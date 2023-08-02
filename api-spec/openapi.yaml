@@ -153,6 +153,11 @@ components:
           $ref: '#/components/schemas/PaymentDetailInfo'
         pspInfo:
           $ref: '#/components/schemas/PspInfo'
+      required:
+        - transactionInfo
+        - paymentInfo
+        - paymentDetailInfo
+        - pspInfo
     TransactionInfo:
       type: object
       description: TransactionResponse
