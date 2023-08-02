@@ -10,7 +10,7 @@ COPY gradle.properties .
 
 COPY eclipse-style.xml eclipse-style.xml
 COPY src src
-COPY api-spec api-spec
+#COPY api-spec api-spec
 RUN ./gradlew build -x test
 RUN mkdir build/extracted && java -Djarmode=layertools -jar build/libs/*.jar extract --destination build/extracted
 
