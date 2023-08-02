@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "it.pagopa.ecommerce.helpdesk"
 
-version = "0.2.0"
+version = "0.0.0"
 
 description = "pagopa-ecommerce-helpdesk-service"
 
@@ -97,7 +97,7 @@ sourceSets {
 }
 
 springBoot {
-  mainClass.set("it.pagopa.ecommerce.helpdesk.PagopaEcommerceHelpdeskServiceApplication")
+  mainClass.set("it.pagopa.ecommerce.helpdesk.PagopaEcommerceHelpdeskServiceApplicationKt")
   buildInfo { properties { additional.set(mapOf("description" to project.description)) } }
 }
 
@@ -146,7 +146,7 @@ tasks.jacocoTestReport {
     files(
       classDirectories.files.map {
         fileTree(it).matching {
-          exclude("it/pagopa/ecommerce/helpdesk/PagopaEcommerceHelpdeskServiceApplication.class")
+          exclude("it/pagopa/ecommerce/helpdesk/PagopaEcommerceHelpdeskServiceApplicationKt.class")
         }
       }
     )
