@@ -10,7 +10,7 @@ cd $checkoutFolder
 echo "Cloning ecommerce commons repo... $gitRepo"
 git clone $gitRepo
 cd pagopa-ecommerce-commons
-echo "Checking out ecommerce common version $version"
+echo "Checking out ecommerce common ref $version"
 git checkout $version
 ./mvnw install -DskipTests
 cd ../../
