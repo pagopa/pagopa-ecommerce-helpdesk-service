@@ -16,6 +16,12 @@ tags:
     externalDocs:
       url: TODO
       description: Technical specifications
+  - name: helpDesk
+    description: Api's for performing transaction search on ecommerce DB
+    externalDocs:
+      url: TODO
+      description: Technical specifications
+
 paths:
   /pm/searchTransaction:
     post:
@@ -86,6 +92,53 @@ paths:
       description: 'GET with body payload - no resources created'
       requestBody:
         $ref: "#/components/requestBodies/EcommerceSearchTransactionRequest"
+      responses:
+        '200':
+          description: Transactions found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchTransactionResponse'
+        '400':
+          description: Formally invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+  /helpdesk/searchTransaction:
+    post:
+      parameters:
+        - in: query
+          name: pageNumber
+          schema:
+            type: integer
+          required: true
+          description: "Searched page number"
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: "Max element per page"
+      tags:
+        - helpDesk
+      operationId: helpDeskSearchTransaction
+      summary: Search transaction by input parmeters
+      description: 'GET with body payload - no resources created'
+      requestBody:
+        $ref: "#/components/requestBodies/SearchTransactionRequest"
       responses:
         '200':
           description: Transactions found
@@ -338,6 +391,28 @@ components:
       type: integer
       minimum: 0
       maximum: 99999999
+    PmSearchTransactionRequest:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/PmSearchTransactionRequestFiscalCode'
+        - $ref: '#/components/schemas/PmSearchTransactionRequestEmail'
+      discriminator:
+        propertyName: type
+        mapping:
+          USER_FISCAL_CODE: "#/components/schemas/PmSearchTransactionRequestFiscalCode"
+          USER_EMAIL: "#/components/schemas/PmSearchTransactionRequestEmail"
+    EcommerceSearchTransactionRequest:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/EcommerceSearchTransactionRequestRptId'
+        - $ref: '#/components/schemas/EcommerceSearchTransactionRequestPaymentToken'
+        - $ref: '#/components/schemas/EcommerceSearchTransactionRequestTransactionId'
+      discriminator:
+        propertyName: type
+        mapping:
+          RPT_ID: "#/components/schemas/EcommerceSearchTransactionRequestRptId"
+          PAYMENT_TOKEN: "#/components/schemas/EcommerceSearchTransactionRequestPaymentToken"
+          TRANSACTION_ID: "#/components/schemas/EcommerceSearchTransactionRequestTransactionId"
   requestBodies:
     PmSearchTransactionRequest:
       required: true
@@ -352,6 +427,15 @@ components:
               mapping:
                 USER_FISCAL_CODE: "#/components/schemas/PmSearchTransactionRequestFiscalCode"
                 USER_EMAIL: "#/components/schemas/PmSearchTransactionRequestEmail"
+          examples:
+            search by user fiscal code:
+              value:
+                type: USER_FISCAL_CODE
+                userFiscalCode: "user_fiscal_code"
+            search by user email:
+              value:
+                type: USER_EMAIL
+                userEmail: "test@test.it"
     PmSearchTransactionResponse:
       required: true
       content:
@@ -373,9 +457,59 @@ components:
                 RPT_ID: "#/components/schemas/EcommerceSearchTransactionRequestRptId"
                 PAYMENT_TOKEN: "#/components/schemas/EcommerceSearchTransactionRequestPaymentToken"
                 TRANSACTION_ID: "#/components/schemas/EcommerceSearchTransactionRequestTransactionId"
+          examples:
+            search by rpt id:
+              value:
+                type: RPT_ID
+                rptId: "77777777777111111111111111111"
+            search by payment token:
+              value:
+                type: PAYMENT_TOKEN
+                paymentToken: "paymentToken"
+            search by transaction id:
+              value:
+                type: TRANSACTION_ID
+                transactionId: "transactionId"
     EcommerceSearchTransactionResponse:
       required: true
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/SearchTransactionResponse'
+    SearchTransactionRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/PmSearchTransactionRequest'
+              - $ref: '#/components/schemas/EcommerceSearchTransactionRequest'
+            discriminator:
+              propertyName: type
+              mapping:
+                USER_FISCAL_CODE: "#/components/schemas/PmSearchTransactionRequestFiscalCode"
+                USER_EMAIL: "#/components/schemas/PmSearchTransactionRequestEmail"
+                RPT_ID: "#/components/schemas/EcommerceSearchTransactionRequestRptId"
+                PAYMENT_TOKEN: "#/components/schemas/EcommerceSearchTransactionRequestPaymentToken"
+                TRANSACTION_ID: "#/components/schemas/EcommerceSearchTransactionRequestTransactionId"
+          examples:
+            search by user fiscal code:
+              value:
+                type: USER_FISCAL_CODE
+                userFiscalCode: "user_fiscal_code"
+            search by user email:
+              value:
+                type: USER_EMAIL
+                userEmail: "test@test.it"
+            search by rpt id:
+              value:
+                type: RPT_ID
+                rptId: "77777777777111111111111111111"
+            search by payment token:
+              value:
+                type: PAYMENT_TOKEN
+                paymentToken: "paymentToken"
+            search by transaction id:
+              value:
+                type: TRANSACTION_ID
+                transactionId: "transactionId"
