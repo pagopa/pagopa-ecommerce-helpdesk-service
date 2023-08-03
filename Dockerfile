@@ -9,12 +9,12 @@ COPY build.gradle.kts .
 COPY settings.gradle.kts .
 COPY gradle.lockfile .
 COPY gradle.properties .
-COPY installCommons.sh .
+COPY pagopa-ecommerce-commons-maven-install.sh .
 
 COPY eclipse-style.xml eclipse-style.xml
 COPY src src
 COPY api-spec api-spec
-RUN ./gradlew build -x test
+RUN ./gradlew build -x test -PbuildCommons
 RUN mkdir build/extracted && java -Djarmode=layertools -jar build/libs/*.jar extract --destination build/extracted
 
 FROM amazoncorretto:17-alpine
