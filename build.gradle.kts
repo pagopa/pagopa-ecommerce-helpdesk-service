@@ -22,6 +22,8 @@ plugins {
 
 val ecommerceCommonsVersion = "0.19.5"
 
+val ecommerceCommonsRef = ecommerceCommonsVersion
+
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
@@ -176,12 +178,14 @@ tasks.register(
   )
 }
 
-task<Exec>("ecommerceCommonsCheckout") {
-  commandLine("sh", "./installCommons.sh", ecommerceCommonsVersion)
+tasks.register<Exec>("install-commons") {
+  val buildCommons = providers.gradleProperty("buildCommons")
+  onlyIf("To build commons library run gradle build -PbuildCommons") { buildCommons.isPresent }
+  commandLine("sh", "./pagopa-ecommerce-commons-maven-install.sh", ecommerceCommonsRef)
 }
 
 tasks.withType<KotlinCompile> {
-  dependsOn("helpdesk", "ecommerceCommonsCheckout")
+  dependsOn("helpdesk", "install-commons")
   kotlinOptions.jvmTarget = "17"
 }
 
