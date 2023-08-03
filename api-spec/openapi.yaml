@@ -30,12 +30,14 @@ paths:
           name: pageNumber
           schema:
             type: integer
+            default: 0
           required: true
-          description: "Searched page number"
+          description: "Searched page number, starting from 0"
         - in: query
           name: pageSize
           schema:
             type: integer
+            default: 10
           required: true
           description: "Max element per page"
       tags:
@@ -77,12 +79,14 @@ paths:
           name: pageNumber
           schema:
             type: integer
+            default: 0
           required: true
-          description: "Searched page number"
+          description: "Searched page number, starting from 0"
         - in: query
           name: pageSize
           schema:
             type: integer
+            default: 10
           required: true
           description: "Max element per page"
       tags:
@@ -124,12 +128,14 @@ paths:
           name: pageNumber
           schema:
             type: integer
+            default: 0
           required: true
-          description: "Searched page number"
+          description: "Searched page number, starting from 0"
         - in: query
           name: pageSize
           schema:
             type: integer
+            default: 10
           required: true
           description: "Max element per page"
       tags:
