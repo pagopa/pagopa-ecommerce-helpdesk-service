@@ -75,9 +75,14 @@ microservice-chart:
     PM_ORACLE_PORT: "1523"
     PM_ORACLE_DATABASE_NAME: "AGIDAD"
     PM_ORACLE_USERNAME: "pagopa_SV"
+    MONGO_HOST: pagopa-d-weu-ecommerce-cosmos-account.mongo.cosmos.azure.com
+    MONGO_USERNAME: pagopa-d-weu-ecommerce-cosmos-account
+    MONGO_PORT: "10255"
+    MONGO_SSL_ENABLED: "true"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PM_ORACLE_PASSWORD: pm-oracle-db-password
+    MONGO_PASSWORD: mongo-ecommerce-password
   keyvault:
     name: "pagopa-d-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
