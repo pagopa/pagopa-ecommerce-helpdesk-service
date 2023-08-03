@@ -132,6 +132,43 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
   }
 }
 
+tasks.register(
+  "helpdesk",
+  org.openapitools.generator.gradle.plugin.tasks.GenerateTask::class.java
+) {
+  generatorName.set("spring")
+  inputSpec.set("$rootDir/api-spec/openapi.yaml")
+  outputDir.set("$buildDir/generated")
+  apiPackage.set("it.pagopa.generated.ecommerce.helpdesk.api")
+  modelPackage.set("it.pagopa.generated.ecommerce.helpdesk.model")
+  generateApiTests.set(false)
+  generateApiDocumentation.set(false)
+  generateApiTests.set(false)
+  generateModelTests.set(false)
+  library.set("spring-boot")
+  modelNameSuffix.set("Dto")
+  configOptions.set(
+    mapOf(
+      "swaggerAnnotations" to "false",
+      "openApiNullable" to "true",
+      "interfaceOnly" to "true",
+      "hideGenerationTimestamp" to "true",
+      "skipDefaultInterface" to "true",
+      "useSwaggerUI" to "false",
+      "reactive" to "true",
+      "useSpringBoot3" to "true",
+      "oas3" to "true",
+      "generateSupportingFiles" to "true",
+      "enumPropertyNaming" to "UPPERCASE"
+    )
+  )
+}
+
+tasks.withType<KotlinCompile> {
+  dependsOn("helpdesk")
+  kotlinOptions.jvmTarget = "17"
+}
+
 tasks.named<Jar>("jar") { enabled = false }
 
 tasks.test {
