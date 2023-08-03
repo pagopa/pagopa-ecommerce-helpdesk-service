@@ -20,11 +20,14 @@ plugins {
   application
 }
 
+val ecommerceCommonsVersion = "0.19.5"
+
 java.sourceCompatibility = JavaVersion.VERSION_17
 
-tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "17" }
-
-repositories { mavenCentral() }
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
 
 dependencyManagement {
   imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.0.5") }
@@ -63,6 +66,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+  implementation("it.pagopa:pagopa-ecommerce-commons:$ecommerceCommonsVersion")
 
   // ECS logback encoder
   implementation("co.elastic.logging:logback-ecs-encoder:$ecsLoggingVersion")
@@ -164,8 +168,12 @@ tasks.register(
   )
 }
 
+task<Exec>("ecommerceCommonsCheckout") {
+  commandLine("sh", "./installCommons.sh", ecommerceCommonsVersion)
+}
+
 tasks.withType<KotlinCompile> {
-  dependsOn("helpdesk")
+  dependsOn("helpdesk", "ecommerceCommonsCheckout")
   kotlinOptions.jvmTarget = "17"
 }
 

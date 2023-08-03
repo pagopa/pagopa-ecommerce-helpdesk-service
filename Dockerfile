@@ -1,5 +1,7 @@
-FROM amazoncorretto:17-alpine AS build
+FROM openjdk:17-jdk as build
 WORKDIR /workspace/app
+
+RUN microdnf install git
 
 COPY gradlew .
 COPY gradle gradle
@@ -7,6 +9,7 @@ COPY build.gradle.kts .
 COPY settings.gradle.kts .
 COPY gradle.lockfile .
 COPY gradle.properties .
+COPY installCommons.sh .
 
 COPY eclipse-style.xml eclipse-style.xml
 COPY src src
