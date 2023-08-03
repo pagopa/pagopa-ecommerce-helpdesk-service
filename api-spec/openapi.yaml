@@ -253,11 +253,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TransactionResult'
-        totalTransactionCount:
-          type: integer
+        page:
+          $ref: '#/components/schemas/PageInfo'
       required:
         - transactions
-        - totalTransactionCount
+        - page
     EcommerceSearchTransactionRequestRptId:
       type: object
       description: Search transaction by user fiscal code
@@ -315,11 +315,14 @@ components:
           $ref: '#/components/schemas/PaymentDetailInfo'
         pspInfo:
           $ref: '#/components/schemas/PspInfo'
+        product:
+          $ref: '#/components/schemas/Product'
       required:
         - transactionInfo
         - paymentInfo
         - paymentDetailInfo
         - pspInfo
+        - product
     TransactionInfo:
       type: object
       description: TransactionResponse
@@ -397,6 +400,27 @@ components:
       type: integer
       minimum: 0
       maximum: 99999999
+    PageInfo:
+      description: Informations about the returned query page
+      type: object
+      properties:
+        current:
+          type: integer
+          description: Current returned page index (0-based)
+        total:
+          type: integer
+          description: Total pages for the query (based on requested page size)
+        results:
+          type: integer
+          description: Transactions returned into the current page
+      required:
+        - current
+        - results
+        - total
+    Product:
+      type: string
+      enum: ["PM", "ECOMMERCE"]
+      description: Product from which transaction belongs
     PmSearchTransactionRequest:
       type: object
       oneOf:
