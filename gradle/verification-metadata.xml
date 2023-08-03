@@ -6,7 +6,7 @@
       <trusted-artifacts>
          <trust file=".*-javadoc[.]jar" regex="true"/>
          <trust file=".*-sources[.]jar" regex="true"/>
-         <trust file=".*pagopa-ecommerce-commons.*" regex="true"/>
+         <trust file=".*pagopa-ecommerce-commons.*[.]jar" regex="true"/>
       </trusted-artifacts>
    </configuration>
    <components>
