@@ -13,6 +13,7 @@ This microservice is responsible for ...
     * [Develop Locally 💻](#develop-locally-)
         + [Prerequisites](#prerequisites-1)
         + [Run the project](#run-the-project)
+        + [Install ecommerce commons library](#install-ecommerce-commons-library-locally)
         + [Testing 🧪](#testing-)
             - [Unit testing](#unit-testing)
             - [Integration testing](#integration-testing)
@@ -85,12 +86,39 @@ $ docker compose up --build
 - git
 - gradle
 - jdk-17
+- ecommerce-commons library installed into maven local folder
 
 ### Run the project
 
 ```shell
 $ ./gradlew bootRun
 ```
+
+### Install ecommerce commons library locally
+
+Into gradle build file have been added a task that take cares for you of proper ecommerce-commons library build,
+performing ecommerce-commons repository clone, checkout to the referred version and build (using maven).
+
+If you want to re-build ecommerce commons library you can run build command with the `-PbuildCommons` argument
+
+This two properties maps ecommerce commons version and ref branch:
+
+````
+val ecommerceCommonsVersion = "x.y.z" -> valued with ecommerce commons wanted pom version
+val ecommerceCommonsRef = ecommerceCommonsVersion -> the branch/tag to be checkout.
+````
+
+`ecommerceCommonsRef` is, by default, valued with the ecommerce commons library version, causing tagged version to be
+checkout. 
+
+This value was left as a separate property because, during developing phases can be changed to a feature branch
+making the local build use a ref branch other than a tag for developing purpose.
+
+```Shell
+$ ./gradlew build -PbuildCommons
+```
+
+Running the above command the version above task will run before project compilation building ecommerce commons locally inside maven local repository
 
 ### Testing 🧪
 
