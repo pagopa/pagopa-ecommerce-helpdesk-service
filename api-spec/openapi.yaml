@@ -5,6 +5,17 @@ info:
   description: This microservice that expose eCommerce services for assistence api.
 servers:
   - url: https://${host}
+tags:
+  - name: PM
+    description: Api's for performing transaction search on PM DB
+    externalDocs:
+      url: TODO
+      description: Technical specifications
+  - name: eCommerce
+    description: Api's for performing transaction search on ecommerce DB
+    externalDocs:
+      url: TODO
+      description: Technical specifications
 paths:
   /pm/searchTransaction:
     post:
@@ -34,7 +45,54 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PmSearchTransactionResponse'
+                $ref: '#/components/schemas/SearchTransactionResponse'
+        '400':
+          description: Formally invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+  /ecommerce/searchTransaction:
+    post:
+      parameters:
+        - in: query
+          name: pageNumber
+          schema:
+            type: integer
+          required: true
+          description: "Searched page number"
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: "Max element per page"
+      tags:
+        - eCommerce
+      operationId: ecommerceSearchTransaction
+      summary: Search transaction by input parmeters
+      description: 'GET with body payload - no resources created'
+      requestBody:
+        $ref: "#/components/requestBodies/EcommerceSearchTransactionRequest"
+      responses:
+        '200':
+          description: Transactions found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchTransactionResponse'
         '400':
           description: Formally invalid input
           content:
@@ -128,20 +186,65 @@ components:
       example:
         type: "USER_EMAIL"
         userEmail: "mario.rossi@pagopa.it"
-    PmSearchTransactionResponse:
+    SearchTransactionResponse:
       type: object
       description: TransactionResponse
       properties:
         transactions:
           type: array
           items:
-            $ref: '#/components/schemas/TrasactionResults'
+            $ref: '#/components/schemas/TransactionResult'
         totalTransactionCount:
           type: integer
       required:
         - transactions
         - totalTransactionCount
-    TrasactionResults:
+    EcommerceSearchTransactionRequestRptId:
+      type: object
+      description: Search transaction by user fiscal code
+      properties:
+        type:
+          type: string
+        rptId:
+          type: string
+          pattern: ^([0-9]{29})$
+      required:
+        - type
+        - rptId
+      example:
+        type: "RPT_ID"
+        rptId: "77777777777302011111111111111"
+    EcommerceSearchTransactionRequestPaymentToken:
+      type: object
+      description: Search transaction by payment token
+      properties:
+        type:
+          type: string
+        paymentToken:
+          type: string
+      required:
+        - type
+        - paymentToken
+      example:
+        type: "PAYMENT_TOKEN"
+        paymentToken: "paymentToken"
+    EcommerceSearchTransactionRequestTransactionId:
+      type: object
+      description: Search transaction by transaction id
+      properties:
+        type:
+          type: string
+        transactionId:
+          type: string
+          minLength: 32
+          maxLength: 32
+      required:
+        - type
+        - transactionId
+      example:
+        type: "TRANSACTION_ID"
+        transactionId: "c9644451389e47b0a7d8e9d488fcd502"
+    TransactionResult:
       type: object
       description: TransactionResponse
       properties:
@@ -254,4 +357,25 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/PmSearchTransactionResponse'
+            $ref: '#/components/schemas/SearchTransactionResponse'
+    EcommerceSearchTransactionRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/EcommerceSearchTransactionRequestRptId'
+              - $ref: '#/components/schemas/EcommerceSearchTransactionRequestPaymentToken'
+              - $ref: '#/components/schemas/EcommerceSearchTransactionRequestTransactionId'
+            discriminator:
+              propertyName: type
+              mapping:
+                RPT_ID: "#/components/schemas/EcommerceSearchTransactionRequestRptId"
+                PAYMENT_TOKEN: "#/components/schemas/EcommerceSearchTransactionRequestPaymentToken"
+                TRANSACTION_ID: "#/components/schemas/EcommerceSearchTransactionRequestTransactionId"
+    EcommerceSearchTransactionResponse:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SearchTransactionResponse'
