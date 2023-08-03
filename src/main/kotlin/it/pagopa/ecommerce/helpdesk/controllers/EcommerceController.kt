@@ -12,17 +12,14 @@ import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 @RestController
-class EcommerceController : EcommerceApi {
-
-    @Autowired private lateinit var ecommerceService: EcommerceService
-
+class EcommerceController(@Autowired val ecommerceService: EcommerceService) : EcommerceApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun ecommerceSearchTransaction(
-        pageNumber: Int?,
-        pageSize: Int?,
-        ecommerceSearchTransactionRequestDto: Mono<EcommerceSearchTransactionRequestDto>?,
-        exchange: ServerWebExchange?
+        pageNumber: Int,
+        pageSize: Int,
+        ecommerceSearchTransactionRequestDto: Mono<EcommerceSearchTransactionRequestDto>,
+        exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
         logger.info("[HelpDesk controller] ecommerceSearchTransaction")
         return ecommerceService

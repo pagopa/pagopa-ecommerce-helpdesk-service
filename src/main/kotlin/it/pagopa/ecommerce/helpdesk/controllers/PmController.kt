@@ -12,17 +12,14 @@ import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 @RestController
-class PmController : PmApi {
-
-    @Autowired private lateinit var pmService: PmService
-
+class PmController(@Autowired val pmService: PmService) : PmApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun pmSearchTransaction(
-        pageNumber: Int?,
-        pageSize: Int?,
-        pmSearchTransactionRequestDto: Mono<PmSearchTransactionRequestDto>?,
-        exchange: ServerWebExchange?
+        pageNumber: Int,
+        pageSize: Int,
+        pmSearchTransactionRequestDto: Mono<PmSearchTransactionRequestDto>,
+        exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
         logger.info("[HelpDesk controller] pmSearchTransaction")
         return pmService
