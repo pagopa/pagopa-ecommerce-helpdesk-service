@@ -107,8 +107,7 @@ val ecommerceCommonsVersion = "x.y.z" -> valued with ecommerce commons wanted po
 val ecommerceCommonsRef = ecommerceCommonsVersion -> the branch/tag to be checkout.
 ````
 
-`ecommerceCommonsRef` is, by default, valued with the ecommerce commons library version, causing tagged version to be
-checkout. 
+`ecommerceCommonsRef` has by default the same value as `ecommerceCommonsVersion`, so that version tagged with `"x.y.z"` will be checked out and installed locally.  
 
 This value was left as a separate property because, during developing phases can be changed to a feature branch
 making the local build use a ref branch other than a tag for developing purpose.
