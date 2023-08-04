@@ -98,7 +98,7 @@ $ ./gradlew bootRun
 
 There is a task into the Gradle build file that take cares for you of properly fetching and building `ecommerce-commons`. It does so by performing a repository clone, checking out to the version set into the build file and building the library with Maven.
 
-If you want to re-build ecommerce commons library you can run build command with the `-PbuildCommons` argument
+If you want to re-build `ecommerce-commons` library you can run the build command with a `-PbuildCommons`.
 
 This two properties maps ecommerce commons version and ref branch:
 
