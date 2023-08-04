@@ -19,10 +19,11 @@ plugins {
   jacoco
   application
 }
-
+// eCommerce commons library version
 val ecommerceCommonsVersion = "0.19.5"
 
-val ecommerceCommonsRef = ecommerceCommonsVersion
+// eCommerce commons library git ref (by default tag)
+val ecommerceCommonsGitRef = ecommerceCommonsVersion
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
@@ -173,7 +174,7 @@ tasks.register(
 tasks.register<Exec>("install-commons") {
   val buildCommons = providers.gradleProperty("buildCommons")
   onlyIf("To build commons library run gradle build -PbuildCommons") { buildCommons.isPresent }
-  commandLine("sh", "./pagopa-ecommerce-commons-maven-install.sh", ecommerceCommonsRef)
+  commandLine("sh", "./pagopa-ecommerce-commons-maven-install.sh", ecommerceCommonsGitRef)
 }
 
 tasks.withType<KotlinCompile> {

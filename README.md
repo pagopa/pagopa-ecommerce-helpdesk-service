@@ -63,13 +63,13 @@ to get a good default configuration.
 
 If you want to customize the application environment, reference this table:
 
-| Variable name                  | Description                                                       | type              | default |
-|--------------------------------|-------------------------------------------------------------------|-------------------|---------|
-| MONGO_HOST                     | Host where MongoDB instance used to persist wallet data           | hostname (string) |         |
-| MONGO_PORT                     | Port where MongoDB is bound to in MongoDB host                    | number            |         |
-| MONGO_USERNAME                 | MongoDB username used to connect to the database                  | string            |         |
-| MONGO_PASSWORD                 | MongoDB password used to connect to the database                  | string            |         |
-| MONGO_SSL_ENABLED              | Whether SSL is enabled while connecting to MongoDB                | string            |         |
+| Variable name     | Description                                             | type              | default |
+|-------------------|---------------------------------------------------------|-------------------|---------|
+| MONGO_HOST        | Host where MongoDB instance used to persist wallet data | hostname (string) |         |
+| MONGO_PORT        | Port where MongoDB is bound to in MongoDB host          | number            |         |
+| MONGO_USERNAME    | MongoDB username used to connect to the database        | string            |         |
+| MONGO_PASSWORD    | MongoDB password used to connect to the database        | string            |         |
+| MONGO_SSL_ENABLED | Whether SSL is enabled while connecting to MongoDB      | string            |         |
 
 ### Run docker container
 
@@ -96,7 +96,9 @@ $ ./gradlew bootRun
 
 ### Install eCommerce commons library locally
 
-There is a task into the Gradle build file that take cares for you of properly fetching and building `ecommerce-commons`. It does so by performing a repository clone, checking out to the version set into the build file and building the library with Maven.
+There is a task into the Gradle build file that take cares for you of properly fetching and
+building `ecommerce-commons`. It does so by performing a repository clone, checking out to the version set into the
+build file and building the library with Maven.
 
 If you want to re-build `ecommerce-commons` library you can run the build command with a `-PbuildCommons`.
 
@@ -104,10 +106,11 @@ This two properties maps `ecommerce-commons` version and git ref:
 
 ````
 val ecommerceCommonsVersion = "x.y.z" -> valued with ecommerce commons wanted pom version
-val ecommerceCommonsRef = ecommerceCommonsVersion -> the branch/tag to be checkout.
+val ecommerceCommonsGitRef = ecommerceCommonsVersion -> the branch/tag to be checkout.
 ````
 
-`ecommerceCommonsRef` has by default the same value as `ecommerceCommonsVersion`, so that version tagged with `"x.y.z"` will be checked out and installed locally.  
+`ecommerceCommonsGitRef` has by default the same value as `ecommerceCommonsVersion`, so that version tagged
+with `"x.y.z"` will be checked out and installed locally.
 
 This value was left as a separate property because, during developing phases can be changed to a feature branch
 making the local build use a ref branch other than a tag for developing purpose.
@@ -116,7 +119,8 @@ making the local build use a ref branch other than a tag for developing purpose.
 $ ./gradlew build -PbuildCommons
 ```
 
-Running the above command the version above task will run before project compilation building eCommerce commons locally inside maven local repository
+Running the above command the version above task will run before project compilation building eCommerce commons locally
+inside maven local repository
 
 ### Testing 🧪
 
