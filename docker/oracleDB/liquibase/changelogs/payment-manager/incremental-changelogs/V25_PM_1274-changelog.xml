@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="V28__PM_1274_FF_NOTIFICATION_SERVICE_TRUE" author="liquibase" failOnError="true" context="insert-dev or insert-sit">
+        <sqlFile path="../scripts/data-insert/V28__PM_1274_FF_NOTIFICATION_SERVICE_TRUE.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+    </changeSet>
+
+    <changeSet id="V29__PM_1274_FF_NOTIFICATION_SERVICE_FALSE" author="liquibase" failOnError="true" context="insert-pt or insert-uat or insert-prod">
+        <sqlFile path="../scripts/data-insert/V29__PM_1274_FF_NOTIFICATION_SERVICE_FALSE.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+    </changeSet>
+
+</databaseChangeLog>

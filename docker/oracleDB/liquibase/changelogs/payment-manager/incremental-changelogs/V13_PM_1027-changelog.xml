@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="V15__PM_1027_ADD_AXEPTA_CONFIGS" author="liquibase" failOnError="true" context="insert-dev or insert-sit or insert-pt">
+        <sqlFile path="../scripts/data-insert/V15__PM_1027_ADD_AXEPTA_CONFIGS.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+    </changeSet>
+
+    <changeSet id="V16__PM_1027_UPDATE_PP_ISSUER_RANGE_HIGH_RANGE" author="liquibase" failOnError="true" context="insert-dev or insert-sit or insert-pt">
+        <sqlFile path="../scripts/data-insert/V16__PM_1027_UPDATE_PP_ISSUER_RANGE_HIGH_RANGE.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+    </changeSet>
+
+</databaseChangeLog>

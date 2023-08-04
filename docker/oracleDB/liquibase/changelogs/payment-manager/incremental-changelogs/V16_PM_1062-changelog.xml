@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="V20__PM_1062_UPDATE_PAYPAL_PSP_URL" author="liquibase" failOnError="true" context="insert-sit">
+        <sqlFile path="../scripts/data-insert/V20__PM_1062_UPDATE_PAYPAL_PSP_URL.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8"/>
+    </changeSet>
+
+</databaseChangeLog>

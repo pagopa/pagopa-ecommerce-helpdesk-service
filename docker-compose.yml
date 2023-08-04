@@ -12,6 +12,20 @@ services:
       - "8080:8080"
     networks:
       - pagopa-ecommerce-net
+  oracle:
+    build: ./docker/oracleDB/liquibase
+    image: pagopadcommonacr.azurecr.io/dboracle-ee-12.2.0.1-slim
+    ports:
+      - 1521:1521
+      - 5500:5500
+    expose:
+      - '1521'
+      - '5500'
+    extra_hosts:
+      - "spid-testenv2:127.0.0.1"
+      - "spid-testenv2-2:127.0.0.1"
+      - "pagopa-dev:127.0.0.1"
+      - "spid-validator:127.0.0.1"
 
 networks:
   pagopa-ecommerce-net:
