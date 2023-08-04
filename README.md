@@ -100,7 +100,7 @@ There is a task into the Gradle build file that take cares for you of properly f
 
 If you want to re-build `ecommerce-commons` library you can run the build command with a `-PbuildCommons`.
 
-This two properties maps ecommerce commons version and ref branch:
+This two properties maps `ecommerce-commons` version and git ref:
 
 ````
 val ecommerceCommonsVersion = "x.y.z" -> valued with ecommerce commons wanted pom version
