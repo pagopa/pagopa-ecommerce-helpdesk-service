@@ -94,7 +94,7 @@ $ docker compose up --build
 $ ./gradlew bootRun
 ```
 
-### Install ecommerce commons library locally
+### Install eCommerce commons library locally
 
 There is a task into the Gradle build file that take cares for you of properly fetching and building `ecommerce-commons`. It does so by performing a repository clone, checking out to the version set into the build file and building the library with Maven.
 
