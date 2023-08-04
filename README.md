@@ -116,7 +116,7 @@ making the local build use a ref branch other than a tag for developing purpose.
 $ ./gradlew build -PbuildCommons
 ```
 
-Running the above command the version above task will run before project compilation building ecommerce commons locally inside maven local repository
+Running the above command the version above task will run before project compilation building eCommerce commons locally inside maven local repository
 
 ### Testing 🧪
 
