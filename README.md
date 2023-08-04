@@ -4,7 +4,7 @@
 
 This microservice is responsible for ...
 
-- [PagoPA Help Desk Service](#pagopa-helpdesk-service)
+- [pagoPA Help Desk Service](#pagopa-helpdesk-service)
     * [Api Documentation 📖](#api-documentation-)
     * [Technology Stack](#technology-stack)
     * [Start Project Locally 🚀](#start-project-locally-)
