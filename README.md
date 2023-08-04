@@ -96,8 +96,7 @@ $ ./gradlew bootRun
 
 ### Install ecommerce commons library locally
 
-Into gradle build file have been added a task that take cares for you of proper ecommerce-commons library build,
-performing ecommerce-commons repository clone, checkout to the referred version and build (using maven).
+There is a task into the Gradle build file that take cares for you of properly fetching and building `ecommerce-commons`. It does so by performing a repository clone, checking out to the version set into the build file and building the library with Maven.
 
 If you want to re-build ecommerce commons library you can run build command with the `-PbuildCommons` argument
 
