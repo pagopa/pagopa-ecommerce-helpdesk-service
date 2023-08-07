@@ -19,10 +19,11 @@ plugins {
   jacoco
   application
 }
-
+// eCommerce commons library version
 val ecommerceCommonsVersion = "0.19.5"
 
-val ecommerceCommonsRef = ecommerceCommonsVersion
+// eCommerce commons library git ref (by default tag)
+val ecommerceCommonsGitRef = ecommerceCommonsVersion
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
