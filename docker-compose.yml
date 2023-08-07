@@ -13,6 +13,7 @@ services:
     networks:
       - pagopa-ecommerce-net
   oracle:
+    container_name: oracle
     build: ./docker/oracleDB/liquibase
     image: pagopadcommonacr.azurecr.io/dboracle-ee-12.2.0.1-slim
     ports:
