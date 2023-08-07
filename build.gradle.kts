@@ -19,12 +19,18 @@ plugins {
   jacoco
   application
 }
+// eCommerce commons library version
+val ecommerceCommonsVersion = "0.19.5"
+
+// eCommerce commons library git ref (by default tag)
+val ecommerceCommonsGitRef = ecommerceCommonsVersion
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
-tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "17" }
-
-repositories { mavenCentral() }
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
 
 dependencyManagement {
   imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.0.5") }
@@ -63,6 +69,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+  implementation("it.pagopa:pagopa-ecommerce-commons:$ecommerceCommonsVersion")
 
   // ECS logback encoder
   implementation("co.elastic.logging:logback-ecs-encoder:$ecsLoggingVersion")
@@ -164,8 +171,14 @@ tasks.register(
   )
 }
 
+tasks.register<Exec>("install-commons") {
+  val buildCommons = providers.gradleProperty("buildCommons")
+  onlyIf("To build commons library run gradle build -PbuildCommons") { buildCommons.isPresent }
+  commandLine("sh", "./pagopa-ecommerce-commons-maven-install.sh", ecommerceCommonsGitRef)
+}
+
 tasks.withType<KotlinCompile> {
-  dependsOn("helpdesk")
+  dependsOn("helpdesk", "install-commons")
   kotlinOptions.jvmTarget = "17"
 }
 
