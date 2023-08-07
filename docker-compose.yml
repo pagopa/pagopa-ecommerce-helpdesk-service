@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  pagopa-ecommerce-helpdesk:
-    container_name: pagopa-ecommerce-helpdesk
+  pagopa-ecommerce-helpdesk-service:
+    container_name: pagopa-ecommerce-helpdesk-service
     build:
       dockerfile: Dockerfile
       context: .
@@ -11,10 +11,12 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - pagopa-ecommerce-net
+      - pagopa-ecommerce-helpdesk-net
   oracle:
-    container_name: oracle
+    container_name: pagopa-ecommerce-helpdesk-oracle
     build: ./docker/oracleDB/liquibase
+    profiles:
+      - arm64
     image: pagopadcommonacr.azurecr.io/dboracle-ee-12.2.0.1-slim
     ports:
       - 1521:1521
@@ -27,10 +29,32 @@ services:
       - "spid-testenv2-2:127.0.0.1"
       - "pagopa-dev:127.0.0.1"
       - "spid-validator:127.0.0.1"
+  mongo:
+    container_name: pagopa-ecommerce-helpdesk-mongo
+    image: mongo
+    env_file: docker/mongoDB/mongodb.env
+    ports:
+      - "27017:27017"
+    networks:
+      - pagopa-ecommerce-helpdesk-net
+    healthcheck:
+      test: echo "db.stats().ok" | mongo --quiet
+      interval: 10s
+
+  mongo-express:
+    container_name: pagopa-ecommerce-helpdesk-express
+    image: mongo-express
+    env_file: docker/mongoDB/mongo-express.env
+    ports:
+      - "8081:8081"
+    networks:
+      - pagopa-ecommerce-helpdesk-net
+    depends_on:
+      - mongo
 
 networks:
-  pagopa-ecommerce-net:
-    name: pagopa-ecommerce-net
+  pagopa-ecommerce-helpdesk-net:
+    name: pagopa-ecommerce-helpdesk-net
     driver: bridge
     driver_opts:
       com.docker.network.driver.mtu: 1450
