@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+  <changeSet id="V5__PM_960_INCREASE_PP_TRANSACTION_RRN_LENGHT" author="liquibase" failOnError="true" context="incremental">
+    <sqlFile path="../scripts/table-creation/V5__PM_960_INCREASE_PP_TRANSACTION_RRN_LENGHT.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+	<rollback>
+		ALTER TABLE PP_TRANSACTION 
+		MODIFY RRN VARCHAR2(20);
+    </rollback>
+  </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+  <changeSet id="V6__PM_892_UPDATE_BIN_AXEPTA" author="liquibase" failOnError="true" context="insert-dev or insert-sit or insert-pt">
+    <sqlFile path="../scripts/data-insert/V6__PM_892_UPDATE_BIN_AXEPTA.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+    <rollback>
+      DELETE FROM PP_ISSUER_RANGE WHERE LOW_RANGE = '5528540000000000000' and HIGH_RANGE='5528549999999999999';
+      DELETE FROM PP_ISSUER_RANGE WHERE LOW_RANGE = '4557770000000000000' and HIGH_RANGE='4557770490000000000';
+      DELETE FROM PP_ISSUER_RANGE WHERE LOW_RANGE = '4563350000000000000' and HIGH_RANGE='4563359990000000000';
+    </rollback>
+  </changeSet>
+</databaseChangeLog>

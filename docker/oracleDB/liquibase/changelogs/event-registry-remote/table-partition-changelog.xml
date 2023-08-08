@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+  <changeSet id="event-registry-remote-table-partition" author="liquibase" failOnError="true" context="baseline and !insert-dev">
+    <sqlFile path="./scripts/table-creation/V2__ALTER_RE_WISP_ADD_PARTITION.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+  </changeSet>
+</databaseChangeLog>

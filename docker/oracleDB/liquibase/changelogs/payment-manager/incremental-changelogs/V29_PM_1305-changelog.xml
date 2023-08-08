@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="V31__PM_1305_PP_CONFIG_RETRY_EMAIL_AND_BATCH" author="liquibase" failOnError="true" context="insert-dev or insert-sit or insert-uat or insert-pt or insert-prod">
+        <sqlFile path="../scripts/data-insert/V31__PM_1305_PP_CONFIG_RETRY_EMAIL_AND_BATCH.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+        <rollback>
+            DELETE FROM PP_CONFIG WHERE KEY IN ('EMAIL_RETRY_MAX_ATTEMPTS','EMAIL_RETRY_WAIT_MILLIS', 'EMAIL_BATCH_ENABLED','EMAIL_BATCH_BLOCKSIZE','EMAIL_BATCH_MAX_RETRY','EMAIL_BATCH_NUM_MINUTES_QUERY','EMAIL_MAX_ONLINE_REQUEST_OFFSET_MINUTES','EMAIL_BATCH_REPORT_EMAIL_TO');
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V11__PM_1305_CREATE_PP_TRANSACTION_EMAIL" author="liquibase" failOnError="true" context="incremental or incremental-uat or incremental-prod">
+        <sqlFile path="../scripts/table-creation/V11__PM_1305_CREATE_PP_TRANSACTION_EMAIL.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+        <rollback>
+            DROP TABLE PP_TRANSACTION_EMAIL;
+            DROP SEQUENCE SEQ_TRANSACTION_EMAIL;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V12__PM_1305_CREATE_IDX_PP_TRAN_CREATION_STATUS" author="liquibase" failOnError="true" context="incremental">
+        <sqlFile path="../scripts/table-creation/V12__PM_1305_CREATE_IDX_PP_TRAN_CREATION_STATUS.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+        <rollback>
+            DROP INDEX PP_TRAN_CREATION_STATUS_IDX;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

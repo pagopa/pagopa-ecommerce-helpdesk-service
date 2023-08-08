@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+  <changeSet id="V5__PM_864_NODO_STATUS_CHECK_ATTEMPTS_LIMIT" author="liquibase" failOnError="true" context="insert-dev or insert-sit or insert-pt">
+    <sqlFile path="../scripts/data-insert/V5__PM_864_NODO_STATUS_CHECK_ATTEMPTS_LIMIT.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+    <rollback>
+      DELETE FROM PP_CONFIG WHERE KEY = 'NODO_STATUS_CHECK_ATTEMPTS_LIMIT';
+    </rollback>
+  </changeSet>
+</databaseChangeLog>

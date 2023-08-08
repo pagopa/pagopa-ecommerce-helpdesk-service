@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+  <include file="./tag-changelog.xml" relativeToChangelogFile="true" />
+  <include file="./table-creation-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./data-insert-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./setup-uat-cloud-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./setup-uat-cloud-changelog_paypal.xml" relativeToChangelogFile="true"></include>
+  <include file="./setup-pt-cloud-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V1_PM_864-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V2_PM_892-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V3_PM_863-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V4_PM_775-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V5_PM_920-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V6_PM_897-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V7_PM_921-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V8_PM_951-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V9_PM_960-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V10_PM_960-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V11_PM_955-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V12_PM_669-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V13_PM_1027-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V14_PM_1078-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V15_PM_ON_CLOUD_PRF_PP_CONFIG_CHARITY_AMEX-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V16_PM_1062-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V17_UPDATE_MOCK_PSP_URL_PERF-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V18_PM_1076-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./setup-prod-cloud-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V19_PM_1119-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V20_PM_817-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V21_PM_1145-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V22_PM_1145-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V23_PM_1233-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V24_PM_1200-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V25_PM_1274-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V26_PM_1286-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V27_PM_1370-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V28_PM_1370-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V29_PM_1305-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V30_PM_1347-changelog.xml" relativeToChangelogFile="true"></include>
+  <include file="./incremental-changelogs/V31_PM_1439-changelog.xml" relativeToChangelogFile="true"></include>
+</databaseChangeLog>

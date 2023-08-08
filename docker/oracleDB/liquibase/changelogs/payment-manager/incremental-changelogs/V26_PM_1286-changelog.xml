@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="V30__PM_1286_DELETE_CF_FOR_UKRAINE_DONATIONS" author="liquibase" failOnError="true" context="insert-dev or insert-sit or insert-uat or insert-pt or insert-prod">
+        <sqlFile path="../scripts/data-insert/V30__PM_1286_DELETE_CF_FOR_UKRAINE_DONATIONS.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+        <rollback>
+            UPDATE PP_CONFIG SET VALUE = '13669721006;97227450158;95008730160;81017180407;97329310151;97531780589;80233930587;01561920586;97096120585;97091470589;09686720153', CREATION_DATE = CURRENT_TIMESTAMP
+            WHERE KEY = 'ID_DOMINIO_LIST_CHARITY';
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

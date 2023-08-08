@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="V8__PM_1233_CREATE_INDEX_PP_USER_ADMIN_PANEL" author="liquibase" failOnError="true" context="incremental-uat">
+        <sqlFile path="../scripts/table-creation/V8__PM_1233_CREATE_INDEX_PP_USER_ADMIN_PANEL.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+    </changeSet>
+
+    <changeSet id="V8__PM_1233_CREATE_INDEX_PP_USER_ADMIN_PANEL_NO_SCHEMA" author="liquibase" failOnError="true" context="incremental">
+        <sqlFile path="../scripts/table-creation/V8__PM_1233_CREATE_INDEX_PP_USER_ADMIN_PANEL_NO_SCHEMA.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+    </changeSet>
+
+</databaseChangeLog>
