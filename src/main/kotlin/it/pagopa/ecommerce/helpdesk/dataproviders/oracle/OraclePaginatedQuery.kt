@@ -26,9 +26,7 @@ fun getResultSetFromPaginatedQuery(
             { connection ->
                 val offset = (pageNumber + 1) * pageSize
                 val query = resultQuery.format(offset, pageSize)
-                logger.info(
-                    "Retrieving transactions for offset: $offset, limit: $pageSize. Query: $query"
-                ) // TODO remove query log
+                logger.info("Retrieving transactions for offset: $offset, limit: $pageSize.")
 
                 Flux.from(connection.createStatement(query).execute()).flatMap {
                     resultToTransactionInfoDto(it)
