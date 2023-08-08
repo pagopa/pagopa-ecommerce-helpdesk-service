@@ -12,6 +12,8 @@ services:
       - "8080:8080"
     networks:
       - pagopa-ecommerce-net
+    depends_on:
+      - mongo
   oracle:
     container_name: pagopa-ecommerce-helpdesk-oracle
     build: ./docker/oracleDB/liquibase
@@ -32,7 +34,7 @@ services:
   mongo:
     container_name: pagopa-ecommerce-helpdesk-mongo
     image: mongo
-    env_file: docker/mongoDB/mongodb.env
+    env_file: docker/mongoDB/conf/mongodb.env
     ports:
       - "27017:27017"
     networks:
@@ -40,17 +42,20 @@ services:
     healthcheck:
       test: echo "db.stats().ok" | mongo --quiet
       interval: 10s
+    volumes:
+      - ./docker/mongoDB/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   mongo-express:
     container_name: pagopa-ecommerce-helpdesk-express
     image: mongo-express
-    env_file: docker/mongoDB/mongo-express.env
+    env_file: docker/mongoDB/conf/mongo-express.env
     ports:
       - "8081:8081"
     networks:
       - pagopa-ecommerce-net
     depends_on:
       - mongo
+
 
 networks:
   pagopa-ecommerce-net:
