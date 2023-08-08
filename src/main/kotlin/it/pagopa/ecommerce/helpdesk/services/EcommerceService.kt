@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.services
 
+import it.pagopa.ecommerce.commons.documents.v1.TransactionActivatedEvent
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import org.slf4j.LoggerFactory
@@ -18,7 +19,11 @@ class EcommerceService {
     ): Mono<SearchTransactionResponseDto> {
         logger.info("[helpDesk ecommerce service] searchTransaction method")
         return ecommerceSearchTransactionRequestDto
-            .doOnNext { logger.info("Search type: ${it.type}") }
+            .doOnNext {
+                logger.info("Search type: ${it.type}")
+                val transactionEvent = TransactionActivatedEvent()
+                println(transactionEvent)
+            }
             .map {
                 SearchTransactionResponseDto()
                     .page(PageInfoDto().current(0).results(3).total(1))

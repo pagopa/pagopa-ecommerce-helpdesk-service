@@ -71,6 +71,10 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("it.pagopa:pagopa-ecommerce-commons:$ecommerceCommonsVersion")
 
+  // oracle
+  implementation("com.oracle.database.jdbc:ojdbc11:23.2.0.0")
+  implementation("com.oracle.database.r2dbc:oracle-r2dbc:1.1.1")
+
   // ECS logback encoder
   implementation("co.elastic.logging:logback-ecs-encoder:$ecsLoggingVersion")
 
