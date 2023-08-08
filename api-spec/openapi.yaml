@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
   version: 1.0.0
-  title: Pagopa eCommerce services for assistence api
-  description: This microservice that expose eCommerce services for assistence api.
+  title: Pagopa eCommerce services for assistance api
+  description: This microservice that expose eCommerce services for assistance api.
 servers:
   - url: https://${host}
 tags:
@@ -43,7 +43,7 @@ paths:
       tags:
         - PM
       operationId: pmSearchTransaction
-      summary: Search transaction by input parmeters
+      summary: Search transaction by input parameters
       description: 'GET with body payload - no resources created'
       requestBody:
         $ref: "#/components/requestBodies/PmSearchTransactionRequest"
@@ -307,6 +307,8 @@ components:
       type: object
       description: TransactionResponse
       properties:
+        userInfo:
+          $ref: '#/components/schemas/UserInfo'
         transactionInfo:
           $ref: '#/components/schemas/TransactionInfo'
         paymentInfo:
@@ -323,6 +325,36 @@ components:
         - paymentDetailInfo
         - pspInfo
         - product
+    UserInfo:
+      type: object
+      description: TransactionResponse
+      properties:
+        userFiscalCode:
+          type: string
+          minLength: 16
+          maxLength: 16
+        notificationEmail:
+          type: string
+          pattern: (?:[a-zA-Z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?|\[(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?|[a-zA-Z0-9-]*[a-zA-Z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])
+        surname:
+          type: string
+          maxLength: 512
+        name:
+          type: string
+          maxLength: 512
+        username:
+          type: string
+          maxLength: 128
+        status:
+          type: string
+      example:
+        userFiscalCode: "user_fiscal_code"
+        notificationEmail: "test@test.it"
+        surname: "Surname"
+        name: "Name"
+        username: "username"
+        status: "TO BE DEFINED"
+
     TransactionInfo:
       type: object
       description: TransactionResponse
@@ -419,7 +451,7 @@ components:
         - total
     Product:
       type: string
-      enum: ["PM", "ECOMMERCE"]
+      enum: [ "PM", "ECOMMERCE" ]
       description: Product from which transaction belongs
     PmSearchTransactionRequest:
       type: object
