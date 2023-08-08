@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="V17__PM_1078_HTTPS_CALL_THROUGH_INTERNET_SIT" author="liquibase" failOnError="true" context="insert-sit">
+        <sqlFile path="../scripts/data-insert/V17__PM_1078_HTTPS_CALL_THROUGH_INTERNET_SIT.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+    </changeSet>
+
+    <changeSet id="V18__PM_1078_HTTPS_CALL_THROUGH_INTERNET_PRF" author="liquibase" failOnError="true" context="insert-pt">
+        <sqlFile path="../scripts/data-insert/V18__PM_1078_HTTPS_CALL_THROUGH_INTERNET_PRF.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+    </changeSet>
+
+</databaseChangeLog>

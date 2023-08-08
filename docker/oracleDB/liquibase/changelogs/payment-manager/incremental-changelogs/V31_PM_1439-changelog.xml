@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="V33__PM_1439_INSTRUMENT_DELETION_BATCH_CONFIGS" author="liquibase" failOnError="true" context="insert-dev or insert-sit or insert-uat or insert-pt or insert-prod">
+        <sqlFile path="../scripts/data-insert/V33__PM_1439_INSTRUMENT_DELETION_BATCH_CONFIGS.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+        <rollback>
+            DELETE FROM PP_CONFIG WHERE KEY IN('INSTRUMENT_DELETION_BATCH_FILE_PATH','INSTRUMENT_DELETION_BATCH_COMMIT_INTERVAL_MS','INSTRUMENT_DELETION_BATCH_START_DATE','INSTRUMENT_DELETION_BATCH_END_DATE','INSTRUMENT_DELETION_BATCH_SELECT_SIZE','INSTRUMENT_DELETION_BATCH_NUMBER_OF_RUNS');
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V34__PM_1439_INSTRUMENT_DELETION_BATCH_CONFIG_LOCALE" author="liquibase" failOnError="true" context="insert-dev">
+        <sqlFile path="../scripts/data-insert/V34__PM_1439_INSTRUMENT_DELETION_BATCH_CONFIG_LOCALE.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+        <rollback>
+            UPDATE PP_CONFIG SET VALUE = '' WHERE "KEY" = 'INSTRUMENT_DELETION_BATCH_FILE_PATH';
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V35__PM_1439_INSTRUMENT_DELETION_BATCH_CONFIG_FIX" author="liquibase" failOnError="true" context="insert-dev or insert-sit or insert-uat or insert-pt or insert-prod">
+        <sqlFile path="../scripts/data-insert/V35__PM_1439_INSTRUMENT_DELETION_BATCH_CONFIG_FIX.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+        <rollback>
+            UPDATE PP_CONFIG SET VALUE = '08-DEC-2020' WHERE "KEY" = 'INSTRUMENT_DELETION_BATCH_START_DATE';
+            UPDATE PP_CONFIG SET VALUE = '30-JUN-2021' WHERE "KEY" = 'INSTRUMENT_DELETION_BATCH_END_DATE';
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V13__PM_1439_CREATE_IDX_PP_TRAN_WALLET" author="liquibase" failOnError="true" context="incremental">
+        <sqlFile path="../scripts/table-creation/V13__PM_1439_CREATE_IDX_PP_TRAN_WALLET.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+        <rollback>
+            DROP INDEX PP_TRAN_WALLET_IDX;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V36__PM_1439_INSTRUMENT_DELETION_BATCH_DATE_CONFIG_FIX" author="liquibase" failOnError="true" context="insert-dev or insert-sit or insert-uat or insert-pt or insert-prod">
+        <sqlFile path="../scripts/data-insert/V36__PM_1439_INSTRUMENT_DELETION_BATCH_DATE_CONFIG_FIX.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+        <rollback>
+            UPDATE PP_CONFIG SET VALUE = '30-JUN-21' WHERE "KEY" = 'INSTRUMENT_DELETION_BATCH_END_DATE';
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

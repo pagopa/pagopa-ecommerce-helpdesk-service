@@ -1,0 +1,4 @@
+update PP_CONFIG
+set "VALUE" = REPLACE("VALUE",';9686720153','') || ';09686720153'
+where "KEY" = 'ID_DOMINIO_LIST_CHARITY'
+and "VALUE" not like '%;09686720153%';

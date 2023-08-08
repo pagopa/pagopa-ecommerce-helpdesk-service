@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="V9__PM_1370_CREATE_INDEXES_PP_SPID_RECORD" author="liquibase" failOnError="true" context="incremental">
+        <sqlFile path="../scripts/table-creation/V9__PM_1370_CREATE_INDEXES_PP_SPID_RECORD.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+        <rollback>
+            DROP INDEX SPID_RECORD_RESP_IDX;
+            DROP INDEX SPID_RECORD_DATE_IDX;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

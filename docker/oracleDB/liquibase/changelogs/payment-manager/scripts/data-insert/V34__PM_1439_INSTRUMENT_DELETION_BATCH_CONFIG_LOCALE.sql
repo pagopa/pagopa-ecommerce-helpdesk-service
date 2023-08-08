@@ -1,0 +1,1 @@
+UPDATE PP_CONFIG SET VALUE = '/opt/deletion-batch/fiscalCodes.txt' WHERE "KEY" = 'INSTRUMENT_DELETION_BATCH_FILE_PATH';

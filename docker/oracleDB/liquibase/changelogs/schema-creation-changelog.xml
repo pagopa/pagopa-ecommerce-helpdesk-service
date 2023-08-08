@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+
+<databaseChangeLog  
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"  
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">  
+    <changeSet id="payment-manager-schema-creation" author="liquibase" failOnError="false">
+      <sqlFile path="./payment-manager/scripts/schema-creation/V0__CREATE_USER.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8"/>
+    </changeSet>
+    <changeSet id="event-registry-schema-creation" author="liquibase" failOnError="false">
+      <sqlFile path="./event-registry/scripts/schema-creation/V0__CREATE_USER.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8"/>
+    </changeSet>
+    <changeSet id="event-registry-remote-schema-creation" author="liquibase" failOnError="false">
+      <sqlFile path="./event-registry-remote/scripts/schema-creation/V0__CREATE_USER.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8"/>
+    </changeSet>
+    <changeSet id="event-registry-remote-history-schema-creation" author="liquibase" failOnError="false">
+        <sqlFile path="./event-registry-remote-history/scripts/schema-creation/V0__CREATE_USER.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8"/>
+    </changeSet>
+</databaseChangeLog>

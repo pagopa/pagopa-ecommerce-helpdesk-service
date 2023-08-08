@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+  <changeSet id="V10__PM_897_UPDATE_MOCK_SERVICE_ENDPOINT_SIT" author="liquibase" failOnError="true" context="insert-sit">
+    <sqlFile path="../scripts/data-insert/V10__PM_897_UPDATE_MOCK_SERVICE_ENDPOINT_SIT.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+  </changeSet>
+</databaseChangeLog>

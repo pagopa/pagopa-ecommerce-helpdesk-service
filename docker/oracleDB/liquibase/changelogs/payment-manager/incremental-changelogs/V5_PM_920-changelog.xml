@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+  <changeSet id="V4__PM_920_CHANGE_ID_PPAY_TO_NULL_INTO_PP_POSTEPAY" author="liquibase" failOnError="true" context="incremental">
+    <sqlFile path="../scripts/table-creation/V4__PM_920_CHANGE_ID_PPAY_TO_NULL_INTO_PP_POSTEPAY.sql" stripComments="true" relativeToChangelogFile="true" dbms="oracle" encoding="UTF-8" />
+	<rollback>
+		ALTER TABLE PP_POSTEPAY 
+		MODIFY ID_PPAY NOT NULL;
+    </rollback>
+  </changeSet>
+  
+</databaseChangeLog>
