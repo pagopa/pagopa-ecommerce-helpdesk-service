@@ -11,7 +11,7 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - pagopa-ecommerce-helpdesk-net
+      - pagopa-ecommerce-net
   oracle:
     container_name: pagopa-ecommerce-helpdesk-oracle
     build: ./docker/oracleDB/liquibase
@@ -36,7 +36,7 @@ services:
     ports:
       - "27017:27017"
     networks:
-      - pagopa-ecommerce-helpdesk-net
+      - pagopa-ecommerce-net
     healthcheck:
       test: echo "db.stats().ok" | mongo --quiet
       interval: 10s
@@ -48,13 +48,13 @@ services:
     ports:
       - "8081:8081"
     networks:
-      - pagopa-ecommerce-helpdesk-net
+      - pagopa-ecommerce-net
     depends_on:
       - mongo
 
 networks:
-  pagopa-ecommerce-helpdesk-net:
-    name: pagopa-ecommerce-helpdesk-net
+  pagopa-ecommerce-net:
+    name: pagopa-ecommerce-net
     driver: bridge
     driver_opts:
       com.docker.network.driver.mtu: 1450
