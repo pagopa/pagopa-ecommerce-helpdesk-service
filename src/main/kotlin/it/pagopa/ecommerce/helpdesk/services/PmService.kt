@@ -6,8 +6,8 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.buildTransactionByUserE
 import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.getResultSetFromPaginatedQuery
 import it.pagopa.ecommerce.helpdesk.utils.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestEmailDto
-import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestFiscalCodeDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestEmailDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestFiscalCodeDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,7 +30,7 @@ class PmService(@Autowired val connectionFactory: ConnectionFactory) {
             .doOnNext { logger.info("Search type: ${it.type}") }
             .flatMap {
                 when (it) {
-                    is PmSearchTransactionRequestEmailDto ->
+                    is SearchTransactionRequestEmailDto ->
                         getResultSetFromPaginatedQuery(
                             connectionFactory = connectionFactory,
                             totalRecordCountQuery =
@@ -39,7 +39,7 @@ class PmService(@Autowired val connectionFactory: ConnectionFactory) {
                             pageSize = pageSize,
                             pageNumber = pageNumber
                         )
-                    is PmSearchTransactionRequestFiscalCodeDto ->
+                    is SearchTransactionRequestFiscalCodeDto ->
                         Mono.error(RuntimeException("Not implemented yet"))
                     else -> Mono.error(RuntimeException(""))
                 }
