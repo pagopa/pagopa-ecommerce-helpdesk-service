@@ -327,7 +327,7 @@ components:
         - product
     UserInfo:
       type: object
-      description: TransactionResponse
+      description: User informations
       properties:
         userFiscalCode:
           type: string
@@ -345,7 +345,7 @@ components:
         username:
           type: string
           maxLength: 128
-        status:
+        authenticationType:
           type: string
       example:
         userFiscalCode: "user_fiscal_code"
@@ -353,11 +353,11 @@ components:
         surname: "Surname"
         name: "Name"
         username: "username"
-        status: "TO BE DEFINED"
+        authenticationType: "auth type"
 
     TransactionInfo:
       type: object
-      description: TransactionResponse
+      description: Transaction info
       properties:
         creationDate:
           type: string
@@ -365,57 +365,73 @@ components:
           description: transaction creation date
         status:
           type: string
+        statusDetail:
+          type: string
         amount:
           $ref: '#/components/schemas/AmountEuroCents'
         fee:
           $ref: '#/components/schemas/AmountEuroCents'
         grandTotal:
           $ref: '#/components/schemas/AmountEuroCents'
+        rrn:
+          type: string
+        authotizationCode:
+          type: string
+        paymentMethodName:
+          type: string
+        brand:
+          type: string
       example:
         creationDate: "2023-08-02T14:42:54.047"
-        status: "TO BE DEFINED"
+        status: "status"
+        statusDetail: "status detail"
         amount: 100
         fee: 10
         grandTotal: 110
+        rrn: "rrn"
+        authorizationCode: "auth code"
+        paymentMethodName: "payment method name"
+        brand: "brand"
     PaymentInfo:
       type: object
-      description: TransactionResponse
+      description: Payment info
       properties:
-        amount:
-          $ref: '#/components/schemas/AmountEuroCents'
         subject:
           type: string
         origin:
           type: string
       example:
-        amount: 100
         subject: "Causale pagamento"
         origin: "CHECKOUT"
     PaymentDetailInfo:
       type: object
-      description: TransactionResponse
+      description: Payment details
       properties:
         iuv:
           type: string
-          minLength: 18
-          maxLength: 18
-        paymentContextCode:
+        rptIds:
+          type: array
+          items:
+            type: string
+        idTransaction:
+          type: string
+        paymentToken:
           type: string
         creditorInstitution:
           type: string
-        amount:
-          $ref: '#/components/schemas/AmountEuroCents'
         paFiscalCode:
           type: string
       example:
         iuv: "302001069073736640"
-        paymentContextCode: "paymentContextCode"
+        rptId: [ "rptId1","rptId2" ]
+        idTransaction: "paymentContextCode"
+        paymentToken: "payment token"
         creditorInstitution: "66666666666"
         amount: 99999999
         paFiscalCode: "77777777777"
     PspInfo:
       type: object
-      description: TransactionResponse
+      description: PSP info
       properties:
         pspId:
           type: string
