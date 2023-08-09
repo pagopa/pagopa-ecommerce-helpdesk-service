@@ -75,7 +75,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                 { connection ->
                     Flux.from(connection.createStatement(totalRecordCountQuery).execute())
                         .flatMap { result ->
-                            result.map { row -> row[0, Number::class.java]!!.toInt() }
+                            result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
                         .doOnNext { logger.info("Total transaction found: $it") }
                 },

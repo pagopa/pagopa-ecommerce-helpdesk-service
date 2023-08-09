@@ -2,6 +2,7 @@ package it.pagopa.ecommerce.helpdesk.utils
 
 import io.r2dbc.spi.Result
 import it.pagopa.generated.ecommerce.helpdesk.model.*
+import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import org.reactivestreams.Publisher
@@ -32,9 +33,9 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
                     .creationDate(row[6, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2")))
                     .status(row[7, String::class.java])
                     .statusDetails(row[8, String::class.java])
-                    .amount(row[10, Number::class.java]?.toInt())
-                    .fee(row[11, Number::class.java]?.toInt())
-                    .grandTotal(row[12, Number::class.java]?.toInt())
+                    .amount(row[10, BigDecimal::class.java]?.toInt())
+                    .fee(row[11, BigDecimal::class.java]?.toInt())
+                    .grandTotal(row[12, BigDecimal::class.java]?.toInt())
                     .rrn(row[13, String::class.java])
                     .authotizationCode(row[14, String::class.java])
                     .paymentMethodName(row[15, String::class.java])
