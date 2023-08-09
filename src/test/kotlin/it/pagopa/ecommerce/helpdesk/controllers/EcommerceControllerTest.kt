@@ -170,7 +170,6 @@ class EcommerceControllerTest {
     fun `post search transaction should return 400 for bad request`() = runTest {
         val pageNumber = 1
         val pageSize = 15
-        val request = HelpdeskTestUtils.buildSearchRequestByTransactionId()
 
         webClient
             .post()
