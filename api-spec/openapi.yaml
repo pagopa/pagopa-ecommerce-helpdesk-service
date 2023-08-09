@@ -365,7 +365,7 @@ components:
           description: transaction creation date
         status:
           type: string
-        statusDetail:
+        statusDetails:
           type: string
         amount:
           $ref: '#/components/schemas/AmountEuroCents'
@@ -384,7 +384,7 @@ components:
       example:
         creationDate: "2023-08-02T14:42:54.047"
         status: "status"
-        statusDetail: "status detail"
+        statusDetails: "status detail"
         amount: 100
         fee: 10
         grandTotal: 110

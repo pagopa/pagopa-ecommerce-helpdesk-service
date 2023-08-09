@@ -61,7 +61,7 @@ class PmService(@Autowired val connectionFactory: ConnectionFactory) {
                                         .fee(100)
                                         .creationDate(OffsetDateTime.now())
                                         .status("status")
-                                        .statusDetail("status detail")
+                                        .statusDetails("status details")
                                         .grandTotal(200)
                                         .rrn("rrn")
                                         .authotizationCode("authCode")
