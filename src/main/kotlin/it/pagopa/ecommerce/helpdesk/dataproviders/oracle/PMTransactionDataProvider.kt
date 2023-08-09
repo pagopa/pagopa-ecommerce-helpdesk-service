@@ -33,7 +33,9 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
             is SearchTransactionRequestEmailDto ->
                 getTotalResultCount(buildTransactionByUserEmailCountQuery(searchCriteria.userEmail))
             is SearchTransactionRequestFiscalCodeDto ->
-                Mono.error(RuntimeException("Not implemented yet"))
+                getTotalResultCount(
+                    buildTransactionByUserFiscalCodeCountQuery(searchCriteria.userFiscalCode)
+                )
             else ->
                 Mono.error(
                     RuntimeException("Unhandled search criteria ${searchCriteria.javaClass}")
@@ -64,7 +66,15 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                     searchType = searchCriteriaType
                 )
             is SearchTransactionRequestFiscalCodeDto ->
-                Mono.error(RuntimeException("Not implemented yet"))
+                getResultSetFromPaginatedQuery(
+                    resultQuery =
+                        buildTransactionByUserFiscalCodePaginatedQuery(
+                            searchCriteria.userFiscalCode
+                        ),
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchType = searchCriteriaType
+                )
             else -> invalidSearchCriteriaError
         }
     }
