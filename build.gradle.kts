@@ -88,6 +88,8 @@ dependencies {
   testImplementation("com.squareup.okhttp3:mockwebserver:$mockWebServerVersion")
   testImplementation("com.squareup.okhttp3:okhttp:$mockWebServerVersion")
   testImplementation("it.pagopa:pagopa-ecommerce-commons:$ecommerceCommonsVersion:tests")
+  testImplementation("com.h2database:h2:2.2.220")
+  testImplementation("io.r2dbc:r2dbc-h2:1.0.0.RELEASE")
 }
 
 configurations {
