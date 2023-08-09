@@ -2,11 +2,54 @@ package it.pagopa.ecommerce.helpdesk.dataproviders.oracle
 
 fun buildTransactionByUserEmailPaginatedQuery(userEmail: String) =
     """
-        SELECT 	pu.FISCAL_CODE AS PU_FISCAL_CODE, pu.NOTIFICATION_EMAIL AS PU_NOTIFICATION_EMAIL, pu.SURNAME AS PU_SURNAME, pu.NAME AS PU_NAME, pu.USERNAME AS PU_USERNAME, pu.STATUS AS PU_STATUS,
-		pt.CREATION_DATE AS PT_CREATION_DATE, pt.STATUS AS PT_STATUS ,pt.ACCOUNTING_STATUS AS PT_ACCOUNTING_STATUS , pt.AMOUNT AS PT_AMOUNT, pt.FEE AS PT_FEE, pt.GRAND_TOTAL AS PT_GRAND_TOTAL,pt.FK_PAYMENT AS PT_FK_PAYMENT,
-		pp.ID AS PP_ID ,pp.AMOUNT AS PP_AMOUNT, pp.SUBJECT AS PP_SUBJECT, pp.ORIGIN AS PP_ORIGIN,
-		ppd.IUV AS PPD_IUV , ppd.CCP AS PPD_CCP, ppd.ENTE_BENEFICIARIO AS PPD_ENTE_BENEFICIARIO, ppd.IMPORTO  AS PPD_IMPORTO, ppd.ID_DOMINIO AS PPD_ID_DOMINIO,
-		pp2.ID_PSP AS PP2_ID_PSP, pp2.BUSINESS_NAME AS PP2_BUSINESS_NAME, pp2.ID_CHANNEL AS PP2_ID_CHANNEL
+       SELECT 	pu.FISCAL_CODE , pu.NOTIFICATION_EMAIL , pu.SURNAME , pu.NAME , pu.USERNAME , 
+		CASE pu.STATUS 
+		WHEN 0 THEN 'Utente non registrato'
+		WHEN 1 THEN 'Utente registrato non SPID'
+		WHEN 2 THEN 'Utente in attesa di verifica OTP'
+		WHEN 3 THEN 'Password da impostare'
+		WHEN 4 THEN 'Password da impostare - cambio password'
+		WHEN 5 THEN 'Utente cancellato'
+		WHEN 11 THEN 'Utente registrato SPID'
+		WHEN 12 THEN 'Utente registrato su IO con CIE'
+		ELSE TO_CHAR(pu.STATUS) END AS STATUS_UTENTE,
+		pt.CREATION_DATE , 
+		CASE pt.STATUS 
+		WHEN 0 THEN 'Da autorizzare'
+		WHEN 1 THEN 'In attesa'
+		WHEN 2 THEN 'In attesa mod1'
+		WHEN 3 THEN 'Confermato'
+		WHEN 4 THEN 'Rifiutato'
+		WHEN 6 THEN 'In attesa di XPAY'
+		WHEN 7 THEN 'In errore'
+		WHEN 8 THEN 'Confermato mod1'
+		WHEN 9 THEN 'Confermato mod2'
+		WHEN 10 THEN 'Rifiutato'
+		WHEN 11 THEN 'Missing callback from PSP'
+		WHEN 12 THEN 'Pagamento preso in carico'
+		WHEN 13 THEN '3DS Scaduto'
+		WHEN 14 THEN 'Authorized with nodo timeout'
+		WHEN 15 THEN 'In attesa del metodo 3ds2'
+		WHEN 16 THEN 'In attesa della challenge 3ds2'
+		WHEN 17 THEN 'Ritornando dal metodo 3ds2'
+		WHEN 18 THEN 'Ritornando dalla challenge 3ds2'
+		WHEN 19 THEN 'Transazione XPAY / PPAL / BPAY da stornare'
+		WHEN 20 THEN 'Transazione XPAY stornata da batch'
+		WHEN 21 THEN 'Pagamento Autorizzato dal Payment Gateway'
+		ELSE TO_CHAR(pt.STATUS) END AS STATUS_PAGAMENTO,
+		CASE pt.ACCOUNTING_STATUS 
+		WHEN 0 THEN 'Non gestito'
+		WHEN 1 THEN 'Contabilizzato'
+		WHEN 2 THEN 'Errore di contabilizzazione'
+		WHEN 3 THEN 'Stornato'
+		WHEN 4 THEN 'Errore Storno'
+ 		WHEN 5 THEN 'Ricevuta creata'
+		ELSE TO_CHAR(pt.ACCOUNTING_STATUS ) END AS SATUS_PAGAMENTO_DETAIL, 
+		PP.ORIGIN ,
+		pt.AMOUNT , pt.FEE , pt.GRAND_TOTAL ,pt.rrn,  pt.AUTHORIZATION_CODE ,
+		pt.SERVICE_NAME ,
+		pp.SUBJECT ,ppd.IUV , ppd.CCP, ppd.ENTE_BENEFICIARIO , ppd.ID_DOMINIO ,
+		pp2.ID_PSP , pp2.BUSINESS_NAME , pp2.ID_CHANNEL 
         FROM AGID_USER.PP_USER pu 
         left JOIN AGID_USER.PP_TRANSACTION pt ON pu.ID_USER =pt.FK_USER 
         left JOIN AGID_USER.PP_PAYMENT pp ON pt.FK_PAYMENT = pp.ID 

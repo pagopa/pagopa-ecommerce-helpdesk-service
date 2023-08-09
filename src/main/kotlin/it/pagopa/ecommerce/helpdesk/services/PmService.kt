@@ -22,30 +22,31 @@ class PmService(@Autowired val connectionFactory: ConnectionFactory) {
     fun searchTransaction(
         pageNumber: Int,
         pageSize: Int,
-        pmSearchTransactionRequestDto: Mono<PmSearchTransactionRequestDto>
+        pmSearchTransactionRequestDto: PmSearchTransactionRequestDto
     ): Mono<SearchTransactionResponseDto> {
-        logger.info("[helpDesk pm service] searchTransaction method")
-
-        return pmSearchTransactionRequestDto
-            .doOnNext { logger.info("Search type: ${it.type}") }
-            .flatMap {
-                when (it) {
-                    is SearchTransactionRequestEmailDto ->
-                        getResultSetFromPaginatedQuery(
-                            connectionFactory = connectionFactory,
-                            totalRecordCountQuery =
-                                buildTransactionByUserEmailCountQuery(it.userEmail),
-                            resultQuery = buildTransactionByUserEmailPaginatedQuery(it.userEmail),
-                            pageSize = pageSize,
-                            pageNumber = pageNumber
-                        )
-                    is SearchTransactionRequestFiscalCodeDto ->
-                        Mono.error(RuntimeException("Not implemented yet"))
-                    else -> Mono.error(RuntimeException(""))
-                }
-            }
-            .map { (totalCount, results) ->
-                buildTransactionSearchResponse(pageNumber, totalCount, results)
-            }
+        logger.info(
+            "[helpDesk pm service] searchTransaction method, search type: ${pmSearchTransactionRequestDto.type}"
+        )
+        return when (pmSearchTransactionRequestDto) {
+            is SearchTransactionRequestEmailDto ->
+                getResultSetFromPaginatedQuery(
+                    connectionFactory = connectionFactory,
+                    totalRecordCountQuery =
+                        buildTransactionByUserEmailCountQuery(
+                            pmSearchTransactionRequestDto.userEmail
+                        ),
+                    resultQuery =
+                        buildTransactionByUserEmailPaginatedQuery(
+                            pmSearchTransactionRequestDto.userEmail
+                        ),
+                    pageSize = pageSize,
+                    pageNumber = pageNumber
+                )
+            is SearchTransactionRequestFiscalCodeDto ->
+                Mono.error(RuntimeException("Not implemented yet"))
+            else -> Mono.error(RuntimeException(""))
+        }.map { (totalCount, results) ->
+            buildTransactionSearchResponse(pageNumber, totalCount, results)
+        }
     }
 }
