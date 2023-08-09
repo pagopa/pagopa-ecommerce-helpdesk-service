@@ -38,7 +38,7 @@ class PmControllerTest {
                     pageSize = eq(pageSize),
                     pmSearchTransactionRequestDto =
                         argThat {
-                            this is PmSearchTransactionRequestEmailDto &&
+                            this is SearchTransactionRequestEmailDto &&
                                 this.userEmail == request.userEmail
                         }
                 )
@@ -71,7 +71,7 @@ class PmControllerTest {
                     pageSize = eq(pageSize),
                     pmSearchTransactionRequestDto =
                         argThat {
-                            this is PmSearchTransactionRequestFiscalCodeDto &&
+                            this is SearchTransactionRequestFiscalCodeDto &&
                                 this.userFiscalCode == request.userFiscalCode
                         }
                 )
@@ -110,7 +110,7 @@ class PmControllerTest {
                     pageSize = eq(pageSize),
                     pmSearchTransactionRequestDto =
                         argThat {
-                            this is PmSearchTransactionRequestEmailDto &&
+                            this is SearchTransactionRequestEmailDto &&
                                 this.userEmail == request.userEmail
                         }
                 )
@@ -173,7 +173,7 @@ class PmControllerTest {
                         pageSize = eq(pageSize),
                         pmSearchTransactionRequestDto =
                             argThat {
-                                this is PmSearchTransactionRequestEmailDto &&
+                                this is SearchTransactionRequestEmailDto &&
                                     this.userEmail == request.userEmail
                             }
                     )

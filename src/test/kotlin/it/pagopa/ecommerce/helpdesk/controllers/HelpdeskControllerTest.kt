@@ -41,7 +41,7 @@ class HelpdeskControllerTest {
                     pageSize = eq(pageSize),
                     ecommerceSearchTransactionRequestDto =
                         argThat {
-                            this is EcommerceSearchTransactionRequestPaymentTokenDto &&
+                            this is SearchTransactionRequestPaymentTokenDto &&
                                 this.paymentToken == request.paymentToken
                         }
                 )
@@ -74,8 +74,7 @@ class HelpdeskControllerTest {
                     pageSize = eq(pageSize),
                     ecommerceSearchTransactionRequestDto =
                         argThat {
-                            this is EcommerceSearchTransactionRequestRptIdDto &&
-                                this.rptId == request.rptId
+                            this is SearchTransactionRequestRptIdDto && this.rptId == request.rptId
                         }
                 )
             )
@@ -107,7 +106,7 @@ class HelpdeskControllerTest {
                     pageSize = eq(pageSize),
                     ecommerceSearchTransactionRequestDto =
                         argThat {
-                            this is EcommerceSearchTransactionRequestTransactionIdDto &&
+                            this is SearchTransactionRequestTransactionIdDto &&
                                 this.transactionId == request.transactionId
                         }
                 )
@@ -140,7 +139,7 @@ class HelpdeskControllerTest {
                     pageSize = eq(pageSize),
                     pmSearchTransactionRequestDto =
                         argThat {
-                            this is PmSearchTransactionRequestEmailDto &&
+                            this is SearchTransactionRequestEmailDto &&
                                 this.userEmail == request.userEmail
                         }
                 )
@@ -173,7 +172,7 @@ class HelpdeskControllerTest {
                     pageSize = eq(pageSize),
                     pmSearchTransactionRequestDto =
                         argThat {
-                            this is PmSearchTransactionRequestFiscalCodeDto &&
+                            this is SearchTransactionRequestFiscalCodeDto &&
                                 this.userFiscalCode == request.userFiscalCode
                         }
                 )
@@ -212,7 +211,7 @@ class HelpdeskControllerTest {
                     pageSize = eq(pageSize),
                     ecommerceSearchTransactionRequestDto =
                         argThat {
-                            this is EcommerceSearchTransactionRequestTransactionIdDto &&
+                            this is SearchTransactionRequestTransactionIdDto &&
                                 this.transactionId == request.transactionId
                         }
                 )
@@ -276,7 +275,7 @@ class HelpdeskControllerTest {
                         pageSize = eq(pageSize),
                         ecommerceSearchTransactionRequestDto =
                             argThat {
-                                this is EcommerceSearchTransactionRequestTransactionIdDto &&
+                                this is SearchTransactionRequestTransactionIdDto &&
                                     this.transactionId == request.transactionId
                             }
                     )

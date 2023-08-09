@@ -38,7 +38,7 @@ class EcommerceControllerTest {
                     pageSize = eq(pageSize),
                     ecommerceSearchTransactionRequestDto =
                         argThat {
-                            this is EcommerceSearchTransactionRequestPaymentTokenDto &&
+                            this is SearchTransactionRequestPaymentTokenDto &&
                                 this.paymentToken == request.paymentToken
                         }
                 )
@@ -71,8 +71,7 @@ class EcommerceControllerTest {
                     pageSize = eq(pageSize),
                     ecommerceSearchTransactionRequestDto =
                         argThat {
-                            this is EcommerceSearchTransactionRequestRptIdDto &&
-                                this.rptId == request.rptId
+                            this is SearchTransactionRequestRptIdDto && this.rptId == request.rptId
                         }
                 )
             )
@@ -104,7 +103,7 @@ class EcommerceControllerTest {
                     pageSize = eq(pageSize),
                     ecommerceSearchTransactionRequestDto =
                         argThat {
-                            this is EcommerceSearchTransactionRequestTransactionIdDto &&
+                            this is SearchTransactionRequestTransactionIdDto &&
                                 this.transactionId == request.transactionId
                         }
                 )
@@ -143,7 +142,7 @@ class EcommerceControllerTest {
                     pageSize = eq(pageSize),
                     ecommerceSearchTransactionRequestDto =
                         argThat {
-                            this is EcommerceSearchTransactionRequestTransactionIdDto &&
+                            this is SearchTransactionRequestTransactionIdDto &&
                                 this.transactionId == request.transactionId
                         }
                 )
@@ -207,7 +206,7 @@ class EcommerceControllerTest {
                         pageSize = eq(pageSize),
                         ecommerceSearchTransactionRequestDto =
                             argThat {
-                                this is EcommerceSearchTransactionRequestTransactionIdDto &&
+                                this is SearchTransactionRequestTransactionIdDto &&
                                     this.transactionId == request.transactionId
                             }
                     )

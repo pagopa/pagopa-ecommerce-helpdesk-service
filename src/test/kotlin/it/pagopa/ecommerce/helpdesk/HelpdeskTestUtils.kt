@@ -12,26 +12,24 @@ object HelpdeskTestUtils {
         description: String
     ): ProblemJsonDto = ProblemJsonDto().status(httpStatus.value()).detail(description).title(title)
 
-    fun buildSearchRequestByRptId(): EcommerceSearchTransactionRequestRptIdDto =
-        EcommerceSearchTransactionRequestRptIdDto()
-            .rptId(TransactionTestUtils.RPT_ID)
-            .type("RPT_ID")
+    fun buildSearchRequestByRptId(): SearchTransactionRequestRptIdDto =
+        SearchTransactionRequestRptIdDto().rptId(TransactionTestUtils.RPT_ID).type("RPT_ID")
 
-    fun buildSearchRequestByTransactionId(): EcommerceSearchTransactionRequestTransactionIdDto =
-        EcommerceSearchTransactionRequestTransactionIdDto()
+    fun buildSearchRequestByTransactionId(): SearchTransactionRequestTransactionIdDto =
+        SearchTransactionRequestTransactionIdDto()
             .transactionId(TransactionTestUtils.TRANSACTION_ID)
             .type("TRANSACTION_ID")
 
-    fun buildSearchRequestByPaymentToken(): EcommerceSearchTransactionRequestPaymentTokenDto =
-        EcommerceSearchTransactionRequestPaymentTokenDto()
+    fun buildSearchRequestByPaymentToken(): SearchTransactionRequestPaymentTokenDto =
+        SearchTransactionRequestPaymentTokenDto()
             .paymentToken(TransactionTestUtils.PAYMENT_TOKEN)
             .type("PAYMENT_TOKEN")
 
-    fun buildSearchRequestByFiscalCode(): PmSearchTransactionRequestFiscalCodeDto =
-        PmSearchTransactionRequestFiscalCodeDto()
+    fun buildSearchRequestByFiscalCode(): SearchTransactionRequestFiscalCodeDto =
+        SearchTransactionRequestFiscalCodeDto()
             .userFiscalCode("AAABBB99A01A000A")
             .type("USER_FISCAL_CODE")
 
-    fun buildSearchRequestByUserMail(): PmSearchTransactionRequestEmailDto =
-        PmSearchTransactionRequestEmailDto().userEmail("test@test.it").type("USER_EMAIL")
+    fun buildSearchRequestByUserMail(): SearchTransactionRequestEmailDto =
+        SearchTransactionRequestEmailDto().userEmail("test@test.it").type("USER_EMAIL")
 }
