@@ -1,13 +1,10 @@
 package it.pagopa.ecommerce.helpdesk.services
 
-import io.r2dbc.spi.ConnectionFactory
-import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.buildTransactionByUserEmailCountQuery
-import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.buildTransactionByUserEmailPaginatedQuery
-import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.getResultSetFromPaginatedQuery
+import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMTransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestEmailDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestFiscalCodeDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,7 +12,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
-class PmService(@Autowired val connectionFactory: ConnectionFactory) {
+class PmService(@Autowired val pmTransactionDataProvider: PMTransactionDataProvider) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -27,26 +24,31 @@ class PmService(@Autowired val connectionFactory: ConnectionFactory) {
         logger.info(
             "[helpDesk pm service] searchTransaction method, search type: ${pmSearchTransactionRequestDto.type}"
         )
-        return when (pmSearchTransactionRequestDto) {
-            is SearchTransactionRequestEmailDto ->
-                getResultSetFromPaginatedQuery(
-                    connectionFactory = connectionFactory,
-                    totalRecordCountQuery =
-                        buildTransactionByUserEmailCountQuery(
-                            pmSearchTransactionRequestDto.userEmail
-                        ),
-                    resultQuery =
-                        buildTransactionByUserEmailPaginatedQuery(
-                            pmSearchTransactionRequestDto.userEmail
-                        ),
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+        return pmTransactionDataProvider.totalRecordCount(pmSearchTransactionRequestDto).flatMap {
+            totalCount ->
+            if (totalCount > 0) {
+                pmTransactionDataProvider
+                    .findResult(
+                        searchCriteria = pmSearchTransactionRequestDto,
+                        pageSize = pageSize,
+                        pageNumber = pageNumber
+                    )
+                    .map { results ->
+                        buildTransactionSearchResponse(
+                            currentPage = pageNumber,
+                            totalCount = totalCount,
+                            results = results
+                        )
+                    }
+            } else {
+                Mono.error(
+                    NoResultFoundException(
+                        TransactionDataProvider.SearchTypeMapping.getSearchType(
+                            pmSearchTransactionRequestDto.javaClass
+                        )
+                    )
                 )
-            is SearchTransactionRequestFiscalCodeDto ->
-                Mono.error(RuntimeException("Not implemented yet"))
-            else -> Mono.error(RuntimeException(""))
-        }.map { (totalCount, results) ->
-            buildTransactionSearchResponse(pageNumber, totalCount, results)
+            }
         }
     }
 }

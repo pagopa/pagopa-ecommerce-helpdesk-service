@@ -2,25 +2,38 @@ package it.pagopa.ecommerce.helpdesk.dataproviders.oracle
 
 import io.r2dbc.spi.ConnectionFactory
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
+import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.resultToTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.*
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
 
+/**
+ * TransactionDataProvider implementation that search transactions into PM DB
+ *
+ * @see TransactionDataProvider
+ */
 @Component
 class PMTransactionDataProvider(@Autowired private val connectionFactory: ConnectionFactory) :
     TransactionDataProvider {
 
-    override fun totalRecorcCount(searchCriteria: HelpDeskSearchTransactionRequestDto): Mono<Int> =
+    private val logger = LoggerFactory.getLogger(javaClass)
+
+    override fun totalRecordCount(searchCriteria: HelpDeskSearchTransactionRequestDto): Mono<Int> =
         when (searchCriteria) {
             is SearchTransactionRequestPaymentTokenDto -> Mono.just(0)
             is SearchTransactionRequestRptIdDto -> Mono.just(0)
             is SearchTransactionRequestTransactionIdDto -> Mono.just(0)
-            is SearchTransactionRequestEmailDto -> Mono.just(0) // TODO implementare
-            is SearchTransactionRequestFiscalCodeDto -> Mono.just(0) // TODO implementare
+            is SearchTransactionRequestEmailDto ->
+                getTotalResultCount(buildTransactionByUserEmailCountQuery(searchCriteria.userEmail))
+            is SearchTransactionRequestFiscalCodeDto ->
+                Mono.error(RuntimeException("Not implemented yet"))
             else ->
                 Mono.error(
                     RuntimeException("Unhandled search criteria ${searchCriteria.javaClass}")
@@ -29,79 +42,66 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
 
     override fun findResult(
         searchCriteria: HelpDeskSearchTransactionRequestDto,
-        offset: Int,
-        limit: Int
-    ): Mono<List<TransactionResultDto>> =
-        when (searchCriteria) {
-            is SearchTransactionRequestPaymentTokenDto -> Mono.just(listOf(TransactionResultDto()))
-            is SearchTransactionRequestRptIdDto -> Mono.just(listOf(TransactionResultDto()))
-            is SearchTransactionRequestTransactionIdDto -> Mono.just(listOf(TransactionResultDto()))
+        pageSize: Int,
+        pageNumber: Int
+    ): Mono<List<TransactionResultDto>> {
+        val searchCriteriaType =
+            TransactionDataProvider.SearchTypeMapping.getSearchType(searchCriteria.javaClass)
+        val invalidSearchCriteriaError =
+            Mono.error<List<TransactionResultDto>>(
+                InvalidSearchCriteriaException(searchCriteriaType, ProductDto.PM)
+            )
+        return when (searchCriteria) {
+            is SearchTransactionRequestPaymentTokenDto -> invalidSearchCriteriaError
+            is SearchTransactionRequestRptIdDto -> invalidSearchCriteriaError
+            is SearchTransactionRequestTransactionIdDto -> invalidSearchCriteriaError
             is SearchTransactionRequestEmailDto ->
-                Mono.just(listOf(TransactionResultDto())) // TODO implementare
-            is SearchTransactionRequestFiscalCodeDto ->
-                Mono.just(listOf(TransactionResultDto())) // TODO implementare
-            else ->
-                Mono.error(
-                    RuntimeException("Unhandled search criteria ${searchCriteria.javaClass}")
+                getResultSetFromPaginatedQuery(
+                    resultQuery =
+                        buildTransactionByUserEmailPaginatedQuery(searchCriteria.userEmail),
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchType = searchCriteriaType
                 )
+            is SearchTransactionRequestFiscalCodeDto ->
+                Mono.error(RuntimeException("Not implemented yet"))
+            else -> invalidSearchCriteriaError
         }
+    }
 
-
-    private fun getTotalResultCount(
-        totalRecordCountQuery: String
-    ): Mono<Int> =
+    private fun getTotalResultCount(totalRecordCountQuery: String): Mono<Int> =
         Flux.usingWhen(
-            connectionFactory.create(),
-            { connection ->
-                Flux.from(connection.createStatement(totalRecordCountQuery).execute())
-                    .flatMap { result ->
-                        result.map { row -> row[0, Integer::class.java]!!.toInt() }
-                    }
-                    .doOnNext { OraclePaginatedQueryLogger.logger.info("Total transaction found: $it") }
-            },
-            { it.close() }
-        )
+                connectionFactory.create(),
+                { connection ->
+                    Flux.from(connection.createStatement(totalRecordCountQuery).execute())
+                        .flatMap { result ->
+                            result.map { row -> row[0, Integer::class.java]!!.toInt() }
+                        }
+                        .doOnNext { logger.info("Total transaction found: $it") }
+                },
+                { it.close() }
+            )
             .toMono()
 
-
-    fun getResultSetFromPaginatedQuery(
-        totalRecordCountQuery: String,
+    private fun getResultSetFromPaginatedQuery(
         resultQuery: String,
         pageNumber: Int,
-        pageSize: Int
-    ): Mono<Pair<Int, List<TransactionResultDto>>> =
+        pageSize: Int,
+        searchType: String
+    ): Mono<List<TransactionResultDto>> =
         Flux.usingWhen(
-            connectionFactory.create(),
-            { connection ->
-                val offset = (pageNumber + 1) * pageSize
-                val query = resultQuery.format(offset, pageSize)
-                OraclePaginatedQueryLogger.logger.info("Retrieving transactions for offset: $offset, limit: $pageSize.")
+                connectionFactory.create(),
+                { connection ->
+                    val offset = pageNumber * pageSize
+                    val query = resultQuery.format(offset, pageSize)
+                    logger.info("Retrieving transactions for offset: $offset, limit: $pageSize.")
 
-                Flux.from(connection.createStatement(query).execute()).flatMap {
-                    resultToTransactionInfoDto(it)
-                }
-            },
-            { it.close() }
-        )
+                    Flux.from(connection.createStatement(query).execute()).flatMap {
+                        resultToTransactionInfoDto(it)
+                    }
+                },
+                { it.close() }
+            )
             .collectList()
-            .flatMap { results ->
-                if (results.isEmpty()) {
-                    Mono.error(RuntimeException("No result found"))
-                } else {
-                    Flux.usingWhen(
-                        connectionFactory.create(),
-                        { connection ->
-                            Flux.from(connection.createStatement(totalRecordCountQuery).execute())
-                                .flatMap { result ->
-                                    result.map { row -> row[0, Integer::class.java] }
-                                }
-                                .doOnNext { OraclePaginatedQueryLogger.logger.info("Total transaction found: $it") }
-                        },
-                        { it.close() }
-                    )
-                        .toMono()
-                        .map { Pair(it.toInt(), results) }
-                }
-            }
-
+            .switchIfEmpty { Mono.error(NoResultFoundException(searchType)) }
 }

@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono
 @Component
 class EcommerceTransactionDataProvider() : TransactionDataProvider {
 
-    override fun totalRecorcCount(searchCriteria: HelpDeskSearchTransactionRequestDto): Mono<Int> =
+    override fun totalRecordCount(searchCriteria: HelpDeskSearchTransactionRequestDto): Mono<Int> =
         when (searchCriteria) {
             is SearchTransactionRequestPaymentTokenDto -> Mono.just(0) // TODO implementare
             is SearchTransactionRequestRptIdDto -> Mono.just(0) // TODO implementare
@@ -23,8 +23,8 @@ class EcommerceTransactionDataProvider() : TransactionDataProvider {
 
     override fun findResult(
         searchCriteria: HelpDeskSearchTransactionRequestDto,
-        offset: Int,
-        limit: Int
+        pageSize: Int,
+        pageNumber: Int
     ): Mono<List<TransactionResultDto>> =
         when (searchCriteria) {
             is SearchTransactionRequestPaymentTokenDto ->
