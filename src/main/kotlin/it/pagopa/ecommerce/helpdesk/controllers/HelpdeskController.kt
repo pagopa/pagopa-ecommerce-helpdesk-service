@@ -3,7 +3,10 @@ package it.pagopa.ecommerce.helpdesk.controllers
 import it.pagopa.ecommerce.helpdesk.services.EcommerceService
 import it.pagopa.ecommerce.helpdesk.services.PmService
 import it.pagopa.generated.ecommerce.helpdesk.api.HelpdeskApi
-import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -29,7 +32,7 @@ class HelpdeskController(
                         .searchTransaction(
                             pageNumber = pageNumber,
                             pageSize = pageSize,
-                            ecommerceSearchTransactionRequestDto = Mono.just(it)
+                            ecommerceSearchTransactionRequestDto = it
                         )
                         .map { response -> ResponseEntity.ok(response) }
                 is PmSearchTransactionRequestDto ->
@@ -37,7 +40,7 @@ class HelpdeskController(
                         .searchTransaction(
                             pageNumber = pageNumber,
                             pageSize = pageSize,
-                            pmSearchTransactionRequestDto = Mono.just(it)
+                            pmSearchTransactionRequestDto = it
                         )
                         .map { response -> ResponseEntity.ok(response) }
                 else -> Mono.error(RuntimeException("Unknown search criteria"))

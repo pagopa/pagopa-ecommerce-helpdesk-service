@@ -3,9 +3,11 @@ package it.pagopa.ecommerce.helpdesk.controllers
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.services.EcommerceService
+import it.pagopa.ecommerce.helpdesk.services.PmService
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
@@ -20,12 +22,13 @@ import org.springframework.test.web.reactive.server.expectBody
 import reactor.core.publisher.Mono
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@WebFluxTest(EcommerceController::class)
-class EcommerceControllerTest {
-
+@WebFluxTest(HelpdeskController::class)
+class HelpdeskControllerTest {
     @Autowired lateinit var webClient: WebTestClient
 
     @MockBean lateinit var ecommerceService: EcommerceService
+
+    @MockBean lateinit var pmService: PmService
 
     @Test
     fun `post search transaction succeeded searching by payment token`() = runTest {
@@ -48,7 +51,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/searchTransaction")
+                    .path("/helpdesk/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -81,7 +84,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/searchTransaction")
+                    .path("/helpdesk/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -114,7 +117,73 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/searchTransaction")
+                    .path("/helpdesk/searchTransaction")
+                    .queryParam("pageNumber", "{pageNumber}")
+                    .queryParam("pageSize", "{pageSize}")
+                    .build(pageNumber, pageSize)
+            }
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isOk
+    }
+
+    @Test
+    fun `post search transaction succeeded searching by user email`() = runTest {
+        val pageNumber = 1
+        val pageSize = 15
+        val request = HelpdeskTestUtils.buildSearchRequestByUserMail()
+        given(
+                pmService.searchTransaction(
+                    pageNumber = eq(pageNumber),
+                    pageSize = eq(pageSize),
+                    pmSearchTransactionRequestDto =
+                        argThat {
+                            this is PmSearchTransactionRequestEmailDto &&
+                                this.userEmail == request.userEmail
+                        }
+                )
+            )
+            .willReturn(Mono.just(SearchTransactionResponseDto()))
+        webClient
+            .post()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/helpdesk/searchTransaction")
+                    .queryParam("pageNumber", "{pageNumber}")
+                    .queryParam("pageSize", "{pageSize}")
+                    .build(pageNumber, pageSize)
+            }
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isOk
+    }
+
+    @Test
+    fun `post search transaction succeeded searching by user fiscal code`() = runTest {
+        val pageNumber = 1
+        val pageSize = 15
+        val request = HelpdeskTestUtils.buildSearchRequestByFiscalCode()
+        given(
+                pmService.searchTransaction(
+                    pageNumber = eq(pageNumber),
+                    pageSize = eq(pageSize),
+                    pmSearchTransactionRequestDto =
+                        argThat {
+                            this is PmSearchTransactionRequestFiscalCodeDto &&
+                                this.userFiscalCode == request.userFiscalCode
+                        }
+                )
+            )
+            .willReturn(Mono.just(SearchTransactionResponseDto()))
+        webClient
+            .post()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/helpdesk/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -153,7 +222,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/searchTransaction")
+                    .path("/helpdesk/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -177,7 +246,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/searchTransaction")
+                    .path("/helpdesk/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -217,7 +286,7 @@ class EcommerceControllerTest {
                 .post()
                 .uri { uriBuilder ->
                     uriBuilder
-                        .path("/ecommerce/searchTransaction")
+                        .path("/helpdesk/searchTransaction")
                         .queryParam("pageNumber", "{pageNumber}")
                         .queryParam("pageSize", "{pageSize}")
                         .build(pageNumber, pageSize)

@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.exceptionhandler
 
+import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.RestApiException
 import jakarta.xml.bind.ValidationException
@@ -35,8 +36,7 @@ class ExceptionHandlerTest {
     @Test
     fun `Should handle ApiError`() {
         val searchCriteria = "searchCriteria"
-        val exception =
-            NoResultFoundException(searchCriteria)
+        val exception = NoResultFoundException(searchCriteria)
         val response = exceptionHandler.handleException(exception)
         assertEquals(
             HelpdeskTestUtils.buildProblemJson(

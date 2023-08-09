@@ -2,10 +2,11 @@ package it.pagopa.ecommerce.helpdesk.controllers
 
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.ecommerce.helpdesk.services.EcommerceService
+import it.pagopa.ecommerce.helpdesk.services.PmService
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
@@ -20,26 +21,25 @@ import org.springframework.test.web.reactive.server.expectBody
 import reactor.core.publisher.Mono
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@WebFluxTest(EcommerceController::class)
-class EcommerceControllerTest {
-
+@WebFluxTest(PmController::class)
+class PmControllerTest {
     @Autowired lateinit var webClient: WebTestClient
 
-    @MockBean lateinit var ecommerceService: EcommerceService
+    @MockBean lateinit var pmService: PmService
 
     @Test
-    fun `post search transaction succeeded searching by payment token`() = runTest {
+    fun `post search transaction succeeded searching by user email`() = runTest {
         val pageNumber = 1
         val pageSize = 15
-        val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
+        val request = HelpdeskTestUtils.buildSearchRequestByUserMail()
         given(
-                ecommerceService.searchTransaction(
+                pmService.searchTransaction(
                     pageNumber = eq(pageNumber),
                     pageSize = eq(pageSize),
-                    ecommerceSearchTransactionRequestDto =
+                    pmSearchTransactionRequestDto =
                         argThat {
-                            this is EcommerceSearchTransactionRequestPaymentTokenDto &&
-                                this.paymentToken == request.paymentToken
+                            this is PmSearchTransactionRequestEmailDto &&
+                                this.userEmail == request.userEmail
                         }
                 )
             )
@@ -48,7 +48,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/searchTransaction")
+                    .path("/pm/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -61,18 +61,18 @@ class EcommerceControllerTest {
     }
 
     @Test
-    fun `post search transaction succeeded searching by rpt id`() = runTest {
+    fun `post search transaction succeeded searching by user fiscal code`() = runTest {
         val pageNumber = 1
         val pageSize = 15
-        val request = HelpdeskTestUtils.buildSearchRequestByRptId()
+        val request = HelpdeskTestUtils.buildSearchRequestByFiscalCode()
         given(
-                ecommerceService.searchTransaction(
+                pmService.searchTransaction(
                     pageNumber = eq(pageNumber),
                     pageSize = eq(pageSize),
-                    ecommerceSearchTransactionRequestDto =
+                    pmSearchTransactionRequestDto =
                         argThat {
-                            this is EcommerceSearchTransactionRequestRptIdDto &&
-                                this.rptId == request.rptId
+                            this is PmSearchTransactionRequestFiscalCodeDto &&
+                                this.userFiscalCode == request.userFiscalCode
                         }
                 )
             )
@@ -81,40 +81,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/searchTransaction")
-                    .queryParam("pageNumber", "{pageNumber}")
-                    .queryParam("pageSize", "{pageSize}")
-                    .build(pageNumber, pageSize)
-            }
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(request)
-            .exchange()
-            .expectStatus()
-            .isOk
-    }
-
-    @Test
-    fun `post search transaction succeeded searching by transaction id`() = runTest {
-        val pageNumber = 1
-        val pageSize = 15
-        val request = HelpdeskTestUtils.buildSearchRequestByTransactionId()
-        given(
-                ecommerceService.searchTransaction(
-                    pageNumber = eq(pageNumber),
-                    pageSize = eq(pageSize),
-                    ecommerceSearchTransactionRequestDto =
-                        argThat {
-                            this is EcommerceSearchTransactionRequestTransactionIdDto &&
-                                this.transactionId == request.transactionId
-                        }
-                )
-            )
-            .willReturn(Mono.just(SearchTransactionResponseDto()))
-        webClient
-            .post()
-            .uri { uriBuilder ->
-                uriBuilder
-                    .path("/ecommerce/searchTransaction")
+                    .path("/pm/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -130,7 +97,7 @@ class EcommerceControllerTest {
     fun `post search transaction should return 404 for no transaction found`() = runTest {
         val pageNumber = 1
         val pageSize = 15
-        val request = HelpdeskTestUtils.buildSearchRequestByTransactionId()
+        val request = HelpdeskTestUtils.buildSearchRequestByUserMail()
         val expected =
             HelpdeskTestUtils.buildProblemJson(
                 httpStatus = HttpStatus.NOT_FOUND,
@@ -138,13 +105,13 @@ class EcommerceControllerTest {
                 description = "No result can be found searching for criteria ${request.type}"
             )
         given(
-                ecommerceService.searchTransaction(
+                pmService.searchTransaction(
                     pageNumber = eq(pageNumber),
                     pageSize = eq(pageSize),
-                    ecommerceSearchTransactionRequestDto =
+                    pmSearchTransactionRequestDto =
                         argThat {
-                            this is EcommerceSearchTransactionRequestTransactionIdDto &&
-                                this.transactionId == request.transactionId
+                            this is PmSearchTransactionRequestEmailDto &&
+                                this.userEmail == request.userEmail
                         }
                 )
             )
@@ -153,7 +120,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/searchTransaction")
+                    .path("/pm/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -171,13 +138,12 @@ class EcommerceControllerTest {
     fun `post search transaction should return 400 for bad request`() = runTest {
         val pageNumber = 1
         val pageSize = 15
-        val request = HelpdeskTestUtils.buildSearchRequestByTransactionId()
 
         webClient
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/searchTransaction")
+                    .path("/pm/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -194,7 +160,7 @@ class EcommerceControllerTest {
         runTest {
             val pageNumber = 1
             val pageSize = 15
-            val request = HelpdeskTestUtils.buildSearchRequestByTransactionId()
+            val request = HelpdeskTestUtils.buildSearchRequestByUserMail()
             val expected =
                 HelpdeskTestUtils.buildProblemJson(
                     httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
@@ -202,13 +168,13 @@ class EcommerceControllerTest {
                     description = "Unhandled error"
                 )
             given(
-                    ecommerceService.searchTransaction(
+                    pmService.searchTransaction(
                         pageNumber = eq(pageNumber),
                         pageSize = eq(pageSize),
-                        ecommerceSearchTransactionRequestDto =
+                        pmSearchTransactionRequestDto =
                             argThat {
-                                this is EcommerceSearchTransactionRequestTransactionIdDto &&
-                                    this.transactionId == request.transactionId
+                                this is PmSearchTransactionRequestEmailDto &&
+                                    this.userEmail == request.userEmail
                             }
                     )
                 )
@@ -217,7 +183,7 @@ class EcommerceControllerTest {
                 .post()
                 .uri { uriBuilder ->
                     uriBuilder
-                        .path("/ecommerce/searchTransaction")
+                        .path("/pm/searchTransaction")
                         .queryParam("pageNumber", "{pageNumber}")
                         .queryParam("pageSize", "{pageSize}")
                         .build(pageNumber, pageSize)
