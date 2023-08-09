@@ -214,7 +214,7 @@ components:
       maximum: 600
       exclusiveMaximum: true
       example: 200
-    PmSearchTransactionRequestFiscalCode:
+    SearchTransactionRequestFiscalCode:
       type: object
       description: Search transaction by user fiscal code
       properties:
@@ -230,7 +230,7 @@ components:
       example:
         type: "USER_FISCAL_CODE"
         userFiscalCode: "MRGHRN97L02C469W"
-    PmSearchTransactionRequestEmail:
+    SearchTransactionRequestEmail:
       type: object
       description: Search transaction by user fiscal code
       properties:
@@ -258,7 +258,7 @@ components:
       required:
         - transactions
         - page
-    EcommerceSearchTransactionRequestRptId:
+    SearchTransactionRequestRptId:
       type: object
       description: Search transaction by user fiscal code
       properties:
@@ -273,7 +273,7 @@ components:
       example:
         type: "RPT_ID"
         rptId: "77777777777302011111111111111"
-    EcommerceSearchTransactionRequestPaymentToken:
+    SearchTransactionRequestPaymentToken:
       type: object
       description: Search transaction by payment token
       properties:
@@ -287,7 +287,7 @@ components:
       example:
         type: "PAYMENT_TOKEN"
         paymentToken: "paymentToken"
-    EcommerceSearchTransactionRequestTransactionId:
+    SearchTransactionRequestTransactionId:
       type: object
       description: Search transaction by transaction id
       properties:
@@ -472,25 +472,25 @@ components:
     PmSearchTransactionRequest:
       type: object
       oneOf:
-        - $ref: '#/components/schemas/PmSearchTransactionRequestFiscalCode'
-        - $ref: '#/components/schemas/PmSearchTransactionRequestEmail'
+        - $ref: '#/components/schemas/SearchTransactionRequestFiscalCode'
+        - $ref: '#/components/schemas/SearchTransactionRequestEmail'
       discriminator:
         propertyName: type
         mapping:
-          USER_FISCAL_CODE: "#/components/schemas/PmSearchTransactionRequestFiscalCode"
-          USER_EMAIL: "#/components/schemas/PmSearchTransactionRequestEmail"
+          USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
+          USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
     EcommerceSearchTransactionRequest:
       type: object
       oneOf:
-        - $ref: '#/components/schemas/EcommerceSearchTransactionRequestRptId'
-        - $ref: '#/components/schemas/EcommerceSearchTransactionRequestPaymentToken'
-        - $ref: '#/components/schemas/EcommerceSearchTransactionRequestTransactionId'
+        - $ref: '#/components/schemas/SearchTransactionRequestRptId'
+        - $ref: '#/components/schemas/SearchTransactionRequestPaymentToken'
+        - $ref: '#/components/schemas/SearchTransactionRequestTransactionId'
       discriminator:
         propertyName: type
         mapping:
-          RPT_ID: "#/components/schemas/EcommerceSearchTransactionRequestRptId"
-          PAYMENT_TOKEN: "#/components/schemas/EcommerceSearchTransactionRequestPaymentToken"
-          TRANSACTION_ID: "#/components/schemas/EcommerceSearchTransactionRequestTransactionId"
+          RPT_ID: "#/components/schemas/SearchTransactionRequestRptId"
+          PAYMENT_TOKEN: "#/components/schemas/SearchTransactionRequestPaymentToken"
+          TRANSACTION_ID: "#/components/schemas/SearchTransactionRequestTransactionId"
   requestBodies:
     PmSearchTransactionRequest:
       required: true
@@ -498,13 +498,13 @@ components:
         application/json:
           schema:
             oneOf:
-              - $ref: '#/components/schemas/PmSearchTransactionRequestFiscalCode'
-              - $ref: '#/components/schemas/PmSearchTransactionRequestEmail'
+              - $ref: '#/components/schemas/SearchTransactionRequestFiscalCode'
+              - $ref: '#/components/schemas/SearchTransactionRequestEmail'
             discriminator:
               propertyName: type
               mapping:
-                USER_FISCAL_CODE: "#/components/schemas/PmSearchTransactionRequestFiscalCode"
-                USER_EMAIL: "#/components/schemas/PmSearchTransactionRequestEmail"
+                USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
+                USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
           examples:
             search by user fiscal code:
               value:
@@ -526,15 +526,15 @@ components:
         application/json:
           schema:
             oneOf:
-              - $ref: '#/components/schemas/EcommerceSearchTransactionRequestRptId'
-              - $ref: '#/components/schemas/EcommerceSearchTransactionRequestPaymentToken'
-              - $ref: '#/components/schemas/EcommerceSearchTransactionRequestTransactionId'
+              - $ref: '#/components/schemas/SearchTransactionRequestRptId'
+              - $ref: '#/components/schemas/SearchTransactionRequestPaymentToken'
+              - $ref: '#/components/schemas/SearchTransactionRequestTransactionId'
             discriminator:
               propertyName: type
               mapping:
-                RPT_ID: "#/components/schemas/EcommerceSearchTransactionRequestRptId"
-                PAYMENT_TOKEN: "#/components/schemas/EcommerceSearchTransactionRequestPaymentToken"
-                TRANSACTION_ID: "#/components/schemas/EcommerceSearchTransactionRequestTransactionId"
+                RPT_ID: "#/components/schemas/SearchTransactionRequestRptId"
+                PAYMENT_TOKEN: "#/components/schemas/SearchTransactionRequestPaymentToken"
+                TRANSACTION_ID: "#/components/schemas/SearchTransactionRequestTransactionId"
           examples:
             search by rpt id:
               value:
@@ -565,11 +565,11 @@ components:
             discriminator:
               propertyName: type
               mapping:
-                USER_FISCAL_CODE: "#/components/schemas/PmSearchTransactionRequestFiscalCode"
-                USER_EMAIL: "#/components/schemas/PmSearchTransactionRequestEmail"
-                RPT_ID: "#/components/schemas/EcommerceSearchTransactionRequestRptId"
-                PAYMENT_TOKEN: "#/components/schemas/EcommerceSearchTransactionRequestPaymentToken"
-                TRANSACTION_ID: "#/components/schemas/EcommerceSearchTransactionRequestTransactionId"
+                USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
+                USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
+                RPT_ID: "#/components/schemas/SearchTransactionRequestRptId"
+                PAYMENT_TOKEN: "#/components/schemas/SearchTransactionRequestPaymentToken"
+                TRANSACTION_ID: "#/components/schemas/SearchTransactionRequestTransactionId"
           examples:
             search by user fiscal code:
               value:
