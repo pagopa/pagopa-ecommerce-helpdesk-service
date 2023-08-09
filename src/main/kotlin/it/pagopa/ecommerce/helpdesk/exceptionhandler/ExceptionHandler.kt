@@ -1,10 +1,9 @@
-package it.pagopa.aca.exceptionhandler
+package it.pagopa.ecommerce.helpdesk.exceptionhandler
 
 import it.pagopa.ecommerce.helpdesk.exceptions.ApiError
 import it.pagopa.ecommerce.helpdesk.exceptions.RestApiException
 import it.pagopa.generated.ecommerce.helpdesk.model.ProblemJsonDto
 import jakarta.xml.bind.ValidationException
-import java.util.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.bind.support.WebExchangeBindException
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.server.ServerWebInputException
+import java.util.*
 
 /**
  * Exception handler used to output a custom message in case an incoming request is invalid or an

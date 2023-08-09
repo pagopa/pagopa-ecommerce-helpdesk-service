@@ -1,6 +1,5 @@
 package it.pagopa.ecommerce.helpdesk.exceptionhandler
 
-import it.pagopa.aca.exceptionhandler.ExceptionHandler
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.RestApiException
 import jakarta.xml.bind.ValidationException
@@ -35,18 +34,19 @@ class ExceptionHandlerTest {
 
     @Test
     fun `Should handle ApiError`() {
+        val searchCriteria = "searchCriteria"
         val exception =
-            NoResultFoundException("USER_FISCAL_CODE")
+            NoResultFoundException(searchCriteria)
         val response = exceptionHandler.handleException(exception)
         assertEquals(
             HelpdeskTestUtils.buildProblemJson(
-                httpStatus = HttpStatus.UNAUTHORIZED,
-                title = "ApiConfig Invocation exception",
-                description = "description"
+                httpStatus = HttpStatus.NOT_FOUND,
+                title = "No result found",
+                description = "No result can be found searching for criteria $searchCriteria"
             ),
             response.body
         )
-        assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+        assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
     }
 
     @Test
