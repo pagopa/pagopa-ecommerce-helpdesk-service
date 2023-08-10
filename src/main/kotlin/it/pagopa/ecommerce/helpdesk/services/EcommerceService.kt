@@ -1,6 +1,5 @@
 package it.pagopa.ecommerce.helpdesk.services
 
-import it.pagopa.ecommerce.commons.documents.v1.TransactionActivatedEvent
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import org.slf4j.LoggerFactory
@@ -15,62 +14,56 @@ class EcommerceService {
     fun searchTransaction(
         pageNumber: Int,
         pageSize: Int,
-        ecommerceSearchTransactionRequestDto: Mono<EcommerceSearchTransactionRequestDto>
+        ecommerceSearchTransactionRequestDto: EcommerceSearchTransactionRequestDto
     ): Mono<SearchTransactionResponseDto> {
         logger.info("[helpDesk ecommerce service] searchTransaction method")
-        return ecommerceSearchTransactionRequestDto
-            .doOnNext {
-                logger.info("Search type: ${it.type}")
-                val transactionEvent = TransactionActivatedEvent()
-                println(transactionEvent)
-            }
-            .map {
-                SearchTransactionResponseDto()
-                    .page(PageInfoDto().current(0).results(3).total(1))
-                    .transactions(
-                        listOf(
-                            TransactionResultDto()
-                                .product(ProductDto.ECOMMERCE)
-                                .userInfo(
-                                    UserInfoDto()
-                                        .userFiscalCode("userFiscalCode")
-                                        .notificationEmail("notificationEmail")
-                                        .surname("surname")
-                                        .name("name")
-                                        .username("username")
-                                        .authenticationType("auth type")
-                                )
-                                .transactionInfo(
-                                    TransactionInfoDto()
-                                        .amount(100)
-                                        .fee(100)
-                                        .creationDate(OffsetDateTime.now())
-                                        .status("status")
-                                        .statusDetails("status details")
-                                        .grandTotal(200)
-                                        .rrn("rrn")
-                                        .authotizationCode("authCode")
-                                        .paymentMethodName("paymentMethodName")
-                                        .brand("brand")
-                                )
-                                .paymentDetailInfo(
-                                    PaymentDetailInfoDto()
-                                        .iuv("IUV")
-                                        .rptIds(listOf("rptId1", "rptId2"))
-                                        .idTransaction("paymentContextCode")
-                                        .paymentToken("paymentToken")
-                                        .creditorInstitution("creditor institution")
-                                        .paFiscalCode("77777777777")
-                                )
-                                .paymentInfo(PaymentInfoDto().origin("origin").subject("subject"))
-                                .pspInfo(
-                                    PspInfoDto()
-                                        .pspId("pspId")
-                                        .businessName("business name")
-                                        .idChannel("id channel")
-                                )
-                        )
+        return Mono.just(
+            SearchTransactionResponseDto()
+                .page(PageInfoDto().current(0).results(3).total(1))
+                .transactions(
+                    listOf(
+                        TransactionResultDto()
+                            .product(ProductDto.ECOMMERCE)
+                            .userInfo(
+                                UserInfoDto()
+                                    .userFiscalCode("userFiscalCode")
+                                    .notificationEmail("notificationEmail")
+                                    .surname("surname")
+                                    .name("name")
+                                    .username("username")
+                                    .authenticationType("auth type")
+                            )
+                            .transactionInfo(
+                                TransactionInfoDto()
+                                    .amount(100)
+                                    .fee(100)
+                                    .creationDate(OffsetDateTime.now())
+                                    .status("status")
+                                    .statusDetails("status details")
+                                    .grandTotal(200)
+                                    .rrn("rrn")
+                                    .authotizationCode("authCode")
+                                    .paymentMethodName("paymentMethodName")
+                                    .brand("brand")
+                            )
+                            .paymentDetailInfo(
+                                PaymentDetailInfoDto()
+                                    .iuv("IUV")
+                                    .rptIds(listOf("rptId1", "rptId2"))
+                                    .idTransaction("paymentContextCode")
+                                    .paymentToken("paymentToken")
+                                    .creditorInstitution("creditor institution")
+                                    .paFiscalCode("77777777777")
+                            )
+                            .paymentInfo(PaymentInfoDto().origin("origin").subject("subject"))
+                            .pspInfo(
+                                PspInfoDto()
+                                    .pspId("pspId")
+                                    .businessName("business name")
+                                    .idChannel("id channel")
+                            )
                     )
-            }
+                )
+        )
     }
 }

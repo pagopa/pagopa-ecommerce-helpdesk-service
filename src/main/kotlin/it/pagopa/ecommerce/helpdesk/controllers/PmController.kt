@@ -22,8 +22,14 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
         logger.info("[HelpDesk controller] pmSearchTransaction")
-        return pmService
-            .searchTransaction(pageSize, pageNumber, pmSearchTransactionRequestDto)
+        return pmSearchTransactionRequestDto
+            .flatMap {
+                pmService.searchTransaction(
+                    pageSize = pageSize,
+                    pageNumber = pageNumber,
+                    pmSearchTransactionRequestDto = it
+                )
+            }
             .map { ResponseEntity.ok(it) }
     }
 }
