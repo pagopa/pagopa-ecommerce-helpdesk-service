@@ -365,6 +365,27 @@ components:
           type: string
         statusDetails:
           type: string
+        eventStatus:
+          type: string
+          enum:
+            - ACTIVATED
+            - AUTHORIZATION_REQUESTED
+            - AUTHORIZATION_COMPLETED
+            - CLOSED
+            - CLOSURE_ERROR
+            - NOTIFIED_OK
+            - NOTIFIED_KO
+            - NOTIFICATION_ERROR
+            - NOTIFICATION_REQUESTED
+            - EXPIRED
+            - REFUNDED
+            - CANCELED
+            - EXPIRED_NOT_AUTHORIZED
+            - UNAUTHORIZED
+            - REFUND_ERROR
+            - REFUND_REQUESTED
+            - CANCELLATION_REQUESTED
+            - CANCELLATION_EXPIRED
         amount:
           $ref: '#/components/schemas/AmountEuroCents'
         fee:
@@ -383,6 +404,7 @@ components:
         creationDate: "2023-08-02T14:42:54.047"
         status: "status"
         statusDetails: "status detail"
+        eventStatus: "NOTIFIED_OK"
         amount: 100
         fee: 10
         grandTotal: 110
