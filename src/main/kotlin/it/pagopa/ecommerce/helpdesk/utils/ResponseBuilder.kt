@@ -75,7 +75,10 @@ fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): Trans
             // Must be populated dinamically when logic will be updated eCommerce side
             // (event-dispatcher/transactions-service)
             .authenticationType(UserDto.TypeEnum.GUEST.toString())
-    val transactionInfo = TransactionInfoDto().creationDate(baseTransaction.creationDate.toOffsetDateTime())
+    val transactionInfo =
+        TransactionInfoDto()
+            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+            .status("")
     val paymentInfo =
         PaymentInfoDto()
             .origin(baseTransaction.clientId.toString())
@@ -116,13 +119,8 @@ fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): Trans
 
     return TransactionResultDto()
         .product(ProductDto.ECOMMERCE)
-        .userInfo(
-            userInfo
-        )
-        .transactionInfo(
-            transactionInfo
-        )
+        .userInfo(userInfo)
+        .transactionInfo(transactionInfo)
         .paymentInfo(paymentInfo)
         .paymentDetailInfo(paymentDetailInfoDto[0])
-
 }
