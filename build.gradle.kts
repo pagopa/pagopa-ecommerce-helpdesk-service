@@ -87,6 +87,7 @@ dependencies {
   testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
   testImplementation("com.squareup.okhttp3:mockwebserver:$mockWebServerVersion")
   testImplementation("com.squareup.okhttp3:okhttp:$mockWebServerVersion")
+  testImplementation("it.pagopa:pagopa-ecommerce-commons:$ecommerceCommonsVersion:tests")
 }
 
 configurations {
@@ -117,7 +118,10 @@ tasks.create("applySemanticVersionPlugin") {
   apply(plugin = "com.dipien.semantic-version")
 }
 
-tasks.withType(JavaCompile::class.java).configureEach { options.encoding = "UTF-8" }
+tasks.withType(JavaCompile::class.java).configureEach {
+  options.encoding = "UTF-8"
+  options.compilerArgs.add("--enable-preview")
+}
 
 tasks.withType(Javadoc::class.java).configureEach { options.encoding = "UTF-8" }
 
@@ -191,6 +195,7 @@ tasks.named<Jar>("jar") { enabled = false }
 tasks.test {
   useJUnitPlatform()
   finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+  jvmArgs(listOf("--enable-preview"))
 }
 
 tasks.jacocoTestReport {

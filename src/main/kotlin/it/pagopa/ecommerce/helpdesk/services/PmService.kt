@@ -17,27 +17,23 @@ class PmService(@Autowired val connectionFactory: ConnectionFactory) {
     fun searchTransaction(
         pageNumber: Int,
         pageSize: Int,
-        pmSearchTransactionRequestDto: Mono<PmSearchTransactionRequestDto>
+        pmSearchTransactionRequestDto: PmSearchTransactionRequestDto
     ): Mono<SearchTransactionResponseDto> {
         logger.info("[helpDesk pm service] searchTransaction method")
 
-        return pmSearchTransactionRequestDto
-            .doOnNext { logger.info("Search type: ${it.type}") }
-            .flatMapMany {
-                Flux.usingWhen(
-                    connectionFactory.create(),
-                    { connection ->
-                        Flux.from(
-                                connection
-                                    .createStatement("SELECT 'Hello, Oracle' FROM sys.dual")
-                                    .execute()
-                            )
-                            .flatMap { result -> result.map { row -> row[0, String::class.java] } }
-                            .doOnNext { logger.info("Read from DB: $it") }
-                    },
-                    { it.close() }
-                )
-            }
+        return Flux.usingWhen(
+                connectionFactory.create(),
+                { connection ->
+                    Flux.from(
+                            connection
+                                .createStatement("SELECT 'Hello, Oracle' FROM sys.dual")
+                                .execute()
+                        )
+                        .flatMap { result -> result.map { row -> row[0, String::class.java] } }
+                        .doOnNext { logger.info("Read from DB: $it") }
+                },
+                { it.close() }
+            )
             .collectList()
             .map {
                 SearchTransactionResponseDto()
