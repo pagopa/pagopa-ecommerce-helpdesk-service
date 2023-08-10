@@ -75,7 +75,7 @@ val userEmailCountQuery =
     """
         .trimIndent()
 
-fun buildTransactionByUserFiscalCodePaginatedQuery(userFiscalCode: String) =
+val userFiscalCodePaginatedQuery =
     """
         SELECT 	pu.FISCAL_CODE , pu.NOTIFICATION_EMAIL , pu.SURNAME , pu.NAME , pu.USERNAME , 
 		CASE pu.STATUS 
@@ -130,15 +130,15 @@ fun buildTransactionByUserFiscalCodePaginatedQuery(userFiscalCode: String) =
         left JOIN AGID_USER.PP_PAYMENT pp ON pt.FK_PAYMENT = pp.ID 
         left JOIN AGID_USER.PP_PAYMENT_DETAIL ppd ON pp.ID =ppd.PAYMENT_ID 
         left JOIN AGID_USER.PP_PSP pp2 ON pt.FK_PSP = pp2.ID 
-        WHERE pu.FISCAL_CODE ='$userFiscalCode'
+        WHERE pu.FISCAL_CODE = ?
         AND PT.AMOUNT > 1
         AND pu.STATUS IN ('11', '12')
         ORDER BY PT.CREATION_DATE DESC 
-        OFFSET %s ROWS FETCH NEXT %s ROWS ONLY
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     """
         .trimIndent()
 
-fun buildTransactionByUserFiscalCodeCountQuery(userFiscalCode: String) =
+val userFiscalCodeCountQuery =
     """
         SELECT COUNT(*)
         FROM AGID_USER.PP_USER pu 
@@ -146,7 +146,7 @@ fun buildTransactionByUserFiscalCodeCountQuery(userFiscalCode: String) =
         left JOIN AGID_USER.PP_PAYMENT pp ON pt.FK_PAYMENT = pp.ID 
         left JOIN AGID_USER.PP_PAYMENT_DETAIL ppd ON pp.ID =ppd.PAYMENT_ID 
         left JOIN AGID_USER.PP_PSP pp2 ON pt.FK_PSP = pp2.ID 
-        WHERE pu.FISCAL_CODE ='$userFiscalCode'
+        WHERE pu.FISCAL_CODE = ?
         AND PT.AMOUNT > 1
         AND pu.STATUS IN ('11', '12')
     """

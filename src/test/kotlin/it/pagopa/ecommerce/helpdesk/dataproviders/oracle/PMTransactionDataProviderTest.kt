@@ -94,7 +94,7 @@ class PMTransactionDataProviderTest {
             )
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
-                    searchParams = HelpdeskTestUtils.buildSearchRequestByUserMail(),
+                    searchParams = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it"),
                     pageNumber = 0,
                     pageSize = 10
                 )
@@ -175,7 +175,7 @@ class PMTransactionDataProviderTest {
             )
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
-                    searchCriteria =
+                    searchParams =
                         HelpdeskTestUtils.buildSearchRequestByUserFiscalCode("fiscal_code"),
                     pageNumber = 0,
                     pageSize = 10

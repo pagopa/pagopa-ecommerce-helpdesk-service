@@ -37,10 +37,11 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                 getTotalResultCount(userEmailCountQuery, searchParams.userEmail)
             is SearchTransactionRequestFiscalCodeDto ->
                 getTotalResultCount(
-                    buildTransactionByUserFiscalCodeCountQuery(searchCriteria.userFiscalCode)
+                    totalRecordCountQuery = userFiscalCodeCountQuery,
+                    searchParam = searchParams.userFiscalCode
                 )
             else -> Mono.error(InvalidSearchCriteriaException(searchParams.type, ProductDto.PM))
-
+        }
     }
 
     override fun findResult(
@@ -67,12 +68,10 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                 )
             is SearchTransactionRequestFiscalCodeDto ->
                 getResultSetFromPaginatedQuery(
-                    resultQuery =
-                        buildTransactionByUserFiscalCodePaginatedQuery(
-                            searchCriteria.userFiscalCode
-                        ),
+                    resultQuery = userFiscalCodePaginatedQuery,
                     pageNumber = pageNumber,
                     pageSize = pageSize,
+                    searchParam = searchParams.userFiscalCode,
                     searchType = searchCriteriaType
                 )
             else -> invalidSearchCriteriaError
