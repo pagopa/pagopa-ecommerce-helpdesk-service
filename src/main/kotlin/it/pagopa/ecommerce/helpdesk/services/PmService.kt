@@ -22,7 +22,7 @@ class PmService(@Autowired val pmTransactionDataProvider: PMTransactionDataProvi
         pmSearchTransactionRequestDto: PmSearchTransactionRequestDto
     ): Mono<SearchTransactionResponseDto> {
         logger.info(
-            "[helpDesk pm service] searchTransaction method, search type: ${pmSearchTransactionRequestDto.type}"
+            "[helpDesk pm service] searchTransaction method, search type: {}", pmSearchTransactionRequestDto.type
         )
         return pmTransactionDataProvider.totalRecordCount(pmSearchTransactionRequestDto).flatMap {
             totalCount ->
