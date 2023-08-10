@@ -2,6 +2,7 @@ package it.pagopa.ecommerce.helpdesk
 
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.generated.ecommerce.helpdesk.model.*
+import java.time.OffsetDateTime
 import org.springframework.http.HttpStatus
 
 object HelpdeskTestUtils {
@@ -32,4 +33,46 @@ object HelpdeskTestUtils {
 
     fun buildSearchRequestByUserMail(): SearchTransactionRequestEmailDto =
         SearchTransactionRequestEmailDto().userEmail("test@test.it").type("USER_EMAIL")
+
+    fun buildTransactionResultDtoPM(creationDate: OffsetDateTime): TransactionResultDto =
+        TransactionResultDto()
+            .userInfo(
+                UserInfoDto()
+                    .userFiscalCode("user fiscal code")
+                    .notificationEmail(TransactionTestUtils.EMAIL_STRING)
+                    .surname("surname")
+                    .name("name")
+                    .username("username")
+                    .authenticationType("auth type")
+            )
+            .transactionInfo(
+                TransactionInfoDto()
+                    .creationDate(creationDate)
+                    .status("status")
+                    .statusDetails("status detail")
+                    .amount(500)
+                    .fee(200)
+                    .grandTotal(700)
+                    .rrn("rrn")
+                    .authotizationCode("authorization code")
+                    .paymentMethodName("payment method name")
+                    .brand(null)
+            )
+            .paymentInfo(PaymentInfoDto().subject("subject").origin("origin"))
+            .paymentDetailInfo(
+                PaymentDetailInfoDto()
+                    .iuv("IUV")
+                    .rptIds(null)
+                    .idTransaction(TransactionTestUtils.TRANSACTION_ID)
+                    .paymentToken(null)
+                    .creditorInstitution("creditor institution")
+                    .paFiscalCode(TransactionTestUtils.PA_FISCAL_CODE)
+            )
+            .pspInfo(
+                PspInfoDto()
+                    .pspId(TransactionTestUtils.PSP_ID)
+                    .businessName(TransactionTestUtils.PSP_BUSINESS_NAME)
+                    .idChannel(TransactionTestUtils.PSP_CHANNEL_CODE)
+            )
+            .product(ProductDto.PM)
 }
