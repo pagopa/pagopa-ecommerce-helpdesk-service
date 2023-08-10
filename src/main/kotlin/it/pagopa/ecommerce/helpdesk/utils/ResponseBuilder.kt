@@ -4,10 +4,10 @@ import io.r2dbc.spi.Result
 import it.pagopa.ecommerce.commons.domain.v1.pojos.*
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
+import org.reactivestreams.Publisher
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import org.reactivestreams.Publisher
 
 fun buildTransactionSearchResponse(
     currentPage: Int,
@@ -75,6 +75,7 @@ fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): Trans
             // Must be populated dinamically when logic will be updated eCommerce side
             // (event-dispatcher/transactions-service)
             .authenticationType(UserDto.TypeEnum.GUEST.toString())
+    val transactionInfo = TransactionInfoDto().creationDate(baseTransaction.creationDate.toOffsetDateTime())
     val paymentInfo =
         PaymentInfoDto()
             .origin(baseTransaction.clientId.toString())
@@ -92,10 +93,13 @@ fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): Trans
     when (baseTransaction) {
         is BaseTransactionWithRefundRequested ->
             baseTransactionToTransactionInfoDto(baseTransaction.transactionAtPreviousState)
+
         is BaseTransactionExpired ->
             baseTransactionToTransactionInfoDto(baseTransaction.transactionAtPreviousState)
+
         is BaseTransactionWithClosureError ->
             baseTransactionToTransactionInfoDto(baseTransaction.transactionAtPreviousState)
+
         is BaseTransactionWithRequestedUserReceipt -> {
             paymentDetailInfoDto.forEach {
                 it.creditorInstitution(
@@ -103,6 +107,7 @@ fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): Trans
                 )
             }
         }
+
         is BaseTransactionWithCompletedAuthorization -> null
         is BaseTransactionWithRequestedAuthorization -> null
         is BaseTransactionWithCancellationRequested -> null
@@ -112,15 +117,12 @@ fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): Trans
     return TransactionResultDto()
         .product(ProductDto.ECOMMERCE)
         .userInfo(
-            UserInfoDto()
-                .notificationEmail("") // TODO to be valued here with PDV integration
-                // TODO this field is statically valued with GUEST eCommerce side into Nodo
-                // ClosePayment requests.
-                // Must be populated dinamically when logic will be updated eCommerce side
-                // (event-dispatcher/transactions-service)
-                .authenticationType(UserDto.TypeEnum.GUEST.toString())
+            userInfo
         )
         .transactionInfo(
-            TransactionInfoDto().creationDate(baseTransaction.creationDate.toOffsetDateTime())
+            transactionInfo
         )
+        .paymentInfo(paymentInfo)
+        .paymentDetailInfo(paymentDetailInfoDto[0])
+
 }

@@ -31,10 +31,8 @@ class EcommerceTransactionDataProvider(
                 transactionsViewRepository.countTransactionsWithPaymentToken(
                     searchParams.paymentToken
                 )
-
             is SearchTransactionRequestRptIdDto ->
                 transactionsViewRepository.countTransactionsWithRptId(searchParams.rptId)
-
             is SearchTransactionRequestTransactionIdDto ->
                 transactionsViewRepository.existsById(searchParams.transactionId).map { exist ->
                     if (exist) {
@@ -44,7 +42,8 @@ class EcommerceTransactionDataProvider(
                     }
                 }
 
-            // TODO search by email not implemented yet, here must be changed with search for mail PDV token
+            // TODO search by email not implemented yet, here must be changed with search for mail
+            // PDV token
             is SearchTransactionRequestEmailDto -> invalidSearchCriteriaError
             is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
             else -> invalidSearchCriteriaError
@@ -71,7 +70,6 @@ class EcommerceTransactionDataProvider(
                     )
                     .flatMap { mapToTransactionResultDto(it) }
                     .collectList()
-
             is SearchTransactionRequestRptIdDto ->
                 transactionsViewRepository
                     .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
@@ -80,14 +78,12 @@ class EcommerceTransactionDataProvider(
                     )
                     .flatMap { mapToTransactionResultDto(it) }
                     .collectList()
-
             is SearchTransactionRequestTransactionIdDto ->
                 transactionsViewRepository
                     .findById(searchParams.transactionId)
                     .toFlux()
                     .flatMap { mapToTransactionResultDto(it) }
                     .collectList()
-
             is SearchTransactionRequestEmailDto -> invalidSearchCriteriaError
             is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
             else -> invalidSearchCriteriaError
