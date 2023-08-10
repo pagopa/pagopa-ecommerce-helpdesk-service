@@ -38,7 +38,12 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                 )
             else ->
                 Mono.error(
-                    RuntimeException("Unhandled search criteria ${searchCriteria.javaClass}")
+                    InvalidSearchCriteriaException(
+                        TransactionDataProvider.SearchTypeMapping.getSearchType(
+                            searchCriteria.javaClass
+                        ),
+                        ProductDto.PM
+                    )
                 )
         }
 
