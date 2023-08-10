@@ -21,13 +21,14 @@ class EcommerceTransactionDataProvider(
 
     override fun totalRecordCount(searchCriteria: HelpDeskSearchTransactionRequestDto): Mono<Long> =
         when (searchCriteria) {
-            is SearchTransactionRequestPaymentTokenDto -> transactionsViewRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
-            )
-
-            is SearchTransactionRequestRptIdDto -> transactionsViewRepository.countTransactionsWithRptId(searchCriteria.rptId)
-            is SearchTransactionRequestTransactionIdDto -> transactionsViewRepository.existsById(searchCriteria.transactionId)
-                .map { exist ->
+            is SearchTransactionRequestPaymentTokenDto ->
+                transactionsViewRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            is SearchTransactionRequestRptIdDto ->
+                transactionsViewRepository.countTransactionsWithRptId(searchCriteria.rptId)
+            is SearchTransactionRequestTransactionIdDto ->
+                transactionsViewRepository.existsById(searchCriteria.transactionId).map { exist ->
                     if (exist) {
                         1
                     } else {
@@ -35,7 +36,8 @@ class EcommerceTransactionDataProvider(
                     }
                 }
 
-            //search by email not implemented yet, here must be changed with search for mail PDV token
+            // search by email not implemented yet, here must be changed with search for mail PDV
+            // token
             is SearchTransactionRequestEmailDto -> Mono.just(0)
             is SearchTransactionRequestFiscalCodeDto -> Mono.just(0)
             else ->
@@ -57,27 +59,27 @@ class EcommerceTransactionDataProvider(
             )
         return when (searchCriteria) {
             is SearchTransactionRequestPaymentTokenDto ->
-                transactionsViewRepository.findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                    searchCriteria.paymentToken,
-                    Pageable.unpaged()
-                )
+                transactionsViewRepository
+                    .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
+                        searchCriteria.paymentToken,
+                        Pageable.unpaged()
+                    )
                     .flatMap { mapToTransactionResultDto(it) }
                     .collectList()
-
             is SearchTransactionRequestRptIdDto ->
-                transactionsViewRepository.findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                    searchCriteria.rptId,
-                    Pageable.unpaged()
-                )
+                transactionsViewRepository
+                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                        searchCriteria.rptId,
+                        Pageable.unpaged()
+                    )
                     .flatMap { mapToTransactionResultDto(it) }
                     .collectList()
-
             is SearchTransactionRequestTransactionIdDto ->
-                transactionsViewRepository.findById(searchCriteria.transactionId)
+                transactionsViewRepository
+                    .findById(searchCriteria.transactionId)
                     .toFlux()
                     .flatMap { mapToTransactionResultDto(it) }
                     .collectList()
-
             is SearchTransactionRequestEmailDto -> invalidSearchCriteriaError
             is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
             else -> invalidSearchCriteriaError
@@ -86,8 +88,15 @@ class EcommerceTransactionDataProvider(
 
     fun mapToTransactionResultDto(transaction: Transaction): Mono<TransactionResultDto> =
         Mono.just(transaction)
-            .flatMapMany { transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(transaction.transactionId) }
-            .reduce(EmptyTransaction(), it.pagopa.ecommerce.commons.domain.v1.Transaction::applyEvent)
+            .flatMapMany {
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transaction.transactionId
+                )
+            }
+            .reduce(
+                EmptyTransaction(),
+                it.pagopa.ecommerce.commons.domain.v1.Transaction::applyEvent
+            )
             .cast(BaseTransaction::class.java)
             .map { baseTransaction -> baseTransactionToTransactionInfoDto(baseTransaction) }
 }

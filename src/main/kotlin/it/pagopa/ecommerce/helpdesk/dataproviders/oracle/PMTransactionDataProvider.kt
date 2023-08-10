@@ -32,12 +32,10 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
             is SearchTransactionRequestTransactionIdDto -> Mono.just(0)
             is SearchTransactionRequestEmailDto ->
                 getTotalResultCount(buildTransactionByUserEmailCountQuery(searchCriteria.userEmail))
-
             is SearchTransactionRequestFiscalCodeDto ->
                 getTotalResultCount(
                     buildTransactionByUserFiscalCodeCountQuery(searchCriteria.userFiscalCode)
                 )
-
             else ->
                 Mono.error(
                     InvalidSearchCriteriaException(
@@ -67,39 +65,37 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
             is SearchTransactionRequestEmailDto ->
                 getResultSetFromPaginatedQuery(
                     resultQuery =
-                    buildTransactionByUserEmailPaginatedQuery(searchCriteria.userEmail),
+                        buildTransactionByUserEmailPaginatedQuery(searchCriteria.userEmail),
                     pageNumber = pageNumber,
                     pageSize = pageSize,
                     searchType = searchCriteriaType
                 )
-
             is SearchTransactionRequestFiscalCodeDto ->
                 getResultSetFromPaginatedQuery(
                     resultQuery =
-                    buildTransactionByUserFiscalCodePaginatedQuery(
-                        searchCriteria.userFiscalCode
-                    ),
+                        buildTransactionByUserFiscalCodePaginatedQuery(
+                            searchCriteria.userFiscalCode
+                        ),
                     pageNumber = pageNumber,
                     pageSize = pageSize,
                     searchType = searchCriteriaType
                 )
-
             else -> invalidSearchCriteriaError
         }
     }
 
     private fun getTotalResultCount(totalRecordCountQuery: String): Mono<Long> =
         Flux.usingWhen(
-            connectionFactory.create(),
-            { connection ->
-                Flux.from(connection.createStatement(totalRecordCountQuery).execute())
-                    .flatMap { result ->
-                        result.map { row -> row[0, java.lang.Long::class.java]!!.toLong() }
-                    }
-                    .doOnNext { logger.info("Total transaction found: $it") }
-            },
-            { it.close() }
-        )
+                connectionFactory.create(),
+                { connection ->
+                    Flux.from(connection.createStatement(totalRecordCountQuery).execute())
+                        .flatMap { result ->
+                            result.map { row -> row[0, java.lang.Long::class.java]!!.toLong() }
+                        }
+                        .doOnNext { logger.info("Total transaction found: $it") }
+                },
+                { it.close() }
+            )
             .toMono()
 
     private fun getResultSetFromPaginatedQuery(
@@ -109,18 +105,18 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
         searchType: String
     ): Mono<List<TransactionResultDto>> =
         Flux.usingWhen(
-            connectionFactory.create(),
-            { connection ->
-                val offset = pageNumber * pageSize
-                val query = resultQuery.format(offset, pageSize)
-                logger.info("Retrieving transactions for offset: $offset, limit: $pageSize.")
+                connectionFactory.create(),
+                { connection ->
+                    val offset = pageNumber * pageSize
+                    val query = resultQuery.format(offset, pageSize)
+                    logger.info("Retrieving transactions for offset: $offset, limit: $pageSize.")
 
-                Flux.from(connection.createStatement(query).execute()).flatMap {
-                    resultToTransactionInfoDto(it)
-                }
-            },
-            { it.close() }
-        )
+                    Flux.from(connection.createStatement(query).execute()).flatMap {
+                        resultToTransactionInfoDto(it)
+                    }
+                },
+                { it.close() }
+            )
             .collectList()
             .switchIfEmpty { Mono.error(NoResultFoundException(searchType)) }
 }

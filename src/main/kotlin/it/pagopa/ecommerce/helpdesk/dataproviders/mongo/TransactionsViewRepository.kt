@@ -8,12 +8,10 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-/**
- * eCommerce Mongo transaction view repository
- */
+/** eCommerce Mongo transaction view repository */
 @Repository
 interface TransactionsViewRepository : ReactiveCrudRepository<Transaction, String> {
-    
+
     @Query("{'paymentNotices.paymentToken': '?0'", count = true)
     fun countTransactionsWithPaymentToken(paymentToken: String): Mono<Long>
 
@@ -31,5 +29,4 @@ interface TransactionsViewRepository : ReactiveCrudRepository<Transaction, Strin
         rptId: String,
         pagination: Pageable
     ): Flux<Transaction>
-
 }
