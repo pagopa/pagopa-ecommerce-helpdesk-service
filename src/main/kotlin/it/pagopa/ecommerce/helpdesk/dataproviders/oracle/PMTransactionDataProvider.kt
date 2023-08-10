@@ -36,7 +36,12 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                 Mono.error(RuntimeException("Not implemented yet"))
             else ->
                 Mono.error(
-                    RuntimeException("Unhandled search criteria ${searchCriteria.javaClass}")
+                    InvalidSearchCriteriaException(
+                        TransactionDataProvider.SearchTypeMapping.getSearchType(
+                            searchCriteria.javaClass
+                        ),
+                        ProductDto.PM
+                    )
                 )
         }
 

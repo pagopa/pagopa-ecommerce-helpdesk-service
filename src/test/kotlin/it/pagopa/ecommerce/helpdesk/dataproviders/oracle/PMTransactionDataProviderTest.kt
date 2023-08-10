@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.helpdesk.dataproviders.oracle
 import io.r2dbc.h2.H2ConnectionConfiguration
 import io.r2dbc.h2.H2ConnectionFactory
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import org.junit.jupiter.api.Test
@@ -88,5 +89,31 @@ class PMTransactionDataProviderTest {
             )
             .expectNext(expectedResponse)
             .verifyComplete()
+    }
+
+    @Test
+    fun `Should return 0 for unhandled search criteria for count operation`() {
+
+        StepVerifier.create(
+                pmTransactionDataProvider.totalRecordCount(
+                    searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId()
+                )
+            )
+            .expectNext(0)
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should return error for invalid input search criteria for find result operation`() {
+
+        StepVerifier.create(
+                pmTransactionDataProvider.findResult(
+                    searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId(),
+                    pageNumber = 0,
+                    pageSize = 10
+                )
+            )
+            .expectError(InvalidSearchCriteriaException::class.java)
+            .verify()
     }
 }
