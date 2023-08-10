@@ -167,7 +167,7 @@ INSERT
 VALUES(1,
 'username',
 'test@test.it',
-0,
+11,
 'name',
 'surname',
 NULL,

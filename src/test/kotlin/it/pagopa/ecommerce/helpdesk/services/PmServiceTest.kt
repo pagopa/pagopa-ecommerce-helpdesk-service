@@ -19,7 +19,7 @@ class PmServiceTest {
 
     @Test
     fun `should return found transaction successfully`() {
-        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail()
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it")
         val pageSize = 10
         val pageNumber = 0
         val totalCount = 100
@@ -57,7 +57,7 @@ class PmServiceTest {
 
     @Test
     fun `should return error for no transaction found performing only count query`() {
-        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail()
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail("unknown@test.it")
         val pageSize = 10
         val pageNumber = 0
         val totalCount = 0

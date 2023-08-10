@@ -132,7 +132,7 @@ class HelpdeskControllerTest {
     fun `post search transaction succeeded searching by user email`() = runTest {
         val pageNumber = 1
         val pageSize = 15
-        val request = HelpdeskTestUtils.buildSearchRequestByUserMail()
+        val request = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it")
         given(
                 pmService.searchTransaction(
                     pageNumber = eq(pageNumber),
@@ -165,7 +165,7 @@ class HelpdeskControllerTest {
     fun `post search transaction succeeded searching by user fiscal code`() = runTest {
         val pageNumber = 1
         val pageSize = 15
-        val request = HelpdeskTestUtils.buildSearchRequestByFiscalCode()
+        val request = HelpdeskTestUtils.buildSearchRequestByUserFiscalCode("AAABBB91E22A123A")
         given(
                 pmService.searchTransaction(
                     pageNumber = eq(pageNumber),

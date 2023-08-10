@@ -26,13 +26,13 @@ object HelpdeskTestUtils {
             .paymentToken(TransactionTestUtils.PAYMENT_TOKEN)
             .type("PAYMENT_TOKEN")
 
-    fun buildSearchRequestByFiscalCode(): SearchTransactionRequestFiscalCodeDto =
-        SearchTransactionRequestFiscalCodeDto()
-            .userFiscalCode("AAABBB99A01A000A")
-            .type("USER_FISCAL_CODE")
+    fun buildSearchRequestByUserFiscalCode(
+        fiscalCode: String
+    ): SearchTransactionRequestFiscalCodeDto =
+        SearchTransactionRequestFiscalCodeDto().userFiscalCode(fiscalCode).type("USER_FISCAL_CODE")
 
-    fun buildSearchRequestByUserMail(): SearchTransactionRequestEmailDto =
-        SearchTransactionRequestEmailDto().userEmail("test@test.it").type("USER_EMAIL")
+    fun buildSearchRequestByUserMail(email: String): SearchTransactionRequestEmailDto =
+        SearchTransactionRequestEmailDto().userEmail(email).type("USER_EMAIL")
 
     fun buildTransactionResultDtoPM(creationDate: OffsetDateTime): TransactionResultDto =
         TransactionResultDto()
