@@ -1,6 +1,5 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.TransactionResultDto
 import reactor.core.publisher.Mono
@@ -25,21 +24,4 @@ interface TransactionDataProvider {
         pageSize: Int,
         pageNumber: Int
     ): Mono<List<TransactionResultDto>>
-
-    object SearchTypeMapping {
-        private val mapping = mutableMapOf<Class<*>, String>()
-        fun getSearchType(clazz: Class<*>): String {
-            if (mapping.isEmpty()) {
-                HelpDeskSearchTransactionRequestDto::class
-                    .java
-                    .getAnnotationsByType(JsonSubTypes::class.java)
-                    .forEach {
-                        it.value.forEach { jsonSubType ->
-                            mapping[jsonSubType.value.java] = jsonSubType.name
-                        }
-                    }
-            }
-            return mapping[clazz] ?: "UNKNOWN"
-        }
-    }
 }

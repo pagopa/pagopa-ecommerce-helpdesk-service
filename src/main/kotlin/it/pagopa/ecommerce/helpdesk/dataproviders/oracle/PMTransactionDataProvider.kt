@@ -34,15 +34,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                 getTotalResultCount(buildTransactionByUserEmailCountQuery(searchCriteria.userEmail))
             is SearchTransactionRequestFiscalCodeDto ->
                 Mono.error(RuntimeException("Not implemented yet"))
-            else ->
-                Mono.error(
-                    InvalidSearchCriteriaException(
-                        TransactionDataProvider.SearchTypeMapping.getSearchType(
-                            searchCriteria.javaClass
-                        ),
-                        ProductDto.PM
-                    )
-                )
+            else -> Mono.error(InvalidSearchCriteriaException(searchCriteria.type, ProductDto.PM))
         }
 
     override fun findResult(
@@ -50,8 +42,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
         pageSize: Int,
         pageNumber: Int
     ): Mono<List<TransactionResultDto>> {
-        val searchCriteriaType =
-            TransactionDataProvider.SearchTypeMapping.getSearchType(searchCriteria.javaClass)
+        val searchCriteriaType = searchCriteria.type
         val invalidSearchCriteriaError =
             Mono.error<List<TransactionResultDto>>(
                 InvalidSearchCriteriaException(searchCriteriaType, ProductDto.PM)

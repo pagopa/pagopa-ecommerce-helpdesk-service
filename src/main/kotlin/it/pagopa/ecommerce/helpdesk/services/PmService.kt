@@ -1,6 +1,5 @@
 package it.pagopa.ecommerce.helpdesk.services
 
-import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.buildTransactionSearchResponse
@@ -22,7 +21,8 @@ class PmService(@Autowired val pmTransactionDataProvider: PMTransactionDataProvi
         pmSearchTransactionRequestDto: PmSearchTransactionRequestDto
     ): Mono<SearchTransactionResponseDto> {
         logger.info(
-            "[helpDesk pm service] searchTransaction method, search type: {}", pmSearchTransactionRequestDto.type
+            "[helpDesk pm service] searchTransaction method, search type: {}",
+            pmSearchTransactionRequestDto.type
         )
         return pmTransactionDataProvider.totalRecordCount(pmSearchTransactionRequestDto).flatMap {
             totalCount ->
@@ -41,13 +41,7 @@ class PmService(@Autowired val pmTransactionDataProvider: PMTransactionDataProvi
                         )
                     }
             } else {
-                Mono.error(
-                    NoResultFoundException(
-                        TransactionDataProvider.SearchTypeMapping.getSearchType(
-                            pmSearchTransactionRequestDto.javaClass
-                        )
-                    )
-                )
+                Mono.error(NoResultFoundException(pmSearchTransactionRequestDto.type))
             }
         }
     }
