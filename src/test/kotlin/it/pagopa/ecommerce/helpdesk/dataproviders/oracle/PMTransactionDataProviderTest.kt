@@ -75,14 +75,18 @@ class PMTransactionDataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin("origin")
-                            .subject("/RFB/718173815252003/0.10/TXT/Pagamento di test 20")
-                    )
-                    .paymentDetailInfo(
-                        PaymentDetailInfoDto()
-                            .iuv("000000044060814")
-                            .idTransaction("MIUR20191119222949")
-                            .creditorInstitution("RMIC81500N")
-                            .paFiscalCode("97061100588")
+                            .details(
+                                listOf(
+                                    PaymentDetailInfoDto()
+                                        .subject(
+                                            "/RFB/718173815252003/0.10/TXT/Pagamento di test 20"
+                                        )
+                                        .iuv("000000044060814")
+                                        .idTransaction("MIUR20191119222949")
+                                        .creditorInstitution("RMIC81500N")
+                                        .paFiscalCode("97061100588")
+                                )
+                            )
                     )
                     .pspInfo(
                         PspInfoDto()
@@ -156,14 +160,18 @@ class PMTransactionDataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin("origin")
-                            .subject("/RFB/718173815252003/0.10/TXT/Pagamento di test 20")
-                    )
-                    .paymentDetailInfo(
-                        PaymentDetailInfoDto()
-                            .iuv("000000044060814")
-                            .idTransaction("MIUR20191119222949")
-                            .creditorInstitution("RMIC81500N")
-                            .paFiscalCode("97061100588")
+                            .details(
+                                listOf(
+                                    PaymentDetailInfoDto()
+                                        .subject(
+                                            "/RFB/718173815252003/0.10/TXT/Pagamento di test 20"
+                                        )
+                                        .iuv("000000044060814")
+                                        .idTransaction("MIUR20191119222949")
+                                        .creditorInstitution("RMIC81500N")
+                                        .paFiscalCode("97061100588")
+                                )
+                            )
                     )
                     .pspInfo(
                         PspInfoDto()
