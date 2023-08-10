@@ -366,26 +366,7 @@ components:
         statusDetails:
           type: string
         eventStatus:
-          type: string
-          enum:
-            - ACTIVATED
-            - AUTHORIZATION_REQUESTED
-            - AUTHORIZATION_COMPLETED
-            - CLOSED
-            - CLOSURE_ERROR
-            - NOTIFIED_OK
-            - NOTIFIED_KO
-            - NOTIFICATION_ERROR
-            - NOTIFICATION_REQUESTED
-            - EXPIRED
-            - REFUNDED
-            - CANCELED
-            - EXPIRED_NOT_AUTHORIZED
-            - UNAUTHORIZED
-            - REFUND_ERROR
-            - REFUND_REQUESTED
-            - CANCELLATION_REQUESTED
-            - CANCELLATION_EXPIRED
+    $ref: "https://raw.githubusercontent.com/pagopa/pagopa-ecommerce-transactions-service/main/api-spec/transactions-api.yaml#/components/schemas/TransactionStatus"
         amount:
           $ref: '#/components/schemas/AmountEuroCents'
         fee:
