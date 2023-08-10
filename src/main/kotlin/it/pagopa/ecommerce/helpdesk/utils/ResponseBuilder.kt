@@ -67,3 +67,8 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
 
 fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): TransactionResultDto =
     TransactionResultDto()
+        .userInfo(
+            UserInfoDto()
+                .notificationEmail("") // TODO to be valued here with PDV integration
+                .authenticationType("GUEST")
+        )

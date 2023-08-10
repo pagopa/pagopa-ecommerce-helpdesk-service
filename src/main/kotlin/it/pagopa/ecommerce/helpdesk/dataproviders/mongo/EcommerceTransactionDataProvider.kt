@@ -8,7 +8,8 @@ import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.baseTransactionToTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
@@ -57,12 +58,13 @@ class EcommerceTransactionDataProvider(
             Mono.error<List<TransactionResultDto>>(
                 InvalidSearchCriteriaException(searchCriteriaType, ProductDto.ECOMMERCE)
             )
+        val pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by("creationDate").descending())
         return when (searchCriteria) {
             is SearchTransactionRequestPaymentTokenDto ->
                 transactionsViewRepository
                     .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
                         searchCriteria.paymentToken,
-                        Pageable.unpaged()
+                        pageRequest
                     )
                     .flatMap { mapToTransactionResultDto(it) }
                     .collectList()
@@ -70,7 +72,7 @@ class EcommerceTransactionDataProvider(
                 transactionsViewRepository
                     .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
                         searchCriteria.rptId,
-                        Pageable.unpaged()
+                        pageRequest
                     )
                     .flatMap { mapToTransactionResultDto(it) }
                     .collectList()
