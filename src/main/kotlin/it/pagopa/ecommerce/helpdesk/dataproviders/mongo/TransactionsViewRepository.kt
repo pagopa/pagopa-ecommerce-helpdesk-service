@@ -12,19 +12,19 @@ import reactor.core.publisher.Mono
 @Repository
 interface TransactionsViewRepository : ReactiveCrudRepository<Transaction, String> {
 
-    @Query("{'paymentNotices.paymentToken': '?0'", count = true)
-    fun countTransactionsWithPaymentToken(paymentToken: String): Mono<Int>
+    @Query("{'paymentNotices.paymentToken': '?0'}", count = true)
+    fun countTransactionsWithPaymentToken(paymentToken: String): Mono<Long>
 
-    @Query("{'paymentNotices.paymentToken': '?0'")
+    @Query("{'paymentNotices.paymentToken': '?0'}")
     fun findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
         paymentToken: String,
         pagination: Pageable
     ): Flux<Transaction>
 
-    @Query("{'paymentNotices.rptId': '?0'", count = true)
-    fun countTransactionsWithRptId(rpiId: String): Mono<Int>
+    @Query("{'paymentNotices.rptId': '?0'}", count = true)
+    fun countTransactionsWithRptId(rpiId: String): Mono<Long>
 
-    @Query("{'paymentNotices.rptId': '?0'")
+    @Query("{'paymentNotices.rptId': '?0'}")
     fun findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
         rptId: String,
         pagination: Pageable

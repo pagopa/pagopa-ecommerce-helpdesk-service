@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
 
@@ -31,8 +32,10 @@ class EcommerceTransactionDataProvider(
                 transactionsViewRepository.countTransactionsWithPaymentToken(
                     searchParams.paymentToken
                 )
+
             is SearchTransactionRequestRptIdDto ->
                 transactionsViewRepository.countTransactionsWithRptId(searchParams.rptId)
+
             is SearchTransactionRequestTransactionIdDto ->
                 transactionsViewRepository.existsById(searchParams.transactionId).map { exist ->
                     if (exist) {
@@ -47,7 +50,7 @@ class EcommerceTransactionDataProvider(
             is SearchTransactionRequestEmailDto -> invalidSearchCriteriaError
             is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
             else -> invalidSearchCriteriaError
-        }
+        }.map { it.toInt() }
     }
 
     override fun findResult(
@@ -57,40 +60,40 @@ class EcommerceTransactionDataProvider(
     ): Mono<List<TransactionResultDto>> {
         val searchCriteriaType = searchParams.type
         val invalidSearchCriteriaError =
-            Mono.error<List<TransactionResultDto>>(
+            Flux.error<Transaction>(
                 InvalidSearchCriteriaException(searchCriteriaType, ProductDto.ECOMMERCE)
             )
         val pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by("creationDate").descending())
-        return when (searchParams) {
+        val transactions: Flux<Transaction> = when (searchParams) {
             is SearchTransactionRequestPaymentTokenDto ->
                 transactionsViewRepository
                     .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
                         searchParams.paymentToken,
                         pageRequest
                     )
-                    .flatMap { mapToTransactionResultDto(it) }
-                    .collectList()
+
             is SearchTransactionRequestRptIdDto ->
                 transactionsViewRepository
                     .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
                         searchParams.rptId,
                         pageRequest
                     )
-                    .flatMap { mapToTransactionResultDto(it) }
-                    .collectList()
+
             is SearchTransactionRequestTransactionIdDto ->
                 transactionsViewRepository
                     .findById(searchParams.transactionId)
                     .toFlux()
-                    .flatMap { mapToTransactionResultDto(it) }
-                    .collectList()
+
             is SearchTransactionRequestEmailDto -> invalidSearchCriteriaError
             is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
             else -> invalidSearchCriteriaError
         }
+        return transactions
+            .flatMap { mapToTransactionResultDto(it) }
+            .collectList()
     }
 
-    fun mapToTransactionResultDto(transaction: Transaction): Mono<TransactionResultDto> =
+    private fun mapToTransactionResultDto(transaction: Transaction): Mono<TransactionResultDto> =
         Mono.just(transaction)
             .flatMapMany {
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
