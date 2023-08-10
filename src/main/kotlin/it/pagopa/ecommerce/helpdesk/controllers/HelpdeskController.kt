@@ -27,6 +27,8 @@ class HelpdeskController(
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> =
         helpDeskSearchTransactionRequestDto.flatMap {
             when (it) {
+                // TODO change logic here, search first into eCommerce then into PM DB when
+                // searching for criteria present in both DBs
                 is EcommerceSearchTransactionRequestDto ->
                     ecommerceService
                         .searchTransaction(

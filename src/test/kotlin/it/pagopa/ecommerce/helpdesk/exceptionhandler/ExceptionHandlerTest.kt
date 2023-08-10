@@ -1,8 +1,10 @@
 package it.pagopa.ecommerce.helpdesk.exceptionhandler
 
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.RestApiException
+import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
 import jakarta.xml.bind.ValidationException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -34,7 +36,7 @@ class ExceptionHandlerTest {
     }
 
     @Test
-    fun `Should handle ApiError`() {
+    fun `Should handle NoResultFoundException`() {
         val searchCriteria = "searchCriteria"
         val exception = NoResultFoundException(searchCriteria)
         val response = exceptionHandler.handleException(exception)
@@ -73,6 +75,23 @@ class ExceptionHandlerTest {
                 httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
                 title = "Error processing the request",
                 description = "Nullpointer exception"
+            ),
+            response.body
+        )
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.statusCode)
+    }
+
+    @Test
+    fun `Should handle InvalidSearchCriteriaException`() {
+        val searchCriteria = "searchCriteria"
+        val exception = InvalidSearchCriteriaException(searchCriteria, ProductDto.PM)
+        val response = exceptionHandler.handleException(exception)
+        assertEquals(
+            HelpdeskTestUtils.buildProblemJson(
+                httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+                title = "Invalid search criteria",
+                description =
+                    "Invalid search criteria with type: $searchCriteria for product: ${ProductDto.PM}"
             ),
             response.body
         )
