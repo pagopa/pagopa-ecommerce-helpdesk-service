@@ -4,10 +4,10 @@ import io.r2dbc.spi.Result
 import it.pagopa.ecommerce.commons.domain.v1.pojos.*
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
-import org.reactivestreams.Publisher
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import org.reactivestreams.Publisher
 
 fun buildTransactionSearchResponse(
     currentPage: Int,
@@ -96,13 +96,10 @@ fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): Trans
     when (baseTransaction) {
         is BaseTransactionWithRefundRequested ->
             baseTransactionToTransactionInfoDto(baseTransaction.transactionAtPreviousState)
-
         is BaseTransactionExpired ->
             baseTransactionToTransactionInfoDto(baseTransaction.transactionAtPreviousState)
-
         is BaseTransactionWithClosureError ->
             baseTransactionToTransactionInfoDto(baseTransaction.transactionAtPreviousState)
-
         is BaseTransactionWithRequestedUserReceipt -> {
             paymentDetailInfoDto.forEach {
                 it.creditorInstitution(
@@ -110,7 +107,6 @@ fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): Trans
                 )
             }
         }
-
         is BaseTransactionWithCompletedAuthorization -> null
         is BaseTransactionWithRequestedAuthorization -> null
         is BaseTransactionWithCancellationRequested -> null
