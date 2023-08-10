@@ -74,7 +74,6 @@ dependencies {
   // oracle
   implementation("com.oracle.database.jdbc:ojdbc11:23.2.0.0")
   implementation("com.oracle.database.r2dbc:oracle-r2dbc:1.1.1")
-  implementation("org.jooq:jooq:3.18.5")
 
   // ECS logback encoder
   implementation("co.elastic.logging:logback-ecs-encoder:$ecsLoggingVersion")

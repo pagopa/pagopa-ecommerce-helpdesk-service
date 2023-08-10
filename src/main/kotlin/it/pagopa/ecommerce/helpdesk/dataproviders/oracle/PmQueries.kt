@@ -1,8 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.oracle
 
-import org.jooq.impl.DSL
-
-fun buildTransactionByUserEmailPaginatedQuery(userEmail: String) =
+val userEmailPaginatedQuery =
     """
        SELECT 	pu.FISCAL_CODE , pu.NOTIFICATION_EMAIL , pu.SURNAME , pu.NAME , pu.USERNAME , 
 		CASE pu.STATUS 
@@ -64,17 +62,7 @@ fun buildTransactionByUserEmailPaginatedQuery(userEmail: String) =
     """
         .trimIndent()
 
-fun main() {
-    val query = DSL
-        .query(buildTransactionByUserEmailPaginatedQuery(""))
-        .bind(1, "test@test.it")
-        .bind(2, 0)
-        .bind(3, 10).sql
-    println(query)
-}
-
-
-fun buildTransactionByUserEmailCountQuery(userEmail: String) =
+val userEmailCountQuery =
     """
         SELECT COUNT(*)
         FROM AGID_USER.PP_USER pu 
@@ -82,7 +70,7 @@ fun buildTransactionByUserEmailCountQuery(userEmail: String) =
         left JOIN AGID_USER.PP_PAYMENT pp ON pt.FK_PAYMENT = pp.ID 
         left JOIN AGID_USER.PP_PAYMENT_DETAIL ppd ON pp.ID =ppd.PAYMENT_ID 
         left JOIN AGID_USER.PP_PSP pp2 ON pt.FK_PSP = pp2.ID 
-        WHERE pu.NOTIFICATION_EMAIL  ='$userEmail'
+        WHERE pu.NOTIFICATION_EMAIL = ?
         AND PT.AMOUNT > 1
     """
         .trimIndent()

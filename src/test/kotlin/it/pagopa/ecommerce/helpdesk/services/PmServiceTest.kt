@@ -60,7 +60,9 @@ class PmServiceTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail()
         val pageSize = 10
         val pageNumber = 0
-
+        val totalCount = 0
+        given(pmTransactionDataProvider.totalRecordCount(searchCriteria))
+            .willReturn(Mono.just(totalCount))
         StepVerifier.create(
                 pmService.searchTransaction(
                     pageNumber = pageNumber,
