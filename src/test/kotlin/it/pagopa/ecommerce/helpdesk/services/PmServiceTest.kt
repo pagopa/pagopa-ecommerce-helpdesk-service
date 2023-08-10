@@ -29,7 +29,7 @@ class PmServiceTest {
             .willReturn(Mono.just(totalCount))
         given(
                 pmTransactionDataProvider.findResult(
-                    searchCriteria = searchCriteria,
+                    searchParams = searchCriteria,
                     pageSize = pageSize,
                     pageNumber = pageNumber
                 )

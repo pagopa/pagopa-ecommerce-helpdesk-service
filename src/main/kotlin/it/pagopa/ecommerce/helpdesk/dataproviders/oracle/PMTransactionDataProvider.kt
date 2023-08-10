@@ -25,36 +25,35 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun totalRecordCount(searchCriteria: HelpDeskSearchTransactionRequestDto): Mono<Int> =
-        when (searchCriteria) {
+    override fun totalRecordCount(searchParams: HelpDeskSearchTransactionRequestDto): Mono<Int> =
+        when (searchParams) {
             is SearchTransactionRequestPaymentTokenDto -> Mono.just(0)
             is SearchTransactionRequestRptIdDto -> Mono.just(0)
             is SearchTransactionRequestTransactionIdDto -> Mono.just(0)
             is SearchTransactionRequestEmailDto ->
-                getTotalResultCount(buildTransactionByUserEmailCountQuery(searchCriteria.userEmail))
+                getTotalResultCount(buildTransactionByUserEmailCountQuery(searchParams.userEmail))
             is SearchTransactionRequestFiscalCodeDto ->
                 Mono.error(RuntimeException("Not implemented yet"))
-            else -> Mono.error(InvalidSearchCriteriaException(searchCriteria.type, ProductDto.PM))
+            else -> Mono.error(InvalidSearchCriteriaException(searchParams.type, ProductDto.PM))
         }
 
     override fun findResult(
-        searchCriteria: HelpDeskSearchTransactionRequestDto,
+        searchParams: HelpDeskSearchTransactionRequestDto,
         pageSize: Int,
         pageNumber: Int
     ): Mono<List<TransactionResultDto>> {
-        val searchCriteriaType = searchCriteria.type
+        val searchCriteriaType = searchParams.type
         val invalidSearchCriteriaError =
             Mono.error<List<TransactionResultDto>>(
                 InvalidSearchCriteriaException(searchCriteriaType, ProductDto.PM)
             )
-        return when (searchCriteria) {
+        return when (searchParams) {
             is SearchTransactionRequestPaymentTokenDto -> invalidSearchCriteriaError
             is SearchTransactionRequestRptIdDto -> invalidSearchCriteriaError
             is SearchTransactionRequestTransactionIdDto -> invalidSearchCriteriaError
             is SearchTransactionRequestEmailDto ->
                 getResultSetFromPaginatedQuery(
-                    resultQuery =
-                        buildTransactionByUserEmailPaginatedQuery(searchCriteria.userEmail),
+                    resultQuery = buildTransactionByUserEmailPaginatedQuery(searchParams.userEmail),
                     pageNumber = pageNumber,
                     pageSize = pageSize,
                     searchType = searchCriteriaType

@@ -82,7 +82,7 @@ class PMTransactionDataProviderTest {
             )
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
-                    searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail(),
+                    searchParams = HelpdeskTestUtils.buildSearchRequestByUserMail(),
                     pageNumber = 0,
                     pageSize = 10
                 )
@@ -96,7 +96,7 @@ class PMTransactionDataProviderTest {
 
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId()
+                    searchParams = HelpdeskTestUtils.buildSearchRequestByRptId()
                 )
             )
             .expectNext(0)
@@ -108,7 +108,7 @@ class PMTransactionDataProviderTest {
 
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
-                    searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId(),
+                    searchParams = HelpdeskTestUtils.buildSearchRequestByRptId(),
                     pageNumber = 0,
                     pageSize = 10
                 )

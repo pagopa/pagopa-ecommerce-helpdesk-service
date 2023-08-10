@@ -29,7 +29,7 @@ class PmService(@Autowired val pmTransactionDataProvider: PMTransactionDataProvi
             if (totalCount > 0) {
                 pmTransactionDataProvider
                     .findResult(
-                        searchCriteria = pmSearchTransactionRequestDto,
+                        searchParams = pmSearchTransactionRequestDto,
                         pageSize = pageSize,
                         pageNumber = pageNumber
                     )
