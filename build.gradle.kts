@@ -20,10 +20,10 @@ plugins {
   application
 }
 // eCommerce commons library version
-val ecommerceCommonsVersion = "0.19.5"
+val ecommerceCommonsVersion = "0.19.7"
 
 // eCommerce commons library git ref (by default tag)
-val ecommerceCommonsGitRef = ecommerceCommonsVersion
+val ecommerceCommonsGitRef = "CHK-1527-refund-requested-previous-transaction"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 

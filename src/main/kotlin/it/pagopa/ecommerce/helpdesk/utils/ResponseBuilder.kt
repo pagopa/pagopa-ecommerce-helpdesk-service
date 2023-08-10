@@ -1,8 +1,9 @@
 package it.pagopa.ecommerce.helpdesk.utils
 
 import io.r2dbc.spi.Result
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransaction
+import it.pagopa.ecommerce.commons.domain.v1.pojos.*
 import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -65,10 +66,61 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
             .product(ProductDto.PM)
     }
 
-fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): TransactionResultDto =
-    TransactionResultDto()
+fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): TransactionResultDto {
+    val userInfo =
+        UserInfoDto()
+            .notificationEmail("") // TODO to be valued here with PDV integration
+            // TODO this field is statically valued with GUEST eCommerce side into Nodo ClosePayment
+            // requests.
+            // Must be populated dinamically when logic will be updated eCommerce side
+            // (event-dispatcher/transactions-service)
+            .authenticationType(UserDto.TypeEnum.GUEST.toString())
+    val paymentInfo =
+        PaymentInfoDto()
+            .origin(baseTransaction.clientId.toString())
+            // TODO make also this object a list?
+            .subject(baseTransaction.paymentNotices[0].transactionDescription.value)
+    val paymentDetailInfoDto =
+        baseTransaction.paymentNotices.map {
+            PaymentDetailInfoDto()
+                .rptIds(listOf(it.rptId.value()))
+                .idTransaction(baseTransaction.transactionId.value())
+                .paymentToken(it.paymentToken.value)
+                // TODO here take the first from the transfer list?
+                .paFiscalCode(it.transferList[0].paFiscalCode)
+        }
+    when (baseTransaction) {
+        is BaseTransactionWithRefundRequested ->
+            baseTransactionToTransactionInfoDto(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionExpired ->
+            baseTransactionToTransactionInfoDto(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithClosureError ->
+            baseTransactionToTransactionInfoDto(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithRequestedUserReceipt -> {
+            paymentDetailInfoDto.forEach {
+                it.creditorInstitution(
+                    baseTransaction.transactionUserReceiptData.receivingOfficeName
+                )
+            }
+        }
+        is BaseTransactionWithCompletedAuthorization -> null
+        is BaseTransactionWithRequestedAuthorization -> null
+        is BaseTransactionWithCancellationRequested -> null
+        is BaseTransactionWithPaymentToken -> null
+    }
+
+    return TransactionResultDto()
+        .product(ProductDto.ECOMMERCE)
         .userInfo(
             UserInfoDto()
                 .notificationEmail("") // TODO to be valued here with PDV integration
-                .authenticationType("GUEST")
+                // TODO this field is statically valued with GUEST eCommerce side into Nodo
+                // ClosePayment requests.
+                // Must be populated dinamically when logic will be updated eCommerce side
+                // (event-dispatcher/transactions-service)
+                .authenticationType(UserDto.TypeEnum.GUEST.toString())
         )
+        .transactionInfo(
+            TransactionInfoDto().creationDate(baseTransaction.creationDate.toOffsetDateTime())
+        )
+}
