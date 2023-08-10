@@ -322,6 +322,7 @@ components:
         product:
           $ref: '#/components/schemas/Product'
       required:
+        - userInfo
         - transactionInfo
         - paymentInfo
         - paymentDetailInfo
