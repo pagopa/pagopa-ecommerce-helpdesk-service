@@ -314,7 +314,9 @@ components:
         paymentInfo:
           $ref: '#/components/schemas/PaymentInfo'
         paymentDetailInfo:
-          $ref: '#/components/schemas/PaymentDetailInfo'
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentDetailInfo'
         pspInfo:
           $ref: '#/components/schemas/PspInfo'
         product:
@@ -409,10 +411,8 @@ components:
       properties:
         iuv:
           type: string
-        rptIds:
-          type: array
-          items:
-            type: string
+        rptId:
+          type: string
         idTransaction:
           type: string
         paymentToken:
@@ -423,7 +423,7 @@ components:
           type: string
       example:
         iuv: "302001069073736640"
-        rptId: [ "rptId1","rptId2" ]
+        rptId: "rptId"
         idTransaction: "paymentContextCode"
         paymentToken: "payment token"
         creditorInstitution: "66666666666"
