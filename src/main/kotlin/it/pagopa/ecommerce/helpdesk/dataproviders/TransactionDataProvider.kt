@@ -20,7 +20,7 @@ interface TransactionDataProvider {
      * Perform paginated query for retrieve transaction information for the given search criteria
      */
     fun findResult(
-        searchCriteria: HelpDeskSearchTransactionRequestDto,
+        searchParams: HelpDeskSearchTransactionRequestDto,
         pageSize: Int,
         pageNumber: Int
     ): Mono<List<TransactionResultDto>>
