@@ -20,16 +20,23 @@ class EcommerceTransactionDataProvider(
     @Autowired private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any>,
 ) : TransactionDataProvider {
 
-    override fun totalRecordCount(searchCriteria: HelpDeskSearchTransactionRequestDto): Mono<Long> =
-        when (searchCriteria) {
+    override fun totalRecordCount(searchParams: HelpDeskSearchTransactionRequestDto): Mono<Int> {
+        val searchCriteriaType = searchParams.type
+        val invalidSearchCriteriaError =
+            Mono.error<Int>(
+                InvalidSearchCriteriaException(searchCriteriaType, ProductDto.ECOMMERCE)
+            )
+        return when (searchParams) {
             is SearchTransactionRequestPaymentTokenDto ->
                 transactionsViewRepository.countTransactionsWithPaymentToken(
-                    searchCriteria.paymentToken
+                    searchParams.paymentToken
                 )
+
             is SearchTransactionRequestRptIdDto ->
-                transactionsViewRepository.countTransactionsWithRptId(searchCriteria.rptId)
+                transactionsViewRepository.countTransactionsWithRptId(searchParams.rptId)
+
             is SearchTransactionRequestTransactionIdDto ->
-                transactionsViewRepository.existsById(searchCriteria.transactionId).map { exist ->
+                transactionsViewRepository.existsById(searchParams.transactionId).map { exist ->
                     if (exist) {
                         1
                     } else {
@@ -37,51 +44,50 @@ class EcommerceTransactionDataProvider(
                     }
                 }
 
-            // search by email not implemented yet, here must be changed with search for mail PDV
-            // token
-            is SearchTransactionRequestEmailDto -> Mono.just(0)
-            is SearchTransactionRequestFiscalCodeDto -> Mono.just(0)
-            else ->
-                Mono.error(
-                    RuntimeException("Unhandled search criteria ${searchCriteria.javaClass}")
-                )
+            // TODO search by email not implemented yet, here must be changed with search for mail PDV token
+            is SearchTransactionRequestEmailDto -> invalidSearchCriteriaError
+            is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
+            else -> invalidSearchCriteriaError
         }
+    }
 
     override fun findResult(
-        searchCriteria: HelpDeskSearchTransactionRequestDto,
+        searchParams: HelpDeskSearchTransactionRequestDto,
         pageSize: Int,
         pageNumber: Int
     ): Mono<List<TransactionResultDto>> {
-        val searchCriteriaType =
-            TransactionDataProvider.SearchTypeMapping.getSearchType(searchCriteria.javaClass)
+        val searchCriteriaType = searchParams.type
         val invalidSearchCriteriaError =
             Mono.error<List<TransactionResultDto>>(
                 InvalidSearchCriteriaException(searchCriteriaType, ProductDto.ECOMMERCE)
             )
         val pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by("creationDate").descending())
-        return when (searchCriteria) {
+        return when (searchParams) {
             is SearchTransactionRequestPaymentTokenDto ->
                 transactionsViewRepository
                     .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                        searchCriteria.paymentToken,
+                        searchParams.paymentToken,
                         pageRequest
                     )
                     .flatMap { mapToTransactionResultDto(it) }
                     .collectList()
+
             is SearchTransactionRequestRptIdDto ->
                 transactionsViewRepository
                     .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                        searchCriteria.rptId,
+                        searchParams.rptId,
                         pageRequest
                     )
                     .flatMap { mapToTransactionResultDto(it) }
                     .collectList()
+
             is SearchTransactionRequestTransactionIdDto ->
                 transactionsViewRepository
-                    .findById(searchCriteria.transactionId)
+                    .findById(searchParams.transactionId)
                     .toFlux()
                     .flatMap { mapToTransactionResultDto(it) }
                     .collectList()
+
             is SearchTransactionRequestEmailDto -> invalidSearchCriteriaError
             is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
             else -> invalidSearchCriteriaError
