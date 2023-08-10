@@ -46,18 +46,21 @@ class EcommerceService {
                                     .paymentMethodName("paymentMethodName")
                                     .brand("brand")
                             )
-                            .paymentDetailInfo(
-                                listOf(
-                                    PaymentDetailInfoDto()
-                                        .iuv("IUV")
-                                        .rptId("rptId1")
-                                        .idTransaction("paymentContextCode")
-                                        .paymentToken("paymentToken")
-                                        .creditorInstitution("creditor institution")
-                                        .paFiscalCode("77777777777")
-                                )
+                            .paymentInfo(
+                                PaymentInfoDto()
+                                    .origin("origin")
+                                    .details(
+                                        listOf(
+                                            PaymentDetailInfoDto()
+                                                .iuv("IUV")
+                                                .rptId("rptId1")
+                                                .idTransaction("paymentContextCode")
+                                                .paymentToken("paymentToken")
+                                                .creditorInstitution("creditor institution")
+                                                .paFiscalCode("77777777777")
+                                        )
+                                    )
                             )
-                            .paymentInfo(PaymentInfoDto().origin("origin").subject("subject"))
                             .pspInfo(
                                 PspInfoDto()
                                     .pspId("pspId")

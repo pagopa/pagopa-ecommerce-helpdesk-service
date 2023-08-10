@@ -313,10 +313,6 @@ components:
           $ref: '#/components/schemas/TransactionInfo'
         paymentInfo:
           $ref: '#/components/schemas/PaymentInfo'
-        paymentDetailInfo:
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentDetailInfo'
         pspInfo:
           $ref: '#/components/schemas/PspInfo'
         product:
@@ -325,7 +321,6 @@ components:
         - userInfo
         - transactionInfo
         - paymentInfo
-        - paymentDetailInfo
         - pspInfo
         - product
     UserInfo:
@@ -399,13 +394,12 @@ components:
       type: object
       description: Payment info
       properties:
-        subject:
-          type: string
         origin:
           type: string
-      example:
-        subject: "Causale pagamento"
-        origin: "CHECKOUT"
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentDetailInfo'
     PaymentDetailInfo:
       type: object
       description: Payment details
