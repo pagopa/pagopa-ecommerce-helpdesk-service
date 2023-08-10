@@ -25,49 +25,44 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun totalRecordCount(searchCriteria: HelpDeskSearchTransactionRequestDto): Mono<Int> =
-        when (searchCriteria) {
-            is SearchTransactionRequestPaymentTokenDto -> Mono.just(0)
-            is SearchTransactionRequestRptIdDto -> Mono.just(0)
-            is SearchTransactionRequestTransactionIdDto -> Mono.just(0)
+    override fun totalRecordCount(searchParams: HelpDeskSearchTransactionRequestDto): Mono<Int> {
+        val searchCriteriaType = searchParams.type
+        val invalidSearchCriteriaError =
+            Mono.error<Int>(InvalidSearchCriteriaException(searchCriteriaType, ProductDto.PM))
+        return when (searchParams) {
+            is SearchTransactionRequestPaymentTokenDto -> invalidSearchCriteriaError
+            is SearchTransactionRequestRptIdDto -> invalidSearchCriteriaError
+            is SearchTransactionRequestTransactionIdDto -> invalidSearchCriteriaError
             is SearchTransactionRequestEmailDto ->
-                getTotalResultCount(buildTransactionByUserEmailCountQuery(searchCriteria.userEmail))
+                getTotalResultCount(userEmailCountQuery, searchParams.userEmail)
             is SearchTransactionRequestFiscalCodeDto ->
                 getTotalResultCount(
                     buildTransactionByUserFiscalCodeCountQuery(searchCriteria.userFiscalCode)
                 )
-            else ->
-                Mono.error(
-                    InvalidSearchCriteriaException(
-                        TransactionDataProvider.SearchTypeMapping.getSearchType(
-                            searchCriteria.javaClass
-                        ),
-                        ProductDto.PM
-                    )
-                )
-        }
+            else -> Mono.error(InvalidSearchCriteriaException(searchParams.type, ProductDto.PM))
+
+    }
 
     override fun findResult(
-        searchCriteria: HelpDeskSearchTransactionRequestDto,
+        searchParams: HelpDeskSearchTransactionRequestDto,
         pageSize: Int,
         pageNumber: Int
     ): Mono<List<TransactionResultDto>> {
-        val searchCriteriaType =
-            TransactionDataProvider.SearchTypeMapping.getSearchType(searchCriteria.javaClass)
+        val searchCriteriaType = searchParams.type
         val invalidSearchCriteriaError =
             Mono.error<List<TransactionResultDto>>(
                 InvalidSearchCriteriaException(searchCriteriaType, ProductDto.PM)
             )
-        return when (searchCriteria) {
+        return when (searchParams) {
             is SearchTransactionRequestPaymentTokenDto -> invalidSearchCriteriaError
             is SearchTransactionRequestRptIdDto -> invalidSearchCriteriaError
             is SearchTransactionRequestTransactionIdDto -> invalidSearchCriteriaError
             is SearchTransactionRequestEmailDto ->
                 getResultSetFromPaginatedQuery(
-                    resultQuery =
-                        buildTransactionByUserEmailPaginatedQuery(searchCriteria.userEmail),
+                    resultQuery = userEmailPaginatedQuery,
                     pageNumber = pageNumber,
                     pageSize = pageSize,
+                    searchParam = searchParams.userEmail,
                     searchType = searchCriteriaType
                 )
             is SearchTransactionRequestFiscalCodeDto ->
@@ -84,11 +79,16 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
         }
     }
 
-    private fun getTotalResultCount(totalRecordCountQuery: String): Mono<Int> =
+    private fun getTotalResultCount(totalRecordCountQuery: String, searchParam: String): Mono<Int> =
         Flux.usingWhen(
                 connectionFactory.create(),
                 { connection ->
-                    Flux.from(connection.createStatement(totalRecordCountQuery).execute())
+                    Flux.from(
+                            connection
+                                .createStatement(totalRecordCountQuery)
+                                .bind(0, searchParam)
+                                .execute()
+                        )
                         .flatMap { result ->
                             result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
@@ -102,18 +102,24 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
         resultQuery: String,
         pageNumber: Int,
         pageSize: Int,
+        searchParam: String,
         searchType: String
     ): Mono<List<TransactionResultDto>> =
         Flux.usingWhen(
                 connectionFactory.create(),
                 { connection ->
                     val offset = pageNumber * pageSize
-                    val query = resultQuery.format(offset, pageSize)
                     logger.info("Retrieving transactions for offset: $offset, limit: $pageSize.")
 
-                    Flux.from(connection.createStatement(query).execute()).flatMap {
-                        resultToTransactionInfoDto(it)
-                    }
+                    Flux.from(
+                            connection
+                                .createStatement(resultQuery)
+                                .bind(0, searchParam)
+                                .bind(1, offset)
+                                .bind(2, pageSize)
+                                .execute()
+                        )
+                        .flatMap { resultToTransactionInfoDto(it) }
                 },
                 { it.close() }
             )

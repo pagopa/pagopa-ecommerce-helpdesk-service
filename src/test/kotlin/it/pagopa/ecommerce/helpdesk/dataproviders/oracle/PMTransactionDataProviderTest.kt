@@ -23,7 +23,7 @@ class PMTransactionDataProviderTest {
     private val pmTransactionDataProvider = PMTransactionDataProvider(connectionFactory)
 
     @Test
-    fun `Should count total record successfully for email transaction search`() {
+    fun `Should count total record successfully`() {
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
@@ -94,7 +94,7 @@ class PMTransactionDataProviderTest {
             )
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
-                    searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it"),
+                    searchParams = HelpdeskTestUtils.buildSearchRequestByUserMail(),
                     pageNumber = 0,
                     pageSize = 10
                 )
@@ -186,15 +186,15 @@ class PMTransactionDataProviderTest {
     }
 
     @Test
-    fun `Should return 0 for unhandled search criteria for count operation`() {
+    fun `Should return error for unhandled search criteria for count operation`() {
 
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId()
+                    searchParams = HelpdeskTestUtils.buildSearchRequestByRptId()
                 )
             )
-            .expectNext(0)
-            .verifyComplete()
+            .expectError(InvalidSearchCriteriaException::class.java)
+            .verify()
     }
 
     @Test
@@ -202,7 +202,7 @@ class PMTransactionDataProviderTest {
 
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
-                    searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId(),
+                    searchParams = HelpdeskTestUtils.buildSearchRequestByRptId(),
                     pageNumber = 0,
                     pageSize = 10
                 )

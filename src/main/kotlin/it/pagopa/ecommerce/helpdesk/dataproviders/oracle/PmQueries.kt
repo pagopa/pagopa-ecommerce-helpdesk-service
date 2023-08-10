@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.oracle
 
-fun buildTransactionByUserEmailPaginatedQuery(userEmail: String) =
+val userEmailPaginatedQuery =
     """
         SELECT 	pu.FISCAL_CODE , pu.NOTIFICATION_EMAIL , pu.SURNAME , pu.NAME , pu.USERNAME , 
 		CASE pu.STATUS 
@@ -55,14 +55,14 @@ fun buildTransactionByUserEmailPaginatedQuery(userEmail: String) =
         left JOIN AGID_USER.PP_PAYMENT pp ON pt.FK_PAYMENT = pp.ID 
         left JOIN AGID_USER.PP_PAYMENT_DETAIL ppd ON pp.ID =ppd.PAYMENT_ID 
         left JOIN AGID_USER.PP_PSP pp2 ON pt.FK_PSP = pp2.ID 
-        WHERE pu.NOTIFICATION_EMAIL  ='$userEmail'
+        WHERE pu.NOTIFICATION_EMAIL = ?
         AND PT.AMOUNT > 1
         ORDER BY PT.CREATION_DATE DESC
-        OFFSET %s ROWS FETCH NEXT %s ROWS ONLY
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     """
         .trimIndent()
 
-fun buildTransactionByUserEmailCountQuery(userEmail: String) =
+val userEmailCountQuery =
     """
         SELECT COUNT(*)
         FROM AGID_USER.PP_USER pu 
@@ -70,7 +70,7 @@ fun buildTransactionByUserEmailCountQuery(userEmail: String) =
         left JOIN AGID_USER.PP_PAYMENT pp ON pt.FK_PAYMENT = pp.ID 
         left JOIN AGID_USER.PP_PAYMENT_DETAIL ppd ON pp.ID =ppd.PAYMENT_ID 
         left JOIN AGID_USER.PP_PSP pp2 ON pt.FK_PSP = pp2.ID 
-        WHERE pu.NOTIFICATION_EMAIL  ='$userEmail'
+        WHERE pu.NOTIFICATION_EMAIL = ?
         AND PT.AMOUNT > 1
     """
         .trimIndent()
