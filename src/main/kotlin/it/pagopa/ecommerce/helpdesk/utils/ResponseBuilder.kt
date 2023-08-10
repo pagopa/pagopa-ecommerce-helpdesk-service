@@ -10,10 +10,11 @@ import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.utils.v1.TransactionUtils.getTransactionFee
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
-import org.reactivestreams.Publisher
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.util.*
+import org.reactivestreams.Publisher
 
 fun buildTransactionSearchResponse(
     currentPage: Int,
@@ -45,7 +46,7 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
                     .fee(row[11, BigDecimal::class.java]?.toInt())
                     .grandTotal(row[12, BigDecimal::class.java]?.toInt())
                     .rrn(row[13, String::class.java])
-                    .authotizationCode(row[14, String::class.java])
+                    .authorizationCode(row[14, String::class.java])
                     .paymentMethodName(row[15, String::class.java])
                     .brand(null)
             )
@@ -75,11 +76,8 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
     }
 
 fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): TransactionResultDto {
-    val amount =
-        baseTransaction.paymentNotices
-            .map { it.transactionAmount.value }
-            .reduce { accumulator, amount -> amount.plus(accumulator) }
-    val fee = getTransactionFee(baseTransaction).orElse(0)
+    val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
+    val fee = getTransactionFees(baseTransaction).orElse(0)
     val totalAmount = amount.plus(fee)
     val transactionAuthorizationRequestData = getTransactionAuthRequestedData(baseTransaction)
     val transactionAuthorizationCompletedData = getTransactionAuthCompletedData(baseTransaction)
@@ -106,7 +104,7 @@ fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): Trans
             .fee(fee)
             .grandTotal(totalAmount)
             .rrn(transactionAuthorizationCompletedData?.rrn)
-            .authotizationCode(transactionAuthorizationCompletedData?.authorizationCode)
+            .authorizationCode(transactionAuthorizationCompletedData?.authorizationCode)
             .paymentMethodName(transactionAuthorizationRequestData?.paymentMethodName)
             .brand(transactionAuthorizationRequestData?.brand?.toString())
     // build payment info
@@ -140,14 +138,24 @@ fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): Trans
         .pspInfo(pspInfo)
 }
 
+private fun getTransactionFees(baseTransaction: BaseTransaction): Optional<Int> =
+    when (baseTransaction) {
+        is BaseTransactionExpired -> getTransactionFee(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithClosureError ->
+            getTransactionFee(baseTransaction.transactionAtPreviousState)
+        else -> getTransactionFee(baseTransaction)
+    }
+
 private fun getTransactionAuthRequestedData(
     baseTransaction: BaseTransaction
 ): TransactionAuthorizationRequestData? =
     when (baseTransaction) {
-        is BaseTransactionExpired -> getTransactionAuthRequestedData(baseTransaction)
+        is BaseTransactionExpired ->
+            getTransactionAuthRequestedData(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithClosureError ->
+            getTransactionAuthRequestedData(baseTransaction.transactionAtPreviousState)
         is BaseTransactionWithRequestedAuthorization ->
             baseTransaction.transactionAuthorizationRequestData
-
         else -> null
     }
 
@@ -157,13 +165,12 @@ private fun getTransactionAuthCompletedData(
     when (baseTransaction) {
         is BaseTransactionExpired ->
             getTransactionAuthCompletedData(baseTransaction.transactionAtPreviousState)
-
+        is BaseTransactionWithClosureError ->
+            getTransactionAuthCompletedData(baseTransaction.transactionAtPreviousState)
         is BaseTransactionWithRefundRequested ->
             getTransactionAuthCompletedData(baseTransaction.transactionAtPreviousState)
-
         is BaseTransactionWithCompletedAuthorization ->
             baseTransaction.transactionAuthorizationCompletedData
-
         else -> null
     }
 
@@ -173,10 +180,8 @@ private fun getTransactionUserReceiptData(
     when (baseTransaction) {
         is BaseTransactionExpired ->
             getTransactionUserReceiptData(baseTransaction.transactionAtPreviousState)
-
         is BaseTransactionWithRefundRequested ->
             getTransactionUserReceiptData(baseTransaction.transactionAtPreviousState)
-
         is BaseTransactionWithRequestedUserReceipt -> baseTransaction.transactionUserReceiptData
         else -> null
     }
@@ -192,15 +197,11 @@ fun getAuthorizationOutcome(baseTransaction: BaseTransaction): AuthorizationResu
     when (baseTransaction) {
         is BaseTransactionExpired ->
             getAuthorizationOutcome(baseTransaction.transactionAtPreviousState)
-
         is BaseTransactionWithRefundRequested ->
             getAuthorizationOutcome(baseTransaction.transactionAtPreviousState)
-
         is TransactionWithClosureError ->
             getAuthorizationOutcome(baseTransaction.transactionAtPreviousState)
-
         is BaseTransactionWithCompletedAuthorization ->
             baseTransaction.transactionAuthorizationCompletedData.authorizationResultDto
-
         else -> null
     }

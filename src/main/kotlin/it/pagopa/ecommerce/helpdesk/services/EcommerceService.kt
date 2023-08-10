@@ -27,17 +27,19 @@ class EcommerceService(
             .totalRecordCount(ecommerceSearchTransactionRequestDto)
             .flatMap { totalCount ->
                 if (totalCount > 0) {
-                    ecommerceTransactionDataProvider.findResult(
-                        searchParams = ecommerceSearchTransactionRequestDto,
-                        pageSize = pageSize,
-                        pageNumber = pageNumber
-                    ).map { results ->
-                        buildTransactionSearchResponse(
-                            currentPage = pageNumber,
-                            totalCount = totalCount,
-                            results = results
+                    ecommerceTransactionDataProvider
+                        .findResult(
+                            searchParams = ecommerceSearchTransactionRequestDto,
+                            pageSize = pageSize,
+                            pageNumber = pageNumber
                         )
-                    }
+                        .map { results ->
+                            buildTransactionSearchResponse(
+                                currentPage = pageNumber,
+                                totalCount = totalCount,
+                                results = results
+                            )
+                        }
                 } else {
                     Mono.error(NoResultFoundException(ecommerceSearchTransactionRequestDto.type))
                 }
