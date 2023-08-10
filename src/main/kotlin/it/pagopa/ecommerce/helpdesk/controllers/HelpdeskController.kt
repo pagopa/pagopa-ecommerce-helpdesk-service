@@ -28,7 +28,10 @@ class HelpdeskController(
         helpDeskSearchTransactionRequestDto.flatMap {
             when (it) {
                 // TODO change logic here, search first into eCommerce then into PM DB when
-                // searching for criteria present in both DBs
+                // searching for criteria present in both DBs.
+                // as for now all criteria are separated so there is no need to search into both DB
+                // in fact mail search for ecommerce has not been enabled yet. once enabled
+                // pagination must be performed against result set from both dm
                 is EcommerceSearchTransactionRequestDto ->
                     ecommerceService
                         .searchTransaction(
@@ -37,6 +40,7 @@ class HelpdeskController(
                             ecommerceSearchTransactionRequestDto = it
                         )
                         .map { response -> ResponseEntity.ok(response) }
+
                 is PmSearchTransactionRequestDto ->
                     pmService
                         .searchTransaction(
@@ -45,6 +49,7 @@ class HelpdeskController(
                             pmSearchTransactionRequestDto = it
                         )
                         .map { response -> ResponseEntity.ok(response) }
+
                 else -> Mono.error(RuntimeException("Unknown search criteria"))
             }
         }
