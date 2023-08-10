@@ -25,17 +25,21 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun totalRecordCount(searchParams: HelpDeskSearchTransactionRequestDto): Mono<Int> =
-        when (searchParams) {
-            is SearchTransactionRequestPaymentTokenDto -> Mono.just(0)
-            is SearchTransactionRequestRptIdDto -> Mono.just(0)
-            is SearchTransactionRequestTransactionIdDto -> Mono.just(0)
+    override fun totalRecordCount(searchParams: HelpDeskSearchTransactionRequestDto): Mono<Int> {
+        val searchCriteriaType = searchParams.type
+        val invalidSearchCriteriaError =
+            Mono.error<Int>(InvalidSearchCriteriaException(searchCriteriaType, ProductDto.PM))
+        return when (searchParams) {
+            is SearchTransactionRequestPaymentTokenDto -> invalidSearchCriteriaError
+            is SearchTransactionRequestRptIdDto -> invalidSearchCriteriaError
+            is SearchTransactionRequestTransactionIdDto -> invalidSearchCriteriaError
             is SearchTransactionRequestEmailDto ->
                 getTotalResultCount(userEmailCountQuery, searchParams.userEmail)
             is SearchTransactionRequestFiscalCodeDto ->
                 Mono.error(RuntimeException("Not implemented yet"))
             else -> Mono.error(InvalidSearchCriteriaException(searchParams.type, ProductDto.PM))
         }
+    }
 
     override fun findResult(
         searchParams: HelpDeskSearchTransactionRequestDto,

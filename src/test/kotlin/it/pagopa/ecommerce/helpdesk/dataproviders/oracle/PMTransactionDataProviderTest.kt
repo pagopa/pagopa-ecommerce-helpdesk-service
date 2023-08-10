@@ -92,15 +92,15 @@ class PMTransactionDataProviderTest {
     }
 
     @Test
-    fun `Should return 0 for unhandled search criteria for count operation`() {
+    fun `Should return error for unhandled search criteria for count operation`() {
 
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
                     searchParams = HelpdeskTestUtils.buildSearchRequestByRptId()
                 )
             )
-            .expectNext(0)
-            .verifyComplete()
+            .expectError(InvalidSearchCriteriaException::class.java)
+            .verify()
     }
 
     @Test
