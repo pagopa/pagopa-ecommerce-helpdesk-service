@@ -37,7 +37,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                 getTotalResultCount(userEmailCountQuery, searchParams.userEmail)
             is SearchTransactionRequestFiscalCodeDto ->
                 Mono.error(RuntimeException("Not implemented yet"))
-            else -> Mono.error(InvalidSearchCriteriaException(searchParams.type, ProductDto.PM))
+            else -> invalidSearchCriteriaError
         }
     }
 
