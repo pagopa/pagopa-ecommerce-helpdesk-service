@@ -58,15 +58,20 @@ object HelpdeskTestUtils {
                     .paymentMethodName("payment method name")
                     .brand(null)
             )
-            .paymentInfo(PaymentInfoDto().subject("subject").origin("origin"))
-            .paymentDetailInfo(
-                PaymentDetailInfoDto()
-                    .iuv("IUV")
-                    .rptIds(null)
-                    .idTransaction(TransactionTestUtils.TRANSACTION_ID)
-                    .paymentToken(null)
-                    .creditorInstitution("creditor institution")
-                    .paFiscalCode(TransactionTestUtils.PA_FISCAL_CODE)
+            .paymentInfo(
+                PaymentInfoDto()
+                    .origin("origin")
+                    .details(
+                        listOf(
+                            PaymentDetailInfoDto()
+                                .iuv("IUV")
+                                .rptId(null)
+                                .idTransaction(TransactionTestUtils.TRANSACTION_ID)
+                                .paymentToken(null)
+                                .creditorInstitution("creditor institution")
+                                .paFiscalCode(TransactionTestUtils.PA_FISCAL_CODE)
+                        )
+                    )
             )
             .pspInfo(
                 PspInfoDto()

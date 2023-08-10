@@ -36,7 +36,7 @@ class PmService(@Autowired val pmTransactionDataProvider: PMTransactionDataProvi
                     .map { results ->
                         buildTransactionSearchResponse(
                             currentPage = pageNumber,
-                            totalCount = totalCount.toInt(),
+                            totalCount = totalCount,
                             results = results
                         )
                     }
