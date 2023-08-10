@@ -26,10 +26,10 @@ class PmServiceTest {
         val transactions =
             listOf(HelpdeskTestUtils.buildTransactionResultDtoPM(OffsetDateTime.now()))
         given(pmTransactionDataProvider.totalRecordCount(searchCriteria))
-            .willReturn(Mono.just(totalCount.toLong()))
+            .willReturn(Mono.just(totalCount))
         given(
                 pmTransactionDataProvider.findResult(
-                    searchCriteria = searchCriteria,
+                    searchParams = searchCriteria,
                     pageSize = pageSize,
                     pageNumber = pageNumber
                 )
@@ -57,13 +57,12 @@ class PmServiceTest {
 
     @Test
     fun `should return error for no transaction found performing only count query`() {
-        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it")
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail("unknown@test.it")
         val pageSize = 10
         val pageNumber = 0
         val totalCount = 0
         given(pmTransactionDataProvider.totalRecordCount(searchCriteria))
-            .willReturn(Mono.just(totalCount.toLong()))
-
+            .willReturn(Mono.just(totalCount))
         StepVerifier.create(
                 pmService.searchTransaction(
                     pageNumber = pageNumber,
