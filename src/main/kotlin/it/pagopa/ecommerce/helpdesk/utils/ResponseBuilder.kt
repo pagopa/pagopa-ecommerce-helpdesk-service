@@ -19,11 +19,19 @@ import org.reactivestreams.Publisher
 fun buildTransactionSearchResponse(
     currentPage: Int,
     totalCount: Int,
+    pageSize: Int,
     results: List<TransactionResultDto>
-): SearchTransactionResponseDto =
-    SearchTransactionResponseDto()
-        .page(PageInfoDto().current(currentPage).total(totalCount).results(results.size))
+): SearchTransactionResponseDto {
+    val totalPages =
+        if (totalCount % pageSize == 0) {
+            totalCount / pageSize
+        } else {
+            totalCount / pageSize + 1
+        }
+    return SearchTransactionResponseDto()
+        .page(PageInfoDto().current(currentPage).total(totalPages).results(results.size))
         .transactions(results)
+}
 
 fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> =
     result.map { row ->

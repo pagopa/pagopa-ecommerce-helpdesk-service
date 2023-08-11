@@ -38,9 +38,7 @@ class EcommerceServiceTest {
         val expectedResponse =
             SearchTransactionResponseDto()
                 .transactions(transactions)
-                .page(
-                    PageInfoDto().results(transactions.size).total(totalCount).current(pageNumber)
-                )
+                .page(PageInfoDto().results(transactions.size).total(10).current(pageNumber))
         StepVerifier.create(
                 ecommerceService.searchTransaction(
                     pageNumber = pageNumber,

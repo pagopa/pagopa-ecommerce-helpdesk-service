@@ -37,6 +37,7 @@ class EcommerceService(
                             buildTransactionSearchResponse(
                                 currentPage = pageNumber,
                                 totalCount = totalCount,
+                                pageSize = pageSize,
                                 results = results
                             )
                         }
