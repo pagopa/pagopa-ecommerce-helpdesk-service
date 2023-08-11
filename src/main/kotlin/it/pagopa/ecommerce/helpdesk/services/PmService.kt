@@ -30,8 +30,8 @@ class PmService(@Autowired val pmTransactionDataProvider: PMTransactionDataProvi
                 pmTransactionDataProvider
                     .findResult(
                         searchParams = pmSearchTransactionRequestDto,
-                        pageSize = pageSize,
-                        pageNumber = pageNumber
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
                     )
                     .map { results ->
                         buildTransactionSearchResponse(

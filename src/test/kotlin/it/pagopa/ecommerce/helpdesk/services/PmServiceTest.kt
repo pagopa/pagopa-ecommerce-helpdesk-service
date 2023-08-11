@@ -30,8 +30,8 @@ class PmServiceTest {
         given(
                 pmTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize * pageNumber,
+                    limit = pageSize
                 )
             )
             .willReturn(Mono.just(transactions))

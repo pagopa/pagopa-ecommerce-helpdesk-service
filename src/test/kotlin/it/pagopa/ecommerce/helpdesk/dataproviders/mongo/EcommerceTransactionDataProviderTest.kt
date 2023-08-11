@@ -20,8 +20,6 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
@@ -158,7 +156,6 @@ class EcommerceTransactionDataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId()
         val pageSize = 100
         val pageNumber = 0
-        val pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by("creationDate").descending())
         val transactionView =
             TransactionTestUtils.transactionDocument(
                 TransactionStatusDto.NOTIFIED_OK,
@@ -195,8 +192,9 @@ class EcommerceTransactionDataProviderTest {
         given(
                 transactionsViewRepository
                     .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                        searchCriteria.rptId,
-                        pageRequest
+                        rptId = searchCriteria.rptId,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
                     )
             )
             .willReturn(Flux.just(transactionView))
@@ -272,8 +270,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize * pageNumber,
+                    limit = pageSize
                 )
             )
             .expectNext(expected)
@@ -285,7 +283,6 @@ class EcommerceTransactionDataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
         val pageSize = 100
         val pageNumber = 0
-        val pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by("creationDate").descending())
         val transactionView =
             TransactionTestUtils.transactionDocument(
                 TransactionStatusDto.NOTIFIED_OK,
@@ -322,8 +319,9 @@ class EcommerceTransactionDataProviderTest {
         given(
                 transactionsViewRepository
                     .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                        searchCriteria.paymentToken,
-                        pageRequest
+                        paymentToken = searchCriteria.paymentToken,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
                     )
             )
             .willReturn(Flux.just(transactionView))
@@ -399,8 +397,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize * pageNumber,
+                    limit = pageSize
                 )
             )
             .expectNext(expected)
@@ -519,8 +517,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -541,8 +539,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -558,8 +556,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -575,8 +573,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -649,8 +647,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -751,8 +749,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -862,8 +860,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -973,8 +971,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -1087,8 +1085,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -1201,8 +1199,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -1315,8 +1313,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -1398,8 +1396,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -1492,8 +1490,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -1582,8 +1580,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -1698,8 +1696,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -1822,8 +1820,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -1946,8 +1944,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -2073,8 +2071,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -2200,8 +2198,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -2327,8 +2325,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -2467,8 +2465,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -2625,8 +2623,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -2800,8 +2798,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -2990,8 +2988,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -3130,8 +3128,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {
@@ -3215,8 +3213,8 @@ class EcommerceTransactionDataProviderTest {
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
+                    skip = pageSize,
+                    limit = pageNumber
                 )
             )
             .consumeNextWith {

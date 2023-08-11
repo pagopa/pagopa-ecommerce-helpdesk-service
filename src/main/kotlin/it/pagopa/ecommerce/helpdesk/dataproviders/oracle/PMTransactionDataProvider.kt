@@ -46,8 +46,8 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
 
     override fun findResult(
         searchParams: HelpDeskSearchTransactionRequestDto,
-        pageSize: Int,
-        pageNumber: Int
+        skip: Int,
+        limit: Int
     ): Mono<List<TransactionResultDto>> {
         val searchCriteriaType = searchParams.type
         val invalidSearchCriteriaError =
@@ -61,16 +61,16 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
             is SearchTransactionRequestEmailDto ->
                 getResultSetFromPaginatedQuery(
                     resultQuery = userEmailPaginatedQuery,
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
+                    skip = skip,
+                    limit = limit,
                     searchParam = searchParams.userEmail,
                     searchType = searchCriteriaType
                 )
             is SearchTransactionRequestFiscalCodeDto ->
                 getResultSetFromPaginatedQuery(
                     resultQuery = userFiscalCodePaginatedQuery,
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
+                    skip = skip,
+                    limit = limit,
                     searchParam = searchParams.userFiscalCode,
                     searchType = searchCriteriaType
                 )
@@ -99,23 +99,24 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
 
     private fun getResultSetFromPaginatedQuery(
         resultQuery: String,
-        pageNumber: Int,
-        pageSize: Int,
+        skip: Int,
+        limit: Int,
         searchParam: String,
         searchType: String
     ): Mono<List<TransactionResultDto>> =
         Flux.usingWhen(
                 connectionFactory.create(),
                 { connection ->
-                    val offset = pageNumber * pageSize
-                    logger.info("Retrieving transactions for offset: $offset, limit: $pageSize.")
+                    logger.info(
+                        "Retrieving transactions from PM database. Skipping: $skip, limit: $limit."
+                    )
 
                     Flux.from(
                             connection
                                 .createStatement(resultQuery)
                                 .bind(0, searchParam)
-                                .bind(1, offset)
-                                .bind(2, pageSize)
+                                .bind(1, skip)
+                                .bind(2, limit)
                                 .execute()
                         )
                         .flatMap { resultToTransactionInfoDto(it) }

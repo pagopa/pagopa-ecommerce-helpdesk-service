@@ -27,11 +27,18 @@ class EcommerceService(
             .totalRecordCount(ecommerceSearchTransactionRequestDto)
             .flatMap { totalCount ->
                 if (totalCount > 0) {
+                    val skip = pageSize * pageNumber
+                    logger.info(
+                        "Total record found: {}, skip: {}, limit: {}",
+                        totalCount,
+                        skip,
+                        pageSize
+                    )
                     ecommerceTransactionDataProvider
                         .findResult(
                             searchParams = ecommerceSearchTransactionRequestDto,
-                            pageSize = pageSize,
-                            pageNumber = pageNumber
+                            skip = skip,
+                            limit = pageSize
                         )
                         .map { results ->
                             buildTransactionSearchResponse(

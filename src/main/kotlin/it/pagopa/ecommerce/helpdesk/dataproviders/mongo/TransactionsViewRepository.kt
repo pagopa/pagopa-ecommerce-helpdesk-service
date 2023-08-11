@@ -1,7 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo
 
 import it.pagopa.ecommerce.commons.documents.v1.Transaction
-import org.springframework.data.domain.Pageable
+import org.springframework.data.mongodb.repository.Aggregation
 import org.springframework.data.mongodb.repository.Query
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Repository
@@ -15,18 +15,30 @@ interface TransactionsViewRepository : ReactiveCrudRepository<Transaction, Strin
     @Query("{'paymentNotices.paymentToken': '?0'}", count = true)
     fun countTransactionsWithPaymentToken(paymentToken: String): Mono<Long>
 
-    @Query("{'paymentNotices.paymentToken': '?0'}")
+    @Aggregation(
+        "{\$match: {'paymentNotices.paymentToken': '?0'}}",
+        "{\$sort: {'creationDate': -1}}",
+        "{\$skip: ?1}",
+        "{\$limit: ?2}",
+    )
     fun findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
         paymentToken: String,
-        pagination: Pageable
+        skip: Int,
+        limit: Int,
     ): Flux<Transaction>
 
     @Query("{'paymentNotices.rptId': '?0'}", count = true)
     fun countTransactionsWithRptId(rpiId: String): Mono<Long>
 
-    @Query("{'paymentNotices.rptId': '?0'}")
+    @Aggregation(
+        "{\$match: {'paymentNotices.rptId': '?0'}}",
+        "{\$sort: {'creationDate': -1}}",
+        "{\$skip: ?1}",
+        "{\$limit: ?2}",
+    )
     fun findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
         rptId: String,
-        pagination: Pageable
+        skip: Int,
+        limit: Int
     ): Flux<Transaction>
 }
