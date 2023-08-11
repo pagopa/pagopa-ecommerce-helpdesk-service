@@ -40,7 +40,6 @@ class HelpdeskController(
                             ecommerceSearchTransactionRequestDto = it
                         )
                         .map { response -> ResponseEntity.ok(response) }
-
                 is PmSearchTransactionRequestDto ->
                     pmService
                         .searchTransaction(
@@ -49,7 +48,6 @@ class HelpdeskController(
                             pmSearchTransactionRequestDto = it
                         )
                         .map { response -> ResponseEntity.ok(response) }
-
                 else -> Mono.error(RuntimeException("Unknown search criteria"))
             }
         }
