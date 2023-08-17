@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.helpdesk.services
 import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
+import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
@@ -37,6 +38,9 @@ class HelpdeskService(
             }
         return totalEcommerceCount.zipWith(totalPmCount, ::Pair).flatMap {
             (totalEcommerceCount, totalPmCount) ->
+            if (totalPmCount + totalEcommerceCount == 0) {
+                return@flatMap Mono.error(NoResultFoundException(searchTransactionRequestDto.type))
+            }
             val skip = pageNumber * pageSize
             logger.info(
                 "Requested page number: {}, page size: {}, records to be skipped: {}. Total records found into ecommerce DB: {}, PM DB: {}",
@@ -51,22 +55,30 @@ class HelpdeskService(
             val records =
                 if (pageNumber < ecommerceTotalPages - 1) {
                     logger.info("Recovering records from eCommerce DB. Skip: {}", skip)
-                    ecommerceTransactionDataProvider.findResult(
-                        searchParams = searchTransactionRequestDto,
-                        skip = skip,
-                        limit = pageSize
-                    )
+                    ecommerceTransactionDataProvider
+                        .findResult(
+                            searchParams = searchTransactionRequestDto,
+                            skip = skip,
+                            limit = pageSize
+                        )
+                        .onErrorResume(InvalidSearchCriteriaException::class.java) {
+                            Mono.just(emptyList())
+                        }
                 } else if (pageNumber == ecommerceTotalPages - 1) {
                     if (ecommerceRemainder == 0) {
                         logger.info(
                             "Recovering last page of records from eCommerce DB, Skip: {}",
                             skip
                         )
-                        ecommerceTransactionDataProvider.findResult(
-                            searchParams = searchTransactionRequestDto,
-                            skip = skip,
-                            limit = pageSize
-                        )
+                        ecommerceTransactionDataProvider
+                            .findResult(
+                                searchParams = searchTransactionRequestDto,
+                                skip = skip,
+                                limit = pageSize
+                            )
+                            .onErrorResume(InvalidSearchCriteriaException::class.java) {
+                                Mono.just(emptyList())
+                            }
                     } else {
                         logger.info(
                             "Recovering last page from eCommerce DB and first page from PM (partial page). Records to recover from eCommerce: {}, from PM: {}",
@@ -79,6 +91,9 @@ class HelpdeskService(
                                 skip = skip,
                                 limit = ecommerceRemainder
                             )
+                            .onErrorResume(InvalidSearchCriteriaException::class.java) {
+                                Mono.just(emptyList())
+                            }
                             .flatMap { ecommerceRecords ->
                                 pmTransactionDataProvider
                                     .findResult(
@@ -88,20 +103,28 @@ class HelpdeskService(
                                     )
                                     .map { pmRecords -> ecommerceRecords + pmRecords }
                             }
+                            .onErrorResume(InvalidSearchCriteriaException::class.java) {
+                                Mono.just(emptyList())
+                            }
                     }
                 } else {
                     val skipFromPmDB = skip - totalEcommerceCount
                     logger.info("Recovering records from PM DB, Skip: {}", skipFromPmDB)
-                    pmTransactionDataProvider.findResult(
-                        searchParams = searchTransactionRequestDto,
-                        skip = skipFromPmDB,
-                        limit = pageSize
-                    )
+                    pmTransactionDataProvider
+                        .findResult(
+                            searchParams = searchTransactionRequestDto,
+                            skip = skipFromPmDB,
+                            limit = pageSize
+                        )
+                        .onErrorResume(InvalidSearchCriteriaException::class.java) {
+                            Mono.just(emptyList())
+                        }
                 }
             return@flatMap records.map { results ->
                 buildTransactionSearchResponse(
                     currentPage = pageNumber,
                     totalCount = totalEcommerceCount + totalPmCount,
+                    pageSize = pageSize,
                     results = results
                 )
             }

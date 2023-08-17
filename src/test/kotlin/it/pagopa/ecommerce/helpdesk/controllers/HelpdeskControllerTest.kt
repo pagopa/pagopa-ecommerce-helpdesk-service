@@ -2,8 +2,7 @@ package it.pagopa.ecommerce.helpdesk.controllers
 
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.ecommerce.helpdesk.services.EcommerceService
-import it.pagopa.ecommerce.helpdesk.services.PmService
+import it.pagopa.ecommerce.helpdesk.services.HelpdeskService
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -26,9 +25,7 @@ import reactor.core.publisher.Mono
 class HelpdeskControllerTest {
     @Autowired lateinit var webClient: WebTestClient
 
-    @MockBean lateinit var ecommerceService: EcommerceService
-
-    @MockBean lateinit var pmService: PmService
+    @MockBean lateinit var helpdeskService: HelpdeskService
 
     @Test
     fun `post search transaction succeeded searching by payment token`() = runTest {
@@ -36,10 +33,10 @@ class HelpdeskControllerTest {
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
         given(
-                ecommerceService.searchTransaction(
+                helpdeskService.searchTransaction(
                     pageNumber = eq(pageNumber),
                     pageSize = eq(pageSize),
-                    ecommerceSearchTransactionRequestDto =
+                    searchTransactionRequestDto =
                         argThat {
                             this is SearchTransactionRequestPaymentTokenDto &&
                                 this.paymentToken == request.paymentToken
@@ -69,10 +66,10 @@ class HelpdeskControllerTest {
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByRptId()
         given(
-                ecommerceService.searchTransaction(
+                helpdeskService.searchTransaction(
                     pageNumber = eq(pageNumber),
                     pageSize = eq(pageSize),
-                    ecommerceSearchTransactionRequestDto =
+                    searchTransactionRequestDto =
                         argThat {
                             this is SearchTransactionRequestRptIdDto && this.rptId == request.rptId
                         }
@@ -101,10 +98,10 @@ class HelpdeskControllerTest {
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         given(
-                ecommerceService.searchTransaction(
+                helpdeskService.searchTransaction(
                     pageNumber = eq(pageNumber),
                     pageSize = eq(pageSize),
-                    ecommerceSearchTransactionRequestDto =
+                    searchTransactionRequestDto =
                         argThat {
                             this is SearchTransactionRequestTransactionIdDto &&
                                 this.transactionId == request.transactionId
@@ -134,10 +131,10 @@ class HelpdeskControllerTest {
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it")
         given(
-                pmService.searchTransaction(
+                helpdeskService.searchTransaction(
                     pageNumber = eq(pageNumber),
                     pageSize = eq(pageSize),
-                    pmSearchTransactionRequestDto =
+                    searchTransactionRequestDto =
                         argThat {
                             this is SearchTransactionRequestEmailDto &&
                                 this.userEmail == request.userEmail
@@ -167,10 +164,10 @@ class HelpdeskControllerTest {
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByUserFiscalCode("AAABBB91E22A123A")
         given(
-                pmService.searchTransaction(
+                helpdeskService.searchTransaction(
                     pageNumber = eq(pageNumber),
                     pageSize = eq(pageSize),
-                    pmSearchTransactionRequestDto =
+                    searchTransactionRequestDto =
                         argThat {
                             this is SearchTransactionRequestFiscalCodeDto &&
                                 this.userFiscalCode == request.userFiscalCode
@@ -206,10 +203,10 @@ class HelpdeskControllerTest {
                 description = "No result can be found searching for criteria ${request.type}"
             )
         given(
-                ecommerceService.searchTransaction(
+                helpdeskService.searchTransaction(
                     pageNumber = eq(pageNumber),
                     pageSize = eq(pageSize),
-                    ecommerceSearchTransactionRequestDto =
+                    searchTransactionRequestDto =
                         argThat {
                             this is SearchTransactionRequestTransactionIdDto &&
                                 this.transactionId == request.transactionId
@@ -269,10 +266,10 @@ class HelpdeskControllerTest {
                     description = "Unhandled error"
                 )
             given(
-                    ecommerceService.searchTransaction(
+                    helpdeskService.searchTransaction(
                         pageNumber = eq(pageNumber),
                         pageSize = eq(pageSize),
-                        ecommerceSearchTransactionRequestDto =
+                        searchTransactionRequestDto =
                             argThat {
                                 this is SearchTransactionRequestTransactionIdDto &&
                                     this.transactionId == request.transactionId
