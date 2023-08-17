@@ -4,6 +4,7 @@ import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.model.PageInfoDto
+import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import java.time.OffsetDateTime
 import org.junit.jupiter.api.Test
@@ -24,7 +25,7 @@ class EcommerceServiceTest {
         val pageNumber = 0
         val totalCount = 100
         val transactions =
-            listOf(HelpdeskTestUtils.buildTransactionResultDtoPM(OffsetDateTime.now()))
+            listOf(HelpdeskTestUtils.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM))
         given(ecommerceTransactionDataProvider.totalRecordCount(searchCriteria))
             .willReturn(Mono.just(totalCount))
         given(
