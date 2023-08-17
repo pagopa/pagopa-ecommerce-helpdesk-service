@@ -26,7 +26,6 @@ microservice-chart:
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
       OTEL_LOGS_EXPORTER: none
       OTEL_TRACES_SAMPLER: "always_on"
-      PM_ORACLE_HOST: "10.70.73.22"
       PM_ORACLE_PORT: "1523"
       PM_ORACLE_DATABASE_NAME: "AGIDAD"
       PM_ORACLE_USERNAME: "pagopa_SV"
@@ -37,6 +36,7 @@ microservice-chart:
     envSecret:
       OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
       PM_ORACLE_PASSWORD: pm-oracle-db-password
+      PM_ORACLE_HOST: pm-oracle-db-host
       MONGO_PASSWORD: mongo-ecommerce-password
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercehelpdeskservice
@@ -107,7 +107,6 @@ microservice-chart:
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
-    PM_ORACLE_HOST: "10.70.73.22"
     PM_ORACLE_PORT: "1523"
     PM_ORACLE_DATABASE_NAME: "AGIDAD"
     PM_ORACLE_USERNAME: "pagopa_SV"
@@ -118,6 +117,7 @@ microservice-chart:
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PM_ORACLE_PASSWORD: pm-oracle-db-password
+    PM_ORACLE_HOST: pm-oracle-db-host
     MONGO_PASSWORD: mongo-ecommerce-password
   keyvault:
     name: "pagopa-u-ecommerce-kv"
