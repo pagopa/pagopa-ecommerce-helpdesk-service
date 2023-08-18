@@ -79,6 +79,7 @@ paths:
           name: pageNumber
           schema:
             type: integer
+            default: 0
           required: true
           description: "Searched page number, starting from 0"
         - in: query
