@@ -37,6 +37,7 @@ paths:
           name: pageSize
           schema:
             type: integer
+            minimum: 1
             default: 10
           required: true
           description: "Max element per page"
@@ -86,6 +87,7 @@ paths:
           name: pageSize
           schema:
             type: integer
+            minimum: 1
             default: 10
           required: true
           description: "Max element per page"
@@ -135,6 +137,7 @@ paths:
           name: pageSize
           schema:
             type: integer
+            minimum: 1
             default: 10
           required: true
           description: "Max element per page"
