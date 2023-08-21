@@ -43,17 +43,19 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
             )
             .paymentInfo(
                 PaymentInfoDto()
-                    .subject(row[16, String::class.java])
                     .origin(row[9, String::class.java])
-            )
-            .paymentDetailInfo(
-                PaymentDetailInfoDto()
-                    .iuv(row[17, String::class.java])
-                    .rptIds(null)
-                    .idTransaction(row[18, String::class.java])
-                    .paymentToken(null)
-                    .creditorInstitution(row[19, String::class.java])
-                    .paFiscalCode(row[20, String::class.java])
+                    .details(
+                        listOf(
+                            PaymentDetailInfoDto()
+                                .subject(row[16, String::class.java])
+                                .iuv(row[17, String::class.java])
+                                .rptId(null)
+                                .idTransaction(row[18, String::class.java])
+                                .paymentToken(null)
+                                .creditorInstitution(row[19, String::class.java])
+                                .paFiscalCode(row[20, String::class.java])
+                        )
+                    )
             )
             .pspInfo(
                 PspInfoDto()
