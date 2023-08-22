@@ -263,7 +263,7 @@ class HelpdeskControllerTest {
                 HelpdeskTestUtils.buildProblemJson(
                     httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
                     title = "Error processing the request",
-                    description = "Unhandled error"
+                    description = "Generic error occurred"
                 )
             given(
                     helpdeskService.searchTransaction(

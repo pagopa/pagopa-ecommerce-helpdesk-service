@@ -74,7 +74,7 @@ class ExceptionHandlerTest {
             HelpdeskTestUtils.buildProblemJson(
                 httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
                 title = "Error processing the request",
-                description = "Nullpointer exception"
+                description = "Generic error occurred"
             ),
             response.body
         )
