@@ -72,6 +72,14 @@ parameters:
       - False
       - True
 
+resources:
+  repositories:
+    - repository: pagopaCommons
+      type: github
+      name: pagopa/azure-pipeline-templates
+      ref: refs/tags/v2.10.1
+      endpoint: 'io-azure-devops-github-ro'
+
 pool:
   vmImage: ubuntu-latest
 
@@ -226,7 +234,7 @@ stages:
               - template: templates/node-job-setup/template.yaml@pagopaCommons
                 parameters:
                   persistCredentials: true
-              - template: azure-templates/maven-github-release.yml
+              - template: azure-templates/gradle-github-release.yml
                 parameters:
                   gitEmail: $(GIT_EMAIL)
                   gitUsername: $(GIT_USERNAME)
