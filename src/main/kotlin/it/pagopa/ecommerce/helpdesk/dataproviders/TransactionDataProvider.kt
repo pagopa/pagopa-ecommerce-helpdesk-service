@@ -21,7 +21,7 @@ interface TransactionDataProvider {
      */
     fun findResult(
         searchParams: HelpDeskSearchTransactionRequestDto,
-        pageSize: Int,
-        pageNumber: Int
+        skip: Int,
+        limit: Int
     ): Mono<List<TransactionResultDto>>
 }
