@@ -234,7 +234,7 @@ stages:
               - template: templates/node-job-setup/template.yaml@pagopaCommons
                 parameters:
                   persistCredentials: true
-              - template: azure-templates/maven-github-release.yml
+              - template: azure-templates/gradle-github-release.yml
                 parameters:
                   gitEmail: $(GIT_EMAIL)
                   gitUsername: $(GIT_USERNAME)
