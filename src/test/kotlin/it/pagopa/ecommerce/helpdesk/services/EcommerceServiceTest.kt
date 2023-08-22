@@ -1,7 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.services
 
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
-import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMTransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.model.PageInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
@@ -11,24 +11,24 @@ import org.mockito.kotlin.*
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
-class PmServiceTest {
+class EcommerceServiceTest {
 
-    private val pmTransactionDataProvider: PMTransactionDataProvider = mock()
+    private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider = mock()
 
-    private val pmService = PmService(pmTransactionDataProvider)
+    private val ecommerceService = EcommerceService(ecommerceTransactionDataProvider)
 
     @Test
     fun `should return found transaction successfully`() {
-        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it")
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId()
         val pageSize = 10
         val pageNumber = 0
         val totalCount = 100
         val transactions =
             listOf(HelpdeskTestUtils.buildTransactionResultDtoPM(OffsetDateTime.now()))
-        given(pmTransactionDataProvider.totalRecordCount(searchCriteria))
+        given(ecommerceTransactionDataProvider.totalRecordCount(searchCriteria))
             .willReturn(Mono.just(totalCount))
         given(
-                pmTransactionDataProvider.findResult(
+                ecommerceTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
                     pageSize = pageSize,
                     pageNumber = pageNumber
@@ -40,38 +40,38 @@ class PmServiceTest {
                 .transactions(transactions)
                 .page(PageInfoDto().results(transactions.size).total(10).current(pageNumber))
         StepVerifier.create(
-                pmService.searchTransaction(
+                ecommerceService.searchTransaction(
                     pageNumber = pageNumber,
                     pageSize = pageSize,
-                    pmSearchTransactionRequestDto = searchCriteria
+                    ecommerceSearchTransactionRequestDto = searchCriteria
                 )
             )
             .expectNext(expectedResponse)
             .verifyComplete()
 
-        verify(pmTransactionDataProvider, times(1)).totalRecordCount(any())
-        verify(pmTransactionDataProvider, times(1)).findResult(any(), any(), any())
+        verify(ecommerceTransactionDataProvider, times(1)).totalRecordCount(any())
+        verify(ecommerceTransactionDataProvider, times(1)).findResult(any(), any(), any())
     }
 
     @Test
     fun `should return error for no transaction found performing only count query`() {
-        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail("unknown@test.it")
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId()
         val pageSize = 10
         val pageNumber = 0
         val totalCount = 0
-        given(pmTransactionDataProvider.totalRecordCount(searchCriteria))
+        given(ecommerceTransactionDataProvider.totalRecordCount(searchCriteria))
             .willReturn(Mono.just(totalCount))
         StepVerifier.create(
-                pmService.searchTransaction(
+                ecommerceService.searchTransaction(
                     pageNumber = pageNumber,
                     pageSize = pageSize,
-                    pmSearchTransactionRequestDto = searchCriteria
+                    ecommerceSearchTransactionRequestDto = searchCriteria
                 )
             )
             .expectError(NoResultFoundException::class.java)
             .verify()
 
-        verify(pmTransactionDataProvider, times(1)).totalRecordCount(any())
-        verify(pmTransactionDataProvider, times(0)).findResult(any(), any(), any())
+        verify(ecommerceTransactionDataProvider, times(1)).totalRecordCount(any())
+        verify(ecommerceTransactionDataProvider, times(0)).findResult(any(), any(), any())
     }
 }

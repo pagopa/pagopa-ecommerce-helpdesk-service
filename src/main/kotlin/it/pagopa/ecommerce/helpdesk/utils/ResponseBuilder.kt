@@ -1,20 +1,37 @@
 package it.pagopa.ecommerce.helpdesk.utils
 
 import io.r2dbc.spi.Result
+import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationCompletedData
+import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationRequestData
+import it.pagopa.ecommerce.commons.documents.v1.TransactionUserReceiptData
+import it.pagopa.ecommerce.commons.domain.v1.TransactionWithClosureError
+import it.pagopa.ecommerce.commons.domain.v1.pojos.*
+import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
+import it.pagopa.ecommerce.commons.utils.v1.TransactionUtils.getTransactionFee
 import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.util.*
 import org.reactivestreams.Publisher
 
 fun buildTransactionSearchResponse(
     currentPage: Int,
     totalCount: Int,
+    pageSize: Int,
     results: List<TransactionResultDto>
-): SearchTransactionResponseDto =
-    SearchTransactionResponseDto()
-        .page(PageInfoDto().current(currentPage).total(totalCount).results(results.size))
+): SearchTransactionResponseDto {
+    val totalPages =
+        if (totalCount % pageSize == 0) {
+            totalCount / pageSize
+        } else {
+            totalCount / pageSize + 1
+        }
+    return SearchTransactionResponseDto()
+        .page(PageInfoDto().current(currentPage).total(totalPages).results(results.size))
         .transactions(results)
+}
 
 fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> =
     result.map { row ->
@@ -37,7 +54,7 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
                     .fee(row[11, BigDecimal::class.java]?.toInt())
                     .grandTotal(row[12, BigDecimal::class.java]?.toInt())
                     .rrn(row[13, String::class.java])
-                    .authotizationCode(row[14, String::class.java])
+                    .authorizationCode(row[14, String::class.java])
                     .paymentMethodName(row[15, String::class.java])
                     .brand(null)
             )
@@ -64,4 +81,135 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
                     .idChannel(row[23, String::class.java])
             )
             .product(ProductDto.PM)
+    }
+
+fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): TransactionResultDto {
+    val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
+    val fee = getTransactionFees(baseTransaction).orElse(0)
+    val totalAmount = amount.plus(fee)
+    val transactionAuthorizationRequestData = getTransactionAuthRequestedData(baseTransaction)
+    val transactionAuthorizationCompletedData = getTransactionAuthCompletedData(baseTransaction)
+    val transactionUserReceiptData = getTransactionUserReceiptData(baseTransaction)
+
+    // Build user info
+
+    val userInfo =
+        UserInfoDto()
+            // TODO to be valued here with PDV integration
+            .notificationEmail("")
+            // TODO this field is statically valued with GUEST eCommerce side into Nodo ClosePayment
+            // requests. Must be populated dinamically when logic will be updated eCommerce side
+            // (event-dispatcher/transactions-service)
+            .authenticationType(UserDto.TypeEnum.GUEST.toString())
+    // build transaction info
+    val transactionInfo =
+        TransactionInfoDto()
+            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+            .status(getTransactionDetailsStatus(baseTransaction))
+            .statusDetails(transactionAuthorizationCompletedData?.errorCode)
+            .eventStatus(TransactionStatusDto.valueOf(baseTransaction.status.toString()))
+            .amount(amount)
+            .fee(fee)
+            .grandTotal(totalAmount)
+            .rrn(transactionAuthorizationCompletedData?.rrn)
+            .authorizationCode(transactionAuthorizationCompletedData?.authorizationCode)
+            .paymentMethodName(transactionAuthorizationRequestData?.paymentMethodName)
+            .brand(transactionAuthorizationRequestData?.brand?.toString())
+    // build payment info
+    val paymentInfo =
+        PaymentInfoDto()
+            .origin(baseTransaction.clientId.toString())
+            .details(
+                baseTransaction.paymentNotices.map {
+                    PaymentDetailInfoDto()
+                        .subject(it.transactionDescription.value)
+                        .rptId(it.rptId.value)
+                        .idTransaction(baseTransaction.transactionId.value())
+                        .paymentToken(it.paymentToken.value)
+                        // TODO here set only the first into transferList or take it from rptId
+                        // object?
+                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                        .creditorInstitution(transactionUserReceiptData?.receivingOfficeName)
+                }
+            )
+    // build psp info
+    val pspInfo =
+        PspInfoDto()
+            .pspId(transactionAuthorizationRequestData?.pspId)
+            .idChannel(transactionAuthorizationRequestData?.pspChannelCode)
+            .businessName(transactionAuthorizationRequestData?.pspBusinessName)
+    return TransactionResultDto()
+        .product(ProductDto.ECOMMERCE)
+        .userInfo(userInfo)
+        .transactionInfo(transactionInfo)
+        .paymentInfo(paymentInfo)
+        .pspInfo(pspInfo)
+}
+
+private fun getTransactionFees(baseTransaction: BaseTransaction): Optional<Int> =
+    when (baseTransaction) {
+        is BaseTransactionExpired -> getTransactionFee(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithClosureError ->
+            getTransactionFee(baseTransaction.transactionAtPreviousState)
+        else -> getTransactionFee(baseTransaction)
+    }
+
+private fun getTransactionAuthRequestedData(
+    baseTransaction: BaseTransaction
+): TransactionAuthorizationRequestData? =
+    when (baseTransaction) {
+        is BaseTransactionExpired ->
+            getTransactionAuthRequestedData(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithClosureError ->
+            getTransactionAuthRequestedData(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithRequestedAuthorization ->
+            baseTransaction.transactionAuthorizationRequestData
+        else -> null
+    }
+
+private fun getTransactionAuthCompletedData(
+    baseTransaction: BaseTransaction
+): TransactionAuthorizationCompletedData? =
+    when (baseTransaction) {
+        is BaseTransactionExpired ->
+            getTransactionAuthCompletedData(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithClosureError ->
+            getTransactionAuthCompletedData(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithRefundRequested ->
+            getTransactionAuthCompletedData(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithCompletedAuthorization ->
+            baseTransaction.transactionAuthorizationCompletedData
+        else -> null
+    }
+
+private fun getTransactionUserReceiptData(
+    baseTransaction: BaseTransaction
+): TransactionUserReceiptData? =
+    when (baseTransaction) {
+        is BaseTransactionExpired ->
+            getTransactionUserReceiptData(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithRefundRequested ->
+            getTransactionUserReceiptData(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithRequestedUserReceipt -> baseTransaction.transactionUserReceiptData
+        else -> null
+    }
+
+private fun getTransactionDetailsStatus(baseTransaction: BaseTransaction): String =
+    when (getAuthorizationOutcome(baseTransaction)) {
+        AuthorizationResultDto.OK -> "Confermato"
+        AuthorizationResultDto.KO -> "Rifiutato"
+        else -> "Cancellato"
+    }
+
+fun getAuthorizationOutcome(baseTransaction: BaseTransaction): AuthorizationResultDto? =
+    when (baseTransaction) {
+        is BaseTransactionExpired ->
+            getAuthorizationOutcome(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithRefundRequested ->
+            getAuthorizationOutcome(baseTransaction.transactionAtPreviousState)
+        is TransactionWithClosureError ->
+            getAuthorizationOutcome(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithCompletedAuthorization ->
+            baseTransaction.transactionAuthorizationCompletedData.authorizationResultDto
+        else -> null
     }
