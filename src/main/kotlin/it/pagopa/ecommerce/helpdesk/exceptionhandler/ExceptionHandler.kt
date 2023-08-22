@@ -72,7 +72,7 @@ class ExceptionHandler {
                 ProblemJsonDto()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .title("Error processing the request")
-                    .detail(e.localizedMessage)
+                    .detail("Generic error occurred")
             )
     }
 }
