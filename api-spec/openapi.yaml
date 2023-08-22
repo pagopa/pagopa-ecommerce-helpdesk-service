@@ -489,12 +489,14 @@ components:
         - $ref: '#/components/schemas/SearchTransactionRequestRptId'
         - $ref: '#/components/schemas/SearchTransactionRequestPaymentToken'
         - $ref: '#/components/schemas/SearchTransactionRequestTransactionId'
+        - $ref: '#/components/schemas/SearchTransactionRequestEmail'
       discriminator:
         propertyName: type
         mapping:
           RPT_ID: "#/components/schemas/SearchTransactionRequestRptId"
           PAYMENT_TOKEN: "#/components/schemas/SearchTransactionRequestPaymentToken"
           TRANSACTION_ID: "#/components/schemas/SearchTransactionRequestTransactionId"
+          USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
   requestBodies:
     PmSearchTransactionRequest:
       required: true
@@ -533,12 +535,14 @@ components:
               - $ref: '#/components/schemas/SearchTransactionRequestRptId'
               - $ref: '#/components/schemas/SearchTransactionRequestPaymentToken'
               - $ref: '#/components/schemas/SearchTransactionRequestTransactionId'
+              - $ref: '#/components/schemas/SearchTransactionRequestEmail'
             discriminator:
               propertyName: type
               mapping:
                 RPT_ID: "#/components/schemas/SearchTransactionRequestRptId"
                 PAYMENT_TOKEN: "#/components/schemas/SearchTransactionRequestPaymentToken"
                 TRANSACTION_ID: "#/components/schemas/SearchTransactionRequestTransactionId"
+                USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
           examples:
             search by rpt id:
               value:
@@ -552,6 +556,10 @@ components:
               value:
                 type: TRANSACTION_ID
                 transactionId: "transactionId"
+            search by user email:
+              value:
+                type: USER_EMAIL
+                userEmail: "test@test.it"
     EcommerceSearchTransactionResponse:
       required: true
       content:

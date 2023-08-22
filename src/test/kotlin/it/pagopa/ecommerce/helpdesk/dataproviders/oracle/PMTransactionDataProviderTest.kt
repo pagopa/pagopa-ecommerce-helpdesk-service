@@ -68,8 +68,8 @@ class PMTransactionDataProviderTest {
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
                     searchParams = searchCriteria,
-                    pageSize = 0,
-                    pageNumber = 0
+                    skip = 0,
+                    limit = 0
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -129,8 +129,8 @@ class PMTransactionDataProviderTest {
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
                     searchParams = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it"),
-                    pageNumber = 0,
-                    pageSize = 10
+                    limit = 10,
+                    skip = 0
                 )
             )
             .expectNext(expectedResponse)
@@ -215,8 +215,8 @@ class PMTransactionDataProviderTest {
                 pmTransactionDataProvider.findResult(
                     searchParams =
                         HelpdeskTestUtils.buildSearchRequestByUserFiscalCode("fiscal_code"),
-                    pageNumber = 0,
-                    pageSize = 10
+                    limit = 10,
+                    skip = 0
                 )
             )
             .expectNext(expectedResponse)
@@ -252,8 +252,8 @@ class PMTransactionDataProviderTest {
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
                     searchParams = HelpdeskTestUtils.buildSearchRequestByRptId(),
-                    pageNumber = 0,
-                    pageSize = 10
+                    limit = 0,
+                    skip = 10
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)

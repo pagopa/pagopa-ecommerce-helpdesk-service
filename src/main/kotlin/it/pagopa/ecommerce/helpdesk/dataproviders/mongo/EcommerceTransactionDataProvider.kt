@@ -8,8 +8,6 @@ import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.baseTransactionToTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -53,28 +51,29 @@ class EcommerceTransactionDataProvider(
 
     override fun findResult(
         searchParams: HelpDeskSearchTransactionRequestDto,
-        pageSize: Int,
-        pageNumber: Int
+        skip: Int,
+        limit: Int
     ): Mono<List<TransactionResultDto>> {
         val searchCriteriaType = searchParams.type
         val invalidSearchCriteriaError =
             Flux.error<Transaction>(
                 InvalidSearchCriteriaException(searchCriteriaType, ProductDto.ECOMMERCE)
             )
-        val pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by("creationDate").descending())
         val transactions: Flux<Transaction> =
             when (searchParams) {
                 is SearchTransactionRequestPaymentTokenDto ->
                     transactionsViewRepository
                         .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                            searchParams.paymentToken,
-                            pageRequest
+                            paymentToken = searchParams.paymentToken,
+                            skip = skip,
+                            limit = limit
                         )
                 is SearchTransactionRequestRptIdDto ->
                     transactionsViewRepository
                         .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                            searchParams.rptId,
-                            pageRequest
+                            rptId = searchParams.rptId,
+                            skip = skip,
+                            limit = limit
                         )
                 is SearchTransactionRequestTransactionIdDto ->
                     transactionsViewRepository.findById(searchParams.transactionId).toFlux()

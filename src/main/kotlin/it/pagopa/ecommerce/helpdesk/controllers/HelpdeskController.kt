@@ -1,11 +1,8 @@
 package it.pagopa.ecommerce.helpdesk.controllers
 
-import it.pagopa.ecommerce.helpdesk.services.EcommerceService
-import it.pagopa.ecommerce.helpdesk.services.PmService
+import it.pagopa.ecommerce.helpdesk.services.HelpdeskService
 import it.pagopa.generated.ecommerce.helpdesk.api.HelpdeskApi
-import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -14,10 +11,7 @@ import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 @RestController
-class HelpdeskController(
-    @Autowired val ecommerceService: EcommerceService,
-    @Autowired val pmService: PmService
-) : HelpdeskApi {
+class HelpdeskController(@Autowired val helpdeskService: HelpdeskService) : HelpdeskApi {
 
     override fun helpDeskSearchTransaction(
         pageNumber: Int,
@@ -25,30 +19,13 @@ class HelpdeskController(
         helpDeskSearchTransactionRequestDto: Mono<HelpDeskSearchTransactionRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> =
-        helpDeskSearchTransactionRequestDto.flatMap {
-            when (it) {
-                // TODO change logic here, search first into eCommerce then into PM DB when
-                // searching for criteria present in both DBs.
-                // as for now all criteria are separated so there is no need to search into both DB
-                // in fact mail search for ecommerce has not been enabled yet. once enabled
-                // pagination must be performed against result set from both dm
-                is EcommerceSearchTransactionRequestDto ->
-                    ecommerceService
-                        .searchTransaction(
-                            pageNumber = pageNumber,
-                            pageSize = pageSize,
-                            ecommerceSearchTransactionRequestDto = it
-                        )
-                        .map { response -> ResponseEntity.ok(response) }
-                is PmSearchTransactionRequestDto ->
-                    pmService
-                        .searchTransaction(
-                            pageNumber = pageNumber,
-                            pageSize = pageSize,
-                            pmSearchTransactionRequestDto = it
-                        )
-                        .map { response -> ResponseEntity.ok(response) }
-                else -> Mono.error(RuntimeException("Unknown search criteria"))
+        helpDeskSearchTransactionRequestDto
+            .flatMap {
+                helpdeskService.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchTransactionRequestDto = it
+                )
             }
-        }
+            .map { ResponseEntity.ok(it) }
 }

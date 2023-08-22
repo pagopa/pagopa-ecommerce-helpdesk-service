@@ -34,7 +34,10 @@ object HelpdeskTestUtils {
     fun buildSearchRequestByUserMail(email: String): SearchTransactionRequestEmailDto =
         SearchTransactionRequestEmailDto().userEmail(email).type("USER_EMAIL")
 
-    fun buildTransactionResultDtoPM(creationDate: OffsetDateTime): TransactionResultDto =
+    fun buildTransactionResultDto(
+        creationDate: OffsetDateTime,
+        product: ProductDto
+    ): TransactionResultDto =
         TransactionResultDto()
             .userInfo(
                 UserInfoDto()
@@ -79,5 +82,5 @@ object HelpdeskTestUtils {
                     .businessName(TransactionTestUtils.PSP_BUSINESS_NAME)
                     .idChannel(TransactionTestUtils.PSP_CHANNEL_CODE)
             )
-            .product(ProductDto.PM)
+            .product(product)
 }
