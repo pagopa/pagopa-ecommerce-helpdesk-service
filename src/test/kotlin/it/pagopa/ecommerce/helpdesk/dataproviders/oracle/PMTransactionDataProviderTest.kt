@@ -7,6 +7,8 @@ import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.given
+import org.mockito.kotlin.mock
 import reactor.core.publisher.Hooks
 import reactor.test.StepVerifier
 
@@ -47,6 +49,34 @@ class PMTransactionDataProviderTest {
     }
 
     @Test
+    fun `Should thrown error counting transaction for unhandled search criteria `() {
+        Hooks.onOperatorDebug()
+        StepVerifier.create(
+                pmTransactionDataProvider.totalRecordCount(
+                    HelpdeskTestUtils.buildSearchRequestByTransactionId()
+                )
+            )
+            .expectError(InvalidSearchCriteriaException::class.java)
+            .verify()
+    }
+
+    @Test
+    fun `Should thrown error counting transaction for unknown search criteria `() {
+        Hooks.onOperatorDebug()
+        val searchCriteria: HelpDeskSearchTransactionRequestDto = mock()
+        given(searchCriteria.type).willReturn("UNKNOWN")
+        StepVerifier.create(
+                pmTransactionDataProvider.findResult(
+                    searchParams = searchCriteria,
+                    pageSize = 0,
+                    pageNumber = 0
+                )
+            )
+            .expectError(InvalidSearchCriteriaException::class.java)
+            .verify()
+    }
+
+    @Test
     fun `Should count found result for paginated query for email transaction search`() {
         val expectedResponse =
             listOf(
@@ -69,7 +99,7 @@ class PMTransactionDataProviderTest {
                             .fee(50)
                             .grandTotal(150)
                             .rrn("rrn")
-                            .authotizationCode("auth code")
+                            .authorizationCode("auth code")
                             .paymentMethodName("payment method name")
                     )
                     .paymentInfo(
@@ -154,7 +184,7 @@ class PMTransactionDataProviderTest {
                             .fee(50)
                             .grandTotal(150)
                             .rrn("rrn")
-                            .authotizationCode("auth code")
+                            .authorizationCode("auth code")
                             .paymentMethodName("payment method name")
                     )
                     .paymentInfo(
@@ -200,6 +230,17 @@ class PMTransactionDataProviderTest {
                 pmTransactionDataProvider.totalRecordCount(
                     searchParams = HelpdeskTestUtils.buildSearchRequestByRptId()
                 )
+            )
+            .expectError(InvalidSearchCriteriaException::class.java)
+            .verify()
+    }
+
+    @Test
+    fun `Should return error for unknown search criteria for count operation`() {
+        val searchCriteria: HelpDeskSearchTransactionRequestDto = mock()
+        given(searchCriteria.type).willReturn("UNKNOWN")
+        StepVerifier.create(
+                pmTransactionDataProvider.totalRecordCount(searchParams = searchCriteria)
             )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()

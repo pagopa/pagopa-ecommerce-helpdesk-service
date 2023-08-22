@@ -54,7 +54,7 @@ object HelpdeskTestUtils {
                     .fee(200)
                     .grandTotal(700)
                     .rrn("rrn")
-                    .authotizationCode("authorization code")
+                    .authorizationCode("authorization code")
                     .paymentMethodName("payment method name")
                     .brand(null)
             )

@@ -37,6 +37,7 @@ class PmService(@Autowired val pmTransactionDataProvider: PMTransactionDataProvi
                         buildTransactionSearchResponse(
                             currentPage = pageNumber,
                             totalCount = totalCount,
+                            pageSize = pageSize,
                             results = results
                         )
                     }
