@@ -133,6 +133,23 @@ stages:
                     GREEN_VERSION: $(Build.SourceVersion)
   # --- END Deploy DEV --- #
 
+  # --- START API TEST for DEV DEPLOY --- #
+  - stage: "API_DEV_test"
+    displayName: 'Running API test on dev app'
+    dependsOn: Deploy_for_DEV
+    jobs:
+      - job: newman_api_test
+        steps:
+          - template: azure-templates/api-tests.yml
+            parameters:
+              ENV_FILE: "api-tests/env/helpDesk_dev.env.json"
+              API_TEST_FILE: "api-tests/eCommerce-helpdesk.api.tests.json"
+              TEST_FILE_PREFIX: "dev"
+              API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_DEV)
+              USER_EMAIL: $(HELPDESK_TESTING_EMAIL_DEV)
+              USER_FISCAL_CODE: $(HELPDESK_TESTING_FISCALCODE_DEV)
+  # --- END API TEST for DEV DEPLOY --- #
+
   # --- START Deploy UAT --- #
   - stage: "Build_release_candidate"
     displayName: 'Build release candidate'
@@ -201,6 +218,23 @@ stages:
                     VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(green_app_version)
                     BLUE_VERSION: $(Build.SourceVersion)
+
+  # --- START API TEST for BLUE UAT DEPLOY --- #
+  - stage: "Blue_API_UAT_test"
+    displayName: 'Running API test on blue app'
+    dependsOn: Deploy_UAT_Blue
+    jobs:
+      - job: newman_api_test
+        steps:
+          - template: azure-templates/api-tests.yml
+            parameters:
+              ENV_FILE: "api-tests/env/helpDesk_uat_blue.env.json"
+              API_TEST_FILE: "api-tests/eCommerce-helpdesk.api.tests.json"
+              TEST_FILE_PREFIX: "blue-uat"
+              API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_UAT)
+              USER_EMAIL: $(HELPDESK_TESTING_EMAIL_UAT)
+              USER_FISCAL_CODE: $(HELPDESK_TESTING_FISCALCODE_UAT)
+  # --- END API TEST for BLUE UAT DEPLOY --- #
 
   - stage: "Bluegreen_WaitForApproval"
     displayName: 'UAT green approval deployment'
@@ -320,6 +354,23 @@ stages:
                     VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(app_version)
   # --- END Deploy UAT --- #
+
+  # --- START API TEST for GREEN UAT DEPLOY --- #
+  - stage: "Green_API_UAT_test"
+    displayName: 'Running API test on green app'
+    dependsOn: Deploy_UAT_Green
+    jobs:
+      - job: newman_api_test
+        steps:
+          - template: azure-templates/api-tests.yml
+            parameters:
+              ENV_FILE: "api-tests/env/helpDesk_uat.env.json"
+              API_TEST_FILE: "api-tests/eCommerce-helpdesk.api.tests.json"
+              TEST_FILE_PREFIX: "green-uat"
+              API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_UAT)
+              USER_EMAIL: $(HELPDESK_TESTING_EMAIL_UAT)
+              USER_FISCAL_CODE: $(HELPDESK_TESTING_FISCALCODE_UAT)
+  # --- END API TEST for GREEN UAT DEPLOY --- #
 
   # --- START Deploy PROD --- #
   - stage: "Prod_WaitForApproval"
