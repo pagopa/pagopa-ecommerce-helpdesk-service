@@ -102,9 +102,9 @@ class HelpdeskService(
                                         limit = pageSize - ecommerceRemainder
                                     )
                                     .map { pmRecords -> ecommerceRecords + pmRecords }
-                            }
-                            .onErrorResume(InvalidSearchCriteriaException::class.java) {
-                                Mono.just(emptyList())
+                                    .onErrorResume(InvalidSearchCriteriaException::class.java) {
+                                         Mono.just(ecommerceRecords)
+                                    }
                             }
                     }
                 } else {
