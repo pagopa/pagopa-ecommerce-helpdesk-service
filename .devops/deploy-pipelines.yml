@@ -143,7 +143,7 @@ stages:
           - template: azure-templates/api-tests.yml
             parameters:
               ENV_FILE: "api-tests/env/helpDesk_dev.env.json"
-              API_TEST_FILE: "api-tests/eCommerce-helpdesk.api.tests.json"
+              API_TEST_FILE: "api-tests/eCommerce-helpdesk.api.tests.dev.json"
               TEST_FILE_PREFIX: "dev"
               API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_DEV)
               USER_EMAIL: $(HELPDESK_TESTING_EMAIL_DEV)
@@ -229,7 +229,7 @@ stages:
           - template: azure-templates/api-tests.yml
             parameters:
               ENV_FILE: "api-tests/env/helpDesk_uat_blue.env.json"
-              API_TEST_FILE: "api-tests/eCommerce-helpdesk.api.tests.json"
+              API_TEST_FILE: "api-tests/eCommerce-helpdesk.api.tests.uat.json"
               TEST_FILE_PREFIX: "blue-uat"
               API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_UAT)
               USER_EMAIL: $(HELPDESK_TESTING_EMAIL_UAT)
@@ -365,7 +365,7 @@ stages:
           - template: azure-templates/api-tests.yml
             parameters:
               ENV_FILE: "api-tests/env/helpDesk_uat.env.json"
-              API_TEST_FILE: "api-tests/eCommerce-helpdesk.api.tests.json"
+              API_TEST_FILE: "api-tests/eCommerce-helpdesk.api.tests.uat.json"
               TEST_FILE_PREFIX: "green-uat"
               API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_UAT)
               USER_EMAIL: $(HELPDESK_TESTING_EMAIL_UAT)
