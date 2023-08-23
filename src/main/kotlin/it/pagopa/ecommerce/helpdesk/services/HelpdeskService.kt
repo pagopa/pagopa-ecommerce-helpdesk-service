@@ -103,7 +103,7 @@ class HelpdeskService(
                                     )
                                     .map { pmRecords -> ecommerceRecords + pmRecords }
                                     .onErrorResume(InvalidSearchCriteriaException::class.java) {
-                                         Mono.just(ecommerceRecords)
+                                        Mono.just(ecommerceRecords)
                                     }
                             }
                     }
