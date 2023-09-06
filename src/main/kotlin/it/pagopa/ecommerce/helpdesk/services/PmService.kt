@@ -3,7 +3,9 @@ package it.pagopa.ecommerce.helpdesk.services
 import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.buildTransactionSearchResponse
+import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodsRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchPaymentMethodResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -45,5 +47,11 @@ class PmService(@Autowired val pmTransactionDataProvider: PMTransactionDataProvi
                 Mono.error(NoResultFoundException(pmSearchTransactionRequestDto.type))
             }
         }
+    }
+
+    fun searchPaymentMethods(
+        pmSearchPaymentMethodsRequestDto: PmSearchPaymentMethodsRequestDto
+    ): Mono<SearchPaymentMethodResponseDto> {
+        return Mono.just(SearchPaymentMethodResponseDto())
     }
 }
