@@ -3,6 +3,8 @@ package it.pagopa.ecommerce.helpdesk.controllers
 import it.pagopa.ecommerce.helpdesk.services.HelpdeskService
 import it.pagopa.generated.ecommerce.helpdesk.api.HelpdeskApi
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodsRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchPaymentMethodResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -28,4 +30,11 @@ class HelpdeskController(@Autowired val helpdeskService: HelpdeskService) : Help
                 )
             }
             .map { ResponseEntity.ok(it) }
+
+    override fun helpDeskSearchPaymentMethods(
+        pmSearchPaymentMethodsRequestDto: Mono<PmSearchPaymentMethodsRequestDto>,
+        exchange: ServerWebExchange
+    ): Mono<ResponseEntity<SearchPaymentMethodResponseDto>> {
+        TODO("Not yet implemented")
+    }
 }
