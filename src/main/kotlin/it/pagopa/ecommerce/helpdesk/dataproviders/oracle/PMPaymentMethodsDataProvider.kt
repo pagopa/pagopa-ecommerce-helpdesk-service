@@ -4,6 +4,7 @@ import io.r2dbc.spi.ConnectionFactory
 import it.pagopa.ecommerce.helpdesk.dataproviders.PaymentMethodDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.resultToPaymentMethodDtoList
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,7 +21,9 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
     PaymentMethodDataProvider {
 
     private val logger = LoggerFactory.getLogger(javaClass)
-
+    companion object {
+        const val PAYPAL_TYPE: Long = 5
+    }
     override fun findResult(
         searchParams: PmSearchPaymentMethodsRequestDto
     ): Mono<SearchPaymentMethodResponseDto> {
@@ -32,13 +35,13 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
         return when (searchParams) {
             is SearchPaymentMethodRequestEmailDto ->
                 getResultSetFromQuery(
-                    resultQuery = "",
+                    resultQuery = searchWalletByUserEmail,
                     searchParam = searchParams.userEmail,
                     searchType = searchCriteriaType
                 )
             is SearchPaymentMethodRequestFiscalCodeDto ->
                 getResultSetFromQuery(
-                    resultQuery = "",
+                    resultQuery = searchWalletByUserFiscalCode,
                     searchParam = searchParams.userFiscalCode,
                     searchType = searchCriteriaType
                 )
@@ -57,12 +60,24 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
                     logger.info("Retrieving payment methods from PM database.")
 
                     Flux.from(
-                        connection.createStatement(resultQuery).bind(0, searchParam).execute()
-                    )
+                            connection.createStatement(resultQuery).bind(0, searchParam).execute()
+                        )
+                        .flatMap { resultToPaymentMethodDtoList(it) }
                 },
                 { it.close() }
             )
             .collectList()
             .switchIfEmpty { Mono.error(NoResultFoundException(searchType)) }
-            .map { SearchPaymentMethodResponseDto() }
+            .map { results
+                -> // select first item for generics property and merge list of all payment method
+                // result
+                SearchPaymentMethodResponseDto()
+                    .fiscalCode(results[0].fiscalCode)
+                    .notificationEmail(results[0].notificationEmail)
+                    .surname(results[0].surname)
+                    .name(results[0].name)
+                    .username(results[0].username)
+                    .status(results[0].status)
+                    .paymentMethods(results.flatMap { it.paymentMethods })
+            }
 }
