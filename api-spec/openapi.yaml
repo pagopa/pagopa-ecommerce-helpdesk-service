@@ -598,12 +598,15 @@ components:
           USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
     PaypalDetailInfo:
       type: object
-      description: SearchPaymentMethodResponse
+      description: PaypalDetailInfo
       properties:
         type:
           type: string
+          description: property discriminator, used to discriminate the wallet detail. Fixed value 'PAYPAL'
+          example: "PAYPAL"
         creationDate:
           type: string
+          format: date-time
         ppayEmail:
           type: string
       required:
@@ -612,31 +615,141 @@ components:
         - ppayEmail
     BankAccountDetailInfo:
       type: object
-      description: SearchPaymentMethodResponse
+      description: BankAccountDetailInfo
       properties:
         type:
           type: string
+          description: property discriminator, used to discriminate the wallet detail. Fixed value 'BANK_ACCOUNT'
+          example: "BANK_ACCOUNT"
         creationDate:
           type: string
-        bank:
+          format: date-time
+        bankName:
           type: string
         bankState:
           type: string
       required:
         - type
         - creationDate
-        - bank
-        - bankState
+        - bankName
+    CardDetailInfo:
+      type: object
+      description: CardDetailInfo
+      properties:
+        type:
+          type: string
+          description: property discriminator, used to discriminate the wallet detail. Fixed value 'CARD'
+          example: "CARD"
+        creationDate:
+          type: string
+          format: date-time
+        idPsp:
+          type: string
+        businessName:
+          type: string
+        cardBin:
+          type: string
+        cardNumber:
+          type: string
+      required:
+        - type
+        - creationDate
+    BancomatDetailInfo:
+      type: object
+      description: BancomatDetailInfo
+      properties:
+        type:
+          type: string
+          description: property discriminator, used to discriminate the wallet detail. Fixed value 'BANCOMAT'
+          example: "BANCOMAT"
+        creationDate:
+          type: string
+          format: date-time
+        bancomatAbi:
+          type: string
+        bancomatNumber:
+          type: string
+      required:
+        - type
+        - creationDate
+    BpayDetailInfo:
+      type: object
+      description: BpayDetailInfo
+      properties:
+        type:
+          type: string
+          description: property discriminator, used to discriminate the wallet detail. Fixed value 'BPAY'
+          example: "BPAY"
+        creationDate:
+          type: string
+          format: date-time
+        idPsp:
+          type: string
+        businessName:
+          type: string
+        bpayName:
+          type: string
+        bpayPhoneNumber:
+          type: string
+      required:
+        - type
+        - creationDate
+    SatispayDetailInfo:
+      type: object
+      description: SatispayDetailInfo
+      properties:
+        type:
+          type: string
+          description: property discriminator, used to discriminate the wallet detail. Fixed value 'SATISPAY'
+          example: "SATISPAY"
+        creationDate:
+          type: string
+          format: date-time
+        idPsp:
+          type: string
+        businessName:
+          type: string
+        uidSatispay:
+          type: string
+      required:
+        - type
+        - creationDate
+    GenericMethodDetailInfo:
+      type: object
+      description: GenericMethodDetailInfo
+      properties:
+        type:
+          type: string
+          description: property discriminator, used to discriminate the wallet detail. Fixed value 'GENERIC_METHOD'
+          example: "GENERIC_METHOD"
+        creationDate:
+          type: string
+          format: date-time
+        description:
+          type: string
+      required:
+        - type
+        - creationDate
     PaymentMethodDetail:
       type: object
       oneOf:
         - $ref: '#/components/schemas/BankAccountDetailInfo'
         - $ref: '#/components/schemas/PaypalDetailInfo'
+        - $ref: '#/components/schemas/CardDetailInfo'
+        - $ref: '#/components/schemas/BancomatDetailInfo'
+        - $ref: '#/components/schemas/BpayDetailInfo'
+        - $ref: '#/components/schemas/SatispayDetailInfo'
+        - $ref: '#/components/schemas/GenericMethodDetailInfo'
       discriminator:
         propertyName: type
         mapping:
           PAYPAL: "#/components/schemas/PaypalDetailInfo"
           BANK_ACCOUNT: "#/components/schemas/BankAccountDetailInfo"
+          CARD: "#/components/schemas/CardDetailInfo"
+          BANCOMAT: "#/components/schemas/BancomatDetailInfo"
+          BPAY: "#/components/schemas/BpayDetailInfo"
+          SATISPAY: "#/components/schemas/SatispayDetailInfo"
+          GENERIC_METHOD: "#/components/schemas/GenericMethodDetailInfo"
     SearchPaymentMethodResponse:
       type: object
       description: SearchPaymentMethodResponse
@@ -664,7 +777,16 @@ components:
         - surname
         - username
         - status
-
+    DetailType:
+      type: string
+      enum:
+        - PAYPAL
+        - BANK_ACCOUNT
+        - CARD
+        - BANCOMAT
+        - BPAY
+        - SATISPAY
+        - GENERIC_METHOD
   requestBodies:
     PmSearchTransactionRequest:
       required: true
