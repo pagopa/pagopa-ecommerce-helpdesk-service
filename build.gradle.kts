@@ -178,6 +178,37 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
   )
 }
 
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("nodo") {
+  generatorName.set("java")
+  remoteInputSpec.set(
+    "https://raw.githubusercontent.com/pagopa/pagopa-infra/eff0d7e961328c9888d73dc17d96695301df1861/src/core/api/nodopagamenti_api/nodoPerPM/v2/_swagger.json.tpl"
+  )
+  outputDir.set("$buildDir/generated")
+  apiPackage.set("it.pagopa.generated.ecommerce.nodo.v2.api")
+  modelPackage.set("it.pagopa.generated.ecommerce.nodo.v2.model")
+  generateApiTests.set(false)
+  generateApiDocumentation.set(false)
+  generateApiTests.set(false)
+  generateModelTests.set(false)
+  library.set("webclient")
+  modelNameSuffix.set("Dto")
+  configOptions.set(
+    mapOf(
+      "swaggerAnnotations" to "false",
+      "openApiNullable" to "true",
+      "interfaceOnly" to "true",
+      "hideGenerationTimestamp" to "true",
+      "skipDefaultInterface" to "true",
+      "useSwaggerUI" to "false",
+      "reactive" to "true",
+      "useSpringBoot3" to "true",
+      "oas3" to "true",
+      "generateSupportingFiles" to "true",
+      "enumPropertyNaming" to "UPPERCASE"
+    )
+  )
+}
+
 tasks.register<Exec>("install-commons") {
   val buildCommons = providers.gradleProperty("buildCommons")
   onlyIf("To build commons library run gradle build -PbuildCommons") { buildCommons.isPresent }
@@ -185,7 +216,7 @@ tasks.register<Exec>("install-commons") {
 }
 
 tasks.withType<KotlinCompile> {
-  dependsOn("helpdesk", "install-commons")
+  dependsOn("helpdesk", "nodo", "install-commons")
   kotlinOptions.jvmTarget = "17"
 }
 
