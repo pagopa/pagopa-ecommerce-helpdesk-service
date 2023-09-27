@@ -7,7 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
-class ResponseBuilderKtTest {
+class ResponseBuilderV1KtTest {
 
     companion object {
         @JvmStatic
@@ -29,7 +29,7 @@ class ResponseBuilderKtTest {
         expectedPages: Int
     ) {
         val paginatedResponse =
-            buildTransactionSearchResponse(
+            buildTransactionSearchResponseV1(
                 pageSize = pageSize,
                 results = listOf(TransactionResultDto()),
                 totalCount = totalCount,

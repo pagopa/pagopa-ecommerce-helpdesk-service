@@ -1,11 +1,10 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo
 
-import it.pagopa.ecommerce.commons.documents.v1.Transaction
-import it.pagopa.ecommerce.commons.domain.v1.EmptyTransaction
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransaction
+import it.pagopa.ecommerce.commons.documents.BaseTransactionView
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
-import it.pagopa.ecommerce.helpdesk.utils.baseTransactionToTransactionInfoDto
+import it.pagopa.ecommerce.helpdesk.utils.baseTransactionToTransactionInfoDtoV1
+import it.pagopa.ecommerce.helpdesk.utils.baseTransactionToTransactionInfoDtoV2
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -56,10 +55,10 @@ class EcommerceTransactionDataProvider(
     ): Mono<List<TransactionResultDto>> {
         val searchCriteriaType = searchParams.type
         val invalidSearchCriteriaError =
-            Flux.error<Transaction>(
+            Flux.error<BaseTransactionView>(
                 InvalidSearchCriteriaException(searchCriteriaType, ProductDto.ECOMMERCE)
             )
-        val transactions: Flux<Transaction> =
+        val transactions: Flux<BaseTransactionView> =
             when (searchParams) {
                 is SearchTransactionRequestPaymentTokenDto ->
                     transactionsViewRepository
@@ -84,17 +83,44 @@ class EcommerceTransactionDataProvider(
         return transactions.flatMap { mapToTransactionResultDto(it) }.collectList()
     }
 
-    private fun mapToTransactionResultDto(transaction: Transaction): Mono<TransactionResultDto> =
-        Mono.just(transaction)
-            .flatMapMany {
+    private fun mapToTransactionResultDto(
+        transaction: BaseTransactionView
+    ): Mono<TransactionResultDto> {
+
+        val events =
+            Mono.just(transaction).flatMapMany {
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transaction.transactionId
                 )
             }
-            .reduce(
-                EmptyTransaction(),
-                it.pagopa.ecommerce.commons.domain.v1.Transaction::applyEvent
-            )
-            .cast(BaseTransaction::class.java)
-            .map { baseTransaction -> baseTransactionToTransactionInfoDto(baseTransaction) }
+
+        return when (transaction) {
+            is it.pagopa.ecommerce.commons.documents.v1.Transaction ->
+                events
+                    .reduce(
+                        it.pagopa.ecommerce.commons.domain.v1.EmptyTransaction(),
+                        it.pagopa.ecommerce.commons.domain.v1.Transaction::applyEvent
+                    )
+                    .cast(it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransaction::class.java)
+                    .map { baseTransaction ->
+                        baseTransactionToTransactionInfoDtoV1(baseTransaction)
+                    }
+            is it.pagopa.ecommerce.commons.documents.v2.Transaction ->
+                events
+                    .reduce(
+                        it.pagopa.ecommerce.commons.domain.v2.EmptyTransaction(),
+                        it.pagopa.ecommerce.commons.domain.v2.Transaction::applyEvent
+                    )
+                    .cast(it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransaction::class.java)
+                    .map { baseTransaction ->
+                        baseTransactionToTransactionInfoDtoV2(baseTransaction)
+                    }
+            else ->
+                Mono.error(
+                    RuntimeException(
+                        "inconsistent state for the transaction ${transaction.transactionId}!"
+                    )
+                )
+        }
+    }
 }
