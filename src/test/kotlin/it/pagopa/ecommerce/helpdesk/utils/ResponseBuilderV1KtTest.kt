@@ -29,7 +29,7 @@ class ResponseBuilderV1KtTest {
         expectedPages: Int
     ) {
         val paginatedResponse =
-            buildTransactionSearchResponseV1(
+            buildTransactionSearchResponse(
                 pageSize = pageSize,
                 results = listOf(TransactionResultDto()),
                 totalCount = totalCount,
