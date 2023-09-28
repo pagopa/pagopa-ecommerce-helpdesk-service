@@ -4,6 +4,7 @@ import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestD
 import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureData as TransactionClosureDataV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent as TransactionEventV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData as TransactionUserReceiptDataV2
+import it.pagopa.ecommerce.commons.domain.v2.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionExpired as BaseTransactionExpiredV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithClosureError as BaseTransactionWithClosureErrorV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithCompletedAuthorization as BaseTransactionWithCompletedAuthorizationV2
@@ -43,8 +44,6 @@ class EcommerceForTransactionV2DataProviderTest {
         @AfterAll
         fun afterAll() {
             TransactionStatusDto.values().forEach {
-                println("prova")
-                testedStatuses.forEach { println(it) }
                 Assertions.assertTrue(
                     testedStatuses.contains(it),
                     "Error: Transaction in status [$it] NOT covered by tests!"
@@ -149,11 +148,10 @@ class EcommerceForTransactionV2DataProviderTest {
         val pageSize = 100
         val pageNumber = 0
         val transactionView =
-            _root_ide_package_.it.pagopa.ecommerce.commons.v1.TransactionTestUtils
-                .transactionDocument(
-                    TransactionStatusDto.AUTHORIZATION_REQUESTED,
-                    ZonedDateTime.now()
-                )
+            TransactionTestUtilsV2.transactionDocument(
+                TransactionStatusDto.AUTHORIZATION_REQUESTED,
+                ZonedDateTime.now()
+            )
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
@@ -2680,6 +2678,140 @@ class EcommerceForTransactionV2DataProviderTest {
                     TransactionStatusDto.valueOf(it[0].transactionInfo.eventStatus.toString())
                 )
             }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should map successfully transaction V2 data into response searching by rptId for NOTIFIED_OK transaction`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId()
+        val pageSize = 100
+        val pageNumber = 0
+        val transactionView =
+            TransactionTestUtilsV2.transactionDocument(
+                TransactionStatusDto.NOTIFIED_OK,
+                ZonedDateTime.now()
+            )
+        val transactionUserReceiptData =
+            TransactionTestUtilsV2.transactionUserReceiptData(
+                TransactionUserReceiptDataV2.Outcome.OK
+            )
+        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val authorizationRequestedEvent =
+            TransactionTestUtilsV2.transactionAuthorizationRequestedEvent()
+        val authorizedEvent =
+            TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
+                TransactionTestUtilsV2.npgTransactionGatewayAuthorizationData(
+                    OperationResultDto.EXECUTED
+                )
+            )
+        val closureSentEvent =
+            TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.KO)
+        val addUserReceiptEvent =
+            TransactionTestUtilsV2.transactionUserReceiptRequestedEvent(transactionUserReceiptData)
+        val userReceiptAddErrorEvent =
+            TransactionTestUtilsV2.transactionUserReceiptAddErrorEvent(addUserReceiptEvent.data)
+        val userReceiptAddedEvent =
+            TransactionTestUtilsV2.transactionUserReceiptAddedEvent(userReceiptAddErrorEvent.data)
+        val events =
+            listOf(
+                transactionActivatedEvent,
+                authorizationRequestedEvent,
+                authorizedEvent,
+                closureSentEvent,
+                addUserReceiptEvent,
+                userReceiptAddErrorEvent,
+                userReceiptAddedEvent
+            )
+                as List<TransactionEventV2<Any>>
+        val baseTransaction =
+            TransactionTestUtilsV2.reduceEvents(*events.toTypedArray())
+                as TransactionWithUserReceiptOkV2
+        given(
+                transactionsViewRepository
+                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                        rptId = searchCriteria.rptId,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
+            .willReturn(Flux.just(transactionView))
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+        val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
+        val fee = baseTransaction.transactionAuthorizationRequestData.fee
+        val totalAmount = amount.plus(fee)
+        val expected =
+            listOf(
+                TransactionResultDto()
+                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails("authorizationCode")
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand(
+                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                    .toString()
+                            )
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .idTransaction(baseTransaction.transactionId.value())
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(
+                                            baseTransaction.transactionUserReceiptData
+                                                .receivingOfficeName
+                                        )
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE)
+            )
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams = searchCriteria,
+                    skip = pageSize * pageNumber,
+                    limit = pageSize
+                )
+            )
+            .expectNext(expected)
             .verifyComplete()
     }
 }
