@@ -1,10 +1,10 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo
 
-import it.pagopa.ecommerce.commons.domain.v2.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData as TransactionAuthorizationRequestDataV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureData as TransactionClosureDataV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent as TransactionEventV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData as TransactionUserReceiptDataV2
+import it.pagopa.ecommerce.commons.domain.v2.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionExpired as BaseTransactionExpiredV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithClosureError as BaseTransactionWithClosureErrorV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithCompletedAuthorization as BaseTransactionWithCompletedAuthorizationV2
@@ -2692,7 +2692,9 @@ class EcommerceForTransactionV2DataProviderTest {
                 ZonedDateTime.now()
             )
         val transactionUserReceiptData =
-            TransactionTestUtilsV2.transactionUserReceiptData(TransactionUserReceiptDataV2.Outcome.OK)
+            TransactionTestUtilsV2.transactionUserReceiptData(
+                TransactionUserReceiptDataV2.Outcome.OK
+            )
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val authorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent()
@@ -2720,17 +2722,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 userReceiptAddErrorEvent,
                 userReceiptAddedEvent
             )
-                    as List<TransactionEventV2<Any>>
+                as List<TransactionEventV2<Any>>
         val baseTransaction =
             TransactionTestUtilsV2.reduceEvents(*events.toTypedArray())
-                    as TransactionWithUserReceiptOkV2
+                as TransactionWithUserReceiptOkV2
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -2796,12 +2798,12 @@ class EcommerceForTransactionV2DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams = searchCriteria,
-                skip = pageSize,
-                limit = pageNumber
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams = searchCriteria,
+                    skip = pageSize,
+                    limit = pageNumber
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
