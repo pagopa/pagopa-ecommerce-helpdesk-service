@@ -77,10 +77,10 @@ class EcommerceForTransactionV2DataProviderTest {
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
@@ -125,12 +125,12 @@ class EcommerceForTransactionV2DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams = searchCriteria,
-                skip = pageSize,
-                limit = pageNumber
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams = searchCriteria,
+                    skip = pageSize,
+                    limit = pageNumber
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
