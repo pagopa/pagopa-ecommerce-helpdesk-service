@@ -3,8 +3,11 @@ package it.pagopa.ecommerce.helpdesk.utils
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationCompletedData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData
+import it.pagopa.ecommerce.commons.documents.v2.authorization.NpgTransactionGatewayAuthorizationData
+import it.pagopa.ecommerce.commons.documents.v2.authorization.PgsTransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.domain.v2.TransactionWithClosureError
 import it.pagopa.ecommerce.commons.domain.v2.pojos.*
+import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto
 import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.utils.v2.TransactionUtils.getTransactionFee
 import it.pagopa.generated.ecommerce.helpdesk.model.*
@@ -137,16 +140,19 @@ fun getAuthorizationOutcomeV2(baseTransaction: BaseTransaction): AuthorizationRe
             getAuthorizationOutcomeV2(baseTransaction.transactionAtPreviousState)
         is TransactionWithClosureError ->
             getAuthorizationOutcomeV2(baseTransaction.transactionAtPreviousState)
-         is BaseTransactionWithCompletedAuthorization -> {
+        is BaseTransactionWithCompletedAuthorization -> {
             val gatewayAuthData =
-                baseTransaction.transactionAuthorizationCompletedData.transactionGatewayAuthorizationData
+                baseTransaction.transactionAuthorizationCompletedData
+                    .transactionGatewayAuthorizationData
             when (gatewayAuthData) {
                 is PgsTransactionGatewayAuthorizationData -> gatewayAuthData.authorizationResultDto
-                is NpgTransactionGatewayAuthorizationData -> if (gatewayAuthData.operationResult == OperationResultDto.EXECUTED) {
-                    AuthorizationResultDto.OK
-                } else {
-                    AuthorizationResultDto.KO
-                }
+                is NpgTransactionGatewayAuthorizationData ->
+                    if (gatewayAuthData.operationResult == OperationResultDto.EXECUTED) {
+                        AuthorizationResultDto.OK
+                    } else {
+                        AuthorizationResultDto.KO
+                    }
+                else -> null
             }
         }
         else -> null
