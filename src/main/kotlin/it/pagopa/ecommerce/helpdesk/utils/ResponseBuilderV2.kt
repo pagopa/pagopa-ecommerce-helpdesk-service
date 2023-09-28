@@ -137,10 +137,17 @@ fun getAuthorizationOutcomeV2(baseTransaction: BaseTransaction): AuthorizationRe
             getAuthorizationOutcomeV2(baseTransaction.transactionAtPreviousState)
         is TransactionWithClosureError ->
             getAuthorizationOutcomeV2(baseTransaction.transactionAtPreviousState)
-        is BaseTransactionWithCompletedAuthorization ->
-            // TODO check v1/v2 mapping for authorization result
-            if (baseTransaction.transactionAuthorizationCompletedData.authorizationCode != null)
-                AuthorizationResultDto.OK
-            else AuthorizationResultDto.KO
+         is BaseTransactionWithCompletedAuthorization -> {
+            val gatewayAuthData =
+                baseTransaction.transactionAuthorizationCompletedData.transactionGatewayAuthorizationData
+            when (gatewayAuthData) {
+                is PgsTransactionGatewayAuthorizationData -> gatewayAuthData.authorizationResultDto
+                is NpgTransactionGatewayAuthorizationData -> if (gatewayAuthData.operationResult == OperationResultDto.EXECUTED) {
+                    AuthorizationResultDto.OK
+                } else {
+                    AuthorizationResultDto.KO
+                }
+            }
+        }
         else -> null
     }
