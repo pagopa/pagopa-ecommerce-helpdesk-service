@@ -8,6 +8,7 @@ import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionExpired as Bas
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithClosureError as BaseTransactionWithClosureErrorV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithCompletedAuthorization as BaseTransactionWithCompletedAuthorizationV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithRefundRequested as BaseTransactionWithRefundRequestedV2
+import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithRequestedAuthorization as BaseTransactionWithRequestedAuthorizationV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithRequestedUserReceipt as BaseTransactionWithRequestedUserReceiptV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithUserReceipt as BaseTransactionWithUserReceiptV2
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto
@@ -42,6 +43,8 @@ class EcommerceForTransactionV2DataProviderTest {
         @AfterAll
         fun afterAll() {
             TransactionStatusDto.values().forEach {
+                println("prova")
+                testedStatuses.forEach { println(it) }
                 Assertions.assertTrue(
                     testedStatuses.contains(it),
                     "Error: Transaction in status [$it] NOT covered by tests!"
@@ -122,6 +125,109 @@ class EcommerceForTransactionV2DataProviderTest {
                             )
                     )
                     .pspInfo(PspInfoDto().pspId(null).businessName(null).idChannel(null))
+                    .product(ProductDto.ECOMMERCE)
+            )
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams = searchCriteria,
+                    skip = pageSize,
+                    limit = pageNumber
+                )
+            )
+            .consumeNextWith {
+                assertEquals(expected, it)
+                testedStatuses.add(
+                    TransactionStatusDto.valueOf(it[0].transactionInfo.eventStatus.toString())
+                )
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should map successfully transaction v2 data into response searching by transaction id for transaction in AUTHORIZATION_REQUESTED state`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
+        val pageSize = 100
+        val pageNumber = 0
+        val transactionView =
+            _root_ide_package_.it.pagopa.ecommerce.commons.v1.TransactionTestUtils
+                .transactionDocument(
+                    TransactionStatusDto.AUTHORIZATION_REQUESTED,
+                    ZonedDateTime.now()
+                )
+        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionAuthorizationRequestedEvent =
+            TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
+                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+            )
+        val events =
+            listOf(transactionActivatedEvent, transactionAuthorizationRequestedEvent)
+                as List<TransactionEventV2<Any>>
+        val baseTransaction =
+            TransactionTestUtilsV2.reduceEvents(*events.toTypedArray())
+                as BaseTransactionWithRequestedAuthorizationV2
+        given(transactionsViewRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.just(transactionView))
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+        val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
+        val fee = baseTransaction.transactionAuthorizationRequestData.fee
+        val totalAmount = amount.plus(fee)
+        val expected =
+            listOf(
+                TransactionResultDto()
+                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Cancellato")
+                            .statusDetails(null)
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(null)
+                            .authorizationCode(null)
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand(
+                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                    .toString()
+                            )
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .idTransaction(baseTransaction.transactionId.value())
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(null)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
