@@ -60,6 +60,86 @@ class EcommerceForTransactionV2DataProviderTest {
             transactionsViewRepository,
             transactionsEventStoreRepository
         )
+
+    @Test
+    fun `should map successfully transaction V2 data into response searching by transaction id for transaction in ACTIVATED state`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
+        val pageSize = 100
+        val pageNumber = 0
+        val transactionView =
+            TransactionTestUtilsV2.transactionDocument(
+                TransactionStatusDto.ACTIVATED,
+                ZonedDateTime.now()
+            )
+        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val events = listOf(transactionActivatedEvent) as List<TransactionEventV2<Any>>
+        val baseTransaction = TransactionTestUtilsV2.reduceEvents(*events.toTypedArray())
+        given(transactionsViewRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.just(transactionView))
+        given(
+            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                transactionView.transactionId
+            )
+        )
+            .willReturn(Flux.fromIterable(events))
+        val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
+        val fee = 0
+        val totalAmount = amount.plus(fee)
+        val expected =
+            listOf(
+                TransactionResultDto()
+                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Cancellato")
+                            .statusDetails(null)
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(null)
+                            .authorizationCode(null)
+                            .paymentMethodName(null)
+                            .brand(null)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .idTransaction(baseTransaction.transactionId.value())
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(null)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(PspInfoDto().pspId(null).businessName(null).idChannel(null))
+                    .product(ProductDto.ECOMMERCE)
+            )
+        StepVerifier.create(
+            ecommerceTransactionDataProvider.findResult(
+                searchParams = searchCriteria,
+                skip = pageSize,
+                limit = pageNumber
+            )
+        )
+            .consumeNextWith {
+                assertEquals(expected, it)
+                testedStatuses.add(
+                    TransactionStatusDto.valueOf(it[0].transactionInfo.eventStatus.toString())
+                )
+            }
+            .verifyComplete()
+    }
+
     @Test
     fun `should map successfully transaction V2 data into response searching by transaction id for transaction in AUTHORIZATION_COMPLETED KO state`() {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
