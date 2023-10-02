@@ -294,7 +294,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Rifiutato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -412,7 +412,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -530,7 +530,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -648,7 +648,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1037,7 +1037,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Rifiutato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1164,7 +1164,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1294,7 +1294,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1427,7 +1427,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1560,7 +1560,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1693,7 +1693,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1839,7 +1839,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2003,7 +2003,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2185,7 +2185,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2382,7 +2382,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2528,7 +2528,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2745,7 +2745,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails("authorizationCode")
+                            .statusDetails(null)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())

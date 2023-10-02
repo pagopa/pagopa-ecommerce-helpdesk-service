@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestD
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.NpgTransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.PgsTransactionGatewayAuthorizationData
+import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.domain.v2.TransactionWithClosureError
 import it.pagopa.ecommerce.commons.domain.v2.pojos.*
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto
@@ -37,7 +38,11 @@ fun baseTransactionToTransactionInfoDtoV2(baseTransaction: BaseTransaction): Tra
         TransactionInfoDto()
             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
             .status(getTransactionDetailsStatus(baseTransaction))
-            .statusDetails(getStatusDetail(transactionAuthorizationCompletedData?.transactionGatewayAuthorizationData))
+            .statusDetails(
+                getStatusDetail(
+                    transactionAuthorizationCompletedData?.transactionGatewayAuthorizationData
+                )
+            )
             .eventStatus(TransactionStatusDto.valueOf(baseTransaction.status.toString()))
             .amount(amount)
             .fee(fee)
@@ -76,6 +81,15 @@ fun baseTransactionToTransactionInfoDtoV2(baseTransaction: BaseTransaction): Tra
         .paymentInfo(paymentInfo)
         .pspInfo(pspInfo)
 }
+
+fun getStatusDetail(
+    transactionGatewayAuthorizationData: TransactionGatewayAuthorizationData?
+): String? =
+    when (transactionGatewayAuthorizationData) {
+        is PgsTransactionGatewayAuthorizationData -> transactionGatewayAuthorizationData.errorCode
+        is NpgTransactionGatewayAuthorizationData -> null
+        else -> null
+    }
 
 private fun getTransactionFees(baseTransaction: BaseTransaction): Optional<Int> =
     when (baseTransaction) {
