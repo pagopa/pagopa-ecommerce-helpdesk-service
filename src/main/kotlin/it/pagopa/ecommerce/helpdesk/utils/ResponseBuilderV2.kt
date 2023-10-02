@@ -37,7 +37,7 @@ fun baseTransactionToTransactionInfoDtoV2(baseTransaction: BaseTransaction): Tra
         TransactionInfoDto()
             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
             .status(getTransactionDetailsStatus(baseTransaction))
-            .statusDetails(transactionAuthorizationCompletedData?.authorizationCode)
+            .statusDetails(getStatusDetail(transactionAuthorizationCompletedData?.transactionGatewayAuthorizationData))
             .eventStatus(TransactionStatusDto.valueOf(baseTransaction.status.toString()))
             .amount(amount)
             .fee(fee)
