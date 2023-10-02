@@ -271,6 +271,72 @@
 			"response": []
 		},
 		{
+			"name": "Technical helpDesk SearchTransaction TRANSACTION_ID with V2 events",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Technical helpDesk SearchTransaction by TRANSACTION_ID with V2 events - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"TRANSACTION_ID\",\n  \"transactionId\": \"{{TRANSACTION_ID_V2}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v1",
+						"helpdesk",
+						"searchTransaction"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Technical helpDesk SearchTransaction PAYMENT_TOKEN",
 			"event": [
 				{
