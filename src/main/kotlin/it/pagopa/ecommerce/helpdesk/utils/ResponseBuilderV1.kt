@@ -83,7 +83,7 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
             .product(ProductDto.PM)
     }
 
-fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): TransactionResultDto {
+fun baseTransactionToTransactionInfoDtoV1(baseTransaction: BaseTransaction): TransactionResultDto {
     val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
     val fee = getTransactionFees(baseTransaction).orElse(0)
     val totalAmount = amount.plus(fee)
@@ -195,20 +195,20 @@ private fun getTransactionUserReceiptData(
     }
 
 private fun getTransactionDetailsStatus(baseTransaction: BaseTransaction): String =
-    when (getAuthorizationOutcome(baseTransaction)) {
+    when (getAuthorizationOutcomeV1(baseTransaction)) {
         AuthorizationResultDto.OK -> "Confermato"
         AuthorizationResultDto.KO -> "Rifiutato"
         else -> "Cancellato"
     }
 
-fun getAuthorizationOutcome(baseTransaction: BaseTransaction): AuthorizationResultDto? =
+fun getAuthorizationOutcomeV1(baseTransaction: BaseTransaction): AuthorizationResultDto? =
     when (baseTransaction) {
         is BaseTransactionExpired ->
-            getAuthorizationOutcome(baseTransaction.transactionAtPreviousState)
+            getAuthorizationOutcomeV1(baseTransaction.transactionAtPreviousState)
         is BaseTransactionWithRefundRequested ->
-            getAuthorizationOutcome(baseTransaction.transactionAtPreviousState)
+            getAuthorizationOutcomeV1(baseTransaction.transactionAtPreviousState)
         is TransactionWithClosureError ->
-            getAuthorizationOutcome(baseTransaction.transactionAtPreviousState)
+            getAuthorizationOutcomeV1(baseTransaction.transactionAtPreviousState)
         is BaseTransactionWithCompletedAuthorization ->
             baseTransaction.transactionAuthorizationCompletedData.authorizationResultDto
         else -> null
