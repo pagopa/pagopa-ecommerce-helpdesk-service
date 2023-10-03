@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo
 
-import it.pagopa.ecommerce.commons.documents.v1.Transaction
+import it.pagopa.ecommerce.commons.documents.BaseTransactionView
 import org.springframework.data.mongodb.repository.Aggregation
 import org.springframework.data.mongodb.repository.Query
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono
 
 /** eCommerce Mongo transaction view repository */
 @Repository
-interface TransactionsViewRepository : ReactiveCrudRepository<Transaction, String> {
+interface TransactionsViewRepository : ReactiveCrudRepository<BaseTransactionView, String> {
 
     @Query("{'paymentNotices.paymentToken': '?0'}", count = true)
     fun countTransactionsWithPaymentToken(paymentToken: String): Mono<Long>
@@ -25,7 +25,7 @@ interface TransactionsViewRepository : ReactiveCrudRepository<Transaction, Strin
         paymentToken: String,
         skip: Int,
         limit: Int,
-    ): Flux<Transaction>
+    ): Flux<BaseTransactionView>
 
     @Query("{'paymentNotices.rptId': '?0'}", count = true)
     fun countTransactionsWithRptId(rpiId: String): Mono<Long>
@@ -40,5 +40,5 @@ interface TransactionsViewRepository : ReactiveCrudRepository<Transaction, Strin
         rptId: String,
         skip: Int,
         limit: Int
-    ): Flux<Transaction>
+    ): Flux<BaseTransactionView>
 }
