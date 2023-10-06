@@ -197,7 +197,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -312,7 +314,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -430,7 +434,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -548,7 +554,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -666,7 +674,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -1055,7 +1065,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -1182,7 +1194,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -1312,7 +1326,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -1445,7 +1461,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -1578,7 +1596,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -1711,7 +1731,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -1857,7 +1879,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -2021,7 +2045,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -2203,7 +2229,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -2400,7 +2428,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -2546,7 +2576,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
@@ -2763,7 +2795,9 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .paymentMethodName
                             )
                             .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .transactionGatewayAuthorizationRequestedData
+                                    .logo
                                     .toString()
                             )
                     )
