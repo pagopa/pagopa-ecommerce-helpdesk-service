@@ -369,7 +369,7 @@ components:
         statusDetails:
           type: string
         eventStatus:
-          $ref: "https://raw.githubusercontent.com/pagopa/pagopa-ecommerce-transactions-service/main/api-spec/transactions-api.yaml#/components/schemas/TransactionStatus"
+          $ref: "https://raw.githubusercontent.com/pagopa/pagopa-ecommerce-transactions-service/main/api-spec/v1/transactions-api.yaml#/components/schemas/TransactionStatus"
         amount:
           $ref: '#/components/schemas/AmountEuroCents'
         fee:
