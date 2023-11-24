@@ -87,7 +87,7 @@ microservice-chart:
       cpu: "300m"
   autoscaling:
     enable: false
-    minReplica: 2
+    minReplica: 3
     maxReplica: 10
     pollingInterval: 10 # seconds
     cooldownPeriod: 50 # seconds
@@ -133,3 +133,12 @@ microservice-chart:
                 operator: In
                 values:
                   - user
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: pagopaecommercehelpdeskservice
+            namespaces: [ "ecommerce" ]
+            topologyKey: topology.kubernetes.io/zone
