@@ -2,7 +2,9 @@ package it.pagopa.ecommerce.helpdesk.controllers
 
 import it.pagopa.ecommerce.helpdesk.services.EcommerceService
 import it.pagopa.generated.ecommerce.helpdesk.api.EcommerceApi
+import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchDeadLetterEventsRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchDeadLetterEventResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,5 +33,14 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
                 )
             }
             .map { ResponseEntity.ok(it) }
+    }
+
+    override fun ecommerceSearchDeadLetterEvents(
+        pageNumber: Int,
+        pageSize: Int,
+        ecommerceSearchDeadLetterEventsRequestDto: Mono<EcommerceSearchDeadLetterEventsRequestDto>,
+        exchange: ServerWebExchange
+    ): Mono<ResponseEntity<SearchDeadLetterEventResponseDto>> {
+        TODO("Not yet implemented")
     }
 }
