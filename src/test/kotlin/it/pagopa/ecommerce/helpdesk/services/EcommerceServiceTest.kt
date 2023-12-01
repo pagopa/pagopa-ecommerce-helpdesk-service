@@ -181,10 +181,6 @@ class EcommerceServiceTest {
                     .data("data2")
                     .timestamp(OffsetDateTime.MIN)
             )
-        val expectedResponse =
-            SearchDeadLetterEventResponseDto()
-                .deadLetterEvents(deadLetterEventList)
-                .page(PageInfoDto().current(0).results(deadLetterEventList.size).total(1))
         given(deadLetterDataProvider.totalRecordCount(request))
             .willReturn(mono { deadLetterEventList.size })
         given(deadLetterDataProvider.findResult(request, 0, 10))
