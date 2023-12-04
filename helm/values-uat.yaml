@@ -33,7 +33,7 @@ microservice-chart:
       MONGO_USERNAME: pagopa-u-weu-ecommerce-cosmos-account
       MONGO_PORT: "10255"
       MONGO_SSL_ENABLED: "true"
-      SEARCH_DEAD_LETTER_QUEUE_MAPPING: { ALL: '*', ECOMMERCE: 'pagopa-u-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-u-weu-ecommerce-notifications-service-errors-queue' }
+      SEARCH_DEAD_LETTER_QUEUE_MAPPING: {ALL: '*', ECOMMERCE: 'pagopa-u-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-u-weu-ecommerce-notifications-service-errors-queue'}
     envSecret:
       OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
       PM_ORACLE_PASSWORD: pm-oracle-db-password
@@ -41,7 +41,7 @@ microservice-chart:
       MONGO_PASSWORD: mongo-ecommerce-password
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercehelpdeskservice
-    tag: "0.4.1"
+    tag: "1.0.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -71,9 +71,9 @@ microservice-chart:
     servicePort: 8080
   serviceAccount:
     create: false
-    annotations: { }
+    annotations: {}
     name: ""
-  podAnnotations: { }
+  podAnnotations: {}
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -115,7 +115,7 @@ microservice-chart:
     MONGO_USERNAME: pagopa-u-weu-ecommerce-cosmos-account
     MONGO_PORT: "10255"
     MONGO_SSL_ENABLED: "true"
-    SEARCH_DEAD_LETTER_QUEUE_MAPPING: { ALL: '*', ECOMMERCE: 'pagopa-u-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-u-weu-ecommerce-notifications-service-errors-queue' }
+    SEARCH_DEAD_LETTER_QUEUE_MAPPING: {ALL: '*', ECOMMERCE: 'pagopa-u-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-u-weu-ecommerce-notifications-service-errors-queue'}
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PM_ORACLE_PASSWORD: pm-oracle-db-password
@@ -124,8 +124,8 @@ microservice-chart:
   keyvault:
     name: "pagopa-u-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: { }
-  tolerations: [ ]
+  nodeSelector: {}
+  tolerations: []
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
