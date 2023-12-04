@@ -21,17 +21,15 @@ fun buildTransactionSearchResponse(
     totalCount: Int,
     pageSize: Int,
     results: List<TransactionResultDto>
-): SearchTransactionResponseDto {
-    val totalPages =
-        if (totalCount % pageSize == 0) {
-            totalCount / pageSize
-        } else {
-            totalCount / pageSize + 1
-        }
-    return SearchTransactionResponseDto()
-        .page(PageInfoDto().current(currentPage).total(totalPages).results(results.size))
+): SearchTransactionResponseDto =
+    SearchTransactionResponseDto()
+        .page(
+            PageInfoDto()
+                .current(currentPage)
+                .total(calculateTotalPages(totalCount = totalCount, pageSize = pageSize))
+                .results(results.size)
+        )
         .transactions(results)
-}
 
 fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> =
     result.map { row ->
@@ -212,4 +210,26 @@ fun getAuthorizationOutcomeV1(baseTransaction: BaseTransaction): AuthorizationRe
         is BaseTransactionWithCompletedAuthorization ->
             baseTransaction.transactionAuthorizationCompletedData.authorizationResultDto
         else -> null
+    }
+
+fun buildDeadLetterEventsSearchResponse(
+    currentPage: Int,
+    totalCount: Int,
+    pageSize: Int,
+    results: List<DeadLetterEventDto>
+): SearchDeadLetterEventResponseDto =
+    SearchDeadLetterEventResponseDto()
+        .page(
+            PageInfoDto()
+                .current(currentPage)
+                .total(calculateTotalPages(totalCount = totalCount, pageSize = pageSize))
+                .results(results.size)
+        )
+        .deadLetterEvents(results)
+
+private fun calculateTotalPages(totalCount: Int, pageSize: Int) =
+    if (totalCount % pageSize == 0) {
+        totalCount / pageSize
+    } else {
+        totalCount / pageSize + 1
     }

@@ -41,6 +41,15 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
         ecommerceSearchDeadLetterEventsRequestDto: Mono<EcommerceSearchDeadLetterEventsRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchDeadLetterEventResponseDto>> {
-        TODO("Not yet implemented")
+        logger.info("[HelpDesk controller] ecommerceSearchDeadLetterEvents")
+        return ecommerceSearchDeadLetterEventsRequestDto
+            .flatMap {
+                ecommerceService.searchDeadLetterEvents(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchRequest = it
+                )
+            }
+            .map { ResponseEntity.ok(it) }
     }
 }
