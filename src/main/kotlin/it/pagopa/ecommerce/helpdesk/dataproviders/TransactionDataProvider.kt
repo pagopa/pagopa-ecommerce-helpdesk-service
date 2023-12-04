@@ -10,16 +10,19 @@ import reactor.core.publisher.Mono
  * criteria
  *
  * @see HelpDeskSearchTransactionRequestDto
+ * @see DataProvider
+ * @see TransactionResultDto
  */
-interface TransactionDataProvider {
+interface TransactionDataProvider :
+    DataProvider<HelpDeskSearchTransactionRequestDto, TransactionResultDto> {
 
     /** Retrieve total record count for the given search parameters */
-    fun totalRecordCount(searchParams: HelpDeskSearchTransactionRequestDto): Mono<Int>
+    override fun totalRecordCount(searchParams: HelpDeskSearchTransactionRequestDto): Mono<Int>
 
     /**
      * Perform paginated query for retrieve transaction information for the given search criteria
      */
-    fun findResult(
+    override fun findResult(
         searchParams: HelpDeskSearchTransactionRequestDto,
         skip: Int,
         limit: Int

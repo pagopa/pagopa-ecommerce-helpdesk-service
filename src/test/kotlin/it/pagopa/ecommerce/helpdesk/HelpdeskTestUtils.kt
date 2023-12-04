@@ -1,8 +1,10 @@
 package it.pagopa.ecommerce.helpdesk
 
+import it.pagopa.ecommerce.commons.documents.DeadLetterEvent
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
+import java.util.*
 import org.springframework.http.HttpStatus
 
 object HelpdeskTestUtils {
@@ -83,4 +85,12 @@ object HelpdeskTestUtils {
                     .idChannel(TransactionTestUtils.PSP_CHANNEL_CODE)
             )
             .product(product)
+
+    fun buildDeadLetterEvent(queueName: String, data: String) =
+        DeadLetterEvent(
+            UUID.randomUUID().toString(),
+            queueName,
+            OffsetDateTime.now().toString(),
+            data
+        )
 }
