@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "5d453027-c767-402f-81d4-a2186f404af0",
-		"name": "Ecommerce helpDesk-service uat",
+		"_postman_id": "f1096aa3-5675-4f19-a8ee-89a891784fdb",
+		"name": "Ecommerce helpDesk-service UAT",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "24209240"
+		"_exporter_id": "23963988"
 	},
 	"item": [
 		{
@@ -651,6 +651,270 @@
 						"v1",
 						"helpdesk",
 						"searchTransaction"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eCommerce retrieve ALL dead letter events [no time range]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"eCommerce search ALL dead letter events without time range - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.deadLetterEvents.length).greaterThan(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"source\": \"ALL\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v1",
+						"ecommerce",
+						"searchDeadLetterEvents"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eCommerce retrieve ALL dead letter events [with time range]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"eCommerce search ALL dead letter events with time range - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.deadLetterEvents.length).greaterThan(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2023-11-30T14:50:27.001Z\",\n      \"endDate\": \"2023-11-30T14:50:27.999Z\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v1",
+						"ecommerce",
+						"searchDeadLetterEvents"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eCommerce retrieve ECOMMERCE dead letter events [no time range]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"eCommerce search ECOMMERCE dead letter events - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.deadLetterEvents.length).greaterThan(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"source\": \"ECOMMERCE\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v1",
+						"ecommerce",
+						"searchDeadLetterEvents"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eCommerce retrieve NOTIFICATIONS_SERVICE dead letter events [no time range]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"eCommerce search NOTIFICATIONS_SERVICE dead letter events - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.deadLetterEvents.length).greaterThan(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"source\": \"NOTIFICATIONS_SERVICE\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v1",
+						"ecommerce",
+						"searchDeadLetterEvents"
 					],
 					"query": [
 						{
