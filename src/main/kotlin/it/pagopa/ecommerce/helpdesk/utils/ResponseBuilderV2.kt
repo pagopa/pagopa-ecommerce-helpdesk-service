@@ -3,9 +3,7 @@ package it.pagopa.ecommerce.helpdesk.utils
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationCompletedData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData
-import it.pagopa.ecommerce.commons.documents.v2.authorization.NpgTransactionGatewayAuthorizationData
-import it.pagopa.ecommerce.commons.documents.v2.authorization.PgsTransactionGatewayAuthorizationData
-import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGatewayAuthorizationData
+import it.pagopa.ecommerce.commons.documents.v2.authorization.*
 import it.pagopa.ecommerce.commons.domain.v2.TransactionWithClosureError
 import it.pagopa.ecommerce.commons.domain.v2.pojos.*
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto
@@ -51,11 +49,13 @@ fun baseTransactionToTransactionInfoDtoV2(baseTransaction: BaseTransaction): Tra
             .authorizationCode(transactionAuthorizationCompletedData?.authorizationCode)
             .paymentMethodName(transactionAuthorizationRequestData?.paymentMethodName)
             .brand(
-                transactionAuthorizationRequestData
-                    ?.transactionGatewayAuthorizationRequestedData
-                    ?.logo
-                    ?.toString()
+                getBrand(
+                    transactionAuthorizationRequestData
+                        ?.transactionGatewayAuthorizationRequestedData
+                )
             )
+            .authorizationRequestId(transactionAuthorizationRequestData?.authorizationRequestId)
+            .paymentGateway(transactionAuthorizationRequestData?.paymentGateway?.toString())
     // build payment info
     val paymentInfo =
         PaymentInfoDto()
@@ -174,5 +174,13 @@ fun getAuthorizationOutcomeV2(baseTransaction: BaseTransaction): AuthorizationRe
                 else -> null
             }
         }
+        else -> null
+    }
+
+fun getBrand(authorizationRequestedData: TransactionGatewayAuthorizationRequestedData?) =
+    when (authorizationRequestedData) {
+        is NpgTransactionGatewayAuthorizationRequestedData -> authorizationRequestedData.brand
+        is PgsTransactionGatewayAuthorizationRequestedData ->
+            authorizationRequestedData.brand?.toString()
         else -> null
     }

@@ -242,6 +242,14 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
                             )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -369,6 +377,14 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
                             )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -487,6 +503,14 @@ class EcommerceForTransactionV1DataProviderTest {
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
+                                    .toString()
+                            )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -724,6 +748,14 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
                             )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -835,6 +867,14 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
                             )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -944,6 +984,14 @@ class EcommerceForTransactionV1DataProviderTest {
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
+                                    .toString()
+                            )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -1060,6 +1108,14 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
                             )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1174,6 +1230,14 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
                             )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1286,6 +1350,14 @@ class EcommerceForTransactionV1DataProviderTest {
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
+                                    .toString()
+                            )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -1671,6 +1743,14 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
                             )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1790,6 +1870,14 @@ class EcommerceForTransactionV1DataProviderTest {
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
+                                    .toString()
+                            )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -1914,6 +2002,14 @@ class EcommerceForTransactionV1DataProviderTest {
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
+                                    .toString()
+                            )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -2043,6 +2139,14 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
                             )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -2170,6 +2274,14 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
                             )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -2295,6 +2407,14 @@ class EcommerceForTransactionV1DataProviderTest {
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
+                                    .toString()
+                            )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -2435,6 +2555,14 @@ class EcommerceForTransactionV1DataProviderTest {
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
+                                    .toString()
+                            )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -2593,6 +2721,14 @@ class EcommerceForTransactionV1DataProviderTest {
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
+                                    .toString()
+                            )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -2769,6 +2905,14 @@ class EcommerceForTransactionV1DataProviderTest {
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
+                                    .toString()
+                            )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -2962,6 +3106,14 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
                             )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -3100,6 +3252,14 @@ class EcommerceForTransactionV1DataProviderTest {
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
+                                    .toString()
+                            )
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )

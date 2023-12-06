@@ -196,10 +196,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -313,10 +316,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -433,10 +439,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -553,10 +562,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -673,10 +685,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -1064,10 +1079,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -1193,10 +1211,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -1325,10 +1346,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -1460,10 +1484,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -1595,10 +1622,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -1730,10 +1760,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -1878,10 +1911,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -2044,10 +2080,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -2228,10 +2267,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -2427,10 +2469,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -2575,10 +2620,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
@@ -2794,10 +2842,13 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand(
+                            .brand("VISA")
+                            .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
-                                    .transactionGatewayAuthorizationRequestedData
-                                    .logo
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
                     )
