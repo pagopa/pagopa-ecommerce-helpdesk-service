@@ -113,6 +113,8 @@ fun baseTransactionToTransactionInfoDtoV1(baseTransaction: BaseTransaction): Tra
             .authorizationCode(transactionAuthorizationCompletedData?.authorizationCode)
             .paymentMethodName(transactionAuthorizationRequestData?.paymentMethodName)
             .brand(transactionAuthorizationRequestData?.brand?.toString())
+            .authorizationRequestId(transactionAuthorizationRequestData?.authorizationRequestId)
+            .paymentGateway(transactionAuthorizationRequestData?.paymentGateway?.toString())
     // build payment info
     val paymentInfo =
         PaymentInfoDto()
