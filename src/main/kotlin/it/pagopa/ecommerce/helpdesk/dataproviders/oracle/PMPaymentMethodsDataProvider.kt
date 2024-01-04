@@ -62,22 +62,14 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
                     Flux.from(
                             connection.createStatement(resultQuery).bind(0, searchParam).execute()
                         )
-                        .flatMap { resultToPaymentMethodDtoList(it) }
                 },
                 { it.close() }
             )
             .collectList()
             .switchIfEmpty { Mono.error(NoResultFoundException(searchType)) }
             .map { results
-                -> // select first item for generics property and merge list of all payment method
-                // result
-                SearchPaymentMethodResponseDto()
-                    .fiscalCode(results[0].fiscalCode)
-                    .notificationEmail(results[0].notificationEmail)
-                    .surname(results[0].surname)
-                    .name(results[0].name)
-                    .username(results[0].username)
-                    .status(results[0].status)
-                    .paymentMethods(results.flatMap { it.paymentMethods })
+                ->
+                 resultToPaymentMethodDtoList(results)
+
             }
 }

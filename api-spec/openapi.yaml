@@ -706,8 +706,6 @@ components:
           format: date-time
         idPsp:
           type: string
-        businessName:
-          type: string
         cardBin:
           type: string
         cardNumber:
@@ -746,8 +744,6 @@ components:
           format: date-time
         idPsp:
           type: string
-        businessName:
-          type: string
         bpayName:
           type: string
         bpayPhoneNumber:
@@ -767,8 +763,6 @@ components:
           type: string
           format: date-time
         idPsp:
-          type: string
-        businessName:
           type: string
         uidSatispay:
           type: string
