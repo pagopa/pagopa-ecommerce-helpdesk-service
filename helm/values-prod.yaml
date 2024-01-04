@@ -26,13 +26,16 @@ microservice-chart:
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
       OTEL_LOGS_EXPORTER: none
       OTEL_TRACES_SAMPLER: "always_on"
-      PM_ORACLE_PORT: ""
-      PM_ORACLE_DATABASE_NAME: ""
-      PM_ORACLE_USERNAME: ""
+      PM_ORACLE_PORT: "1523"
+      PM_ORACLE_DATABASE_NAME: "AZAGIDP"
+      PM_ORACLE_USERNAME: "PAGOPA_SV"
       MONGO_HOST: pagopa-p-weu-ecommerce-cosmos-account.mongo.cosmos.azure.com
       MONGO_USERNAME: pagopa-p-weu-ecommerce-cosmos-account
       MONGO_PORT: "10255"
       MONGO_SSL_ENABLED: "true"
+      SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
+        {ALL: '*', ECOMMERCE: 'pagopa-p-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-p-weu-ecommerce-notifications-service-errors-queue'}
+
     envSecret:
       OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
       PM_ORACLE_PASSWORD: pm-oracle-db-password
@@ -40,20 +43,20 @@ microservice-chart:
       MONGO_PASSWORD: mongo-ecommerce-password
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaecommercehelpdeskservice
-    tag: "0.1.0"
+    tag: "1.1.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 40
+    initialDelaySeconds: 100
     failureThreshold: 6
     periodSeconds: 10
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 40
+    initialDelaySeconds: 100
     failureThreshold: 6
     periodSeconds: 10
   deployment:
@@ -86,8 +89,8 @@ microservice-chart:
       memory: "512Mi"
       cpu: "300m"
   autoscaling:
-    enable: false
-    minReplica: 2
+    enable: true
+    minReplica: 3
     maxReplica: 10
     pollingInterval: 10 # seconds
     cooldownPeriod: 50 # seconds
@@ -107,13 +110,16 @@ microservice-chart:
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
-    PM_ORACLE_PORT: ""
-    PM_ORACLE_DATABASE_NAME: ""
-    PM_ORACLE_USERNAME: ""
+    PM_ORACLE_PORT: "1523"
+    PM_ORACLE_DATABASE_NAME: "AZAGIDP"
+    PM_ORACLE_USERNAME: "PAGOPA_SV"
     MONGO_HOST: pagopa-p-weu-ecommerce-cosmos-account.mongo.cosmos.azure.com
     MONGO_USERNAME: pagopa-p-weu-ecommerce-cosmos-account
     MONGO_PORT: "10255"
     MONGO_SSL_ENABLED: "true"
+    SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
+      {ALL: '*', ECOMMERCE: 'pagopa-p-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-p-weu-ecommerce-notifications-service-errors-queue'}
+
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PM_ORACLE_PASSWORD: pm-oracle-db-password
@@ -133,3 +139,12 @@ microservice-chart:
                 operator: In
                 values:
                   - user
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: pagopaecommercehelpdeskservice
+            namespaces: ["ecommerce"]
+            topologyKey: topology.kubernetes.io/zone

@@ -33,6 +33,9 @@ microservice-chart:
       MONGO_USERNAME: pagopa-u-weu-ecommerce-cosmos-account
       MONGO_PORT: "10255"
       MONGO_SSL_ENABLED: "true"
+      SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
+        {ALL: '*', ECOMMERCE: 'pagopa-u-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-u-weu-ecommerce-notifications-service-errors-queue'}
+
     envSecret:
       OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
       PM_ORACLE_PASSWORD: pm-oracle-db-password
@@ -40,20 +43,20 @@ microservice-chart:
       MONGO_PASSWORD: mongo-ecommerce-password
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercehelpdeskservice
-    tag: "0.1.0"
+    tag: "1.1.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 40
+    initialDelaySeconds: 60
     failureThreshold: 6
     periodSeconds: 10
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 40
+    initialDelaySeconds: 60
     failureThreshold: 6
     periodSeconds: 10
   deployment:
@@ -114,6 +117,9 @@ microservice-chart:
     MONGO_USERNAME: pagopa-u-weu-ecommerce-cosmos-account
     MONGO_PORT: "10255"
     MONGO_SSL_ENABLED: "true"
+    SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
+      {ALL: '*', ECOMMERCE: 'pagopa-u-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-u-weu-ecommerce-notifications-service-errors-queue'}
+
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PM_ORACLE_PASSWORD: pm-oracle-db-password

@@ -228,4 +228,40 @@ class EcommerceControllerTest {
                 .expectBody<ProblemJsonDto>()
                 .isEqualTo(expected)
         }
+
+    @Test
+    fun `Post search dead letter should return records successfully searching for all dead letter events without time range`() =
+        runTest {
+            val pageNumber = 1
+            val pageSize = 15
+            val request =
+                EcommerceSearchDeadLetterEventsRequestDto()
+                    .source(DeadLetterSearchEventSourceDto.ALL)
+            val expected = SearchDeadLetterEventResponseDto()
+
+            given(
+                    ecommerceService.searchDeadLetterEvents(
+                        pageNumber = pageNumber,
+                        pageSize = pageSize,
+                        searchRequest = request
+                    )
+                )
+                .willReturn(Mono.just(SearchDeadLetterEventResponseDto()))
+            webClient
+                .post()
+                .uri { uriBuilder ->
+                    uriBuilder
+                        .path("/ecommerce/searchDeadLetterEvents")
+                        .queryParam("pageNumber", "{pageNumber}")
+                        .queryParam("pageSize", "{pageSize}")
+                        .build(pageNumber, pageSize)
+                }
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<SearchDeadLetterEventResponseDto>()
+                .isEqualTo(expected)
+        }
 }

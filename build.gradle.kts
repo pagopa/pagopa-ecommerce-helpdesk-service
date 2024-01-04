@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "it.pagopa.ecommerce.helpdesk"
 
-version = "0.1.0"
+version = "1.1.0"
 
 description = "pagopa-ecommerce-helpdesk-service"
 
@@ -20,7 +20,7 @@ plugins {
   application
 }
 // eCommerce commons library version
-val ecommerceCommonsVersion = "0.19.8"
+val ecommerceCommonsVersion = "1.0.0"
 
 // eCommerce commons library git ref (by default tag)
 val ecommerceCommonsGitRef = ecommerceCommonsVersion

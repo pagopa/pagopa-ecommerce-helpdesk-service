@@ -132,6 +132,64 @@ class HelpdeskServiceTest {
     }
 
     @Test
+    fun `Should recover records from eCommerce DB last page without remainder`() {
+        val totalEcommerceCount = 8
+        val totalPmCount = 5
+        val pageSize = 4
+        val pageNumber = 1
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it")
+        val ecommerceResults =
+            listOf(
+                HelpdeskTestUtils.buildTransactionResultDto(
+                    OffsetDateTime.now(),
+                    ProductDto.ECOMMERCE
+                )
+            )
+        val pmResults =
+            listOf(HelpdeskTestUtils.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM))
+        given(ecommerceTransactionDataProvider.totalRecordCount(searchCriteria))
+            .willReturn(Mono.just(totalEcommerceCount))
+        given(pmTransactionDataProvider.totalRecordCount(searchCriteria))
+            .willReturn(Mono.just(totalPmCount))
+        given(
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams = eq(searchCriteria),
+                    limit = any(),
+                    skip = any()
+                )
+            )
+            .willReturn(Mono.just(ecommerceResults))
+        given(
+                pmTransactionDataProvider.findResult(
+                    searchParams = eq(searchCriteria),
+                    limit = any(),
+                    skip = any()
+                )
+            )
+            .willReturn(Mono.just(pmResults))
+
+        StepVerifier.create(
+                helpdeskService.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchTransactionRequestDto = searchCriteria
+                )
+            )
+            .expectNext(
+                SearchTransactionResponseDto()
+                    .transactions(ecommerceResults)
+                    .page(PageInfoDto().current(1).total(4).results(ecommerceResults.size))
+            )
+            .verifyComplete()
+        verify(pmTransactionDataProvider, times(1)).totalRecordCount(searchCriteria)
+        verify(ecommerceTransactionDataProvider, times(1)).totalRecordCount(searchCriteria)
+        verify(ecommerceTransactionDataProvider, times(1))
+            .findResult(skip = 4, limit = 4, searchParams = searchCriteria)
+        verify(pmTransactionDataProvider, times(0))
+            .findResult(skip = any(), limit = any(), searchParams = any())
+    }
+
+    @Test
     fun `Should recover records from PM DB only`() {
         val totalEcommerceCount = 5
         val totalPmCount = 5

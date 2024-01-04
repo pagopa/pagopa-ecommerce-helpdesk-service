@@ -22,17 +22,15 @@ fun buildTransactionSearchResponse(
     totalCount: Int,
     pageSize: Int,
     results: List<TransactionResultDto>
-): SearchTransactionResponseDto {
-    val totalPages =
-        if (totalCount % pageSize == 0) {
-            totalCount / pageSize
-        } else {
-            totalCount / pageSize + 1
-        }
-    return SearchTransactionResponseDto()
-        .page(PageInfoDto().current(currentPage).total(totalPages).results(results.size))
+): SearchTransactionResponseDto =
+    SearchTransactionResponseDto()
+        .page(
+            PageInfoDto()
+                .current(currentPage)
+                .total(calculateTotalPages(totalCount = totalCount, pageSize = pageSize))
+                .results(results.size)
+        )
         .transactions(results)
-}
 
 fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> =
     result.map { row ->
@@ -84,6 +82,7 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
             .product(ProductDto.PM)
     }
 
+fun baseTransactionToTransactionInfoDtoV1(baseTransaction: BaseTransaction): TransactionResultDto {
 fun resultToPaymentMethodDtoList(result: Result): Publisher<SearchPaymentMethodResponseDto> =
     result.map { row ->
         SearchPaymentMethodResponseDto()
@@ -193,6 +192,8 @@ fun baseTransactionToTransactionInfoDto(baseTransaction: BaseTransaction): Trans
             .authorizationCode(transactionAuthorizationCompletedData?.authorizationCode)
             .paymentMethodName(transactionAuthorizationRequestData?.paymentMethodName)
             .brand(transactionAuthorizationRequestData?.brand?.toString())
+            .authorizationRequestId(transactionAuthorizationRequestData?.authorizationRequestId)
+            .paymentGateway(transactionAuthorizationRequestData?.paymentGateway?.toString())
     // build payment info
     val paymentInfo =
         PaymentInfoDto()
@@ -273,21 +274,43 @@ private fun getTransactionUserReceiptData(
     }
 
 private fun getTransactionDetailsStatus(baseTransaction: BaseTransaction): String =
-    when (getAuthorizationOutcome(baseTransaction)) {
+    when (getAuthorizationOutcomeV1(baseTransaction)) {
         AuthorizationResultDto.OK -> "Confermato"
         AuthorizationResultDto.KO -> "Rifiutato"
         else -> "Cancellato"
     }
 
-fun getAuthorizationOutcome(baseTransaction: BaseTransaction): AuthorizationResultDto? =
+fun getAuthorizationOutcomeV1(baseTransaction: BaseTransaction): AuthorizationResultDto? =
     when (baseTransaction) {
         is BaseTransactionExpired ->
-            getAuthorizationOutcome(baseTransaction.transactionAtPreviousState)
+            getAuthorizationOutcomeV1(baseTransaction.transactionAtPreviousState)
         is BaseTransactionWithRefundRequested ->
-            getAuthorizationOutcome(baseTransaction.transactionAtPreviousState)
+            getAuthorizationOutcomeV1(baseTransaction.transactionAtPreviousState)
         is TransactionWithClosureError ->
-            getAuthorizationOutcome(baseTransaction.transactionAtPreviousState)
+            getAuthorizationOutcomeV1(baseTransaction.transactionAtPreviousState)
         is BaseTransactionWithCompletedAuthorization ->
             baseTransaction.transactionAuthorizationCompletedData.authorizationResultDto
         else -> null
+    }
+
+fun buildDeadLetterEventsSearchResponse(
+    currentPage: Int,
+    totalCount: Int,
+    pageSize: Int,
+    results: List<DeadLetterEventDto>
+): SearchDeadLetterEventResponseDto =
+    SearchDeadLetterEventResponseDto()
+        .page(
+            PageInfoDto()
+                .current(currentPage)
+                .total(calculateTotalPages(totalCount = totalCount, pageSize = pageSize))
+                .results(results.size)
+        )
+        .deadLetterEvents(results)
+
+private fun calculateTotalPages(totalCount: Int, pageSize: Int) =
+    if (totalCount % pageSize == 0) {
+        totalCount / pageSize
+    } else {
+        totalCount / pageSize + 1
     }
