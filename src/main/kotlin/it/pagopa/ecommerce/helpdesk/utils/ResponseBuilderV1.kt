@@ -16,6 +16,9 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
 import org.reactivestreams.Publisher
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 fun buildTransactionSearchResponse(
     currentPage: Int,
@@ -82,91 +85,114 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
             .product(ProductDto.PM)
     }
 
-fun resultToPaymentMethodDtoList(results: List<Result>): Publisher<SearchPaymentMethodResponseDto> {
-    val response = results[0].map { row ->
-        SearchPaymentMethodResponseDto()
-            .fiscalCode(row[0, String::class.java])
-            .notificationEmail(row[1, String::class.java])
-            .surname(row[2, String::class.java])
-            .name(row[3, String::class.java])
-            .username(row[4, String::class.java])
-            .status(row[5, String::class.java])
-            .paymentMethods(
-                results
-                    .map {
-                        result -> result.map { row ->
-                        if (row[6, String::class.java] != null) { // FK_CREDIT_CARD
-                            CardDetailInfoDto()
-                                .type(DetailTypeDto.CARD.value)
-                                .creationDate(
-                                    row[14, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
-                                )
-                                .idPsp(row[15, String::class.java])
-                                .businessName(row[16, String::class.java])
-                                .cardBin(row[17, String::class.java])
-                                .cardNumber(row[18, String::class.java])
-                        } else if (row[7, String::class.java] != null) { // FK_BUYER_BANK
-                            BankAccountDetailInfoDto()
-                                .type(DetailTypeDto.BANK_ACCOUNT.value)
-                                .creationDate(
-                                    row[14, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
-                                )
-                                .bankName(row[19, String::class.java])
-                                .bankState(row[20, String::class.java])
-                        } else if (row[8, String::class.java] != null) { // FK_BANCOMAT_CARD
-                            BancomatDetailInfoDto()
-                                .type(DetailTypeDto.BANCOMAT.value)
-                                .creationDate(
-                                    row[14, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
-                                )
-                                .bancomatAbi(row[21, String::class.java])
-                                .bancomatNumber(row[22, String::class.java])
-                        } else if (row[9, String::class.java] != null) { // FK_SATISPAY
-                            SatispayDetailInfoDto()
-                                .type(DetailTypeDto.SATISPAY.value)
-                                .creationDate(
-                                    row[14, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
-                                )
-                                .idPsp(row[15, String::class.java])
-                                .businessName(row[16, String::class.java])
-                                .uidSatispay(row[23, String::class.java])
-                        } else if (row[10, String::class.java] != null) { // FK_BPAY
-                            BpayDetailInfoDto()
-                                .type(DetailTypeDto.BPAY.value)
-                                .creationDate(
-                                    row[14, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
-                                )
-                                .idPsp(row[15, String::class.java])
-                                .businessName(row[16, String::class.java])
-                                .bpayName(row[24, String::class.java])
-                                .bpayPhoneNumber(row[25, String::class.java])
-                        } else if (row[11, String::class.java] != null) { // FK_GENERIC_INSTRUMENT
-                            GenericMethodDetailInfoDto()
-                                .type(DetailTypeDto.GENERIC_METHOD.value)
-                                .creationDate(
-                                    row[14, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
-                                )
-                                .description((row[26, String::class.java]))
-                        } else if ((PAYPAL_TYPE == (row[12, Long::class.java]))) { // PAYPAL
-                            PaypalDetailInfoDto()
-                                .type(DetailTypeDto.PAYPAL.value)
-                                .creationDate(
-                                    row[14, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
-                                )
-                                .ppayEmail((row[28, String::class.java]))
-                        } else {
-                            null
+fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMethodResponseDto> {
+    val paymentMethods =
+        Flux.fromIterable(results)
+            .flatMap { result ->
+                result
+                    .map { row ->
+                        when {
+                            row[6, String::class.java] != null -> { // FK_CREDIT_CARD
+                                CardDetailInfoDto()
+                                    .type(DetailTypeDto.CARD.value)
+                                    .creationDate(
+                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                            ZoneOffset.of("+2")
+                                        )
+                                    )
+                                    .idPsp(row[15, String::class.java])
+                                    .cardBin(row[17, String::class.java])
+                                    .cardNumber(row[18, String::class.java])
+                            }
+                            row[7, String::class.java] != null -> { // FK_BUYER_BANK
+                                BankAccountDetailInfoDto()
+                                    .type(DetailTypeDto.BANK_ACCOUNT.value)
+                                    .creationDate(
+                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                            ZoneOffset.of("+2")
+                                        )
+                                    )
+                                    .bankName(row[19, String::class.java])
+                                    .bankState(row[20, String::class.java])
+                            }
+                            row[8, String::class.java] != null -> { // FK_BANCOMAT_CARD
+                                BancomatDetailInfoDto()
+                                    .type(DetailTypeDto.BANCOMAT.value)
+                                    .creationDate(
+                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                            ZoneOffset.of("+2")
+                                        )
+                                    )
+                                    .bancomatAbi(row[21, String::class.java])
+                                    .bancomatNumber(row[22, String::class.java])
+                            }
+                            row[9, String::class.java] != null -> { // FK_SATISPAY
+                                SatispayDetailInfoDto()
+                                    .type(DetailTypeDto.SATISPAY.value)
+                                    .creationDate(
+                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                            ZoneOffset.of("+2")
+                                        )
+                                    )
+                                    .idPsp(row[15, String::class.java])
+                                    .uidSatispay(row[23, String::class.java])
+                            }
+                            row[10, String::class.java] != null -> { // FK_BPAY
+                                BpayDetailInfoDto()
+                                    .type(DetailTypeDto.BPAY.value)
+                                    .creationDate(
+                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                            ZoneOffset.of("+2")
+                                        )
+                                    )
+                                    .idPsp(row[15, String::class.java])
+                                    .bpayName(row[24, String::class.java])
+                                    .bpayPhoneNumber(row[25, String::class.java])
+                            }
+                            row[11, String::class.java] != null -> { // FK_GENERIC_INSTRUMENT
+                                GenericMethodDetailInfoDto()
+                                    .type(DetailTypeDto.GENERIC_METHOD.value)
+                                    .creationDate(
+                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                            ZoneOffset.of("+2")
+                                        )
+                                    )
+                                    .description((row[26, String::class.java]))
+                            }
+                            PAYPAL_TYPE == (row[12, Long::class.java]) -> { // PAYPAL
+                                PaypalDetailInfoDto()
+                                    .type(DetailTypeDto.PAYPAL.value)
+                                    .creationDate(
+                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                            ZoneOffset.of("+2")
+                                        )
+                                    )
+                                    .ppayEmail((row[28, String::class.java]))
+                            }
+                            else -> {
+                                null
+                            }
                         }
                     }
-                    }
-                    .toList()
-            )
-    }
-     return response;
-
-
+                    .toMono()
+            }
+            .collectList()
+    val response =
+        results[0]
+            .map { row ->
+                SearchPaymentMethodResponseDto()
+                    .fiscalCode(row[0, String::class.java])
+                    .notificationEmail(row[1, String::class.java])
+                    .surname(row[2, String::class.java])
+                    .name(row[3, String::class.java])
+                    .username(row[4, String::class.java])
+                    .status(row[5, String::class.java])
+            }
+            .toMono()
+            .zipWith(paymentMethods, ::Pair)
+            .map { (searchResult, paymentMethods) -> searchResult.paymentMethods(paymentMethods) }
+    return response
 }
-
 
 fun baseTransactionToTransactionInfoDtoV1(baseTransaction: BaseTransaction): TransactionResultDto {
     val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }

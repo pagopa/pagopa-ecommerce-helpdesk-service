@@ -21,9 +21,11 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
     PaymentMethodDataProvider {
 
     private val logger = LoggerFactory.getLogger(javaClass)
+
     companion object {
         const val PAYPAL_TYPE: Long = 5
     }
+
     override fun findResult(
         searchParams: PmSearchPaymentMethodsRequestDto
     ): Mono<SearchPaymentMethodResponseDto> {
@@ -60,16 +62,12 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
                     logger.info("Retrieving payment methods from PM database.")
 
                     Flux.from(
-                            connection.createStatement(resultQuery).bind(0, searchParam).execute()
-                        )
+                        connection.createStatement(resultQuery).bind(0, searchParam).execute()
+                    )
                 },
                 { it.close() }
             )
             .collectList()
             .switchIfEmpty { Mono.error(NoResultFoundException(searchType)) }
-            .map { results
-                ->
-                 resultToPaymentMethodDtoList(results)
-
-            }
+            .flatMap { results -> resultToPaymentMethodDtoList(results) }
 }
