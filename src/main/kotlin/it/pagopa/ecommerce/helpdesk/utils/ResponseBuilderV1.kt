@@ -92,82 +92,81 @@ fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMetho
                 result
                     .map { row ->
                         when {
-                            row[6, String::class.java] != null -> { // FK_CREDIT_CARD
+                            row[10, String::class.java] != null -> { // FK_CREDIT_CARD
                                 CardDetailInfoDto()
                                     .type(DetailTypeDto.CARD.value)
                                     .creationDate(
-                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                        row[7, LocalDateTime::class.java]?.atOffset(
                                             ZoneOffset.of("+2")
                                         )
                                     )
-                                    .idPsp(row[15, String::class.java])
-                                    .cardBin(row[17, String::class.java])
-                                    .cardNumber(row[18, String::class.java])
+                                    .idPsp(row[8, String::class.java])
+                                    .cardBin(row[11, String::class.java])
+                                    .cardNumber(row[12, String::class.java])
                             }
-                            row[7, String::class.java] != null -> { // FK_BUYER_BANK
+                            row[13, String::class.java] != null -> { // FK_BUYER_BANK
                                 BankAccountDetailInfoDto()
                                     .type(DetailTypeDto.BANK_ACCOUNT.value)
                                     .creationDate(
-                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                        row[7, LocalDateTime::class.java]?.atOffset(
                                             ZoneOffset.of("+2")
                                         )
                                     )
-                                    .bankName(row[19, String::class.java])
-                                    .bankState(row[20, String::class.java])
+                                    .bankName(row[14, String::class.java])
+                                    .bankState(row[15, String::class.java])
                             }
-                            row[8, String::class.java] != null -> { // FK_BANCOMAT_CARD
+                            row[16, String::class.java] != null -> { // FK_BANCOMAT_CARD
                                 BancomatDetailInfoDto()
                                     .type(DetailTypeDto.BANCOMAT.value)
                                     .creationDate(
-                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                        row[7, LocalDateTime::class.java]?.atOffset(
                                             ZoneOffset.of("+2")
                                         )
                                     )
-                                    .bancomatAbi(row[21, String::class.java])
-                                    .bancomatNumber(row[22, String::class.java])
+                                    .bancomatAbi(row[17, String::class.java])
+                                    .bancomatNumber(row[18, String::class.java])
                             }
-                            row[9, String::class.java] != null -> { // FK_SATISPAY
+                            row[19, String::class.java] != null -> { // FK_SATISPAY
                                 SatispayDetailInfoDto()
                                     .type(DetailTypeDto.SATISPAY.value)
                                     .creationDate(
-                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                        row[7, LocalDateTime::class.java]?.atOffset(
                                             ZoneOffset.of("+2")
                                         )
                                     )
-                                    .idPsp(row[15, String::class.java])
-                                    .uidSatispay(row[23, String::class.java])
+                                    .idPsp(row[8, String::class.java])
                             }
-                            row[10, String::class.java] != null -> { // FK_BPAY
+                            row[20, String::class.java] != null -> { // FK_BPAY
                                 BpayDetailInfoDto()
                                     .type(DetailTypeDto.BPAY.value)
                                     .creationDate(
-                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                        row[7, LocalDateTime::class.java]?.atOffset(
                                             ZoneOffset.of("+2")
                                         )
                                     )
-                                    .idPsp(row[15, String::class.java])
-                                    .bpayName(row[24, String::class.java])
-                                    .bpayPhoneNumber(row[25, String::class.java])
+                                    .idPsp(row[8, String::class.java])
+                                    .bpayName(row[21, String::class.java])
+                                    .bpayPhoneNumber(row[22, String::class.java])
                             }
-                            row[11, String::class.java] != null -> { // FK_GENERIC_INSTRUMENT
+                            row[23, String::class.java] != null -> { // FK_GENERIC_INSTRUMENT
                                 GenericMethodDetailInfoDto()
                                     .type(DetailTypeDto.GENERIC_METHOD.value)
                                     .creationDate(
-                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                        row[7, LocalDateTime::class.java]?.atOffset(
                                             ZoneOffset.of("+2")
                                         )
                                     )
-                                    .description((row[26, String::class.java]))
+                                    .description((row[24, String::class.java]))
                             }
-                            PAYPAL_TYPE == (row[12, Long::class.java]) -> { // PAYPAL
+                            row[25, String::class.java] != null -> { // FK_PPAL
                                 PaypalDetailInfoDto()
                                     .type(DetailTypeDto.PAYPAL.value)
                                     .creationDate(
-                                        row[14, LocalDateTime::class.java]?.atOffset(
+                                        row[7, LocalDateTime::class.java]?.atOffset(
                                             ZoneOffset.of("+2")
                                         )
                                     )
-                                    .ppayEmail((row[28, String::class.java]))
+                                    .ppayEmail((row[26, String::class.java]))
                             }
                             else -> {
                                 null
@@ -176,7 +175,8 @@ fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMetho
                     }
                     .toMono()
             }
-            .collectList()
+            .collectSortedList(compareBy { it?.type })
+
     val response =
         results[0]
             .map { row ->
