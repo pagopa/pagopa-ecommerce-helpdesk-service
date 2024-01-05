@@ -36,6 +36,18 @@ object HelpdeskTestUtils {
     fun buildSearchRequestByUserMail(email: String): SearchTransactionRequestEmailDto =
         SearchTransactionRequestEmailDto().userEmail(email).type("USER_EMAIL")
 
+    fun buildPaymentMethodSearchRequestByUserFiscalCode(
+        fiscalCode: String
+    ): SearchPaymentMethodRequestFiscalCodeDto =
+        SearchPaymentMethodRequestFiscalCodeDto()
+            .userFiscalCode(fiscalCode)
+            .type("USER_FISCAL_CODE")
+
+    fun buildPaymentMethodSearchRequestByUserEmail(
+        userEmail: String
+    ): SearchPaymentMethodRequestEmailDto =
+        SearchPaymentMethodRequestEmailDto().userEmail(userEmail).type("USER_EMAIL")
+
     fun buildTransactionResultDto(
         creationDate: OffsetDateTime,
         product: ProductDto
