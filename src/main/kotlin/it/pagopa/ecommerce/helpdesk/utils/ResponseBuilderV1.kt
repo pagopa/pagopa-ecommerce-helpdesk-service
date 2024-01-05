@@ -17,7 +17,6 @@ import java.util.*
 import org.reactivestreams.Publisher
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.toMono
 
 fun buildTransactionSearchResponse(
     currentPage: Int,
@@ -84,14 +83,20 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
             .product(ProductDto.PM)
     }
 
-fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMethodResponseDto> {
-    val paymentMethods =
-        Flux.fromIterable(results)
-            .flatMap { result ->
-                result
-                    .map { row ->
+fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMethodResponseDto> =
+    Flux.fromIterable(results)
+        .flatMap { result ->
+            result.map { row ->
+                SearchPaymentMethodResponseDto()
+                    .fiscalCode(row[0, String::class.java])
+                    .notificationEmail(row[1, String::class.java])
+                    .surname(row[2, String::class.java])
+                    .name(row[3, String::class.java])
+                    .username(row[4, String::class.java])
+                    .status(row[5, String::class.java])
+                    .addPaymentMethodsItem(
                         when {
-                            row[10, String::class.java] != null -> { // FK_CREDIT_CARD
+                            row[10, BigDecimal::class.java] != null -> { // FK_CREDIT_CARD
                                 CardDetailInfoDto()
                                     .type(DetailTypeDto.CARD.value)
                                     .creationDate(
@@ -103,7 +108,7 @@ fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMetho
                                     .cardBin(row[11, String::class.java])
                                     .cardNumber(row[12, String::class.java])
                             }
-                            row[13, String::class.java] != null -> { // FK_BUYER_BANK
+                            row[13, BigDecimal::class.java] != null -> { // FK_BUYER_BANK
                                 BankAccountDetailInfoDto()
                                     .type(DetailTypeDto.BANK_ACCOUNT.value)
                                     .creationDate(
@@ -114,7 +119,7 @@ fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMetho
                                     .bankName(row[14, String::class.java])
                                     .bankState(row[15, String::class.java])
                             }
-                            row[16, String::class.java] != null -> { // FK_BANCOMAT_CARD
+                            row[16, BigDecimal::class.java] != null -> { // FK_BANCOMAT_CARD
                                 BancomatDetailInfoDto()
                                     .type(DetailTypeDto.BANCOMAT.value)
                                     .creationDate(
@@ -125,7 +130,7 @@ fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMetho
                                     .bancomatAbi(row[17, String::class.java])
                                     .bancomatNumber(row[18, String::class.java])
                             }
-                            row[19, String::class.java] != null -> { // FK_SATISPAY
+                            row[19, BigDecimal::class.java] != null -> { // FK_SATISPAY
                                 SatispayDetailInfoDto()
                                     .type(DetailTypeDto.SATISPAY.value)
                                     .creationDate(
@@ -135,7 +140,7 @@ fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMetho
                                     )
                                     .idPsp(row[8, String::class.java])
                             }
-                            row[20, String::class.java] != null -> { // FK_BPAY
+                            row[20, BigDecimal::class.java] != null -> { // FK_BPAY
                                 BpayDetailInfoDto()
                                     .type(DetailTypeDto.BPAY.value)
                                     .creationDate(
@@ -147,7 +152,7 @@ fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMetho
                                     .bpayName(row[21, String::class.java])
                                     .bpayPhoneNumber(row[22, String::class.java])
                             }
-                            row[23, String::class.java] != null -> { // FK_GENERIC_INSTRUMENT
+                            row[23, BigDecimal::class.java] != null -> { // FK_GENERIC_INSTRUMENT
                                 GenericMethodDetailInfoDto()
                                     .type(DetailTypeDto.GENERIC_METHOD.value)
                                     .creationDate(
@@ -157,7 +162,7 @@ fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMetho
                                     )
                                     .description((row[24, String::class.java]))
                             }
-                            row[25, String::class.java] != null -> { // FK_PPAL
+                            row[25, BigDecimal::class.java] != null -> { // FK_PPAL
                                 PaypalDetailInfoDto()
                                     .type(DetailTypeDto.PAYPAL.value)
                                     .creationDate(
@@ -171,27 +176,18 @@ fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMetho
                                 null
                             }
                         }
-                    }
-                    .toMono()
+                    )
             }
-            .collectSortedList(compareBy { it?.type })
-
-    val response =
-        results[0]
-            .map { row ->
-                SearchPaymentMethodResponseDto()
-                    .fiscalCode(row[0, String::class.java])
-                    .notificationEmail(row[1, String::class.java])
-                    .surname(row[2, String::class.java])
-                    .name(row[3, String::class.java])
-                    .username(row[4, String::class.java])
-                    .status(row[5, String::class.java])
-            }
-            .toMono()
-            .zipWith(paymentMethods, ::Pair)
-            .map { (searchResult, paymentMethods) -> searchResult.paymentMethods(paymentMethods) }
-    return response
-}
+        }
+        .reduce(SearchPaymentMethodResponseDto()) { searchResponse, mappedRow ->
+            searchResponse.fiscalCode(mappedRow.fiscalCode)
+            searchResponse.notificationEmail(mappedRow.notificationEmail)
+            searchResponse.name(mappedRow.name)
+            searchResponse.surname(mappedRow.surname)
+            searchResponse.username(mappedRow.username)
+            searchResponse.status(mappedRow.status)
+            searchResponse.addPaymentMethodsItem(mappedRow.paymentMethods[0])
+        }
 
 fun baseTransactionToTransactionInfoDtoV1(baseTransaction: BaseTransaction): TransactionResultDto {
     val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
