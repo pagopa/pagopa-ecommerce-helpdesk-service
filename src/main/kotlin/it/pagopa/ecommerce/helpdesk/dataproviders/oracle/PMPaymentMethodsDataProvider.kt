@@ -7,6 +7,7 @@ import it.pagopa.ecommerce.helpdesk.utils.resultToPaymentMethodDtoList
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono
  *
  * @see PMPaymentMethodsDataProvider
  */
+@Component
 class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: ConnectionFactory) :
     PaymentMethodDataProvider {
 
