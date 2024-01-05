@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.services
 
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.model.PageInfoDto
@@ -15,8 +16,9 @@ import reactor.test.StepVerifier
 class PmServiceTest {
 
     private val pmTransactionDataProvider: PMTransactionDataProvider = mock()
+    private val pmPaymentMethodsDataProvider: PMPaymentMethodsDataProvider = mock()
 
-    private val pmService = PmService(pmTransactionDataProvider)
+    private val pmService = PmService(pmTransactionDataProvider, pmPaymentMethodsDataProvider)
 
     @Test
     fun `should return found transaction successfully`() {

@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.services
 
+import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.buildTransactionSearchResponse
@@ -13,7 +14,10 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
-class PmService(@Autowired val pmTransactionDataProvider: PMTransactionDataProvider) {
+class PmService(
+    @Autowired val pmTransactionDataProvider: PMTransactionDataProvider,
+    @Autowired val pmPaymentMethodsDataProvider: PMPaymentMethodsDataProvider
+) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -52,6 +56,10 @@ class PmService(@Autowired val pmTransactionDataProvider: PMTransactionDataProvi
     fun searchPaymentMethods(
         pmSearchPaymentMethodsRequestDto: PmSearchPaymentMethodsRequestDto
     ): Mono<SearchPaymentMethodResponseDto> {
-        return Mono.just(SearchPaymentMethodResponseDto())
+        logger.info(
+            "[helpDesk pm service] searchPaymentMethods, search type: {}",
+            pmSearchPaymentMethodsRequestDto.type
+        )
+        return pmPaymentMethodsDataProvider.findResult(pmSearchPaymentMethodsRequestDto)
     }
 }

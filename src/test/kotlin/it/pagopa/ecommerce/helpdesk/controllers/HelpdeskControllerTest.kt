@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.helpdesk.controllers
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.services.HelpdeskService
+import it.pagopa.ecommerce.helpdesk.services.PmService
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -26,6 +27,8 @@ class HelpdeskControllerTest {
     @Autowired lateinit var webClient: WebTestClient
 
     @MockBean lateinit var helpdeskService: HelpdeskService
+
+    @MockBean lateinit var pmService: PmService
 
     @Test
     fun `post search transaction succeeded searching by payment token`() = runTest {
