@@ -18,7 +18,6 @@ import java.util.*
 import org.reactivestreams.Publisher
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.switchIfEmpty
 
 fun buildTransactionSearchResponse(
     currentPage: Int,
