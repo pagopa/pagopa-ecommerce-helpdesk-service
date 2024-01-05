@@ -190,6 +190,7 @@ val searchWalletByUserFiscalCode =
         AND ((pw.FK_SATISPAY IS NULL AND pp.ID_PSP != 'SATYLUL1') OR (pw.FK_SATISPAY IS NULL AND pp.ID_PSP IS NULL) OR  (pw.FK_SATISPAY IS NOT NULL ))
         ORDER BY Pw.CREATION_DATE DESC 
     """
+        .trimIndent()
 
 val searchWalletByUserEmail =
     """
@@ -229,3 +230,4 @@ val searchWalletByUserEmail =
         AND ((pw.FK_SATISPAY IS NULL AND pp.ID_PSP != 'SATYLUL1') OR (pw.FK_SATISPAY IS NULL AND pp.ID_PSP IS NULL) OR  (pw.FK_SATISPAY IS NOT NULL ))
         ORDER BY Pw.CREATION_DATE DESC 
     """
+        .trimIndent()
