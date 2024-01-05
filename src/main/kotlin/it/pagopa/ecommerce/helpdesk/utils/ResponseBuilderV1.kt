@@ -8,6 +8,7 @@ import it.pagopa.ecommerce.commons.domain.v1.TransactionWithClosureError
 import it.pagopa.ecommerce.commons.domain.v1.pojos.*
 import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.utils.v1.TransactionUtils.getTransactionFee
+import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
 import java.math.BigDecimal
@@ -17,6 +18,7 @@ import java.util.*
 import org.reactivestreams.Publisher
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 
 fun buildTransactionSearchResponse(
     currentPage: Int,
@@ -83,7 +85,10 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
             .product(ProductDto.PM)
     }
 
-fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMethodResponseDto> =
+fun resultToPaymentMethodDtoList(
+    results: List<Result>,
+    searchType: String
+): Mono<SearchPaymentMethodResponseDto> =
     Flux.fromIterable(results)
         .flatMap { result ->
             result.map { row ->
@@ -179,6 +184,7 @@ fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMetho
                     )
             }
         }
+        .switchIfEmpty(Mono.error(NoResultFoundException(searchType)))
         .reduce(SearchPaymentMethodResponseDto()) { searchResponse, mappedRow ->
             searchResponse.fiscalCode(mappedRow.fiscalCode)
             searchResponse.notificationEmail(mappedRow.notificationEmail)
@@ -187,6 +193,10 @@ fun resultToPaymentMethodDtoList(results: List<Result>): Mono<SearchPaymentMetho
             searchResponse.username(mappedRow.username)
             searchResponse.status(mappedRow.status)
             searchResponse.addPaymentMethodsItem(mappedRow.paymentMethods[0])
+        }
+        .map { response ->
+            response.paymentMethods?.sortBy { it.type }
+            response
         }
 
 fun baseTransactionToTransactionInfoDtoV1(baseTransaction: BaseTransaction): TransactionResultDto {

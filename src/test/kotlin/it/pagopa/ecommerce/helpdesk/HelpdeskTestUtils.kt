@@ -98,6 +98,62 @@ object HelpdeskTestUtils {
             )
             .product(product)
 
+    fun buildSearchPaymentMethodResponseDto(): SearchPaymentMethodResponseDto =
+        SearchPaymentMethodResponseDto()
+            .name("name")
+            .fiscalCode("fiscal_code")
+            .notificationEmail("test@test.it")
+            .surname("surname")
+            .username("username")
+            .status("Utente registrato SPID")
+            .addPaymentMethodsItem(
+                CardDetailInfoDto()
+                    .type(DetailTypeDto.CARD.value)
+                    .creationDate(OffsetDateTime.now())
+                    .idPsp("idPsp")
+                    .cardBin("cardBin")
+                    .cardNumber("cardNumber")
+            )
+            .addPaymentMethodsItem(
+                GenericMethodDetailInfoDto()
+                    .type(DetailTypeDto.GENERIC_METHOD.value)
+                    .creationDate(OffsetDateTime.now())
+                    .description("genericMethod")
+            )
+            .addPaymentMethodsItem(
+                PaypalDetailInfoDto()
+                    .type(DetailTypeDto.PAYPAL.value)
+                    .creationDate(OffsetDateTime.now())
+                    .ppayEmail("paypalEmail")
+            )
+            .addPaymentMethodsItem(
+                SatispayDetailInfoDto()
+                    .type(DetailTypeDto.SATISPAY.value)
+                    .creationDate(OffsetDateTime.now())
+                    .idPsp("idPsp")
+            )
+            .addPaymentMethodsItem(
+                BancomatDetailInfoDto()
+                    .type(DetailTypeDto.BANCOMAT.value)
+                    .creationDate(OffsetDateTime.now())
+                    .bancomatNumber("bancomatNumber")
+                    .bancomatAbi("bancomatAbi")
+            )
+            .addPaymentMethodsItem(
+                BpayDetailInfoDto()
+                    .type(DetailTypeDto.BPAY.value)
+                    .creationDate(OffsetDateTime.now())
+                    .bpayPhoneNumber("bpayPhoneNumber")
+                    .bpayName("bpayName")
+            )
+            .addPaymentMethodsItem(
+                BankAccountDetailInfoDto()
+                    .type(DetailTypeDto.BANK_ACCOUNT.value)
+                    .creationDate(OffsetDateTime.now())
+                    .bankName("bankName")
+                    .bankState("bankState")
+            )
+
     fun buildDeadLetterEvent(queueName: String, data: String) =
         DeadLetterEvent(
             UUID.randomUUID().toString(),
