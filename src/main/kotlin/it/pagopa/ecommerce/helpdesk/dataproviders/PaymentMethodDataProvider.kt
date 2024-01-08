@@ -1,7 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders
 
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodsRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchPaymentMethodResponseDto
 import reactor.core.publisher.Mono
 
@@ -19,6 +19,6 @@ interface PaymentMethodDataProvider {
      * criteria
      */
     fun findResult(
-        searchParams: PmSearchPaymentMethodsRequestDto
+        searchParams: PmSearchPaymentMethodRequestDto
     ): Mono<SearchPaymentMethodResponseDto>
 }

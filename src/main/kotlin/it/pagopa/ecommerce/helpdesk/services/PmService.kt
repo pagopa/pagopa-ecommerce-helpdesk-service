@@ -4,10 +4,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMPaymentMethodsDataPro
 import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.buildTransactionSearchResponse
-import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodsRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchPaymentMethodResponseDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -53,13 +50,13 @@ class PmService(
         }
     }
 
-    fun searchPaymentMethods(
-        pmSearchPaymentMethodsRequestDto: PmSearchPaymentMethodsRequestDto
+    fun searchPaymentMethod(
+        pmSearchPaymentMethodRequestDto: PmSearchPaymentMethodRequestDto
     ): Mono<SearchPaymentMethodResponseDto> {
         logger.info(
             "[helpDesk pm service] searchPaymentMethods, search type: {}",
-            pmSearchPaymentMethodsRequestDto.type
+            pmSearchPaymentMethodRequestDto.type
         )
-        return pmPaymentMethodsDataProvider.findResult(pmSearchPaymentMethodsRequestDto)
+        return pmPaymentMethodsDataProvider.findResult(pmSearchPaymentMethodRequestDto)
     }
 }

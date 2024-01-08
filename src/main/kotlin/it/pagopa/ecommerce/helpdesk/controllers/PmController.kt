@@ -2,7 +2,7 @@ package it.pagopa.ecommerce.helpdesk.controllers
 
 import it.pagopa.ecommerce.helpdesk.services.PmService
 import it.pagopa.generated.ecommerce.helpdesk.api.PmApi
-import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodsRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchPaymentMethodResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
@@ -35,13 +35,13 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
             .map { ResponseEntity.ok(it) }
     }
 
-    override fun pmSearchPaymentMethods(
-        pmSearchPaymentMethodsRequestDto: Mono<PmSearchPaymentMethodsRequestDto>,
+    override fun pmSearchPaymentMethod(
+        pmSearchPaymentMethodRequestDto: Mono<PmSearchPaymentMethodRequestDto>,
         exchange: ServerWebExchange?
     ): Mono<ResponseEntity<SearchPaymentMethodResponseDto>> {
-        logger.info("[HelpDesk controller] pmSearchPaymentMethods")
-        return pmSearchPaymentMethodsRequestDto
-            .flatMap { pmService.searchPaymentMethods(pmSearchPaymentMethodsRequestDto = it) }
+        logger.info("[HelpDesk controller] pmSearchPaymentMethod")
+        return pmSearchPaymentMethodRequestDto
+            .flatMap { pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = it) }
             .map { ResponseEntity.ok(it) }
     }
 }

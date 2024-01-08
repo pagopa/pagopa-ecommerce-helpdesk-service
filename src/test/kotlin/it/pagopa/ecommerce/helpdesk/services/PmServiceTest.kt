@@ -86,7 +86,7 @@ class PmServiceTest {
         given(pmPaymentMethodsDataProvider.findResult(searchParams = searchCriteria))
             .willReturn(Mono.just(response))
         StepVerifier.create(
-                pmService.searchPaymentMethods(pmSearchPaymentMethodsRequestDto = searchCriteria)
+                pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = searchCriteria)
             )
             .expectNext(response)
             .verifyComplete()
@@ -104,7 +104,7 @@ class PmServiceTest {
         given(pmPaymentMethodsDataProvider.findResult(searchParams = searchCriteria))
             .willReturn(Mono.just(response))
         StepVerifier.create(
-                pmService.searchPaymentMethods(pmSearchPaymentMethodsRequestDto = searchCriteria)
+                pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = searchCriteria)
             )
             .expectNext(response)
             .verifyComplete()

@@ -23,7 +23,7 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
     private val logger = LoggerFactory.getLogger(javaClass)
 
     override fun findResult(
-        searchParams: PmSearchPaymentMethodsRequestDto
+        searchParams: PmSearchPaymentMethodRequestDto
     ): Mono<SearchPaymentMethodResponseDto> {
         val searchCriteriaType = searchParams.type
         val invalidSearchCriteriaError =

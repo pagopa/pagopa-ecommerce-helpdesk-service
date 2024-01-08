@@ -202,8 +202,8 @@ class PmControllerTest {
         val request =
             HelpdeskTestUtils.buildPaymentMethodSearchRequestByUserFiscalCode("RHFGDH98HG02DH7U")
         given(
-                pmService.searchPaymentMethods(
-                    pmSearchPaymentMethodsRequestDto =
+                pmService.searchPaymentMethod(
+                    pmSearchPaymentMethodRequestDto =
                         argThat {
                             this is SearchPaymentMethodRequestFiscalCodeDto &&
                                 this.userFiscalCode == request.userFiscalCode
@@ -213,7 +213,7 @@ class PmControllerTest {
             .willReturn(Mono.just(SearchPaymentMethodResponseDto()))
         webClient
             .post()
-            .uri { uriBuilder -> uriBuilder.path("/pm/searchPaymentMethods").build() }
+            .uri { uriBuilder -> uriBuilder.path("/pm/searchPaymentMethod").build() }
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(request)
             .exchange()
@@ -226,8 +226,8 @@ class PmControllerTest {
         val request =
             HelpdeskTestUtils.buildPaymentMethodSearchRequestByUserFiscalCode("invalidFiscalCode")
         given(
-                pmService.searchPaymentMethods(
-                    pmSearchPaymentMethodsRequestDto =
+                pmService.searchPaymentMethod(
+                    pmSearchPaymentMethodRequestDto =
                         argThat {
                             this is SearchPaymentMethodRequestFiscalCodeDto &&
                                 this.userFiscalCode == request.userFiscalCode
@@ -237,7 +237,7 @@ class PmControllerTest {
             .willReturn(Mono.just(SearchPaymentMethodResponseDto()))
         webClient
             .post()
-            .uri { uriBuilder -> uriBuilder.path("/pm/searchPaymentMethods").build() }
+            .uri { uriBuilder -> uriBuilder.path("/pm/searchPaymentMethod").build() }
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(request)
             .exchange()
@@ -250,8 +250,8 @@ class PmControllerTest {
         val request =
             HelpdeskTestUtils.buildPaymentMethodSearchRequestByUserEmail("mail.test@email.com")
         given(
-                pmService.searchPaymentMethods(
-                    pmSearchPaymentMethodsRequestDto =
+                pmService.searchPaymentMethod(
+                    pmSearchPaymentMethodRequestDto =
                         argThat {
                             this is SearchPaymentMethodRequestEmailDto &&
                                 this.userEmail == request.userEmail
@@ -261,7 +261,7 @@ class PmControllerTest {
             .willReturn(Mono.just(SearchPaymentMethodResponseDto()))
         webClient
             .post()
-            .uri { uriBuilder -> uriBuilder.path("/pm/searchPaymentMethods").build() }
+            .uri { uriBuilder -> uriBuilder.path("/pm/searchPaymentMethod").build() }
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(request)
             .exchange()
@@ -273,8 +273,8 @@ class PmControllerTest {
     fun `post search payment method failed for invalid email`() = runTest {
         val request = HelpdeskTestUtils.buildPaymentMethodSearchRequestByUserEmail("invalid_email")
         given(
-                pmService.searchPaymentMethods(
-                    pmSearchPaymentMethodsRequestDto =
+                pmService.searchPaymentMethod(
+                    pmSearchPaymentMethodRequestDto =
                         argThat {
                             this is SearchPaymentMethodRequestEmailDto &&
                                 this.userEmail == request.userEmail
@@ -284,7 +284,7 @@ class PmControllerTest {
             .willReturn(Mono.just(SearchPaymentMethodResponseDto()))
         webClient
             .post()
-            .uri { uriBuilder -> uriBuilder.path("/pm/searchPaymentMethods").build() }
+            .uri { uriBuilder -> uriBuilder.path("/pm/searchPaymentMethod").build() }
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(request)
             .exchange()
@@ -304,8 +304,8 @@ class PmControllerTest {
                     description = "Generic error occurred"
                 )
             given(
-                    pmService.searchPaymentMethods(
-                        pmSearchPaymentMethodsRequestDto =
+                    pmService.searchPaymentMethod(
+                        pmSearchPaymentMethodRequestDto =
                             argThat {
                                 this is SearchPaymentMethodRequestEmailDto &&
                                     this.userEmail == request.userEmail
@@ -315,7 +315,7 @@ class PmControllerTest {
                 .willReturn(Mono.error(RuntimeException("Unhandled error")))
             webClient
                 .post()
-                .uri { uriBuilder -> uriBuilder.path("/pm/searchPaymentMethods").build() }
+                .uri { uriBuilder -> uriBuilder.path("/pm/searchPaymentMethod").build() }
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()

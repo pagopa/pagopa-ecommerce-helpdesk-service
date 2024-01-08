@@ -74,11 +74,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-  /pm/searchPaymentMethods:
+  /pm/searchPaymentMethod:
     post:
       tags:
         - PM
-      operationId: pmSearchPaymentMethods
+      operationId: pmSearchPaymentMethod
       summary: Search payment method by input parameters
       description: 'GET with body payload - no resources created'
       requestBody:
@@ -210,11 +210,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-  /helpdesk/searchPaymentMethods:
+  /helpdesk/searchPaymentMethod:
     post:
       tags:
         - helpDesk
-      operationId: helpDeskSearchPaymentMethods
+      operationId: helpDeskSearchPaymentMethod
       summary: Search payment methods by input parameters
       description: 'GET with body payload - no resources created'
       requestBody:

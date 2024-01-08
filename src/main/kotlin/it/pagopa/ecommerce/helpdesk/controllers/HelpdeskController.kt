@@ -3,10 +3,7 @@ package it.pagopa.ecommerce.helpdesk.controllers
 import it.pagopa.ecommerce.helpdesk.services.HelpdeskService
 import it.pagopa.ecommerce.helpdesk.services.PmService
 import it.pagopa.generated.ecommerce.helpdesk.api.HelpdeskApi
-import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodsRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchPaymentMethodResponseDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -36,13 +33,13 @@ class HelpdeskController(
             }
             .map { ResponseEntity.ok(it) }
 
-    override fun helpDeskSearchPaymentMethods(
-        pmSearchPaymentMethodsRequestDto: Mono<PmSearchPaymentMethodsRequestDto>,
+    override fun helpDeskSearchPaymentMethod(
+        pmSearchPaymentMethodRequestDto: Mono<PmSearchPaymentMethodRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchPaymentMethodResponseDto>> {
-        logger.info("[HelpDesk controller] pmSearchPaymentMethods")
-        return pmSearchPaymentMethodsRequestDto
-            .flatMap { pmService.searchPaymentMethods(pmSearchPaymentMethodsRequestDto = it) }
+        logger.info("[HelpDesk controller] pmSearchPaymentMethod")
+        return pmSearchPaymentMethodRequestDto
+            .flatMap { pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = it) }
             .map { ResponseEntity.ok(it) }
     }
 }
