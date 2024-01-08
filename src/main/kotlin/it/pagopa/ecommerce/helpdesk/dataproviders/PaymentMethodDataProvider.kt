@@ -1,6 +1,4 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders
-
-import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchPaymentMethodResponseDto
 import reactor.core.publisher.Mono
@@ -8,9 +6,9 @@ import reactor.core.publisher.Mono
 /**
  * Payment method data provider interface. This interface models common function for payment method
  * data provider in order to search for payment method given a specific
- * HelpDeskSearchTransactionRequestDto criteria
+ * PmSearchPaymentMethodRequestDto criteria
  *
- * @see HelpDeskSearchTransactionRequestDto
+ * @see PmSearchPaymentMethodRequestDto
  */
 interface PaymentMethodDataProvider {
 
