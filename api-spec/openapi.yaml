@@ -829,16 +829,22 @@ components:
       properties:
         fiscalCode:
           type: string
+          description: The user fiscal code
         notificationEmail:
           type: string
+          description: The user notification email
         name:
           type: string
+          description: The name of the user
         surname:
           type: string
+          description: The surname of the user
         username:
           type: string
+          description: The username of the user
         status:
           type: string
+          description: The user state.
         paymentMethods:
           type: array
           items:
