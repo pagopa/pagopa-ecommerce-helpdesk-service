@@ -52,17 +52,15 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
         searchParam: String,
         searchType: String
     ): Mono<SearchPaymentMethodResponseDto> =
-        Flux.usingWhen(
-                connectionFactory.create(),
-                { connection ->
-                    logger.info("Retrieving payment methods from PM database.")
+        Mono.usingWhen(
+            connectionFactory.create(),
+            { connection ->
+                logger.info("Retrieving payment methods from PM database.")
 
-                    Flux.from(
-                        connection.createStatement(resultQuery).bind(0, searchParam).execute()
-                    )
-                },
-                { it.close() }
-            )
-            .collectList()
-            .flatMap { results -> resultToPaymentMethodDtoList(results, searchType) }
+                Flux.from(connection.createStatement(resultQuery).bind(0, searchParam).execute())
+                    .collectList()
+                    .flatMap { results -> resultToPaymentMethodDtoList(results, searchType) }
+            },
+            { it.close() }
+        )
 }
