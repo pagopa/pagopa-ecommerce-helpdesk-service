@@ -151,3 +151,83 @@ val userFiscalCodeCountQuery =
         AND pu.STATUS IN ('11', '12')
     """
         .trimIndent()
+
+val searchWalletByUserFiscalCode =
+    """
+    SELECT  pu.FISCAL_CODE , pu.NOTIFICATION_EMAIL , pu.SURNAME , pu.NAME , pu.USERNAME , 
+		CASE pu.STATUS 
+		WHEN 0 THEN 'Utente non registrato'
+		WHEN 1 THEN 'Utente registrato non SPID'
+		WHEN 2 THEN 'Utente in attesa di verifica OTP'
+		WHEN 3 THEN 'Password da impostare'
+		WHEN 4 THEN 'Password da impostare - cambio password'
+		WHEN 5 THEN 'Utente cancellato'
+		WHEN 11 THEN 'Utente registrato SPID'
+		WHEN 12 THEN 'Utente registrato su IO con CIE'
+		ELSE TO_CHAR(pu.STATUS) END AS STATUS_UTENTE,
+		pw."TYPE" ,
+		pw.CREATION_DATE , pp.ID_PSP , pp.BUSINESS_NAME ,
+		pw.FK_CREDIT_CARD, pcc.CARD_BIN , pcc.CARD_NUMBER ,
+		pw.FK_BUYER_BANK, pmbb.ALIAS as MYBANK, pmbb.STATE AS MYBANK_STATE ,
+		pw.FK_BANCOMAT_CARD, pbc.ABI as BANCOMAT_ABI, pbc.CARD_PARTIAL_NUMBER AS BANCOMAT_NUMBER,
+		ps.ID_SATISPAY AS FK_SATISPAY,
+		pw.FK_BPAY, pb.BANK_NAME AS BPAY_NAME ,pb.CELLPHONE_NUMBER AS BPAY_NUMBER,
+		pw.FK_GENERIC_INSTRUMENT, pgi.DESCRIPTION AS GENERIC_INSTRUMENT_DESCRIPTION,
+		pp2.ID  AS FK_PPAL, pp2.EMAIL_PP AS PPAL_EMAIL 
+        FROM AGID_USER.PP_USER pu 
+        left JOIN AGID_USER.PP_WALLET pw ON pu.ID_USER =pw.ID_USER 
+        left  JOIN AGID_USER.PP_CREDIT_CARD pcc  ON pw.FK_CREDIT_CARD  = pcc.ID_CREDIT_CARD 
+        left JOIN AGID_USER.PP_MYBANK_BUYER_BANK pmbb  ON pw.FK_BUYER_BANK  = pmbb.ID_BUYER_BANK 
+        left JOIN AGID_USER.PP_BANCOMAT_CARD pbc  ON pw.FK_BANCOMAT_CARD  = pbc.ID_BANCOMAT_CARD 
+        left JOIN AGID_USER.PP_SATISPAY ps  ON pw.FK_SATISPAY = ps.ID_SATISPAY AND pw.FK_SATISPAY IS NOT null
+        left JOIN AGID_USER.PP_BPAY pb  ON pw.FK_BPAY  = pb.ID_BPAY 
+        left JOIN AGID_USER.PP_GENERIC_INSTRUMENT pgi  ON pw.FK_GENERIC_INSTRUMENT  = pgi.ID 
+        left JOIN AGID_USER.PP_PSP pp  ON pw.FK_PSP  =  pp.ID 
+        LEFT JOIN AGID_USER.PP_PAYPAL pp2 ON pw.ID_WALLET =pp2.FK_WALLET AND pp2.IS_CANCELED = '0'
+        WHERE pu.FISCAL_CODE = ?
+        AND pu.STATUS IN ('11', '12')
+        AND pw.FL_ENABLED ='1' AND pw.FL_VISIBLE ='1'
+        AND ((pw.FK_SATISPAY IS NULL AND pp.ID_PSP != 'SATYLUL1') OR (pw.FK_SATISPAY IS NULL AND pp.ID_PSP IS NULL) OR  (pw.FK_SATISPAY IS NOT NULL ))
+        ORDER BY Pw.CREATION_DATE DESC 
+    """
+        .trimIndent()
+
+val searchWalletByUserEmail =
+    """
+    SELECT  pu.FISCAL_CODE , pu.NOTIFICATION_EMAIL , pu.SURNAME , pu.NAME , pu.USERNAME , 
+		CASE pu.STATUS 
+		WHEN 0 THEN 'Utente non registrato'
+		WHEN 1 THEN 'Utente registrato non SPID'
+		WHEN 2 THEN 'Utente in attesa di verifica OTP'
+		WHEN 3 THEN 'Password da impostare'
+		WHEN 4 THEN 'Password da impostare - cambio password'
+		WHEN 5 THEN 'Utente cancellato'
+		WHEN 11 THEN 'Utente registrato SPID'
+		WHEN 12 THEN 'Utente registrato su IO con CIE'
+		ELSE TO_CHAR(pu.STATUS) END AS STATUS_UTENTE,
+		pw."TYPE" ,
+		pw.CREATION_DATE , pp.ID_PSP , pp.BUSINESS_NAME ,
+		pw.FK_CREDIT_CARD, pcc.CARD_BIN , pcc.CARD_NUMBER ,
+		pw.FK_BUYER_BANK, pmbb.ALIAS as MYBANK, pmbb.STATE AS MYBANK_STATE ,
+		pw.FK_BANCOMAT_CARD, pbc.ABI as BANCOMAT_ABI, pbc.CARD_PARTIAL_NUMBER AS BANCOMAT_NUMBER,
+		ps.ID_SATISPAY AS FK_SATISPAY,
+		pw.FK_BPAY, pb.BANK_NAME AS BPAY_NAME ,pb.CELLPHONE_NUMBER AS BPAY_NUMBER,
+		pw.FK_GENERIC_INSTRUMENT, pgi.DESCRIPTION AS GENERIC_INSTRUMENT_DESCRIPTION,
+		pp2.ID  AS FK_PPAL, pp2.EMAIL_PP AS PPAL_EMAIL 
+        FROM AGID_USER.PP_USER pu 
+        left JOIN AGID_USER.PP_WALLET pw ON pu.ID_USER =pw.ID_USER 
+        left  JOIN AGID_USER.PP_CREDIT_CARD pcc  ON pw.FK_CREDIT_CARD  = pcc.ID_CREDIT_CARD 
+        left JOIN AGID_USER.PP_MYBANK_BUYER_BANK pmbb  ON pw.FK_BUYER_BANK  = pmbb.ID_BUYER_BANK 
+        left JOIN AGID_USER.PP_BANCOMAT_CARD pbc  ON pw.FK_BANCOMAT_CARD  = pbc.ID_BANCOMAT_CARD 
+        left JOIN AGID_USER.PP_SATISPAY ps  ON pw.FK_SATISPAY = ps.ID_SATISPAY AND pw.FK_SATISPAY IS NOT null
+        left JOIN AGID_USER.PP_BPAY pb  ON pw.FK_BPAY  = pb.ID_BPAY 
+        left JOIN AGID_USER.PP_GENERIC_INSTRUMENT pgi  ON pw.FK_GENERIC_INSTRUMENT  = pgi.ID 
+        left JOIN AGID_USER.PP_PSP pp  ON pw.FK_PSP  =  pp.ID 
+        LEFT JOIN AGID_USER.PP_PAYPAL pp2 ON pw.ID_WALLET =pp2.FK_WALLET AND pp2.IS_CANCELED = '0'
+        WHERE pu.NOTIFICATION_EMAIL = ?
+        AND pu.STATUS IN ('11', '12')
+        AND pw.FL_ENABLED ='1' AND pw.FL_VISIBLE ='1'
+        AND ((pw.FK_SATISPAY IS NULL AND pp.ID_PSP != 'SATYLUL1') OR (pw.FK_SATISPAY IS NULL AND pp.ID_PSP IS NULL) OR  (pw.FK_SATISPAY IS NOT NULL ))
+        ORDER BY Pw.CREATION_DATE DESC 
+    """
+        .trimIndent()
