@@ -56,6 +56,15 @@ services:
     depends_on:
       - mongo
 
+  pagopa-pdv-mock:
+    container_name: pagopa-pdv-mock
+    build:
+      context: .
+      dockerfile: docker/pagopa-personal-data-vault-tokenizer/Dockerfile.pdv
+    ports:
+      - "8092:8080"
+    networks:
+      - pagopa-ecommerce-net
 
 networks:
   pagopa-ecommerce-net:

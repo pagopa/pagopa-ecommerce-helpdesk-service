@@ -63,22 +63,24 @@ to get a good default configuration.
 
 If you want to customize the application environment, reference this table:
 
-| Variable name                    | Description                                        | type               | default |
-|----------------------------------|----------------------------------------------------|--------------------|---------|
-| DEFAULT_LOGGING_LEVEL            | Default root application logging level             | string             | INFO    |
-| APP_LOGGING_LEVEL                | Application logging level                          | string             | INFO    |
-| WEB_LOGGING_LEVEL                | Web logging level                                  | string             | INFO    |
-| MONGO_HOST                       | MongoDB ecommerce hostname instance                | hostname (string)  |         |
-| MONGO_PORT                       | Port where MongoDB is bound to in MongoDB host     | number             |         |
-| MONGO_USERNAME                   | MongoDB username used to connect to the database   | string             |         |
-| MONGO_PASSWORD                   | MongoDB password used to connect to the database   | string             |         |
-| MONGO_SSL_ENABLED                | Whether SSL is enabled while connecting to MongoDB | string             |         |
-| PM_ORACLE_HOST                   | PM Oracle DB hostname instance                     | hostname (string)  |         |
-| PM_ORACLE_PORT                   | PM Oracle DB port                                  | int                |         |
-| PM_ORACLE_DATABASE_NAME          | PM Oracle DB database name                         | string             |         |
-| PM_ORACLE_USERNAME               | PM Oracle DB username                              | string             |         |
-| PM_ORACLE_PASSWORD               | PM Oracle DB password                              | string             |         |
-| SEARCH_DEAD_LETTER_QUEUE_MAPPING | Dead letter search criteria to queue name mapping  | map(string,string) |         |
+| Variable name                     | Description                                                                                         | type               | default |
+|-----------------------------------|-----------------------------------------------------------------------------------------------------|--------------------|---------|
+| DEFAULT_LOGGING_LEVEL             | Default root application logging level                                                              | string             | INFO    |
+| APP_LOGGING_LEVEL                 | Application logging level                                                                           | string             | INFO    |
+| WEB_LOGGING_LEVEL                 | Web logging level                                                                                   | string             | INFO    |
+| MONGO_HOST                        | MongoDB ecommerce hostname instance                                                                 | hostname (string)  |         |
+| MONGO_PORT                        | Port where MongoDB is bound to in MongoDB host                                                      | number             |         |
+| MONGO_USERNAME                    | MongoDB username used to connect to the database                                                    | string             |         |
+| MONGO_PASSWORD                    | MongoDB password used to connect to the database                                                    | string             |         |
+| MONGO_SSL_ENABLED                 | Whether SSL is enabled while connecting to MongoDB                                                  | string             |         |
+| PERSONAL_DATA_VAULT_API_KEY       | API Key for Personal Data Vault (PDV is used to safely encrypt PIIs, e.g. the user's email address) | string             |         |         
+| PERSONAL_DATA_VAULT_API_BASE_PATH | API base path for Personal Data Vault                                                               | string             |         |         
+| PM_ORACLE_HOST                    | PM Oracle DB hostname instance                                                                      | hostname (string)  |         |
+| PM_ORACLE_PORT                    | PM Oracle DB port                                                                                   | int                |         |
+| PM_ORACLE_DATABASE_NAME           | PM Oracle DB database name                                                                          | string             |         |
+| PM_ORACLE_USERNAME                | PM Oracle DB username                                                                               | string             |         |
+| PM_ORACLE_PASSWORD                | PM Oracle DB password                                                                               | string             |         |
+| SEARCH_DEAD_LETTER_QUEUE_MAPPING  | Dead letter search criteria to queue name mapping                                                   | map(string,string) |         |
 
 ### Run docker container
 
