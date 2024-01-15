@@ -59,8 +59,8 @@ services:
   pagopa-pdv-mock:
     container_name: pagopa-pdv-mock
     build:
-      context: .
-      dockerfile: docker/pagopa-personal-data-vault-tokenizer/Dockerfile.pdv
+      context: docker/pagopa-personal-data-vault-tokenizer/
+      dockerfile: Dockerfile.pdv
     ports:
       - "8092:8080"
     networks:
