@@ -7,11 +7,21 @@ import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
 
+/** Class used for handle mail encryption end decryption. */
 class ConfidentialMailUtils(private val emailConfidentialDataManager: ConfidentialDataManager) {
-    private val emailCachedMap = mutableMapOf<String, Email>()
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
+    /** Map containing the opaque mail token as the key and the clear mail as the value. */
+    private val emailCachedMap = mutableMapOf<String, Email>()
+
+    /**
+     * The method search clear mail into cache if not found make a call to pdv to decrypt the email
+     * then cache it
+     *
+     * @param encrypted email encrypted
+     * @return Mono<Email> return mono with clear email value object
+     */
     fun toEmail(encrypted: Confidential<Email>): Mono<Email> {
         return if (emailCachedMap.contains(encrypted.opaqueData)) {
             mono { emailCachedMap[encrypted.opaqueData] }
@@ -26,7 +36,7 @@ class ConfidentialMailUtils(private val emailConfidentialDataManager: Confidenti
         }
     }
 
-    fun toConfidential(clearText: Email): Mono<Confidential<Email>> {
+    private fun toConfidential(clearText: Email): Mono<Confidential<Email>> {
         return emailConfidentialDataManager.encrypt(clearText).doOnError { e ->
             logger.error("Exception encrypting confidential data", e)
         }
