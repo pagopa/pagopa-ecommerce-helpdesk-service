@@ -4,6 +4,7 @@ import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestD
 import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureData as TransactionClosureDataV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent as TransactionEventV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData as TransactionUserReceiptDataV2
+import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.domain.v2.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionExpired as BaseTransactionExpiredV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithClosureError as BaseTransactionWithClosureErrorV2
@@ -16,6 +17,7 @@ import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto
 import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.v2.TransactionTestUtils as TransactionTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.ZonedDateTime
 import org.junit.jupiter.api.AfterAll
@@ -23,6 +25,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import reactor.core.publisher.Flux
@@ -33,7 +36,7 @@ class EcommerceForTransactionV2DataProviderTest {
 
     companion object {
         val testedStatuses: MutableSet<TransactionStatusDto> = HashSet()
-
+        const val TEST_EMAIL = "test.email@test.it"
         @JvmStatic
         @BeforeAll
         fun beforeAll() {
@@ -57,10 +60,13 @@ class EcommerceForTransactionV2DataProviderTest {
 
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
 
+    private val confidentialMailUtils: ConfidentialMailUtils = mock()
+
     private val ecommerceTransactionDataProvider =
         EcommerceTransactionDataProvider(
             transactionsViewRepository,
-            transactionsEventStoreRepository
+            transactionsEventStoreRepository,
+            confidentialMailUtils
         )
 
     @Test
@@ -84,13 +90,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -171,13 +180,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -288,13 +300,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -411,13 +426,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -534,13 +552,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -657,13 +678,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -763,13 +787,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -857,13 +884,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -947,13 +977,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1051,13 +1084,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1183,13 +1219,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1318,13 +1357,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1456,13 +1498,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1594,13 +1639,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1732,13 +1780,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1883,13 +1934,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -2052,13 +2106,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -2239,13 +2296,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -2441,13 +2501,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -2592,13 +2655,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -2703,13 +2769,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -2814,13 +2883,16 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())

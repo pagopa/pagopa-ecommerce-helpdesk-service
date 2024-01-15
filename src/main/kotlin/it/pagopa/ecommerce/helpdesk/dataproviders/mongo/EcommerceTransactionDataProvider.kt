@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.helpdesk.dataproviders.mongo
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
+import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.baseTransactionToTransactionInfoDtoV1
 import it.pagopa.ecommerce.helpdesk.utils.baseTransactionToTransactionInfoDtoV2
 import it.pagopa.generated.ecommerce.helpdesk.model.*
@@ -16,6 +17,7 @@ import reactor.kotlin.core.publisher.toFlux
 class EcommerceTransactionDataProvider(
     @Autowired private val transactionsViewRepository: TransactionsViewRepository,
     @Autowired private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any>,
+    @Autowired private val confidentialMailUtils: ConfidentialMailUtils
 ) : TransactionDataProvider {
 
     override fun totalRecordCount(searchParams: HelpDeskSearchTransactionRequestDto): Mono<Int> {
@@ -102,8 +104,12 @@ class EcommerceTransactionDataProvider(
                         it.pagopa.ecommerce.commons.domain.v1.Transaction::applyEvent
                     )
                     .cast(it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransaction::class.java)
-                    .map { baseTransaction ->
-                        baseTransactionToTransactionInfoDtoV1(baseTransaction)
+                    .zipWhen(
+                        { baseTransaction -> confidentialMailUtils.toEmail(baseTransaction.email) },
+                        ::Pair
+                    )
+                    .map { (baseTransaction, email) ->
+                        baseTransactionToTransactionInfoDtoV1(baseTransaction, email)
                     }
             is it.pagopa.ecommerce.commons.documents.v2.Transaction ->
                 events
@@ -112,8 +118,12 @@ class EcommerceTransactionDataProvider(
                         it.pagopa.ecommerce.commons.domain.v2.Transaction::applyEvent
                     )
                     .cast(it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransaction::class.java)
-                    .map { baseTransaction ->
-                        baseTransactionToTransactionInfoDtoV2(baseTransaction)
+                    .zipWhen(
+                        { baseTransaction -> confidentialMailUtils.toEmail(baseTransaction.email) },
+                        ::Pair
+                    )
+                    .map { (baseTransaction, email) ->
+                        baseTransactionToTransactionInfoDtoV2(baseTransaction, email)
                     }
             else ->
                 Mono.error(
