@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo
 
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
+import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
@@ -17,7 +18,7 @@ import reactor.kotlin.core.publisher.toFlux
 class EcommerceTransactionDataProvider(
     @Autowired private val transactionsViewRepository: TransactionsViewRepository,
     @Autowired private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any>,
-    @Autowired private val confidentialMailUtils: ConfidentialMailUtils
+    @Autowired private val emailConfidentialDataManager: ConfidentialDataManager
 ) : TransactionDataProvider {
 
     override fun totalRecordCount(searchParams: HelpDeskSearchTransactionRequestDto): Mono<Int> {
@@ -55,6 +56,8 @@ class EcommerceTransactionDataProvider(
         skip: Int,
         limit: Int
     ): Mono<List<TransactionResultDto>> {
+        val confidentialMailUtils =
+            ConfidentialMailUtils(emailConfidentialDataManager = emailConfidentialDataManager)
         val searchCriteriaType = searchParams.type
         val invalidSearchCriteriaError =
             Flux.error<BaseTransactionView>(
@@ -82,13 +85,15 @@ class EcommerceTransactionDataProvider(
                 is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
                 else -> invalidSearchCriteriaError
             }
-        return transactions.flatMap { mapToTransactionResultDto(it) }.collectList()
+        return transactions
+            .flatMap { mapToTransactionResultDto(it, confidentialMailUtils) }
+            .collectList()
     }
 
     private fun mapToTransactionResultDto(
-        transaction: BaseTransactionView
+        transaction: BaseTransactionView,
+        confidentialMailUtils: ConfidentialMailUtils
     ): Mono<TransactionResultDto> {
-
         val events =
             Mono.just(transaction).flatMapMany {
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(

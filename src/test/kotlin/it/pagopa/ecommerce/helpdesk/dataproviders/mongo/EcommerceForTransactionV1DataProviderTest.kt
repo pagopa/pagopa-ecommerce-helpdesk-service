@@ -4,6 +4,7 @@ import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationRequestD
 import it.pagopa.ecommerce.commons.documents.v1.TransactionClosureData as TransactionClosureDataV1
 import it.pagopa.ecommerce.commons.documents.v1.TransactionEvent as TransactionEventV1
 import it.pagopa.ecommerce.commons.documents.v1.TransactionUserReceiptData as TransactionUserReceiptDataV1
+import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.domain.v1.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV1
 import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionExpired as BaseTransactionExpiredV1
@@ -15,10 +16,10 @@ import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRequestedU
 import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithUserReceipt as BaseTransactionWithUserReceiptV1
 import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
+import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
-import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.ZonedDateTime
 import org.junit.jupiter.api.AfterAll
@@ -62,13 +63,13 @@ class EcommerceForTransactionV1DataProviderTest {
 
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
 
-    private val confidentialMailUtils: ConfidentialMailUtils = mock()
+    private val confidentialDataManager: ConfidentialDataManager = mock()
 
     private val ecommerceTransactionDataProvider =
         EcommerceTransactionDataProvider(
             transactionsViewRepository,
             transactionsEventStoreRepository,
-            confidentialMailUtils
+            confidentialDataManager
         )
 
     @Test
@@ -217,7 +218,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -355,7 +357,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -486,7 +489,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -648,7 +652,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)
@@ -738,7 +743,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -857,7 +863,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -979,7 +986,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -1104,7 +1112,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -1229,7 +1238,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -1354,7 +1364,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -1466,7 +1477,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)
@@ -1563,7 +1575,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
 
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
@@ -1657,7 +1670,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)
@@ -1758,7 +1772,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -1890,7 +1905,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -2025,7 +2041,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -2163,7 +2180,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -2301,7 +2319,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -2439,7 +2458,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -2590,7 +2610,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -2759,7 +2780,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -2946,7 +2968,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -3148,7 +3171,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -3299,7 +3323,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -3416,7 +3441,8 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
-        given(confidentialMailUtils.toEmail(any())).willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)

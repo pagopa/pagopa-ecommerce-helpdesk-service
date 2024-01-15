@@ -3,21 +3,26 @@ package it.pagopa.ecommerce.helpdesk.utils
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
+import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 
-@Component
-class ConfidentialMailUtils(
-    @Autowired private val emailConfidentialDataManager: ConfidentialDataManager
-) {
+class ConfidentialMailUtils(private val emailConfidentialDataManager: ConfidentialDataManager) {
+    private val emailCachedMap = mutableMapOf<String, Email>()
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
     fun toEmail(encrypted: Confidential<Email>): Mono<Email> {
-        return emailConfidentialDataManager.decrypt(encrypted, ::Email).doOnError { e ->
-            logger.error("Exception decrypting confidential data", e)
+        return if (emailCachedMap.contains(encrypted.opaqueData)) {
+            mono { emailCachedMap[encrypted.opaqueData] }
+        } else {
+            emailConfidentialDataManager
+                .decrypt(encrypted, ::Email)
+                .doOnError { e -> logger.error("Exception decrypting confidential data", e) }
+                .map { decryptedEmail ->
+                    emailCachedMap[encrypted.opaqueData] = decryptedEmail
+                    decryptedEmail
+                }
         }
     }
 
