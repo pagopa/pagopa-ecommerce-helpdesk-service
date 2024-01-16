@@ -42,12 +42,24 @@ class ConfidentialMailUtils(
         }
     }
 
-    fun toConfidential(clearText: Email): Mono<Confidential<Email>> {
+    /**
+     * The method used for encrypt mail using pdv
+     *
+     * @param clearText clear email
+     * @return Mono<Confidential<Email>> return mono with encrypted email
+     */
+    private fun toConfidential(clearText: Email): Mono<Confidential<Email>> {
         return emailConfidentialDataManager.encrypt(clearText).doOnError { e ->
             logger.error("Exception encrypting confidential data", e)
         }
     }
 
+    /**
+     * The method used for encrypt mail using pdv
+     *
+     * @param clearText clear email
+     * @return Mono<Confidential<Email>> return mono with encrypted email
+     */
     fun toConfidential(email: String): Mono<Confidential<Email>> {
         return toConfidential(Email(email))
     }
