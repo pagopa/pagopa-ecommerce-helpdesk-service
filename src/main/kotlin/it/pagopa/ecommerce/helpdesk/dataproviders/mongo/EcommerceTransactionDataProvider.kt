@@ -56,6 +56,11 @@ class EcommerceTransactionDataProvider(
         skip: Int,
         limit: Int
     ): Mono<List<TransactionResultDto>> {
+        /**
+         * The confidentialMailUtils object is initialized to ensure that the static map stored in
+         * memory, which is useful for managing the cache to avoid overloading PDV, does not
+         * increase disproportionately .The cache context must terminate for each request
+         */
         val confidentialMailUtils =
             ConfidentialMailUtils(emailConfidentialDataManager = emailConfidentialDataManager)
         val searchCriteriaType = searchParams.type
