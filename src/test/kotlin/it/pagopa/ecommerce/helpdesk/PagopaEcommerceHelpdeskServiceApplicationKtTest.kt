@@ -13,5 +13,4 @@ class PagopaEcommerceHelpdeskServiceApplicationKtTest {
     fun contextLoads() {
         Assert.assertTrue(true)
     }
-
 }
