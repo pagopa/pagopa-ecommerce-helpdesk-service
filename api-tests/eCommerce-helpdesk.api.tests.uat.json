@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "47f17708-7fce-4149-b077-d1fa3b2b4544",
+		"_postman_id": "bc5b5e2a-4a15-4fa9-b8f9-043bbb780361",
 		"name": "Ecommerce helpDesk-service UAT",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "24209240"
@@ -17,6 +17,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.eq(1);",
+							"    pm.expect(response.page.results).to.be.eq(1);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -83,6 +86,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -149,6 +155,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -215,6 +224,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -281,6 +293,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -431,6 +446,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.eq(1);",
+							"    pm.expect(response.page.results).to.be.eq(1);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -497,6 +515,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -563,6 +584,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -629,6 +653,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -695,6 +722,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -845,6 +875,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.deadLetterEvents.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -911,6 +944,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.deadLetterEvents.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -933,7 +969,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2023-11-30T14:50:27.001Z\",\n      \"endDate\": \"2023-11-30T14:50:27.999Z\"\n  }\n}",
+					"raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2023-12-03T00:00:00.001Z\",\n      \"endDate\": \"2023-12-05T00:00:00.999Z\"\n  }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -977,6 +1013,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.deadLetterEvents.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1043,6 +1082,9 @@
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.deadLetterEvents.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1093,6 +1135,113 @@
 							"key": "pageSize",
 							"value": "10"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eCommerce retrieve PGS XPAY transaction status",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"PGS XPAY retrieve transaction status - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.status).to.be.eq(\"AUTHORIZED\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/pgs/xpay/authorizations/{{XPAY_AUTHORIZATION_REQUEST_ID}}",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v1",
+						"pgs",
+						"xpay",
+						"authorizations",
+						"{{XPAY_AUTHORIZATION_REQUEST_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eCommerce retrieve PGS VPOS transaction status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"PGS VPOS retrieve transaction status - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.status).to.be.eq(\"AUTHORIZED\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/pgs/vpos/authorizations/{{VPOS_AUTHORIZATION_REQUEST_ID}}",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v1",
+						"pgs",
+						"vpos",
+						"authorizations",
+						"{{VPOS_AUTHORIZATION_REQUEST_ID}}"
 					]
 				}
 			},
