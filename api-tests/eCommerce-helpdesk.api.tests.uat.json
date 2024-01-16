@@ -2,8 +2,8 @@
 	"info": {
 		"_postman_id": "bc5b5e2a-4a15-4fa9-b8f9-043bbb780361",
 		"name": "Ecommerce helpDesk-service UAT",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "23963988"
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "24209240"
 	},
 	"item": [
 		{
@@ -352,6 +352,90 @@
 			"response": []
 		},
 		{
+			"name": "PM SearchPaymentMethod FISCAL_CODE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"PM SearchPaymentMethod by FISCAL_CODE - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"USER_FISCAL_CODE\",\n  \"userFiscalCode\": \"{{USER_FISCAL_CODE}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/pm/searchPaymentMethod"
+			},
+			"response": []
+		},
+		{
+			"name": "PM SearchPaymentMethod USER_EMAIL",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"PM SearchPaymentMethods by USER_EMAIL - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"USER_EMAIL\",\n  \"userEmail\": \"{{USER_EMAIL}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/pm/searchPaymentMethod"
+			},
+			"response": []
+		},
+		{
 			"name": "Technical helpDesk SearchTransaction TRANSACTION_ID",
 			"event": [
 				{
@@ -693,6 +777,90 @@
 						}
 					]
 				}
+			},
+			"response": []
+		},
+		{
+			"name": "Technical helpDesk SearchPaymentMethod USER_EMAIL",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Technical helpDesk SearchPaymentMethod by USER_EMAIL - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"USER_EMAIL\",\n  \"userEmail\": \"{{USER_EMAIL}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchPaymentMethod"
+			},
+			"response": []
+		},
+		{
+			"name": "Technical helpDesk SearchPaymentMethod FISCAL_CODE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Technical helpDesk SearchPaymentMethod by FISCAL_CODE - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"USER_FISCAL_CODE\",\n  \"userFiscalCode\": \"{{USER_FISCAL_CODE}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchPaymentMethod"
 			},
 			"response": []
 		},

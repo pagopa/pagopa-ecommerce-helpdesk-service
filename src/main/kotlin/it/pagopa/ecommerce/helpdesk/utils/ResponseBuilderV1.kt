@@ -8,6 +8,7 @@ import it.pagopa.ecommerce.commons.domain.v1.TransactionWithClosureError
 import it.pagopa.ecommerce.commons.domain.v1.pojos.*
 import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.utils.v1.TransactionUtils.getTransactionFee
+import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
 import java.math.BigDecimal
@@ -15,6 +16,14 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
 import org.reactivestreams.Publisher
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+
+object ResponseBuilderV1Logger {
+    val logger: Logger = LoggerFactory.getLogger(ResponseBuilderV1Logger::class.java)
+}
 
 fun buildTransactionSearchResponse(
     currentPage: Int,
@@ -80,6 +89,111 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
             )
             .product(ProductDto.PM)
     }
+
+fun resultToPaymentMethodDtoList(
+    results: List<Result>,
+    searchType: String
+): Mono<SearchPaymentMethodResponseDto> =
+    Flux.fromIterable(results)
+        .flatMap { result ->
+            result.map { row ->
+                val paymentMethod =
+                    when {
+                        row[10, BigDecimal::class.java] != null -> { // FK_CREDIT_CARD
+                            CardDetailInfoDto()
+                                .type(DetailTypeDto.CARD.value)
+                                .creationDate(
+                                    row[7, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
+                                )
+                                .idPsp(row[8, String::class.java])
+                                .cardBin(row[11, String::class.java])
+                                .cardNumber(row[12, String::class.java])
+                        }
+                        row[13, BigDecimal::class.java] != null -> { // FK_BUYER_BANK
+                            BankAccountDetailInfoDto()
+                                .type(DetailTypeDto.BANK_ACCOUNT.value)
+                                .creationDate(
+                                    row[7, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
+                                )
+                                .bankName(row[14, String::class.java])
+                                .bankState(row[15, String::class.java])
+                        }
+                        row[16, BigDecimal::class.java] != null -> { // FK_BANCOMAT_CARD
+                            BancomatDetailInfoDto()
+                                .type(DetailTypeDto.BANCOMAT.value)
+                                .creationDate(
+                                    row[7, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
+                                )
+                                .bancomatAbi(row[17, String::class.java])
+                                .bancomatNumber(row[18, String::class.java])
+                        }
+                        row[19, BigDecimal::class.java] != null -> { // FK_SATISPAY
+                            SatispayDetailInfoDto()
+                                .type(DetailTypeDto.SATISPAY.value)
+                                .creationDate(
+                                    row[7, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
+                                )
+                                .idPsp(row[8, String::class.java])
+                        }
+                        row[20, BigDecimal::class.java] != null -> { // FK_BPAY
+                            BpayDetailInfoDto()
+                                .type(DetailTypeDto.BPAY.value)
+                                .creationDate(
+                                    row[7, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
+                                )
+                                .idPsp(row[8, String::class.java])
+                                .bpayName(row[21, String::class.java])
+                                .bpayPhoneNumber(row[22, String::class.java])
+                        }
+                        row[23, BigDecimal::class.java] != null -> { // FK_GENERIC_INSTRUMENT
+                            GenericMethodDetailInfoDto()
+                                .type(DetailTypeDto.GENERIC_METHOD.value)
+                                .creationDate(
+                                    row[7, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
+                                )
+                                .description((row[24, String::class.java]))
+                        }
+                        row[25, BigDecimal::class.java] != null -> { // FK_PPAL
+                            PaypalDetailInfoDto()
+                                .type(DetailTypeDto.PAYPAL.value)
+                                .creationDate(
+                                    row[7, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2"))
+                                )
+                                .ppayEmail((row[26, String::class.java]))
+                        }
+                        else -> {
+                            ResponseBuilderV1Logger.logger.warn("Payment method not handled")
+                            null
+                        }
+                    }
+                val searchPaymentMethodResponse =
+                    SearchPaymentMethodResponseDto()
+                        .fiscalCode(row[0, String::class.java])
+                        .notificationEmail(row[1, String::class.java])
+                        .surname(row[2, String::class.java])
+                        .name(row[3, String::class.java])
+                        .username(row[4, String::class.java])
+                        .status(row[5, String::class.java])
+                if (paymentMethod != null) {
+                    searchPaymentMethodResponse.addPaymentMethodsItem(paymentMethod)
+                }
+                searchPaymentMethodResponse
+            }
+        }
+        .switchIfEmpty(Mono.error(NoResultFoundException(searchType)))
+        .reduce(SearchPaymentMethodResponseDto()) { searchResponse, mappedRow ->
+            searchResponse.fiscalCode(mappedRow.fiscalCode)
+            searchResponse.notificationEmail(mappedRow.notificationEmail)
+            searchResponse.name(mappedRow.name)
+            searchResponse.surname(mappedRow.surname)
+            searchResponse.username(mappedRow.username)
+            searchResponse.status(mappedRow.status)
+            searchResponse.addPaymentMethodsItem(mappedRow.paymentMethods[0])
+        }
+        .map { response ->
+            response.paymentMethods?.sortBy { it.type }
+            response
+        }
 
 fun baseTransactionToTransactionInfoDtoV1(baseTransaction: BaseTransaction): TransactionResultDto {
     val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }

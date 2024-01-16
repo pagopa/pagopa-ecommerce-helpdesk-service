@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.services
 
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.model.PageInfoDto
@@ -15,8 +16,9 @@ import reactor.test.StepVerifier
 class PmServiceTest {
 
     private val pmTransactionDataProvider: PMTransactionDataProvider = mock()
+    private val pmPaymentMethodsDataProvider: PMPaymentMethodsDataProvider = mock()
 
-    private val pmService = PmService(pmTransactionDataProvider)
+    private val pmService = PmService(pmTransactionDataProvider, pmPaymentMethodsDataProvider)
 
     @Test
     fun `should return found transaction successfully`() {
@@ -74,5 +76,41 @@ class PmServiceTest {
 
         verify(pmTransactionDataProvider, times(1)).totalRecordCount(any())
         verify(pmTransactionDataProvider, times(0)).findResult(any(), any(), any())
+    }
+
+    @Test
+    fun `should return found payment methods successfully using fiscal code`() {
+        val searchCriteria =
+            HelpdeskTestUtils.buildPaymentMethodSearchRequestByUserFiscalCode("GOGFT675GGEY98IT")
+        val response = HelpdeskTestUtils.buildSearchPaymentMethodResponseDto()
+        given(pmPaymentMethodsDataProvider.findResult(searchParams = searchCriteria))
+            .willReturn(Mono.just(response))
+        StepVerifier.create(
+                pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = searchCriteria)
+            )
+            .expectNext(response)
+            .verifyComplete()
+
+        verify(pmTransactionDataProvider, times(0)).totalRecordCount(any())
+        verify(pmTransactionDataProvider, times(0)).findResult(any(), any(), any())
+        verify(pmPaymentMethodsDataProvider, times(1)).findResult(any())
+    }
+
+    @Test
+    fun `should return found payment methods successfully using email`() {
+        val searchCriteria =
+            HelpdeskTestUtils.buildPaymentMethodSearchRequestByUserEmail("test@test.it")
+        val response = HelpdeskTestUtils.buildSearchPaymentMethodResponseDto()
+        given(pmPaymentMethodsDataProvider.findResult(searchParams = searchCriteria))
+            .willReturn(Mono.just(response))
+        StepVerifier.create(
+                pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = searchCriteria)
+            )
+            .expectNext(response)
+            .verifyComplete()
+
+        verify(pmTransactionDataProvider, times(0)).totalRecordCount(any())
+        verify(pmTransactionDataProvider, times(0)).findResult(any(), any(), any())
+        verify(pmPaymentMethodsDataProvider, times(1)).findResult(any())
     }
 }
