@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.exceptionhandler
 
+import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
@@ -96,5 +97,20 @@ class ExceptionHandlerTest {
             response.body
         )
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.statusCode)
+    }
+
+    @Test
+    fun `Should handle ConfidentialDataException`() {
+        val exception = ConfidentialDataException(Exception())
+        val response = exceptionHandler.handleConfidentialDataException(exception)
+        assertEquals(
+            HelpdeskTestUtils.buildProblemJson(
+                httpStatus = HttpStatus.BAD_GATEWAY,
+                title = "Error processing the request",
+                description = "Error while processing pdv request"
+            ),
+            response.body
+        )
+        assertEquals(HttpStatus.BAD_GATEWAY, response.statusCode)
     }
 }
