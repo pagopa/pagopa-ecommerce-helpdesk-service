@@ -26,17 +26,14 @@ import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.ZonedDateTime
 import java.util.*
-import kotlin.collections.HashSet
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
-import org.mockito.kotlin.any
-import org.mockito.kotlin.given
-import org.mockito.kotlin.mock
 import org.springframework.http.HttpStatus
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Hooks
 import reactor.core.publisher.Mono
@@ -3873,7 +3870,15 @@ class EcommerceForTransactionV1DataProviderTest {
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(
                 Mono.error(
-                    ConfidentialDataException(Exception(), Optional.of(HttpStatus.NOT_FOUND))
+                    ConfidentialDataException(
+                        WebClientResponseException(
+                            HttpStatus.NOT_FOUND.value(),
+                            "",
+                            null,
+                            null,
+                            null
+                        )
+                    )
                 )
             )
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }

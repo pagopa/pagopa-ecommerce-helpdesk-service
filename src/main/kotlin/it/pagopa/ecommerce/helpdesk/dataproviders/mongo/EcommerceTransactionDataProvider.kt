@@ -1,7 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo
 
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
-import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.helpdesk.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionDataProvider
@@ -12,8 +11,8 @@ import it.pagopa.ecommerce.helpdesk.utils.baseTransactionToTransactionInfoDtoV2
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.util.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
@@ -132,10 +131,15 @@ class EcommerceTransactionDataProvider(
                                 .toEmail(baseTransaction.email)
                                 .map { Optional.of(it) }
                                 .onErrorResume(ConfidentialDataException::class.java) {
-                                    it.statusCode
-                                        .filter { status -> status == HttpStatus.NOT_FOUND }
-                                        .map { Mono.just(Optional.empty<Email>()) }
-                                        .orElse(Mono.error(it))
+                                    val errorCause = it.cause
+                                    if (
+                                        errorCause is WebClientResponseException &&
+                                            errorCause.statusCode.value() == 404
+                                    ) {
+                                        Mono.just(Optional.empty())
+                                    } else {
+                                        Mono.error(it)
+                                    }
                                 }
                         },
                         ::Pair
@@ -156,10 +160,15 @@ class EcommerceTransactionDataProvider(
                                 .toEmail(baseTransaction.email)
                                 .map { Optional.of(it) }
                                 .onErrorResume(ConfidentialDataException::class.java) {
-                                    it.statusCode
-                                        .filter { status -> status == HttpStatus.NOT_FOUND }
-                                        .map { Mono.just(Optional.empty<Email>()) }
-                                        .orElse(Mono.error(it))
+                                    val errorCause = it.cause
+                                    if (
+                                        errorCause is WebClientResponseException &&
+                                            errorCause.statusCode.value() == 404
+                                    ) {
+                                        Mono.just(Optional.empty())
+                                    } else {
+                                        Mono.error(it)
+                                    }
                                 }
                         },
                         ::Pair

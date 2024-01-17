@@ -7,10 +7,10 @@ import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.RestApiException
 import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
 import jakarta.xml.bind.ValidationException
-import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
+import org.springframework.web.reactive.function.client.WebClientResponseException
 
 class ExceptionHandlerTest {
 
@@ -102,7 +102,10 @@ class ExceptionHandlerTest {
 
     @Test
     fun `Should handle ConfidentialDataException`() {
-        val exception = ConfidentialDataException(Exception(), Optional.empty())
+        val exception =
+            ConfidentialDataException(
+                WebClientResponseException(HttpStatus.NOT_FOUND.value(), "", null, null, null)
+            )
         val response = exceptionHandler.handleConfidentialDataException(exception)
         assertEquals(
             HelpdeskTestUtils.buildProblemJson(
