@@ -1,6 +1,8 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo
 
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
+import it.pagopa.ecommerce.commons.domain.Email
+import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
@@ -8,7 +10,9 @@ import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.baseTransactionToTransactionInfoDtoV1
 import it.pagopa.ecommerce.helpdesk.utils.baseTransactionToTransactionInfoDtoV2
 import it.pagopa.generated.ecommerce.helpdesk.model.*
+import java.util.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -115,7 +119,17 @@ class EcommerceTransactionDataProvider(
                     )
                     .cast(it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransaction::class.java)
                     .zipWhen(
-                        { baseTransaction -> confidentialMailUtils.toEmail(baseTransaction.email) },
+                        { baseTransaction ->
+                            confidentialMailUtils
+                                .toEmail(baseTransaction.email)
+                                .map { Optional.of(it) }
+                                .onErrorResume(ConfidentialDataException::class.java) {
+                                    it.statusCode
+                                        .filter { status -> status == HttpStatus.NOT_FOUND }
+                                        .map { Mono.just(Optional.empty<Email>()) }
+                                        .orElse(Mono.error(it))
+                                }
+                        },
                         ::Pair
                     )
                     .map { (baseTransaction, email) ->
@@ -129,7 +143,17 @@ class EcommerceTransactionDataProvider(
                     )
                     .cast(it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransaction::class.java)
                     .zipWhen(
-                        { baseTransaction -> confidentialMailUtils.toEmail(baseTransaction.email) },
+                        { baseTransaction ->
+                            confidentialMailUtils
+                                .toEmail(baseTransaction.email)
+                                .map { Optional.of(it) }
+                                .onErrorResume(ConfidentialDataException::class.java) {
+                                    it.statusCode
+                                        .filter { status -> status == HttpStatus.NOT_FOUND }
+                                        .map { Mono.just(Optional.empty<Email>()) }
+                                        .orElse(Mono.error(it))
+                                }
+                        },
                         ::Pair
                     )
                     .map { (baseTransaction, email) ->

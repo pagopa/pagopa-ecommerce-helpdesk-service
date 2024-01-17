@@ -20,10 +20,11 @@ plugins {
   application
 }
 // eCommerce commons library version
-val ecommerceCommonsVersion = "1.0.0"
+val ecommerceCommonsVersion = "1.4.1"
 
 // eCommerce commons library git ref (by default tag)
-val ecommerceCommonsGitRef = ecommerceCommonsVersion
+val ecommerceCommonsGitRef =
+  "CHK-2251-status-code-confidentialDataException" // ecommerceCommonsVersion
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 

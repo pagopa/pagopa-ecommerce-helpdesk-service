@@ -16,7 +16,7 @@ import java.util.*
 
 fun baseTransactionToTransactionInfoDtoV2(
     baseTransaction: BaseTransaction,
-    email: Email
+    email: Optional<Email>
 ): TransactionResultDto {
     val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
     val fee = getTransactionFees(baseTransaction).orElse(0)
@@ -29,7 +29,7 @@ fun baseTransactionToTransactionInfoDtoV2(
 
     val userInfo =
         UserInfoDto()
-            .notificationEmail(email.value)
+            .notificationEmail(email.map { it.value }.orElse("N/A"))
             // TODO this field is statically valued with GUEST eCommerce side into Nodo ClosePayment
             // requests. Must be populated dinamically when logic will be updated eCommerce side
             // (event-dispatcher/transactions-service)
