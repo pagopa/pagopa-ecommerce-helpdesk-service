@@ -30,6 +30,7 @@ class ConfidentialMailUtils(
      */
     fun toEmail(encrypted: Confidential<Email>): Mono<Email> {
         return if (emailCachedMap.contains(encrypted.opaqueData)) {
+            logger.info("email decrypt cache hit")
             mono { emailCachedMap[encrypted.opaqueData] }
         } else {
             emailConfidentialDataManager
