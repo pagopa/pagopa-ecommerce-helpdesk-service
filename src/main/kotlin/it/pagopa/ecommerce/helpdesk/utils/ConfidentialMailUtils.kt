@@ -11,12 +11,12 @@ import reactor.core.publisher.Mono
  * Class used for handle mail encryption end decryption.
  *
  * @param emailConfidentialDataManager class for execute pdv call
- * @param emailCachedMap Map containing the opaque mail token as the key and the clear mail as the
- *   value.
+ * @param encryptedToClearMap Map containing the opaque mail token as the key and the clear mail as
+ *   the value.
  */
 class ConfidentialMailUtils(
     private val emailConfidentialDataManager: ConfidentialDataManager,
-    private val emailCachedMap: MutableMap<String, Email> = mutableMapOf()
+    private val encryptedToClearMap: MutableMap<String, Email> = mutableMapOf()
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -29,16 +29,15 @@ class ConfidentialMailUtils(
      * @return Mono<Email> return mono with clear email value object
      */
     fun toEmail(encrypted: Confidential<Email>): Mono<Email> {
-        return if (emailCachedMap.contains(encrypted.opaqueData)) {
+        return if (encryptedToClearMap.contains(encrypted.opaqueData)) {
             logger.info("email decrypt cache hit")
-            mono { emailCachedMap[encrypted.opaqueData] }
+            mono { encryptedToClearMap[encrypted.opaqueData] }
         } else {
             emailConfidentialDataManager
                 .decrypt(encrypted, ::Email)
                 .doOnError { e -> logger.error("Exception decrypting confidential data", e) }
-                .map { decryptedEmail ->
-                    emailCachedMap[encrypted.opaqueData] = decryptedEmail
-                    decryptedEmail
+                .doOnNext { decryptedEmail ->
+                    encryptedToClearMap[encrypted.opaqueData] = decryptedEmail
                 }
         }
     }
@@ -50,9 +49,26 @@ class ConfidentialMailUtils(
      * @return Mono<Confidential<Email>> return mono with encrypted email
      */
     private fun toConfidential(clearText: Email): Mono<Confidential<Email>> {
-        return emailConfidentialDataManager.encrypt(clearText).doOnError { e ->
-            logger.error("Exception encrypting confidential data", e)
-        }
+        return mono {
+                encryptedToClearMap.entries
+                    .stream()
+                    .filter { it.value == clearText }
+                    .map { it.key }
+                    .findFirst()
+                    .map { it }
+            }
+            .flatMap {
+                if (it.isEmpty) {
+                    emailConfidentialDataManager
+                        .encrypt(clearText)
+                        .doOnNext { encryptedToClearMap[it.opaqueData] = clearText }
+                        .doOnError { e ->
+                            logger.error("Exception encrypting confidential data", e)
+                        }
+                } else {
+                    Mono.just(Confidential(it.get()))
+                }
+            }
     }
 
     /**

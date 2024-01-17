@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.oracle
 
 import io.r2dbc.spi.ConnectionFactory
+import it.pagopa.ecommerce.helpdesk.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
@@ -25,56 +26,66 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun totalRecordCount(searchParams: HelpDeskSearchTransactionRequestDto): Mono<Int> {
-        val searchCriteriaType = searchParams.type
+    override fun totalRecordCount(
+        searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>
+    ): Mono<Int> {
+        val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
-            Mono.error<Int>(InvalidSearchCriteriaException(searchCriteriaType, ProductDto.PM))
-        return when (searchParams) {
-            is SearchTransactionRequestPaymentTokenDto -> invalidSearchCriteriaError
-            is SearchTransactionRequestRptIdDto -> invalidSearchCriteriaError
-            is SearchTransactionRequestTransactionIdDto -> invalidSearchCriteriaError
-            is SearchTransactionRequestEmailDto ->
-                getTotalResultCount(userEmailCountQuery, searchParams.userEmail)
-            is SearchTransactionRequestFiscalCodeDto ->
-                getTotalResultCount(
-                    totalRecordCountQuery = userFiscalCodeCountQuery,
-                    searchParam = searchParams.userFiscalCode
-                )
-            else -> Mono.error(InvalidSearchCriteriaException(searchParams.type, ProductDto.PM))
+            decodedSearchParam.flatMap {
+                Mono.error<Int>(InvalidSearchCriteriaException(it.type, ProductDto.PM))
+            }
+        return decodedSearchParam.flatMap {
+            when (it) {
+                is SearchTransactionRequestPaymentTokenDto -> invalidSearchCriteriaError
+                is SearchTransactionRequestRptIdDto -> invalidSearchCriteriaError
+                is SearchTransactionRequestTransactionIdDto -> invalidSearchCriteriaError
+                is SearchTransactionRequestEmailDto ->
+                    getTotalResultCount(userEmailCountQuery, it.userEmail)
+                is SearchTransactionRequestFiscalCodeDto ->
+                    getTotalResultCount(
+                        totalRecordCountQuery = userFiscalCodeCountQuery,
+                        searchParam = it.userFiscalCode
+                    )
+                else -> invalidSearchCriteriaError
+            }
         }
     }
 
     override fun findResult(
-        searchParams: HelpDeskSearchTransactionRequestDto,
+        searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>,
         skip: Int,
         limit: Int
     ): Mono<List<TransactionResultDto>> {
-        val searchCriteriaType = searchParams.type
+        val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
-            Mono.error<List<TransactionResultDto>>(
-                InvalidSearchCriteriaException(searchCriteriaType, ProductDto.PM)
-            )
-        return when (searchParams) {
-            is SearchTransactionRequestPaymentTokenDto -> invalidSearchCriteriaError
-            is SearchTransactionRequestRptIdDto -> invalidSearchCriteriaError
-            is SearchTransactionRequestTransactionIdDto -> invalidSearchCriteriaError
-            is SearchTransactionRequestEmailDto ->
-                getResultSetFromPaginatedQuery(
-                    resultQuery = userEmailPaginatedQuery,
-                    skip = skip,
-                    limit = limit,
-                    searchParam = searchParams.userEmail,
-                    searchType = searchCriteriaType
+            decodedSearchParam.flatMap {
+                Mono.error<List<TransactionResultDto>>(
+                    InvalidSearchCriteriaException(it.type, ProductDto.PM)
                 )
-            is SearchTransactionRequestFiscalCodeDto ->
-                getResultSetFromPaginatedQuery(
-                    resultQuery = userFiscalCodePaginatedQuery,
-                    skip = skip,
-                    limit = limit,
-                    searchParam = searchParams.userFiscalCode,
-                    searchType = searchCriteriaType
-                )
-            else -> invalidSearchCriteriaError
+            }
+        return decodedSearchParam.flatMap {
+            when (it) {
+                is SearchTransactionRequestPaymentTokenDto -> invalidSearchCriteriaError
+                is SearchTransactionRequestRptIdDto -> invalidSearchCriteriaError
+                is SearchTransactionRequestTransactionIdDto -> invalidSearchCriteriaError
+                is SearchTransactionRequestEmailDto ->
+                    getResultSetFromPaginatedQuery(
+                        resultQuery = userEmailPaginatedQuery,
+                        skip = skip,
+                        limit = limit,
+                        searchParam = it.userEmail,
+                        searchType = it.type
+                    )
+                is SearchTransactionRequestFiscalCodeDto ->
+                    getResultSetFromPaginatedQuery(
+                        resultQuery = userFiscalCodePaginatedQuery,
+                        skip = skip,
+                        limit = limit,
+                        searchParam = it.userFiscalCode,
+                        searchType = it.type
+                    )
+                else -> invalidSearchCriteriaError
+            }
         }
     }
 

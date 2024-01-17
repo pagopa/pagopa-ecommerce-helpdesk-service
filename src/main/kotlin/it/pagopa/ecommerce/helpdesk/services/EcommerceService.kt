@@ -1,10 +1,13 @@
 package it.pagopa.ecommerce.helpdesk.services
 
+import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
+import it.pagopa.ecommerce.helpdesk.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.DeadLetterDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.buildDeadLetterEventsSearchResponse
 import it.pagopa.ecommerce.helpdesk.utils.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.*
@@ -17,7 +20,8 @@ import reactor.core.publisher.Mono
 @Service
 class EcommerceService(
     @Autowired private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
-    @Autowired private val deadLetterDataProvider: DeadLetterDataProvider
+    @Autowired private val deadLetterDataProvider: DeadLetterDataProvider,
+    @Autowired private val confidentialDataManager: ConfidentialDataManager
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -31,7 +35,11 @@ class EcommerceService(
         return searchPaginatedResult(
                 pageNumber = pageNumber,
                 pageSize = pageSize,
-                searchCriteria = ecommerceSearchTransactionRequestDto,
+                searchCriteria =
+                    SearchParamDecoder(
+                        searchParameter = ecommerceSearchTransactionRequestDto,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    ),
                 searchCriteriaType = ecommerceSearchTransactionRequestDto.type,
                 dataProvider = ecommerceTransactionDataProvider
             )

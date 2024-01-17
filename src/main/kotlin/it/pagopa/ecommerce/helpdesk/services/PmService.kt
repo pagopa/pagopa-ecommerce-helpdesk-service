@@ -1,10 +1,14 @@
 package it.pagopa.ecommerce.helpdesk.services
 
+import it.pagopa.ecommerce.helpdesk.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.buildTransactionSearchResponse
-import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchPaymentMethodResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -27,27 +31,37 @@ class PmService(
             "[helpDesk pm service] searchTransaction method, search type: {}",
             pmSearchTransactionRequestDto.type
         )
-        return pmTransactionDataProvider.totalRecordCount(pmSearchTransactionRequestDto).flatMap {
-            totalCount ->
-            if (totalCount > 0) {
-                pmTransactionDataProvider
-                    .findResult(
-                        searchParams = pmSearchTransactionRequestDto,
-                        skip = pageSize * pageNumber,
-                        limit = pageSize
-                    )
-                    .map { results ->
-                        buildTransactionSearchResponse(
-                            currentPage = pageNumber,
-                            totalCount = totalCount,
-                            pageSize = pageSize,
-                            results = results
+        return pmTransactionDataProvider
+            .totalRecordCount(
+                SearchParamDecoder(
+                    searchParameter = pmSearchTransactionRequestDto,
+                    confidentialMailUtils = null
+                )
+            )
+            .flatMap { totalCount ->
+                if (totalCount > 0) {
+                    pmTransactionDataProvider
+                        .findResult(
+                            searchParams =
+                                SearchParamDecoder(
+                                    searchParameter = pmSearchTransactionRequestDto,
+                                    confidentialMailUtils = null
+                                ),
+                            skip = pageSize * pageNumber,
+                            limit = pageSize
                         )
-                    }
-            } else {
-                Mono.error(NoResultFoundException(pmSearchTransactionRequestDto.type))
+                        .map { results ->
+                            buildTransactionSearchResponse(
+                                currentPage = pageNumber,
+                                totalCount = totalCount,
+                                pageSize = pageSize,
+                                results = results
+                            )
+                        }
+                } else {
+                    Mono.error(NoResultFoundException(pmSearchTransactionRequestDto.type))
+                }
             }
-        }
     }
 
     fun searchPaymentMethod(
