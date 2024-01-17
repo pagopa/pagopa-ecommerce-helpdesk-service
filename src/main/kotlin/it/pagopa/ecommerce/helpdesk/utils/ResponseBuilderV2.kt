@@ -28,7 +28,7 @@ fun baseTransactionToTransactionInfoDtoV2(baseTransaction: BaseTransaction): Tra
             // TODO to be valued here with PDV integration
             .notificationEmail("")
             // TODO this field is statically valued with GUEST eCommerce side into Nodo ClosePayment
-            // requests. Must be populated dinamically when logic will be updated eCommerce side
+            // requests. Must be populated dynamically when logic will be updated eCommerce side
             // (event-dispatcher/transactions-service)
             .authenticationType(UserDto.TypeEnum.GUEST.toString())
     // build transaction info
@@ -93,6 +93,8 @@ fun getStatusDetail(
     when (transactionGatewayAuthorizationData) {
         is PgsTransactionGatewayAuthorizationData -> transactionGatewayAuthorizationData.errorCode
         is NpgTransactionGatewayAuthorizationData -> null
+        is RedirectTransactionGatewayAuthorizationData ->
+            transactionGatewayAuthorizationData.errorCode
         else -> null
     }
 
@@ -171,6 +173,15 @@ fun getAuthorizationOutcomeV2(baseTransaction: BaseTransaction): AuthorizationRe
                     } else {
                         AuthorizationResultDto.KO
                     }
+                is RedirectTransactionGatewayAuthorizationData ->
+                    if (
+                        gatewayAuthData.outcome ==
+                            RedirectTransactionGatewayAuthorizationData.Outcome.OK
+                    ) {
+                        AuthorizationResultDto.OK
+                    } else {
+                        AuthorizationResultDto.KO
+                    }
                 else -> null
             }
         }
@@ -182,5 +193,7 @@ fun getBrand(authorizationRequestedData: TransactionGatewayAuthorizationRequeste
         is NpgTransactionGatewayAuthorizationRequestedData -> authorizationRequestedData.brand
         is PgsTransactionGatewayAuthorizationRequestedData ->
             authorizationRequestedData.brand?.toString()
+        is RedirectTransactionGatewayAuthorizationRequestedData ->
+            authorizationRequestedData.paymentMethodType.toString()
         else -> null
     }
