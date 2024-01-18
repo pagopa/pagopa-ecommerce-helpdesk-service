@@ -20,10 +20,10 @@ import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v2.TransactionTestUtils as TransactionTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
+import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.ZonedDateTime
-import java.util.*
-import kotlin.collections.HashSet
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -33,6 +33,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.springframework.http.HttpStatus
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
@@ -42,6 +43,7 @@ class EcommerceForTransactionV2DataProviderTest {
     companion object {
         val testedStatuses: MutableSet<TransactionStatusDto> = HashSet()
         const val TEST_EMAIL = "test.email@test.it"
+
         @JvmStatic
         @BeforeAll
         fun beforeAll() {
@@ -70,8 +72,7 @@ class EcommerceForTransactionV2DataProviderTest {
     private val ecommerceTransactionDataProvider =
         EcommerceTransactionDataProvider(
             transactionsViewRepository,
-            transactionsEventStoreRepository,
-            confidentialDataManager
+            transactionsEventStoreRepository
         )
 
     @Test
@@ -143,7 +144,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -254,7 +259,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -378,7 +387,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -505,7 +518,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -632,7 +649,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -759,7 +780,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -846,7 +871,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -944,7 +973,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1038,7 +1071,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1169,7 +1206,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1308,7 +1349,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1447,7 +1492,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1589,7 +1638,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1731,7 +1784,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1873,7 +1930,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -2028,7 +2089,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -2201,7 +2266,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -2392,7 +2461,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -2598,7 +2671,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -2753,7 +2830,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -2842,7 +2923,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -2983,7 +3068,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -3053,7 +3142,15 @@ class EcommerceForTransactionV2DataProviderTest {
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(
                 Mono.error(
-                    ConfidentialDataException(Exception(), Optional.of(HttpStatus.NOT_FOUND))
+                    ConfidentialDataException(
+                        WebClientResponseException(
+                            HttpStatus.NOT_FOUND.value(),
+                            "",
+                            null,
+                            null,
+                            null
+                        )
+                    )
                 )
             )
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -3126,7 +3223,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )

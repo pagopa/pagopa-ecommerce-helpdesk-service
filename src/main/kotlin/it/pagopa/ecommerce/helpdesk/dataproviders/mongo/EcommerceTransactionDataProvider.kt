@@ -1,19 +1,18 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo
 
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
-import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
-import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
+import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.baseTransactionToTransactionInfoDtoV1
 import it.pagopa.ecommerce.helpdesk.utils.baseTransactionToTransactionInfoDtoV2
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.util.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
@@ -21,81 +20,89 @@ import reactor.kotlin.core.publisher.toFlux
 @Component
 class EcommerceTransactionDataProvider(
     @Autowired private val transactionsViewRepository: TransactionsViewRepository,
-    @Autowired private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any>,
-    @Autowired private val emailConfidentialDataManager: ConfidentialDataManager
+    @Autowired private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any>
 ) : TransactionDataProvider {
 
-    override fun totalRecordCount(searchParams: HelpDeskSearchTransactionRequestDto): Mono<Int> {
-        val searchCriteriaType = searchParams.type
+    override fun totalRecordCount(
+        searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>
+    ): Mono<Int> {
+        val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
-            Mono.error<Int>(
-                InvalidSearchCriteriaException(searchCriteriaType, ProductDto.ECOMMERCE)
-            )
-        return when (searchParams) {
-            is SearchTransactionRequestPaymentTokenDto ->
-                transactionsViewRepository.countTransactionsWithPaymentToken(
-                    searchParams.paymentToken
-                )
-            is SearchTransactionRequestRptIdDto ->
-                transactionsViewRepository.countTransactionsWithRptId(searchParams.rptId)
-            is SearchTransactionRequestTransactionIdDto ->
-                transactionsViewRepository.existsById(searchParams.transactionId).map { exist ->
-                    if (exist) {
-                        1
-                    } else {
-                        0
-                    }
+            decodedSearchParam.flatMap {
+                Mono.error<Long>(InvalidSearchCriteriaException(it.type, ProductDto.ECOMMERCE))
+            }
+        return decodedSearchParam
+            .flatMap {
+                when (it) {
+                    is SearchTransactionRequestPaymentTokenDto ->
+                        transactionsViewRepository.countTransactionsWithPaymentToken(
+                            it.paymentToken
+                        )
+                    is SearchTransactionRequestRptIdDto ->
+                        transactionsViewRepository.countTransactionsWithRptId(it.rptId)
+                    is SearchTransactionRequestTransactionIdDto ->
+                        transactionsViewRepository.existsById(it.transactionId).map { exist ->
+                            if (exist) {
+                                1
+                            } else {
+                                0
+                            }
+                        }
+                    is SearchTransactionRequestEmailDto ->
+                        transactionsViewRepository.countTransactionsWithEmail(it.userEmail)
+                    is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
+                    else -> invalidSearchCriteriaError
                 }
-
-            // TODO search by email not implemented yet, here must be changed with search for mail
-            // PDV token
-            is SearchTransactionRequestEmailDto -> invalidSearchCriteriaError
-            is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
-            else -> invalidSearchCriteriaError
-        }.map { it.toInt() }
+            }
+            .map { it.toInt() }
     }
 
     override fun findResult(
-        searchParams: HelpDeskSearchTransactionRequestDto,
+        searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>,
         skip: Int,
         limit: Int
     ): Mono<List<TransactionResultDto>> {
-        /**
-         * The confidentialMailUtils object is initialized to ensure that the static map stored in
-         * memory, which is useful for managing the cache to avoid overloading PDV, does not
-         * increase disproportionately .The cache context must terminate for each request
-         */
-        val confidentialMailUtils =
-            ConfidentialMailUtils(emailConfidentialDataManager = emailConfidentialDataManager)
-        val searchCriteriaType = searchParams.type
+        val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
-            Flux.error<BaseTransactionView>(
-                InvalidSearchCriteriaException(searchCriteriaType, ProductDto.ECOMMERCE)
-            )
-        val transactions: Flux<BaseTransactionView> =
-            when (searchParams) {
-                is SearchTransactionRequestPaymentTokenDto ->
-                    transactionsViewRepository
-                        .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                            paymentToken = searchParams.paymentToken,
-                            skip = skip,
-                            limit = limit
-                        )
-                is SearchTransactionRequestRptIdDto ->
-                    transactionsViewRepository
-                        .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                            rptId = searchParams.rptId,
-                            skip = skip,
-                            limit = limit
-                        )
-                is SearchTransactionRequestTransactionIdDto ->
-                    transactionsViewRepository.findById(searchParams.transactionId).toFlux()
-                is SearchTransactionRequestEmailDto -> invalidSearchCriteriaError
-                is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
-                else -> invalidSearchCriteriaError
+            decodedSearchParam.flatMapMany {
+                Flux.error<BaseTransactionView>(
+                    InvalidSearchCriteriaException(it.type, ProductDto.ECOMMERCE)
+                )
             }
+
+        val transactions: Flux<BaseTransactionView> =
+            decodedSearchParam.flatMapMany {
+                when (it) {
+                    is SearchTransactionRequestPaymentTokenDto ->
+                        transactionsViewRepository
+                            .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
+                                paymentToken = it.paymentToken,
+                                skip = skip,
+                                limit = limit
+                            )
+                    is SearchTransactionRequestRptIdDto ->
+                        transactionsViewRepository
+                            .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                                rptId = it.rptId,
+                                skip = skip,
+                                limit = limit
+                            )
+                    is SearchTransactionRequestTransactionIdDto ->
+                        transactionsViewRepository.findById(it.transactionId).toFlux()
+                    is SearchTransactionRequestEmailDto ->
+                        transactionsViewRepository
+                            .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                                encryptedEmail = it.userEmail,
+                                skip = skip,
+                                limit = limit
+                            )
+                    is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
+                    else -> invalidSearchCriteriaError
+                }
+            }
+
         return transactions
-            .flatMap { mapToTransactionResultDto(it, confidentialMailUtils) }
+            .flatMap { mapToTransactionResultDto(it, searchParams.confidentialMailUtils!!) }
             .collectList()
     }
 
@@ -124,10 +131,15 @@ class EcommerceTransactionDataProvider(
                                 .toEmail(baseTransaction.email)
                                 .map { Optional.of(it) }
                                 .onErrorResume(ConfidentialDataException::class.java) {
-                                    it.statusCode
-                                        .filter { status -> status == HttpStatus.NOT_FOUND }
-                                        .map { Mono.just(Optional.empty<Email>()) }
-                                        .orElse(Mono.error(it))
+                                    val errorCause = it.cause
+                                    if (
+                                        errorCause is WebClientResponseException &&
+                                            errorCause.statusCode.value() == 404
+                                    ) {
+                                        Mono.just(Optional.empty())
+                                    } else {
+                                        Mono.error(it)
+                                    }
                                 }
                         },
                         ::Pair
@@ -148,10 +160,15 @@ class EcommerceTransactionDataProvider(
                                 .toEmail(baseTransaction.email)
                                 .map { Optional.of(it) }
                                 .onErrorResume(ConfidentialDataException::class.java) {
-                                    it.statusCode
-                                        .filter { status -> status == HttpStatus.NOT_FOUND }
-                                        .map { Mono.just(Optional.empty<Email>()) }
-                                        .orElse(Mono.error(it))
+                                    val errorCause = it.cause
+                                    if (
+                                        errorCause is WebClientResponseException &&
+                                            errorCause.statusCode.value() == 404
+                                    ) {
+                                        Mono.just(Optional.empty())
+                                    } else {
+                                        Mono.error(it)
+                                    }
                                 }
                         },
                         ::Pair
