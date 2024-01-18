@@ -1,9 +1,13 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo
 
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData as TransactionAuthorizationRequestDataV2
+import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureData as TransactionClosureDataV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent as TransactionEventV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData as TransactionUserReceiptDataV2
+import it.pagopa.ecommerce.commons.documents.v2.authorization.RedirectTransactionGatewayAuthorizationData
+import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGatewayAuthorizationData
+import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGatewayAuthorizationRequestedData
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.domain.v2.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV2
@@ -16,6 +20,7 @@ import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithRequestedU
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithUserReceipt as BaseTransactionWithUserReceiptV2
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto
+import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v2.TransactionTestUtils as TransactionTestUtilsV2
@@ -24,11 +29,15 @@ import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.ZonedDateTime
+import java.util.stream.Stream
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.kotlin.any
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
@@ -61,6 +70,100 @@ class EcommerceForTransactionV2DataProviderTest {
             }
             testedStatuses.clear()
         }
+
+        @JvmStatic
+        /**
+         * Test arguments paymentGateway: TransactionAuthorizationRequestData.PaymentGateway,
+         * gatewayAuthRequestedData: TransactionGatewayAuthorizationRequestedData, gatewayAuthData:
+         * TransactionGatewayAuthorizationData
+         */
+        fun differentPaymentGatewayDataTestMethodSourceAuthOK(): Stream<Arguments> =
+            Stream.of(
+                Arguments.of(
+                    TransactionAuthorizationRequestData.PaymentGateway.XPAY,
+                    TransactionTestUtilsV2.pgsTransactionGatewayAuthorizationRequestedData(),
+                    TransactionTestUtilsV2.pgsTransactionGatewayAuthorizationData(
+                        AuthorizationResultDto.OK
+                    ),
+                    "VISA"
+                ),
+                Arguments.of(
+                    TransactionAuthorizationRequestData.PaymentGateway.VPOS,
+                    TransactionTestUtilsV2.pgsTransactionGatewayAuthorizationRequestedData(),
+                    TransactionTestUtilsV2.pgsTransactionGatewayAuthorizationData(
+                        AuthorizationResultDto.OK
+                    ),
+                    "VISA"
+                ),
+                Arguments.of(
+                    TransactionAuthorizationRequestData.PaymentGateway.NPG,
+                    TransactionTestUtilsV2.npgTransactionGatewayAuthorizationRequestedData(),
+                    TransactionTestUtilsV2.npgTransactionGatewayAuthorizationData(
+                        OperationResultDto.EXECUTED
+                    ),
+                    "VISA"
+                ),
+                Arguments.of(
+                    TransactionAuthorizationRequestData.PaymentGateway.REDIRECT,
+                    TransactionTestUtilsV2.redirectTransactionGatewayAuthorizationRequestedData(),
+                    TransactionTestUtilsV2.redirectTransactionGatewayAuthorizationData(
+                        RedirectTransactionGatewayAuthorizationData.Outcome.OK,
+                        null
+                    ),
+                    "BANK_ACCOUNT"
+                )
+            )
+
+        private const val authKoErrorCode = "errorCode"
+
+        @JvmStatic
+        /**
+         * Test arguments paymentGateway: TransactionAuthorizationRequestData.PaymentGateway,
+         * gatewayAuthRequestedData: TransactionGatewayAuthorizationRequestedData, gatewayAuthData:
+         * TransactionGatewayAuthorizationData, expectedErrorCode: String?
+         */
+        fun differentPaymentGatewayDataTestMethodSourceAuthKO(): Stream<Arguments> =
+            Stream.of(
+                Arguments.of(
+                    TransactionAuthorizationRequestData.PaymentGateway.XPAY,
+                    TransactionTestUtilsV2.pgsTransactionGatewayAuthorizationRequestedData(),
+                    TransactionTestUtilsV2.pgsTransactionGatewayAuthorizationData(
+                        AuthorizationResultDto.KO,
+                        authKoErrorCode
+                    ),
+                    "VISA",
+                    authKoErrorCode
+                ),
+                Arguments.of(
+                    TransactionAuthorizationRequestData.PaymentGateway.VPOS,
+                    TransactionTestUtilsV2.pgsTransactionGatewayAuthorizationRequestedData(),
+                    TransactionTestUtilsV2.pgsTransactionGatewayAuthorizationData(
+                        AuthorizationResultDto.KO,
+                        authKoErrorCode
+                    ),
+                    "VISA",
+                    authKoErrorCode
+                ),
+                Arguments.of(
+                    TransactionAuthorizationRequestData.PaymentGateway.NPG,
+                    TransactionTestUtilsV2.npgTransactionGatewayAuthorizationRequestedData(),
+                    TransactionTestUtilsV2.npgTransactionGatewayAuthorizationData(
+                        OperationResultDto.FAILED
+                    ),
+                    "VISA",
+                    null
+                ),
+                Arguments.of(
+                    TransactionAuthorizationRequestData.PaymentGateway.REDIRECT,
+                    TransactionTestUtilsV2.redirectTransactionGatewayAuthorizationRequestedData(),
+                    TransactionTestUtilsV2.redirectTransactionGatewayAuthorizationData(
+                        RedirectTransactionGatewayAuthorizationData.Outcome.KO,
+                        authKoErrorCode
+                    ),
+                    "BANK_ACCOUNT",
+                    authKoErrorCode
+                )
+            )
     }
 
     private val transactionsViewRepository: TransactionsViewRepository = mock()
@@ -175,7 +278,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val events =
             listOf(transactionActivatedEvent, transactionAuthorizationRequestedEvent)
@@ -277,8 +380,15 @@ class EcommerceForTransactionV2DataProviderTest {
             .verifyComplete()
     }
 
-    @Test
-    fun `should map successfully transaction V2 data into response searching by transaction id for transaction in AUTHORIZATION_COMPLETED KO state`() {
+    @ParameterizedTest
+    @MethodSource("differentPaymentGatewayDataTestMethodSourceAuthKO")
+    fun `should map successfully transaction V2 data into response searching by transaction id for transaction in AUTHORIZATION_COMPLETED KO state`(
+        paymentGateway: TransactionAuthorizationRequestData.PaymentGateway,
+        gatewayAuthRequestedData: TransactionGatewayAuthorizationRequestedData,
+        gatewayAuthData: TransactionGatewayAuthorizationData,
+        brand: String,
+        expectedErrorCode: String?
+    ) {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
@@ -290,14 +400,11 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                paymentGateway,
+                gatewayAuthRequestedData
             )
         val transactionAuthorizationCompletedEvent =
-            TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
-                TransactionTestUtilsV2.npgTransactionGatewayAuthorizationData(
-                    OperationResultDto.FAILED
-                )
-            )
+            TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(gatewayAuthData)
         val events =
             listOf(
                 transactionActivatedEvent,
@@ -331,7 +438,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Rifiutato")
-                            .statusDetails(null)
+                            .statusDetails(expectedErrorCode)
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -348,7 +455,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand("VISA")
+                            .brand(brand)
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .authorizationRequestId
@@ -418,7 +525,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -549,7 +656,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -680,7 +787,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -1102,7 +1209,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -1241,7 +1348,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -1384,7 +1491,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -1527,7 +1634,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -1673,7 +1780,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -1819,7 +1926,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -1965,7 +2072,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -2124,7 +2231,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -2301,7 +2408,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -2496,7 +2603,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -2706,7 +2813,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
-                TransactionAuthorizationRequestDataV2.PaymentGateway.XPAY
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
@@ -2941,8 +3048,14 @@ class EcommerceForTransactionV2DataProviderTest {
             .verifyComplete()
     }
 
-    @Test
-    fun `should map successfully transaction v2 data into response searching by transaction id for NOTIFIED_OK transaction`() {
+    @ParameterizedTest
+    @MethodSource("differentPaymentGatewayDataTestMethodSourceAuthOK")
+    fun `should map successfully transaction v2 data into response searching by transaction id for NOTIFIED_OK transaction`(
+        paymentGateway: TransactionAuthorizationRequestData.PaymentGateway,
+        gatewayAuthRequestedData: TransactionGatewayAuthorizationRequestedData,
+        gatewayAuthData: TransactionGatewayAuthorizationData,
+        expectedBrand: String
+    ) {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
@@ -2957,13 +3070,12 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
         val authorizationRequestedEvent =
-            TransactionTestUtilsV2.transactionAuthorizationRequestedEvent()
-        val authorizedEvent =
-            TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
-                TransactionTestUtilsV2.npgTransactionGatewayAuthorizationData(
-                    OperationResultDto.EXECUTED
-                )
+            TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
+                paymentGateway,
+                gatewayAuthRequestedData
             )
+        val authorizedEvent =
+            TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(gatewayAuthData)
         val closureSentEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.KO)
         val addUserReceiptEvent =
@@ -3026,7 +3138,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
-                            .brand("VISA")
+                            .brand(expectedBrand)
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .authorizationRequestId
