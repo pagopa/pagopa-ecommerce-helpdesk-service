@@ -41,4 +41,19 @@ interface TransactionsViewRepository : ReactiveCrudRepository<BaseTransactionVie
         skip: Int,
         limit: Int
     ): Flux<BaseTransactionView>
+
+    @Query("{'email.data': '?0'}", count = true)
+    fun countTransactionsWithEmail(encryptedEmail: String): Mono<Long>
+
+    @Aggregation(
+        "{\$match: {'email.data': '?0'}}",
+        "{\$sort: {'creationDate': -1}}",
+        "{\$skip: ?1}",
+        "{\$limit: ?2}",
+    )
+    fun findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+        encryptedEmail: String,
+        skip: Int,
+        limit: Int
+    ): Flux<BaseTransactionView>
 }

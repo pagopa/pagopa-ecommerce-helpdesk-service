@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.exceptionhandler
 
+import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.helpdesk.exceptions.ApiError
 import it.pagopa.ecommerce.helpdesk.exceptions.RestApiException
 import it.pagopa.generated.ecommerce.helpdesk.model.ProblemJsonDto
@@ -40,6 +41,21 @@ class ExceptionHandler {
     @ExceptionHandler(ApiError::class)
     fun handleException(e: ApiError): ResponseEntity<ProblemJsonDto> {
         return handleException(e.toRestException())
+    }
+
+    /** Confidential data exception handler */
+    @ExceptionHandler(ConfidentialDataException::class)
+    fun handleConfidentialDataException(
+        e: ConfidentialDataException
+    ): ResponseEntity<ProblemJsonDto> {
+        logger.error("Exception processing encrypt/decrypt pdv request", e)
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+            .body(
+                ProblemJsonDto()
+                    .status(HttpStatus.BAD_GATEWAY.value())
+                    .title("Error processing the request")
+                    .detail("Error while processing pdv request")
+            )
     }
 
     /** Validation request exception handler */

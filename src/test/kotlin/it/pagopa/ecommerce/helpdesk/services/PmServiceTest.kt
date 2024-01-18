@@ -28,13 +28,17 @@ class PmServiceTest {
         val totalCount = 100
         val transactions =
             listOf(HelpdeskTestUtils.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM))
-        given(pmTransactionDataProvider.totalRecordCount(searchCriteria))
+        given(
+                pmTransactionDataProvider.totalRecordCount(
+                    argThat { this.searchParameter == searchCriteria }
+                )
+            )
             .willReturn(Mono.just(totalCount))
         given(
                 pmTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
+                    searchParams = argThat { this.searchParameter == searchCriteria },
+                    skip = eq(pageSize * pageNumber),
+                    limit = eq(pageSize)
                 )
             )
             .willReturn(Mono.just(transactions))
@@ -62,7 +66,12 @@ class PmServiceTest {
         val pageSize = 10
         val pageNumber = 0
         val totalCount = 0
-        given(pmTransactionDataProvider.totalRecordCount(searchCriteria))
+
+        given(
+                pmTransactionDataProvider.totalRecordCount(
+                    argThat { this.searchParameter == searchCriteria }
+                )
+            )
             .willReturn(Mono.just(totalCount))
         StepVerifier.create(
                 pmService.searchTransaction(

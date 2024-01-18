@@ -4,6 +4,8 @@ import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestD
 import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureData as TransactionClosureDataV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent as TransactionEventV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData as TransactionUserReceiptDataV2
+import it.pagopa.ecommerce.commons.domain.Confidential
+import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.domain.v2.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionExpired as BaseTransactionExpiredV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithClosureError as BaseTransactionWithClosureErrorV2
@@ -12,10 +14,14 @@ import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithRefundRequ
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithRequestedAuthorization as BaseTransactionWithRequestedAuthorizationV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithRequestedUserReceipt as BaseTransactionWithRequestedUserReceiptV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithUserReceipt as BaseTransactionWithUserReceiptV2
+import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto
 import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
+import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v2.TransactionTestUtils as TransactionTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
+import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.ZonedDateTime
 import org.junit.jupiter.api.AfterAll
@@ -23,8 +29,11 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
+import org.springframework.http.HttpStatus
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
@@ -33,6 +42,7 @@ class EcommerceForTransactionV2DataProviderTest {
 
     companion object {
         val testedStatuses: MutableSet<TransactionStatusDto> = HashSet()
+        const val TEST_EMAIL = "test.email@test.it"
 
         @JvmStatic
         @BeforeAll
@@ -56,6 +66,8 @@ class EcommerceForTransactionV2DataProviderTest {
     private val transactionsViewRepository: TransactionsViewRepository = mock()
 
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
+
+    private val confidentialDataManager: ConfidentialDataManager = mock()
 
     private val ecommerceTransactionDataProvider =
         EcommerceTransactionDataProvider(
@@ -84,13 +96,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -128,7 +144,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -171,13 +191,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -235,7 +259,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -288,13 +316,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -355,7 +387,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -411,13 +447,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -478,7 +518,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -534,13 +578,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -601,7 +649,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -657,13 +709,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -724,7 +780,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -763,13 +823,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -807,7 +871,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -857,13 +925,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -901,7 +973,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -947,13 +1023,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -991,7 +1071,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1051,13 +1135,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1118,7 +1206,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1183,13 +1275,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1253,7 +1349,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1318,13 +1418,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1388,7 +1492,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1456,13 +1564,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1526,7 +1638,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1594,13 +1710,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1664,7 +1784,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1732,13 +1856,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1802,7 +1930,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -1883,13 +2015,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -1953,7 +2089,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -2052,13 +2192,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -2122,7 +2266,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -2239,13 +2387,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -2309,7 +2461,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -2441,13 +2597,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -2511,7 +2671,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -2592,13 +2756,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -2662,7 +2830,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -2703,13 +2875,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -2747,7 +2923,11 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
@@ -2814,13 +2994,17 @@ class EcommerceForTransactionV2DataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail(""))
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
@@ -2884,7 +3068,166 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber
+                )
+            )
+            .consumeNextWith {
+                assertEquals(expected, it)
+                testedStatuses.add(
+                    TransactionStatusDto.valueOf(it[0].transactionInfo.eventStatus.toString())
+                )
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should map successfully transaction data with 404 from PDV`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
+        val pageSize = 100
+        val pageNumber = 0
+        val transactionView =
+            TransactionTestUtilsV2.transactionDocument(
+                TransactionStatusDto.NOTIFIED_OK,
+                ZonedDateTime.now()
+            )
+        val transactionUserReceiptData =
+            TransactionTestUtilsV2.transactionUserReceiptData(
+                TransactionUserReceiptDataV2.Outcome.OK
+            )
+        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val authorizationRequestedEvent =
+            TransactionTestUtilsV2.transactionAuthorizationRequestedEvent()
+        val authorizedEvent =
+            TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
+                TransactionTestUtilsV2.npgTransactionGatewayAuthorizationData(
+                    OperationResultDto.EXECUTED
+                )
+            )
+        val closureSentEvent =
+            TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.KO)
+        val addUserReceiptEvent =
+            TransactionTestUtilsV2.transactionUserReceiptRequestedEvent(transactionUserReceiptData)
+        val userReceiptAddErrorEvent =
+            TransactionTestUtilsV2.transactionUserReceiptAddErrorEvent(addUserReceiptEvent.data)
+        val userReceiptAddedEvent =
+            TransactionTestUtilsV2.transactionUserReceiptAddedEvent(userReceiptAddErrorEvent.data)
+        val events =
+            listOf(
+                transactionActivatedEvent,
+                authorizationRequestedEvent,
+                authorizedEvent,
+                closureSentEvent,
+                addUserReceiptEvent,
+                userReceiptAddErrorEvent,
+                userReceiptAddedEvent
+            )
+                as List<TransactionEventV2<Any>>
+        val baseTransaction =
+            TransactionTestUtilsV2.reduceEvents(*events.toTypedArray())
+                as TransactionWithUserReceiptOkV2
+        given(transactionsViewRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.just(transactionView))
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(
+                Mono.error(
+                    ConfidentialDataException(
+                        WebClientResponseException(
+                            HttpStatus.NOT_FOUND.value(),
+                            "",
+                            null,
+                            null,
+                            null
+                        )
+                    )
+                )
+            )
+        val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
+        val fee = baseTransaction.transactionAuthorizationRequestData.fee
+        val totalAmount = amount.plus(fee)
+        val expected =
+            listOf(
+                TransactionResultDto()
+                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail("N/A"))
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .idTransaction(baseTransaction.transactionId.value())
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(
+                                            baseTransaction.transactionUserReceiptData
+                                                .receivingOfficeName
+                                        )
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE)
+            )
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
                     skip = pageSize,
                     limit = pageNumber
                 )
