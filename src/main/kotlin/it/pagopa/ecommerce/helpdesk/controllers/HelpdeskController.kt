@@ -4,6 +4,8 @@ import it.pagopa.ecommerce.helpdesk.services.HelpdeskService
 import it.pagopa.ecommerce.helpdesk.services.PmService
 import it.pagopa.generated.ecommerce.helpdesk.api.HelpdeskApi
 import it.pagopa.generated.ecommerce.helpdesk.model.*
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -18,8 +20,8 @@ class HelpdeskController(
 ) : HelpdeskApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
     override fun helpDeskSearchTransaction(
-        pageNumber: Int,
-        pageSize: Int,
+        @Min(0) pageNumber: Int,
+        @Min(1) @Max(20) pageSize: Int,
         helpDeskSearchTransactionRequestDto: Mono<HelpDeskSearchTransactionRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> =
