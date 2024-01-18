@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaecommercehelpdeskservice
-    tag: "1.2.3"
+    tag: "1.3.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -71,6 +71,7 @@ microservice-chart:
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
+    PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.uat.tokenizer.pdv.pagopa.it/tokenizer/v1"
     PM_ORACLE_PORT: "1523"
     PM_ORACLE_DATABASE_NAME: "AGIDAD"
     PM_ORACLE_USERNAME: "pagopa_SV"
@@ -83,6 +84,7 @@ microservice-chart:
 
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
+    PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
     PM_ORACLE_PASSWORD: pm-oracle-db-password
     PM_ORACLE_HOST: pm-oracle-db-host
     MONGO_PASSWORD: mongo-ecommerce-password

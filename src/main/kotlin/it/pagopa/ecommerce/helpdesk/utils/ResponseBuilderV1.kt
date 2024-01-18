@@ -4,6 +4,7 @@ import io.r2dbc.spi.Result
 import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationCompletedData
 import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.commons.documents.v1.TransactionUserReceiptData
+import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.domain.v1.TransactionWithClosureError
 import it.pagopa.ecommerce.commons.domain.v1.pojos.*
 import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
@@ -195,7 +196,10 @@ fun resultToPaymentMethodDtoList(
             response
         }
 
-fun baseTransactionToTransactionInfoDtoV1(baseTransaction: BaseTransaction): TransactionResultDto {
+fun baseTransactionToTransactionInfoDtoV1(
+    baseTransaction: BaseTransaction,
+    email: Optional<Email>
+): TransactionResultDto {
     val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
     val fee = getTransactionFees(baseTransaction).orElse(0)
     val totalAmount = amount.plus(fee)
@@ -207,8 +211,7 @@ fun baseTransactionToTransactionInfoDtoV1(baseTransaction: BaseTransaction): Tra
 
     val userInfo =
         UserInfoDto()
-            // TODO to be valued here with PDV integration
-            .notificationEmail("")
+            .notificationEmail(email.map { it.value }.orElse("N/A"))
             // TODO this field is statically valued with GUEST eCommerce side into Nodo ClosePayment
             // requests. Must be populated dinamically when logic will be updated eCommerce side
             // (event-dispatcher/transactions-service)
