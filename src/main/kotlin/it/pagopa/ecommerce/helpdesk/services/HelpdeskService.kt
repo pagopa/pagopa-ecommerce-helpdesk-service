@@ -30,12 +30,13 @@ class HelpdeskService(
         pageSize: Int,
         searchTransactionRequestDto: HelpDeskSearchTransactionRequestDto
     ): Mono<SearchTransactionResponseDto> {
+        val confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
         val totalEcommerceCount =
             ecommerceTransactionDataProvider
                 .totalRecordCount(
                     SearchParamDecoder(
                         searchParameter = searchTransactionRequestDto,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        confidentialMailUtils = confidentialMailUtils
                     )
                 )
                 .onErrorResume(InvalidSearchCriteriaException::class.java) { Mono.just(0) }
@@ -72,8 +73,7 @@ class HelpdeskService(
                             searchParams =
                                 SearchParamDecoder(
                                     searchParameter = searchTransactionRequestDto,
-                                    confidentialMailUtils =
-                                        ConfidentialMailUtils(confidentialDataManager)
+                                    confidentialMailUtils = confidentialMailUtils
                                 ),
                             skip = skip,
                             limit = pageSize
@@ -92,8 +92,7 @@ class HelpdeskService(
                                 searchParams =
                                     SearchParamDecoder(
                                         searchParameter = searchTransactionRequestDto,
-                                        confidentialMailUtils =
-                                            ConfidentialMailUtils(confidentialDataManager)
+                                        confidentialMailUtils = confidentialMailUtils
                                     ),
                                 skip = skip,
                                 limit = pageSize
@@ -112,8 +111,7 @@ class HelpdeskService(
                                 searchParams =
                                     SearchParamDecoder(
                                         searchParameter = searchTransactionRequestDto,
-                                        confidentialMailUtils =
-                                            ConfidentialMailUtils(confidentialDataManager)
+                                        confidentialMailUtils = confidentialMailUtils
                                     ),
                                 skip = skip,
                                 limit = ecommerceRemainder
