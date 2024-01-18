@@ -6,6 +6,8 @@ import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchDeadLetterEve
 import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchDeadLetterEventResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -18,8 +20,8 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun ecommerceSearchTransaction(
-        pageNumber: Int,
-        pageSize: Int,
+        @Min(0) pageNumber: Int,
+        @Min(1) @Max(20) pageSize: Int,
         ecommerceSearchTransactionRequestDto: Mono<EcommerceSearchTransactionRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
@@ -36,8 +38,8 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
     }
 
     override fun ecommerceSearchDeadLetterEvents(
-        pageNumber: Int,
-        pageSize: Int,
+        @Min(0) pageNumber: Int,
+        @Min(1) @Max(20) pageSize: Int,
         ecommerceSearchDeadLetterEventsRequestDto: Mono<EcommerceSearchDeadLetterEventsRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchDeadLetterEventResponseDto>> {

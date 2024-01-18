@@ -4,13 +4,17 @@ import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.helpdesk.exceptions.ApiError
 import it.pagopa.ecommerce.helpdesk.exceptions.RestApiException
 import it.pagopa.generated.ecommerce.helpdesk.model.ProblemJsonDto
+import jakarta.validation.ConstraintViolationException
 import jakarta.xml.bind.ValidationException
 import java.util.*
+import java.util.stream.Collectors
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.validation.Errors
+import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -26,6 +30,8 @@ import org.springframework.web.server.ServerWebInputException
 class ExceptionHandler {
 
     val logger: Logger = LoggerFactory.getLogger(javaClass)
+
+    val invalidRequestDefaultMessage = "Input request is invalid."
 
     /** RestApiException exception handler */
     @ExceptionHandler(RestApiException::class)
@@ -65,17 +71,48 @@ class ExceptionHandler {
         ServerWebInputException::class,
         ValidationException::class,
         HttpMessageNotReadableException::class,
-        WebExchangeBindException::class
+        WebExchangeBindException::class,
+        ConstraintViolationException::class
     )
-    fun handleRequestValidationException(e: Exception): ResponseEntity<ProblemJsonDto> {
-
-        logger.error("Input request is not valid", e)
+    fun handleRequestValidationException(exception: Exception): ResponseEntity<ProblemJsonDto> {
+        // stacktrace not logged to avoid logging of sensitive data such as mail
+        logger.error(invalidRequestDefaultMessage)
+        val validationErrorCause =
+            when (exception) {
+                is ConstraintViolationException ->
+                    exception.constraintViolations
+                        .stream()
+                        .map { it.propertyPath.toString() }
+                        .collect(Collectors.joining(","))
+                is WebExchangeBindException ->
+                    if (exception.bindingResult is Errors) {
+                        exception.bindingResult.allErrors
+                            .stream()
+                            .map {
+                                if (it is FieldError) {
+                                    it.field
+                                } else {
+                                    it.toString()
+                                }
+                            }
+                            .collect(Collectors.joining(","))
+                    } else {
+                        null
+                    }
+                else -> null
+            }
+        val validationErrorMessage =
+            if (validationErrorCause != null) {
+                "$invalidRequestDefaultMessage Invalid fields: $validationErrorCause"
+            } else {
+                invalidRequestDefaultMessage
+            }
         return ResponseEntity.badRequest()
             .body(
                 ProblemJsonDto()
                     .status(HttpStatus.BAD_REQUEST.value())
                     .title("Bad request")
-                    .detail(e.localizedMessage)
+                    .detail(validationErrorMessage)
             )
     }
 

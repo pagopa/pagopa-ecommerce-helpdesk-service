@@ -6,6 +6,8 @@ import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodRequest
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchPaymentMethodResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -18,8 +20,8 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun pmSearchTransaction(
-        pageNumber: Int,
-        pageSize: Int,
+        @Min(0) pageNumber: Int,
+        @Min(1) @Max(20) pageSize: Int,
         pmSearchTransactionRequestDto: Mono<PmSearchTransactionRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
