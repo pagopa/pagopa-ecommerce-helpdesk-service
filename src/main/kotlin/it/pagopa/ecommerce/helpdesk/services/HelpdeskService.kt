@@ -1,9 +1,12 @@
 package it.pagopa.ecommerce.helpdesk.services
 
+import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
+import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
@@ -16,7 +19,8 @@ import reactor.core.publisher.Mono
 @Service
 class HelpdeskService(
     @Autowired val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
-    @Autowired val pmTransactionDataProvider: PMTransactionDataProvider
+    @Autowired val pmTransactionDataProvider: PMTransactionDataProvider,
+    @Autowired val confidentialDataManager: ConfidentialDataManager
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -28,14 +32,22 @@ class HelpdeskService(
     ): Mono<SearchTransactionResponseDto> {
         val totalEcommerceCount =
             ecommerceTransactionDataProvider
-                .totalRecordCount(searchTransactionRequestDto)
+                .totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchTransactionRequestDto,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
                 .onErrorResume(InvalidSearchCriteriaException::class.java) { Mono.just(0) }
         val totalPmCount =
-            pmTransactionDataProvider.totalRecordCount(searchTransactionRequestDto).onErrorResume(
-                InvalidSearchCriteriaException::class.java
-            ) {
-                Mono.just(0)
-            }
+            pmTransactionDataProvider
+                .totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchTransactionRequestDto,
+                        confidentialMailUtils = null
+                    )
+                )
+                .onErrorResume(InvalidSearchCriteriaException::class.java) { Mono.just(0) }
         return totalEcommerceCount.zipWith(totalPmCount, ::Pair).flatMap {
             (totalEcommerceCount, totalPmCount) ->
             if (totalPmCount + totalEcommerceCount == 0) {
@@ -57,7 +69,12 @@ class HelpdeskService(
                     logger.info("Recovering records from eCommerce DB. Skip: {}", skip)
                     ecommerceTransactionDataProvider
                         .findResult(
-                            searchParams = searchTransactionRequestDto,
+                            searchParams =
+                                SearchParamDecoder(
+                                    searchParameter = searchTransactionRequestDto,
+                                    confidentialMailUtils =
+                                        ConfidentialMailUtils(confidentialDataManager)
+                                ),
                             skip = skip,
                             limit = pageSize
                         )
@@ -72,7 +89,12 @@ class HelpdeskService(
                         )
                         ecommerceTransactionDataProvider
                             .findResult(
-                                searchParams = searchTransactionRequestDto,
+                                searchParams =
+                                    SearchParamDecoder(
+                                        searchParameter = searchTransactionRequestDto,
+                                        confidentialMailUtils =
+                                            ConfidentialMailUtils(confidentialDataManager)
+                                    ),
                                 skip = skip,
                                 limit = pageSize
                             )
@@ -87,7 +109,12 @@ class HelpdeskService(
                         )
                         ecommerceTransactionDataProvider
                             .findResult(
-                                searchParams = searchTransactionRequestDto,
+                                searchParams =
+                                    SearchParamDecoder(
+                                        searchParameter = searchTransactionRequestDto,
+                                        confidentialMailUtils =
+                                            ConfidentialMailUtils(confidentialDataManager)
+                                    ),
                                 skip = skip,
                                 limit = ecommerceRemainder
                             )
@@ -97,7 +124,11 @@ class HelpdeskService(
                             .flatMap { ecommerceRecords ->
                                 pmTransactionDataProvider
                                     .findResult(
-                                        searchParams = searchTransactionRequestDto,
+                                        searchParams =
+                                            SearchParamDecoder(
+                                                searchParameter = searchTransactionRequestDto,
+                                                confidentialMailUtils = null
+                                            ),
                                         skip = 0,
                                         limit = pageSize - ecommerceRemainder
                                     )
@@ -112,7 +143,11 @@ class HelpdeskService(
                     logger.info("Recovering records from PM DB, Skip: {}", skipFromPmDB)
                     pmTransactionDataProvider
                         .findResult(
-                            searchParams = searchTransactionRequestDto,
+                            searchParams =
+                                SearchParamDecoder(
+                                    searchParameter = searchTransactionRequestDto,
+                                    confidentialMailUtils = null
+                                ),
                             skip = skipFromPmDB,
                             limit = pageSize
                         )

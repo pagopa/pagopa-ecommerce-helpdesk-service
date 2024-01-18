@@ -4,6 +4,7 @@ import io.r2dbc.h2.H2ConnectionConfiguration
 import io.r2dbc.h2.H2ConnectionFactory
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
+import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import org.junit.jupiter.api.Test
@@ -29,7 +30,11 @@ class PMTransactionDataProviderTest {
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it")
+                    SearchParamDecoder(
+                        searchParameter =
+                            HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it"),
+                        confidentialMailUtils = null
+                    )
                 )
             )
             .expectNext(1)
@@ -41,7 +46,11 @@ class PMTransactionDataProviderTest {
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    HelpdeskTestUtils.buildSearchRequestByUserMail("unknown@test.it")
+                    SearchParamDecoder(
+                        searchParameter =
+                            HelpdeskTestUtils.buildSearchRequestByUserMail("unknown@test.it"),
+                        confidentialMailUtils = null
+                    ),
                 )
             )
             .expectNext(0)
@@ -53,7 +62,10 @@ class PMTransactionDataProviderTest {
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    HelpdeskTestUtils.buildSearchRequestByTransactionId()
+                    SearchParamDecoder(
+                        searchParameter = HelpdeskTestUtils.buildSearchRequestByTransactionId(),
+                        confidentialMailUtils = null
+                    ),
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -67,7 +79,7 @@ class PMTransactionDataProviderTest {
         given(searchCriteria.type).willReturn("UNKNOWN")
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
+                    searchParams = SearchParamDecoder(searchParameter = searchCriteria, null),
                     skip = 0,
                     limit = 0
                 )
@@ -128,7 +140,12 @@ class PMTransactionDataProviderTest {
             )
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
-                    searchParams = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it"),
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter =
+                                HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it"),
+                            confidentialMailUtils = null
+                        ),
                     limit = 10,
                     skip = 0
                 )
@@ -142,7 +159,11 @@ class PMTransactionDataProviderTest {
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    HelpdeskTestUtils.buildSearchRequestByUserFiscalCode("fiscal_code")
+                    SearchParamDecoder(
+                        searchParameter =
+                            HelpdeskTestUtils.buildSearchRequestByUserFiscalCode("fiscal_code"),
+                        confidentialMailUtils = null
+                    ),
                 )
             )
             .expectNext(1)
@@ -154,7 +175,13 @@ class PMTransactionDataProviderTest {
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    HelpdeskTestUtils.buildSearchRequestByUserFiscalCode("unknown-fiscal_code")
+                    SearchParamDecoder(
+                        searchParameter =
+                            HelpdeskTestUtils.buildSearchRequestByUserFiscalCode(
+                                "unknown-fiscal_code"
+                            ),
+                        confidentialMailUtils = null
+                    ),
                 )
             )
             .expectNext(0)
@@ -214,7 +241,11 @@ class PMTransactionDataProviderTest {
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
                     searchParams =
-                        HelpdeskTestUtils.buildSearchRequestByUserFiscalCode("fiscal_code"),
+                        SearchParamDecoder(
+                            searchParameter =
+                                HelpdeskTestUtils.buildSearchRequestByUserFiscalCode("fiscal_code"),
+                            confidentialMailUtils = null
+                        ),
                     limit = 10,
                     skip = 0
                 )
@@ -228,7 +259,11 @@ class PMTransactionDataProviderTest {
 
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    searchParams = HelpdeskTestUtils.buildSearchRequestByRptId()
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = HelpdeskTestUtils.buildSearchRequestByRptId(),
+                            confidentialMailUtils = null
+                        ),
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -240,7 +275,9 @@ class PMTransactionDataProviderTest {
         val searchCriteria: HelpDeskSearchTransactionRequestDto = mock()
         given(searchCriteria.type).willReturn("UNKNOWN")
         StepVerifier.create(
-                pmTransactionDataProvider.totalRecordCount(searchParams = searchCriteria)
+                pmTransactionDataProvider.totalRecordCount(
+                    searchParams = SearchParamDecoder(searchParameter = searchCriteria, null),
+                )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
@@ -251,7 +288,11 @@ class PMTransactionDataProviderTest {
 
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
-                    searchParams = HelpdeskTestUtils.buildSearchRequestByRptId(),
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = HelpdeskTestUtils.buildSearchRequestByRptId(),
+                            confidentialMailUtils = null
+                        ),
                     limit = 0,
                     skip = 10
                 )

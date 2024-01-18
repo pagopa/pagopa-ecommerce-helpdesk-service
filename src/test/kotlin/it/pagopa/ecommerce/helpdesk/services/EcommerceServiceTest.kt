@@ -1,10 +1,13 @@
 package it.pagopa.ecommerce.helpdesk.services
 
+import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.DeadLetterDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
+import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import kotlinx.coroutines.reactor.mono
@@ -19,24 +22,39 @@ class EcommerceServiceTest {
 
     private val deadLetterDataProvider: DeadLetterDataProvider = mock()
 
+    private val confidentialDataManager: ConfidentialDataManager = mock()
+
     private val ecommerceService =
-        EcommerceService(ecommerceTransactionDataProvider, deadLetterDataProvider)
+        EcommerceService(
+            ecommerceTransactionDataProvider,
+            deadLetterDataProvider,
+            confidentialDataManager
+        )
 
     @Test
     fun `should return found transaction successfully`() {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId()
+        val searchParamDecoder =
+            SearchParamDecoder(
+                searchParameter = searchCriteria,
+                confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+            )
         val pageSize = 10
         val pageNumber = 0
         val totalCount = 100
         val transactions =
             listOf(HelpdeskTestUtils.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM))
-        given(ecommerceTransactionDataProvider.totalRecordCount(searchCriteria))
+        given(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    argThat { this.searchParameter == searchCriteria }
+                )
+            )
             .willReturn(Mono.just(totalCount))
         given(
                 ecommerceTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
+                    searchParams = argThat { this.searchParameter == searchCriteria },
+                    skip = eq(pageSize * pageNumber),
+                    limit = eq(pageSize)
                 )
             )
             .willReturn(Mono.just(transactions))
@@ -64,7 +82,11 @@ class EcommerceServiceTest {
         val pageSize = 10
         val pageNumber = 0
         val totalCount = 0
-        given(ecommerceTransactionDataProvider.totalRecordCount(searchCriteria))
+        given(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    argThat { this.searchParameter == searchCriteria }
+                )
+            )
             .willReturn(Mono.just(totalCount))
         StepVerifier.create(
                 ecommerceService.searchTransaction(
