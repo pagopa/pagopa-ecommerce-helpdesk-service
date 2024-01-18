@@ -137,8 +137,14 @@ class PmControllerTest {
     @Test
     fun `post search transaction should return 400 for bad request`() = runTest {
         val pageNumber = 1
-        val pageSize = 15
-
+        val pageSize = 1
+        val request = HelpdeskTestUtils.buildSearchRequestByUserMail("")
+        val expectedProblemJson =
+            HelpdeskTestUtils.buildProblemJson(
+                httpStatus = HttpStatus.BAD_REQUEST,
+                title = "Bad request",
+                description = "Input request is invalid. Invalid fields: userEmail"
+            )
         webClient
             .post()
             .uri { uriBuilder ->
@@ -149,11 +155,44 @@ class PmControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue("{}")
+            .bodyValue(request)
             .exchange()
             .expectStatus()
             .isBadRequest
+            .expectBody(ProblemJsonDto::class.java)
+            .isEqualTo(expectedProblemJson)
     }
+
+    @Test
+    fun `post search transaction should return 400 for invalid query page query parameters`() =
+        runTest {
+            val pageNumber = 0
+            val pageSize = Int.MAX_VALUE
+            val request = HelpdeskTestUtils.buildSearchRequestByTransactionId()
+            val expectedProblemJson =
+                HelpdeskTestUtils.buildProblemJson(
+                    httpStatus = HttpStatus.BAD_REQUEST,
+                    title = "Bad request",
+                    description =
+                        "Input request is invalid. Invalid fields: pmSearchTransaction.pageSize"
+                )
+            webClient
+                .post()
+                .uri { uriBuilder ->
+                    uriBuilder
+                        .path("/pm/searchTransaction")
+                        .queryParam("pageNumber", "{pageNumber}")
+                        .queryParam("pageSize", "{pageSize}")
+                        .build(pageNumber, pageSize)
+                }
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus()
+                .isBadRequest
+                .expectBody(ProblemJsonDto::class.java)
+                .isEqualTo(expectedProblemJson)
+        }
 
     @Test
     fun `post search transaction should return 500 for unhandled error processing request`() =

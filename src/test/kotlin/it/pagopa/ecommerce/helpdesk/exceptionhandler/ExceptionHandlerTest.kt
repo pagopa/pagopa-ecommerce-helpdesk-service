@@ -61,7 +61,7 @@ class ExceptionHandlerTest {
             HelpdeskTestUtils.buildProblemJson(
                 httpStatus = HttpStatus.BAD_REQUEST,
                 title = "Bad request",
-                description = "Invalid request"
+                description = "Input request is invalid."
             ),
             response.body
         )
