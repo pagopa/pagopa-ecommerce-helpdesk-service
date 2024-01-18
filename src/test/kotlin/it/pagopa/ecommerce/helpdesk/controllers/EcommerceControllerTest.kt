@@ -175,8 +175,7 @@ class EcommerceControllerTest {
             HelpdeskTestUtils.buildProblemJson(
                 httpStatus = HttpStatus.BAD_REQUEST,
                 title = "Bad request",
-                description =
-                    "Input request is invalid. Invalid fields: ecommerceSearchTransaction.pageNumber,ecommerceSearchTransaction.pageSize"
+                description = "Input request is invalid. Invalid fields: transactionId"
             )
         webClient
             .post()
@@ -199,7 +198,7 @@ class EcommerceControllerTest {
     @Test
     fun `post search transaction should return 400 for invalid query page query parameters`() =
         runTest {
-            val pageNumber = -1
+            val pageNumber = 0
             val pageSize = Int.MAX_VALUE
             val request = HelpdeskTestUtils.buildSearchRequestByTransactionId()
             val expectedProblemJson =
@@ -207,7 +206,7 @@ class EcommerceControllerTest {
                     httpStatus = HttpStatus.BAD_REQUEST,
                     title = "Bad request",
                     description =
-                        "Input request is invalid. Invalid fields: ecommerceSearchTransaction.pageNumber,ecommerceSearchTransaction.pageSize"
+                        "Input request is invalid. Invalid fields: ecommerceSearchTransaction.pageSize"
                 )
             webClient
                 .post()
