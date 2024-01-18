@@ -1,18 +1,27 @@
 package it.pagopa.ecommerce.helpdesk.services
 
+import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
+import it.pagopa.ecommerce.commons.documents.BaseTransactionView
+import it.pagopa.ecommerce.commons.domain.Confidential
+import it.pagopa.ecommerce.commons.domain.Email
+import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
+import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.DeadLetterDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.EcommerceTransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.TransactionsEventStoreRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
-import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
+import java.time.ZonedDateTime
 import kotlinx.coroutines.reactor.mono
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
@@ -24,6 +33,12 @@ class EcommerceServiceTest {
 
     private val confidentialDataManager: ConfidentialDataManager = mock()
 
+    private val testEmail = "test@test.it"
+
+    private val encryptedEmail = TransactionTestUtils.EMAIL.opaqueData
+    private val transactionsViewRepository: TransactionsViewRepository = mock()
+    private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
+
     private val ecommerceService =
         EcommerceService(
             ecommerceTransactionDataProvider,
@@ -34,16 +49,16 @@ class EcommerceServiceTest {
     @Test
     fun `should return found transaction successfully`() {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId()
-        val searchParamDecoder =
-            SearchParamDecoder(
-                searchParameter = searchCriteria,
-                confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-            )
         val pageSize = 10
         val pageNumber = 0
         val totalCount = 100
         val transactions =
-            listOf(HelpdeskTestUtils.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM))
+            listOf(
+                HelpdeskTestUtils.buildTransactionResultDto(
+                    OffsetDateTime.now(),
+                    ProductDto.ECOMMERCE
+                )
+            )
         given(
                 ecommerceTransactionDataProvider.totalRecordCount(
                     argThat { this.searchParameter == searchCriteria }
@@ -216,5 +231,72 @@ class EcommerceServiceTest {
             )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
+    }
+
+    @Test
+    fun `should invoke PDV only once recovering found transaction successfully`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail(testEmail)
+        val pageSize = 10
+        val pageNumber = 0
+        val totalCount = 100
+        val transactionDocument =
+            TransactionTestUtils.transactionDocument(
+                TransactionStatusDto.ACTIVATED,
+                ZonedDateTime.now()
+            ) as BaseTransactionView
+        val transactions =
+            listOf(
+                HelpdeskTestUtils.buildTransactionResultDto(
+                    OffsetDateTime.now(),
+                    ProductDto.ECOMMERCE
+                )
+            )
+        given(confidentialDataManager.encrypt(Email(testEmail)))
+            .willReturn(Mono.just(Confidential(encryptedEmail)))
+        given(transactionsViewRepository.countTransactionsWithEmail(encryptedEmail))
+            .willReturn(Mono.just(totalCount.toLong()))
+        given(
+                transactionsViewRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
+                    )
+            )
+            .willReturn(Flux.just(transactionDocument))
+        given(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(any()))
+            .willReturn(
+                Flux.just(
+                    TransactionTestUtils.transactionActivateEvent() as BaseTransactionEvent<Any>
+                )
+            )
+        val ecommerceServiceLocalMock =
+            EcommerceService(
+                confidentialDataManager = confidentialDataManager,
+                ecommerceTransactionDataProvider =
+                    EcommerceTransactionDataProvider(
+                        transactionsViewRepository = transactionsViewRepository,
+                        transactionsEventStoreRepository = transactionsEventStoreRepository
+                    ),
+                deadLetterDataProvider = deadLetterDataProvider
+            )
+
+        StepVerifier.create(
+                ecommerceServiceLocalMock.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    ecommerceSearchTransactionRequestDto = searchCriteria
+                )
+            )
+            .assertNext {
+                Assertions.assertEquals(
+                    it.page,
+                    PageInfoDto().results(transactions.size).total(10).current(pageNumber)
+                )
+            }
+            .verifyComplete()
+
+        verify(confidentialDataManager, times(1)).encrypt(any())
+        verify(confidentialDataManager, times(0)).decrypt(any<Confidential<Email>>(), any())
     }
 }
