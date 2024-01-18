@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders
 
-import it.pagopa.ecommerce.helpdesk.SearchParamDecoder
+import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.TransactionResultDto
 import reactor.core.publisher.Mono

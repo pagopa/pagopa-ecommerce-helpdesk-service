@@ -1,10 +1,10 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.oracle
 
 import io.r2dbc.spi.ConnectionFactory
-import it.pagopa.ecommerce.helpdesk.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.resultToTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
