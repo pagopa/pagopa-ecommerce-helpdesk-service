@@ -1,8 +1,16 @@
 package it.pagopa.ecommerce.helpdesk.services
 
+import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
+import it.pagopa.ecommerce.commons.documents.BaseTransactionView
+import it.pagopa.ecommerce.commons.domain.Confidential
+import it.pagopa.ecommerce.commons.domain.Email
+import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
+import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.EcommerceTransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.TransactionsEventStoreRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.mongo.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.model.PageInfoDto
@@ -10,8 +18,11 @@ import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestEmailDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import java.time.OffsetDateTime
+import java.time.ZonedDateTime
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Hooks
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
@@ -32,6 +43,10 @@ class HelpdeskServiceTest {
         )
 
     private val testEmail = "test@test.it"
+
+    private val encryptedEmail = TransactionTestUtils.EMAIL.opaqueData
+    private val transactionsViewRepository: TransactionsViewRepository = mock()
+    private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
 
     @Test
     fun `Should recover records from eCommerce DB only`() {
@@ -545,5 +560,243 @@ class HelpdeskServiceTest {
             .findResult(skip = any(), limit = any(), searchParams = any())
         verify(pmTransactionDataProvider, times(0))
             .findResult(skip = any(), limit = any(), searchParams = any())
+    }
+
+    @Test
+    fun `Should invoke PDV only once recovering records from eCommerce DB only`() {
+        val totalEcommerceCount = 5
+        val totalPmCount = 5
+        val pageSize = 4
+        val pageNumber = 0
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail(testEmail)
+        val transactionDocument =
+            TransactionTestUtils.transactionDocument(
+                TransactionStatusDto.ACTIVATED,
+                ZonedDateTime.now()
+            ) as BaseTransactionView
+        val helpDeskServiceLocalMock =
+            HelpdeskService(
+                pmTransactionDataProvider = pmTransactionDataProvider,
+                ecommerceTransactionDataProvider =
+                    EcommerceTransactionDataProvider(
+                        transactionsViewRepository = transactionsViewRepository,
+                        transactionsEventStoreRepository = transactionsEventStoreRepository
+                    ),
+                confidentialDataManager = confidentialDataManager
+            )
+        given(confidentialDataManager.encrypt(Email(testEmail)))
+            .willReturn(Mono.just(Confidential(encryptedEmail)))
+        given(transactionsViewRepository.countTransactionsWithEmail(encryptedEmail))
+            .willReturn(Mono.just(totalEcommerceCount.toLong()))
+        given(
+                transactionsViewRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
+                    )
+            )
+            .willReturn(Flux.just(transactionDocument))
+        given(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(any()))
+            .willReturn(
+                Flux.just(
+                    TransactionTestUtils.transactionActivateEvent() as BaseTransactionEvent<Any>
+                )
+            )
+        given(
+                pmTransactionDataProvider.totalRecordCount(
+                    argThat {
+                        (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                            testEmail
+                    }
+                )
+            )
+            .willReturn(Mono.just(totalPmCount))
+        Hooks.onOperatorDebug()
+        StepVerifier.create(
+                helpDeskServiceLocalMock.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchTransactionRequestDto = searchCriteria
+                )
+            )
+            .assertNext { assertEquals(it.page, PageInfoDto().current(0).total(3).results(1)) }
+            .verifyComplete()
+        verify(confidentialDataManager, times(1)).encrypt(any())
+        verify(confidentialDataManager, times(0)).decrypt(any<Confidential<Email>>(), any())
+    }
+
+    @Test
+    fun `Should invoke PDV only once recovering records from eCommerce DB and PM`() {
+        val totalEcommerceCount = 5
+        val totalPmCount = 5
+        val pageSize = 4
+        val pageNumber = 1
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail(testEmail)
+        val transactionDocument =
+            TransactionTestUtils.transactionDocument(
+                TransactionStatusDto.ACTIVATED,
+                ZonedDateTime.now()
+            ) as BaseTransactionView
+        val helpDeskServiceLocalMock =
+            HelpdeskService(
+                pmTransactionDataProvider = pmTransactionDataProvider,
+                ecommerceTransactionDataProvider =
+                    EcommerceTransactionDataProvider(
+                        transactionsViewRepository = transactionsViewRepository,
+                        transactionsEventStoreRepository = transactionsEventStoreRepository
+                    ),
+                confidentialDataManager = confidentialDataManager
+            )
+        val pmResults =
+            listOf(HelpdeskTestUtils.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM))
+        given(
+                pmTransactionDataProvider.totalRecordCount(
+                    argThat {
+                        (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                            testEmail
+                    }
+                )
+            )
+            .willReturn(Mono.just(totalPmCount))
+        given(
+                pmTransactionDataProvider.findResult(
+                    searchParams =
+                        argThat {
+                            (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                                testEmail
+                        },
+                    limit = any(),
+                    skip = any()
+                )
+            )
+            .willReturn(Mono.just(pmResults))
+        given(confidentialDataManager.encrypt(Email(testEmail)))
+            .willReturn(Mono.just(Confidential(encryptedEmail)))
+        given(transactionsViewRepository.countTransactionsWithEmail(encryptedEmail))
+            .willReturn(Mono.just(totalEcommerceCount.toLong()))
+        given(
+                transactionsViewRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
+                    )
+            )
+            .willReturn(Flux.just(transactionDocument))
+        given(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(any()))
+            .willReturn(
+                Flux.just(
+                    TransactionTestUtils.transactionActivateEvent() as BaseTransactionEvent<Any>
+                )
+            )
+        given(
+                pmTransactionDataProvider.totalRecordCount(
+                    argThat {
+                        (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                            testEmail
+                    }
+                )
+            )
+            .willReturn(Mono.just(totalPmCount))
+        Hooks.onOperatorDebug()
+        StepVerifier.create(
+                helpDeskServiceLocalMock.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchTransactionRequestDto = searchCriteria
+                )
+            )
+            .assertNext { assertEquals(it.page, PageInfoDto().current(1).total(3).results(2)) }
+            .verifyComplete()
+        verify(confidentialDataManager, times(1)).encrypt(any())
+        verify(confidentialDataManager, times(0)).decrypt(any<Confidential<Email>>(), any())
+    }
+
+    @Test
+    fun `Should invoke PDV only once recovering records from eCommerce DB last page without remainder`() {
+        val totalEcommerceCount = 8
+        val totalPmCount = 5
+        val pageSize = 4
+        val pageNumber = 1
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail(testEmail)
+        val transactionDocument =
+            TransactionTestUtils.transactionDocument(
+                TransactionStatusDto.ACTIVATED,
+                ZonedDateTime.now()
+            ) as BaseTransactionView
+        val helpDeskServiceLocalMock =
+            HelpdeskService(
+                pmTransactionDataProvider = pmTransactionDataProvider,
+                ecommerceTransactionDataProvider =
+                    EcommerceTransactionDataProvider(
+                        transactionsViewRepository = transactionsViewRepository,
+                        transactionsEventStoreRepository = transactionsEventStoreRepository
+                    ),
+                confidentialDataManager = confidentialDataManager
+            )
+        val pmResults =
+            listOf(HelpdeskTestUtils.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM))
+        given(
+                pmTransactionDataProvider.totalRecordCount(
+                    argThat {
+                        (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                            testEmail
+                    }
+                )
+            )
+            .willReturn(Mono.just(totalPmCount))
+        given(
+                pmTransactionDataProvider.findResult(
+                    searchParams =
+                        argThat {
+                            (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                                testEmail
+                        },
+                    limit = any(),
+                    skip = any()
+                )
+            )
+            .willReturn(Mono.just(pmResults))
+        given(confidentialDataManager.encrypt(Email(testEmail)))
+            .willReturn(Mono.just(Confidential(encryptedEmail)))
+        given(transactionsViewRepository.countTransactionsWithEmail(encryptedEmail))
+            .willReturn(Mono.just(totalEcommerceCount.toLong()))
+        given(
+                transactionsViewRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
+                    )
+            )
+            .willReturn(Flux.just(transactionDocument))
+        given(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(any()))
+            .willReturn(
+                Flux.just(
+                    TransactionTestUtils.transactionActivateEvent() as BaseTransactionEvent<Any>
+                )
+            )
+        given(
+                pmTransactionDataProvider.totalRecordCount(
+                    argThat {
+                        (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                            testEmail
+                    }
+                )
+            )
+            .willReturn(Mono.just(totalPmCount))
+        Hooks.onOperatorDebug()
+        StepVerifier.create(
+                helpDeskServiceLocalMock.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchTransactionRequestDto = searchCriteria
+                )
+            )
+            .assertNext { assertEquals(it.page, PageInfoDto().current(1).total(4).results(1)) }
+            .verifyComplete()
+        verify(confidentialDataManager, times(1)).encrypt(any())
+        verify(confidentialDataManager, times(0)).decrypt(any<Confidential<Email>>(), any())
     }
 }
