@@ -533,6 +533,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val transactionClosedEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.OK)
         val events =
@@ -540,6 +542,7 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 transactionClosedEvent
             )
                 as List<TransactionEventV2<Any>>
@@ -664,6 +667,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val transactionClosedEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.KO)
         val events =
@@ -671,7 +676,140 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 transactionClosedEvent
+            )
+                as List<TransactionEventV2<Any>>
+        val baseTransaction =
+            TransactionTestUtilsV2.reduceEvents(*events.toTypedArray())
+                as BaseTransactionWithCompletedAuthorizationV2
+        given(transactionsViewRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.just(transactionView))
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
+        val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
+        val fee = baseTransaction.transactionAuthorizationRequestData.fee
+        val totalAmount = amount.plus(fee)
+        val expected =
+            listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .idTransaction(baseTransaction.transactionId.value())
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(null)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE)
+            )
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber
+                )
+            )
+            .consumeNextWith {
+                assertEquals(expected, it)
+                testedStatuses.add(
+                    TransactionStatusDto.valueOf(it[0].transactionInfo.eventStatus.toString())
+                )
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should map successfully transaction V2 data into response searching by transaction id for transaction in CLOSURE_REQUESTED`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
+        val pageSize = 100
+        val pageNumber = 0
+        val transactionView =
+            TransactionTestUtilsV2.transactionDocument(
+                TransactionStatusDto.CLOSURE_REQUESTED,
+                ZonedDateTime.now()
+            )
+        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionAuthorizationRequestedEvent =
+            TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
+            )
+        val transactionAuthorizationCompletedEvent =
+            TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
+                TransactionTestUtilsV2.npgTransactionGatewayAuthorizationData(
+                    OperationResultDto.EXECUTED
+                )
+            )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
+
+        val events =
+            listOf(
+                transactionActivatedEvent,
+                transactionAuthorizationRequestedEvent,
+                transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent
             )
                 as List<TransactionEventV2<Any>>
         val baseTransaction =
@@ -795,12 +933,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val closureErrorEvent = TransactionTestUtilsV2.transactionClosureErrorEvent()
         val events =
             listOf(
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 closureErrorEvent
             )
                 as List<TransactionEventV2<Any>>
@@ -1217,6 +1358,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.FAILED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val transactionCloseFailedEvent =
             TransactionTestUtilsV2.transactionClosureFailedEvent(
                 TransactionClosureDataV2.Outcome.KO
@@ -1227,6 +1370,7 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 transactionCloseFailedEvent
             )
                 as List<TransactionEventV2<Any>>
@@ -1356,6 +1500,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val transactionClosedEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.OK)
         val transactionNotificationRequestedEvent =
@@ -1366,6 +1512,7 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 transactionClosedEvent,
                 transactionNotificationRequestedEvent
             )
@@ -1499,6 +1646,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val transactionClosedEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.OK)
         val transactionNotificationRequestedEvent =
@@ -1509,6 +1658,7 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 transactionClosedEvent,
                 transactionNotificationRequestedEvent
             )
@@ -1642,6 +1792,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val transactionClosedEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.OK)
         val transactionNotificationRequestedEvent =
@@ -1654,6 +1806,7 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 transactionClosedEvent,
                 transactionNotificationRequestedEvent,
                 transactionUserReceiptError
@@ -1788,6 +1941,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val transactionClosedEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.OK)
         val transactionNotificationRequestedEvent =
@@ -1800,7 +1955,9 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 transactionClosedEvent,
+                transactionClosedRequestedEvent,
                 transactionNotificationRequestedEvent,
                 transactionUserReceiptError
             )
@@ -1934,6 +2091,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val transactionClosedEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.OK)
         val transactionNotificationRequestedEvent =
@@ -1946,6 +2105,7 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 transactionClosedEvent,
                 transactionNotificationRequestedEvent,
                 transactionUserReceiptError
@@ -2074,12 +2234,15 @@ class EcommerceForTransactionV2DataProviderTest {
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
             )
+
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
                 TransactionTestUtilsV2.npgTransactionGatewayAuthorizationData(
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val transactionClosedEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.OK)
         val transactionNotificationRequestedEvent =
@@ -2093,6 +2256,7 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionAuthorizationRequestedEvent,
                     transactionAuthorizationCompletedEvent,
                     transactionClosedEvent,
+                    transactionClosedRequestedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError
                 )
@@ -2103,7 +2267,9 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 transactionClosedEvent,
+                transactionClosedRequestedEvent,
                 transactionNotificationRequestedEvent,
                 transactionUserReceiptError,
                 transactionRefundRequestedEvent
@@ -2239,6 +2405,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val transactionClosedEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.OK)
         val transactionNotificationRequestedEvent =
@@ -2251,6 +2419,7 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionActivatedEvent,
                     transactionAuthorizationRequestedEvent,
                     transactionAuthorizationCompletedEvent,
+                    transactionClosedRequestedEvent,
                     transactionClosedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError
@@ -2262,6 +2431,7 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionActivatedEvent,
                     transactionAuthorizationRequestedEvent,
                     transactionAuthorizationCompletedEvent,
+                    transactionClosedRequestedEvent,
                     transactionClosedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError,
@@ -2273,6 +2443,7 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 transactionClosedEvent,
                 transactionNotificationRequestedEvent,
                 transactionUserReceiptError,
@@ -2416,6 +2587,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val transactionClosedEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.OK)
         val transactionNotificationRequestedEvent =
@@ -2428,6 +2601,7 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionActivatedEvent,
                     transactionAuthorizationRequestedEvent,
                     transactionAuthorizationCompletedEvent,
+                    transactionClosedRequestedEvent,
                     transactionClosedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError
@@ -2439,6 +2613,7 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionActivatedEvent,
                     transactionAuthorizationRequestedEvent,
                     transactionAuthorizationCompletedEvent,
+                    transactionClosedRequestedEvent,
                     transactionClosedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError,
@@ -2451,6 +2626,7 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionActivatedEvent,
                     transactionAuthorizationRequestedEvent,
                     transactionAuthorizationCompletedEvent,
+                    transactionClosedRequestedEvent,
                     transactionClosedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError,
@@ -2463,6 +2639,7 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 transactionClosedEvent,
                 transactionNotificationRequestedEvent,
                 transactionUserReceiptError,
@@ -2611,6 +2788,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val transactionClosedEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.OK)
         val transactionNotificationRequestedEvent =
@@ -2623,6 +2802,7 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionActivatedEvent,
                     transactionAuthorizationRequestedEvent,
                     transactionAuthorizationCompletedEvent,
+                    transactionClosedRequestedEvent,
                     transactionClosedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError
@@ -2634,6 +2814,7 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionActivatedEvent,
                     transactionAuthorizationRequestedEvent,
                     transactionAuthorizationCompletedEvent,
+                    transactionClosedRequestedEvent,
                     transactionClosedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError,
@@ -2672,6 +2853,7 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 transactionClosedEvent,
                 transactionNotificationRequestedEvent,
                 transactionUserReceiptError,
@@ -2821,6 +3003,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val transactionClosedEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.OK)
         val transactionNotificationRequestedEvent =
@@ -2833,6 +3017,7 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionActivatedEvent,
                     transactionAuthorizationRequestedEvent,
                     transactionAuthorizationCompletedEvent,
+                    transactionClosedRequestedEvent,
                     transactionClosedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError
@@ -2843,6 +3028,7 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
                 transactionClosedEvent,
                 transactionNotificationRequestedEvent,
                 transactionUserReceiptError,
@@ -3076,6 +3262,8 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         val authorizedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(gatewayAuthData)
+        val transactionClosureRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val closureSentEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.KO)
         val addUserReceiptEvent =
@@ -3089,6 +3277,7 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 authorizationRequestedEvent,
                 authorizedEvent,
+                transactionClosureRequestedEvent,
                 closureSentEvent,
                 addUserReceiptEvent,
                 userReceiptAddErrorEvent,
@@ -3221,6 +3410,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     OperationResultDto.EXECUTED
                 )
             )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
         val closureSentEvent =
             TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.KO)
         val addUserReceiptEvent =
@@ -3234,6 +3425,7 @@ class EcommerceForTransactionV2DataProviderTest {
                 transactionActivatedEvent,
                 authorizationRequestedEvent,
                 authorizedEvent,
+                transactionClosedRequestedEvent,
                 closureSentEvent,
                 addUserReceiptEvent,
                 userReceiptAddErrorEvent,

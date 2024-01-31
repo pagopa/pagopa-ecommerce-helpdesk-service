@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
@@ -43,6 +44,8 @@ class EcommerceForTransactionV1DataProviderTest {
 
     companion object {
         const val TEST_EMAIL = "test.email@test.it"
+        private val logger = LoggerFactory.getLogger(javaClass)
+        private val excludedStatusV1 = setOf(TransactionStatusDto.CLOSURE_REQUESTED)
         val testedStatuses: MutableSet<TransactionStatusDto> = HashSet()
 
         @JvmStatic
@@ -55,10 +58,14 @@ class EcommerceForTransactionV1DataProviderTest {
         @AfterAll
         fun afterAll() {
             TransactionStatusDto.values().forEach {
-                Assertions.assertTrue(
-                    testedStatuses.contains(it),
-                    "Error: Transaction in status [$it] NOT covered by tests!"
-                )
+                if (!excludedStatusV1.contains(it)) {
+                    Assertions.assertTrue(
+                        testedStatuses.contains(it),
+                        "Error: Transaction in status [$it] NOT covered by tests!"
+                    )
+                } else {
+                    logger.warn("The [$it] status has been skipped as not handled for v1 event")
+                }
             }
             testedStatuses.clear()
         }
