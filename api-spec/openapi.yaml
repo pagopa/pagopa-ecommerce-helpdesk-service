@@ -542,6 +542,10 @@ components:
         paymentGateway:
           type: string
           description: Payment gateway used to perform transaction
+        correlationId:
+          type: string
+          format: uuid
+          description: correlation id for a transaction executed with NPG
       example:
         creationDate: "2023-08-02T14:42:54.047"
         status: "status"
@@ -556,6 +560,7 @@ components:
         brand: "brand"
         authorizationRequestId: "authorizationRequestId"
         paymentGateway: "VPOS"
+        correlationId: "30846e8f-efa1-47ad-abad-08cfb30e5c09"
     PaymentInfo:
       type: object
       description: Payment info
