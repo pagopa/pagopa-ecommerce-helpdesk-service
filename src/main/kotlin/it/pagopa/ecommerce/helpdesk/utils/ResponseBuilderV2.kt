@@ -1,8 +1,10 @@
 package it.pagopa.ecommerce.helpdesk.utils
 
+import it.pagopa.ecommerce.commons.documents.v2.TransactionActivatedData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationCompletedData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData
+import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.*
 import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.domain.v2.TransactionWithClosureError
@@ -21,6 +23,9 @@ fun baseTransactionToTransactionInfoDtoV2(
     val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
     val fee = getTransactionFees(baseTransaction).orElse(0)
     val totalAmount = amount.plus(fee)
+    val transactionActivatedData = getTransactionActivatedData(baseTransaction)
+    val transactionGatewayActivationData =
+        transactionActivatedData?.transactionGatewayActivationData
     val transactionAuthorizationRequestData = getTransactionAuthRequestedData(baseTransaction)
     val transactionAuthorizationCompletedData = getTransactionAuthCompletedData(baseTransaction)
     val transactionUserReceiptData = getTransactionUserReceiptData(baseTransaction)
@@ -59,6 +64,11 @@ fun baseTransactionToTransactionInfoDtoV2(
             )
             .authorizationRequestId(transactionAuthorizationRequestData?.authorizationRequestId)
             .paymentGateway(transactionAuthorizationRequestData?.paymentGateway?.toString())
+            .correlationId(
+                if (transactionGatewayActivationData is NpgTransactionGatewayActivationData)
+                    UUID.fromString(transactionGatewayActivationData.correlationId)
+                else null
+            )
     // build payment info
     val paymentInfo =
         PaymentInfoDto()
@@ -119,6 +129,18 @@ private fun getTransactionAuthRequestedData(
             getTransactionAuthRequestedData(baseTransaction.transactionAtPreviousState)
         is BaseTransactionWithRequestedAuthorization ->
             baseTransaction.transactionAuthorizationRequestData
+        else -> null
+    }
+
+private fun getTransactionActivatedData(
+    baseTransaction: BaseTransaction
+): TransactionActivatedData? =
+    when (baseTransaction) {
+        is BaseTransactionExpired ->
+            getTransactionActivatedData(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithClosureError ->
+            getTransactionActivatedData(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithRequestedAuthorization -> baseTransaction.transactionActivatedData
         else -> null
     }
 

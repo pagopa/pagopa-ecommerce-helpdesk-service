@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestD
 import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureData as TransactionClosureDataV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent as TransactionEventV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData as TransactionUserReceiptDataV2
+import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.RedirectTransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGatewayAuthorizationRequestedData
@@ -29,7 +30,9 @@ import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.ZonedDateTime
+import java.util.*
 import java.util.stream.Stream
+import kotlin.collections.HashSet
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -183,12 +186,17 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.ACTIVATED,
                 ZonedDateTime.now()
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val events = listOf(transactionActivatedEvent) as List<TransactionEventV2<Any>>
         val baseTransaction = TransactionTestUtilsV2.reduceEvents(*events.toTypedArray())
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
@@ -270,12 +278,17 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.AUTHORIZATION_REQUESTED,
                 ZonedDateTime.now()
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -332,6 +345,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -392,12 +406,17 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.AUTHORIZATION_COMPLETED,
                 ZonedDateTime.now()
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 paymentGateway,
@@ -464,6 +483,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -517,12 +537,17 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.CLOSED,
                 ZonedDateTime.now()
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -598,6 +623,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -651,12 +677,17 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.CLOSED,
                 ZonedDateTime.now()
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -732,6 +763,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -785,12 +817,17 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.CLOSURE_REQUESTED,
                 ZonedDateTime.now()
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -864,6 +901,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -917,12 +955,17 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.CLOSURE_ERROR,
                 ZonedDateTime.now()
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -998,6 +1041,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1051,12 +1095,17 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.CANCELLATION_REQUESTED,
                 ZonedDateTime.now()
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionCancellationRequestedEvent =
             TransactionTestUtilsV2.transactionUserCanceledEvent()
         val events =
@@ -1142,12 +1191,17 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.CANCELLATION_EXPIRED,
                 ZonedDateTime.now()
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionCancellationRequestedEvent =
             TransactionTestUtilsV2.transactionUserCanceledEvent()
         val transactionExpiredEvent =
@@ -1244,12 +1298,17 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.CANCELED,
                 ZonedDateTime.now()
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionCancellationRequestedEvent =
             TransactionTestUtilsV2.transactionUserCanceledEvent()
         val transactionClosedEvent =
@@ -1342,12 +1401,17 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.UNAUTHORIZED,
                 ZonedDateTime.now()
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -1427,6 +1491,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1480,6 +1545,8 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.NOTIFICATION_REQUESTED,
@@ -1489,7 +1556,10 @@ class EcommerceForTransactionV2DataProviderTest {
             TransactionTestUtilsV2.transactionUserReceiptData(
                 TransactionUserReceiptDataV2.Outcome.OK
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -1570,6 +1640,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1626,6 +1697,8 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.NOTIFICATION_REQUESTED,
@@ -1635,7 +1708,10 @@ class EcommerceForTransactionV2DataProviderTest {
             TransactionTestUtilsV2.transactionUserReceiptData(
                 TransactionUserReceiptDataV2.Outcome.KO
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -1716,6 +1792,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1772,6 +1849,8 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.NOTIFICATION_ERROR,
@@ -1781,7 +1860,10 @@ class EcommerceForTransactionV2DataProviderTest {
             TransactionTestUtilsV2.transactionUserReceiptData(
                 TransactionUserReceiptDataV2.Outcome.OK
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -1865,6 +1947,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1921,6 +2004,8 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.NOTIFICATION_ERROR,
@@ -1930,7 +2015,10 @@ class EcommerceForTransactionV2DataProviderTest {
             TransactionTestUtilsV2.transactionUserReceiptData(
                 TransactionUserReceiptDataV2.Outcome.KO
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -2015,6 +2103,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -2071,6 +2160,8 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.NOTIFIED_KO,
@@ -2080,7 +2171,10 @@ class EcommerceForTransactionV2DataProviderTest {
             TransactionTestUtilsV2.transactionUserReceiptData(
                 TransactionUserReceiptDataV2.Outcome.KO
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -2164,6 +2258,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -2220,6 +2315,8 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.REFUND_REQUESTED,
@@ -2229,7 +2326,10 @@ class EcommerceForTransactionV2DataProviderTest {
             TransactionTestUtilsV2.transactionUserReceiptData(
                 TransactionUserReceiptDataV2.Outcome.KO
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -2329,6 +2429,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -2385,6 +2486,8 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.REFUND_ERROR,
@@ -2394,7 +2497,10 @@ class EcommerceForTransactionV2DataProviderTest {
             TransactionTestUtilsV2.transactionUserReceiptData(
                 TransactionUserReceiptDataV2.Outcome.KO
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -2511,6 +2617,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -2567,6 +2674,8 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.REFUNDED,
@@ -2576,7 +2685,10 @@ class EcommerceForTransactionV2DataProviderTest {
             TransactionTestUtilsV2.transactionUserReceiptData(
                 TransactionUserReceiptDataV2.Outcome.KO
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -2712,6 +2824,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -2768,6 +2881,8 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.REFUNDED,
@@ -2777,7 +2892,10 @@ class EcommerceForTransactionV2DataProviderTest {
             TransactionTestUtilsV2.transactionUserReceiptData(
                 TransactionUserReceiptDataV2.Outcome.KO
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -2927,6 +3045,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -2983,6 +3102,8 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.EXPIRED,
@@ -2992,7 +3113,10 @@ class EcommerceForTransactionV2DataProviderTest {
             TransactionTestUtilsV2.transactionUserReceiptData(
                 TransactionUserReceiptDataV2.Outcome.OK
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionAuthorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
@@ -3090,6 +3214,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -3146,12 +3271,17 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.EXPIRED_NOT_AUTHORIZED,
                 ZonedDateTime.now()
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val transactionExpiredEvent =
             TransactionTestUtilsV2.transactionExpiredEvent(
                 TransactionTestUtilsV2.reduceEvents(transactionActivatedEvent)
@@ -3245,6 +3375,8 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.NOTIFIED_OK,
@@ -3254,7 +3386,10 @@ class EcommerceForTransactionV2DataProviderTest {
             TransactionTestUtilsV2.transactionUserReceiptData(
                 TransactionUserReceiptDataV2.Outcome.OK
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val authorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
                 paymentGateway,
@@ -3336,6 +3471,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -3392,6 +3528,8 @@ class EcommerceForTransactionV2DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.NOTIFIED_OK,
@@ -3401,7 +3539,10 @@ class EcommerceForTransactionV2DataProviderTest {
             TransactionTestUtilsV2.transactionUserReceiptData(
                 TransactionUserReceiptDataV2.Outcome.OK
             )
-        val transactionActivatedEvent = TransactionTestUtilsV2.transactionActivateEvent()
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
         val authorizationRequestedEvent =
             TransactionTestUtilsV2.transactionAuthorizationRequestedEvent()
         val authorizedEvent =
@@ -3494,6 +3635,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.paymentGateway
                                     .toString()
                             )
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
