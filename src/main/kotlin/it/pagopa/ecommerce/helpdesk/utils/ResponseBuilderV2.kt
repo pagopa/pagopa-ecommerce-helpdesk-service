@@ -29,8 +29,10 @@ fun baseTransactionToTransactionInfoDtoV2(
     val transactionAuthorizationRequestData = getTransactionAuthRequestedData(baseTransaction)
     val transactionAuthorizationCompletedData = getTransactionAuthCompletedData(baseTransaction)
     val transactionUserReceiptData = getTransactionUserReceiptData(baseTransaction)
-    val transactionGatewayAuthorizationData =
-        transactionAuthorizationCompletedData?.transactionGatewayAuthorizationData
+    val gatewayAuthorizationData =
+        getGatewayAuthorizationData(
+            transactionAuthorizationCompletedData?.transactionGatewayAuthorizationData
+        )
 
     // Build user info
 
@@ -71,16 +73,8 @@ fun baseTransactionToTransactionInfoDtoV2(
                     UUID.fromString(transactionGatewayActivationData.correlationId)
                 else null
             )
-            .gatewayAuthorizationStatus(
-                if (transactionGatewayAuthorizationData is NpgTransactionGatewayAuthorizationData)
-                    transactionGatewayAuthorizationData.operationResult.value
-                else null
-            )
-            .gatewayErrorCode(
-                if (transactionGatewayAuthorizationData is NpgTransactionGatewayAuthorizationData)
-                    transactionGatewayAuthorizationData.errorCode
-                else null
-            )
+            .gatewayAuthorizationStatus(gatewayAuthorizationData?.authorizationStatus)
+            .gatewayErrorCode(gatewayAuthorizationData?.errorCode)
     // build payment info
     val paymentInfo =
         PaymentInfoDto()
@@ -234,3 +228,26 @@ fun getBrand(authorizationRequestedData: TransactionGatewayAuthorizationRequeste
             authorizationRequestedData.paymentMethodType.toString()
         else -> null
     }
+
+fun getGatewayAuthorizationData(
+    transactionGatewayAuthorizationData: TransactionGatewayAuthorizationData?
+): GatewayAuthorizationData? {
+    return when (transactionGatewayAuthorizationData) {
+        is NpgTransactionGatewayAuthorizationData ->
+            GatewayAuthorizationData(
+                transactionGatewayAuthorizationData.operationResult.value,
+                transactionGatewayAuthorizationData.errorCode
+            )
+        is PgsTransactionGatewayAuthorizationData ->
+            GatewayAuthorizationData(
+                transactionGatewayAuthorizationData.authorizationResultDto.value,
+                transactionGatewayAuthorizationData.errorCode
+            )
+        is RedirectTransactionGatewayAuthorizationData ->
+            GatewayAuthorizationData(
+                transactionGatewayAuthorizationData.outcome.name,
+                transactionGatewayAuthorizationData.errorCode
+            )
+        else -> null
+    }
+}

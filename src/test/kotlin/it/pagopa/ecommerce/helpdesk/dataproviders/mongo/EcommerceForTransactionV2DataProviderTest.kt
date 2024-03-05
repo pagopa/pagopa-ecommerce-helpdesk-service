@@ -6,7 +6,6 @@ import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureData as Transa
 import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent as TransactionEventV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData as TransactionUserReceiptDataV2
 import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
-import it.pagopa.ecommerce.commons.documents.v2.authorization.NpgTransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.RedirectTransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGatewayAuthorizationRequestedData
@@ -29,6 +28,7 @@ import it.pagopa.ecommerce.commons.v2.TransactionTestUtils as TransactionTestUti
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
+import it.pagopa.ecommerce.helpdesk.utils.getGatewayAuthorizationData
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.ZonedDateTime
 import java.util.*
@@ -404,6 +404,7 @@ class EcommerceForTransactionV2DataProviderTest {
         brand: String,
         expectedErrorCode: String?
     ) {
+        val gatewayAuthorizationData = getGatewayAuthorizationData(gatewayAuthData)
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
@@ -486,15 +487,9 @@ class EcommerceForTransactionV2DataProviderTest {
                             )
                             .correlationId(UUID.fromString(correlationId))
                             .gatewayAuthorizationStatus(
-                                if (gatewayAuthData is NpgTransactionGatewayAuthorizationData) {
-                                    gatewayAuthData.operationResult.value
-                                } else null
+                                gatewayAuthorizationData?.authorizationStatus
                             )
-                            .gatewayErrorCode(
-                                if (gatewayAuthData is NpgTransactionGatewayAuthorizationData) {
-                                    gatewayAuthData.errorCode
-                                } else null
-                            )
+                            .gatewayErrorCode(gatewayAuthorizationData?.errorCode)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -3400,6 +3395,7 @@ class EcommerceForTransactionV2DataProviderTest {
         gatewayAuthData: TransactionGatewayAuthorizationData,
         expectedBrand: String
     ) {
+        val gatewayAuthorizationData = getGatewayAuthorizationData(gatewayAuthData)
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
@@ -3501,10 +3497,9 @@ class EcommerceForTransactionV2DataProviderTest {
                             )
                             .correlationId(UUID.fromString(correlationId))
                             .gatewayAuthorizationStatus(
-                                if (gatewayAuthData is NpgTransactionGatewayAuthorizationData) {
-                                    gatewayAuthData.operationResult.value
-                                } else null
+                                gatewayAuthorizationData?.authorizationStatus
                             )
+                            .gatewayErrorCode(gatewayAuthorizationData?.errorCode)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
