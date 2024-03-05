@@ -29,6 +29,8 @@ fun baseTransactionToTransactionInfoDtoV2(
     val transactionAuthorizationRequestData = getTransactionAuthRequestedData(baseTransaction)
     val transactionAuthorizationCompletedData = getTransactionAuthCompletedData(baseTransaction)
     val transactionUserReceiptData = getTransactionUserReceiptData(baseTransaction)
+    val transactionGatewayAuthorizationData =
+        transactionAuthorizationCompletedData?.transactionGatewayAuthorizationData
 
     // Build user info
 
@@ -67,6 +69,16 @@ fun baseTransactionToTransactionInfoDtoV2(
             .correlationId(
                 if (transactionGatewayActivationData is NpgTransactionGatewayActivationData)
                     UUID.fromString(transactionGatewayActivationData.correlationId)
+                else null
+            )
+            .gatewayAuthorizationStatus(
+                if (transactionGatewayAuthorizationData is NpgTransactionGatewayAuthorizationData)
+                    transactionGatewayAuthorizationData.operationResult.value
+                else null
+            )
+            .gatewayErrorCode(
+                if (transactionGatewayAuthorizationData is NpgTransactionGatewayAuthorizationData)
+                    transactionGatewayAuthorizationData.errorCode
                 else null
             )
     // build payment info
