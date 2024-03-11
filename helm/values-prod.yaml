@@ -53,7 +53,7 @@ microservice-chart:
       MONGO_PASSWORD: mongo-ecommerce-password
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaecommercehelpdeskservice
-    tag: "1.6.5"
+    tag: "1.6.6"
     pullPolicy: Always
   livenessProbe:
     httpGet:
