@@ -33,7 +33,6 @@ import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.ZonedDateTime
 import java.util.*
 import java.util.stream.Stream
-import kotlin.collections.HashSet
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -235,6 +234,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .authorizationCode(null)
                             .paymentMethodName(null)
                             .brand(null)
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1157,6 +1157,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .authorizationCode(null)
                             .paymentMethodName(null)
                             .brand(null)
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1264,6 +1265,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .authorizationCode(null)
                             .paymentMethodName(null)
                             .brand(null)
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()

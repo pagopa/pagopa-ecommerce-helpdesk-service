@@ -141,13 +141,10 @@ private fun getTransactionAuthRequestedData(
 private fun getTransactionActivatedData(
     baseTransaction: BaseTransaction
 ): TransactionActivatedData? =
-    when (baseTransaction) {
-        is BaseTransactionExpired ->
-            getTransactionActivatedData(baseTransaction.transactionAtPreviousState)
-        is BaseTransactionWithClosureError ->
-            getTransactionActivatedData(baseTransaction.transactionAtPreviousState)
-        is BaseTransactionWithRequestedAuthorization -> baseTransaction.transactionActivatedData
-        else -> null
+    if (baseTransaction is BaseTransactionWithPaymentToken) {
+        baseTransaction.transactionActivatedData
+    } else {
+        null
     }
 
 private fun getTransactionAuthCompletedData(
