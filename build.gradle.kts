@@ -23,7 +23,7 @@ plugins {
 val ecommerceCommonsVersion = "1.10.1"
 
 // eCommerce commons library git ref (by default tag)
-val ecommerceCommonsGitRef = ecommerceCommonsVersion
+val ecommerceCommonsGitRef = "CHK-2554-redirect-remove-psptransactionid"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 

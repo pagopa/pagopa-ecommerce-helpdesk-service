@@ -113,7 +113,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         RedirectTransactionGatewayAuthorizationData.Outcome.OK,
                         null
                     ),
-                    "BANK_ACCOUNT"
+                    "N/A"
                 )
             )
 
@@ -163,7 +163,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         RedirectTransactionGatewayAuthorizationData.Outcome.KO,
                         authKoErrorCode
                     ),
-                    "BANK_ACCOUNT",
+                    "N/A",
                     authKoErrorCode
                 )
             )
