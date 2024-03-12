@@ -28,6 +28,7 @@ import it.pagopa.ecommerce.commons.v2.TransactionTestUtils as TransactionTestUti
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
+import it.pagopa.ecommerce.helpdesk.utils.getGatewayAuthorizationData
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.ZonedDateTime
 import java.util.*
@@ -403,6 +404,7 @@ class EcommerceForTransactionV2DataProviderTest {
         brand: String,
         expectedErrorCode: String?
     ) {
+        val gatewayAuthorizationData = getGatewayAuthorizationData(gatewayAuthData)
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
@@ -484,6 +486,10 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(
+                                gatewayAuthorizationData?.authorizationStatus
+                            )
+                            .gatewayErrorCode(gatewayAuthorizationData?.errorCode)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -624,6 +630,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -764,6 +771,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -902,6 +910,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1042,6 +1051,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1421,7 +1431,8 @@ class EcommerceForTransactionV2DataProviderTest {
         val transactionAuthorizationCompletedEvent =
             TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
                 TransactionTestUtilsV2.npgTransactionGatewayAuthorizationData(
-                    OperationResultDto.FAILED
+                    OperationResultDto.DECLINED,
+                    "101"
                 )
             )
         val transactionClosedRequestedEvent =
@@ -1494,6 +1505,8 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.DECLINED.value)
+                            .gatewayErrorCode("101")
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1643,6 +1656,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1795,6 +1809,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1950,6 +1965,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -2106,6 +2122,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -2261,6 +2278,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -2432,6 +2450,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -2620,6 +2639,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -2827,6 +2847,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -3048,6 +3069,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -3217,6 +3239,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -3374,6 +3397,7 @@ class EcommerceForTransactionV2DataProviderTest {
         gatewayAuthData: TransactionGatewayAuthorizationData,
         expectedBrand: String
     ) {
+        val gatewayAuthorizationData = getGatewayAuthorizationData(gatewayAuthData)
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         val pageSize = 100
         val pageNumber = 0
@@ -3474,6 +3498,10 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(
+                                gatewayAuthorizationData?.authorizationStatus
+                            )
+                            .gatewayErrorCode(gatewayAuthorizationData?.errorCode)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -3638,6 +3666,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                     .toString()
                             )
                             .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
                     )
                     .paymentInfo(
                         PaymentInfoDto()
