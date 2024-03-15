@@ -221,8 +221,7 @@ fun getBrand(authorizationRequestedData: TransactionGatewayAuthorizationRequeste
         is NpgTransactionGatewayAuthorizationRequestedData -> authorizationRequestedData.brand
         is PgsTransactionGatewayAuthorizationRequestedData ->
             authorizationRequestedData.brand?.toString()
-        is RedirectTransactionGatewayAuthorizationRequestedData ->
-            authorizationRequestedData.paymentMethodType.toString()
+        is RedirectTransactionGatewayAuthorizationRequestedData -> "N/A"
         else -> null
     }
 
