@@ -42,7 +42,7 @@ microservice-chart:
       MONGO_SERVER_SELECTION_TIMEOUT_MS: "2000"
       MONGO_WAITING_QUEUE_MS: "2000"
       MONGO_HEARTBEAT_FREQUENCY_MS: "5000"
-      MONGO_REPLICA_SET: "globaldb"
+      MONGO_REPLICA_SET_OPTION: "&replicaSet=globaldb"
       SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
         {ALL: '*', ECOMMERCE: 'pagopa-p-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-p-weu-ecommerce-notifications-service-errors-queue'}
 
@@ -137,7 +137,7 @@ microservice-chart:
     MONGO_SERVER_SELECTION_TIMEOUT_MS: "2000"
     MONGO_WAITING_QUEUE_MS: "2000"
     MONGO_HEARTBEAT_FREQUENCY_MS: "5000"
-    MONGO_REPLICA_SET: "globaldb"
+    MONGO_REPLICA_SET_OPTION: "&replicaSet=globaldb"
     SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
       {ALL: '*', ECOMMERCE: 'pagopa-p-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-p-weu-ecommerce-notifications-service-errors-queue'}
 
