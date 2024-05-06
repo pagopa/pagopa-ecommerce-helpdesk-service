@@ -78,12 +78,12 @@ object HelpdeskTestUtils {
             .paymentInfo(
                 PaymentInfoDto()
                     .origin("origin")
+                    .idTransaction(TransactionTestUtils.TRANSACTION_ID)
                     .details(
                         listOf(
                             PaymentDetailInfoDto()
                                 .iuv("IUV")
                                 .rptId(null)
-                                .idTransaction(TransactionTestUtils.TRANSACTION_ID)
                                 .paymentToken(null)
                                 .creditorInstitution("creditor institution")
                                 .paFiscalCode(TransactionTestUtils.PA_FISCAL_CODE)

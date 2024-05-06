@@ -346,12 +346,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -489,12 +489,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -625,12 +625,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -798,12 +798,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -913,12 +913,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1022,12 +1022,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1149,12 +1149,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1276,12 +1276,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1406,12 +1406,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1536,12 +1536,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1666,12 +1666,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1766,12 +1766,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1869,12 +1869,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1967,12 +1967,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -2090,12 +2090,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -2227,12 +2227,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -2367,12 +2367,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -2510,12 +2510,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -2653,12 +2653,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -2796,12 +2796,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -2952,12 +2952,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -3126,12 +3126,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -3318,12 +3318,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -3525,12 +3525,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -3681,12 +3681,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -3786,12 +3786,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -3932,12 +3932,12 @@ class EcommerceForTransactionV1DataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
                             .details(
                                 baseTransaction.paymentNotices.map {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
-                                        .idTransaction(baseTransaction.transactionId.value())
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData

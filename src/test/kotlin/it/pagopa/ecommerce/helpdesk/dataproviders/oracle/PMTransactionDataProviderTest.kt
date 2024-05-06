@@ -117,6 +117,7 @@ class PMTransactionDataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin("origin")
+                            .idTransaction("MIUR20191119222949")
                             .details(
                                 listOf(
                                     PaymentDetailInfoDto()
@@ -124,7 +125,6 @@ class PMTransactionDataProviderTest {
                                             "/RFB/718173815252003/0.10/TXT/Pagamento di test 20"
                                         )
                                         .iuv("000000044060814")
-                                        .idTransaction("MIUR20191119222949")
                                         .creditorInstitution("RMIC81500N")
                                         .paFiscalCode("97061100588")
                                 )
@@ -217,6 +217,7 @@ class PMTransactionDataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin("origin")
+                            .idTransaction("MIUR20191119222949")
                             .details(
                                 listOf(
                                     PaymentDetailInfoDto()
@@ -224,7 +225,6 @@ class PMTransactionDataProviderTest {
                                             "/RFB/718173815252003/0.10/TXT/Pagamento di test 20"
                                         )
                                         .iuv("000000044060814")
-                                        .idTransaction("MIUR20191119222949")
                                         .creditorInstitution("RMIC81500N")
                                         .paFiscalCode("97061100588")
                                 )
