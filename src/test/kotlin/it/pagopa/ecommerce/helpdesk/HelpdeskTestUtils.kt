@@ -86,6 +86,7 @@ object HelpdeskTestUtils {
                                 .rptId(null)
                                 .paymentToken(null)
                                 .creditorInstitution("creditor institution")
+                                .amount(500)
                                 .paFiscalCode(TransactionTestUtils.PA_FISCAL_CODE)
                         )
                     )
