@@ -28,7 +28,6 @@ fun baseTransactionToTransactionInfoDtoV2(
         transactionActivatedData?.transactionGatewayActivationData
     val transactionAuthorizationRequestData = getTransactionAuthRequestedData(baseTransaction)
     val transactionAuthorizationCompletedData = getTransactionAuthCompletedData(baseTransaction)
-    val transactionUserReceiptData = getTransactionUserReceiptData(baseTransaction)
     val gatewayAuthorizationData =
         getGatewayAuthorizationData(
             transactionAuthorizationCompletedData?.transactionGatewayAuthorizationData
@@ -89,7 +88,7 @@ fun baseTransactionToTransactionInfoDtoV2(
                         // TODO here set only the first into transferList or take it from rptId
                         // object?
                         .paFiscalCode(it.transferList[0].paFiscalCode)
-                        .creditorInstitution(transactionUserReceiptData?.receivingOfficeName)
+                        .creditorInstitution(it.companyName.value)
                 }
             )
     // build psp info
