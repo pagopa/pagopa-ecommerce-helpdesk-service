@@ -49,7 +49,7 @@ val userEmailPaginatedQuery =
 		pt.AMOUNT , pt.FEE , pt.GRAND_TOTAL ,pt.rrn,  pt.AUTHORIZATION_CODE ,
 		pt.SERVICE_NAME ,
 		pp.SUBJECT ,ppd.IUV , ppd.CCP, ppd.ENTE_BENEFICIARIO , ppd.ID_DOMINIO ,
-		pp2.ID_PSP , pp2.BUSINESS_NAME , pp2.ID_CHANNEL 
+		pp2.ID_PSP , pp2.BUSINESS_NAME , pp2.ID_CHANNEL, ppd.IMPORTO 
         FROM AGID_USER.PP_USER pu 
         left JOIN AGID_USER.PP_TRANSACTION pt ON pu.ID_USER =pt.FK_USER 
         left JOIN AGID_USER.PP_PAYMENT pp ON pt.FK_PAYMENT = pp.ID 
@@ -124,7 +124,7 @@ val userFiscalCodePaginatedQuery =
  		pt.AMOUNT , pt.FEE , pt.GRAND_TOTAL ,pt.rrn, pt.AUTHORIZATION_CODE , 
         pt.SERVICE_NAME ,
 		pp.SUBJECT , ppd.IUV , ppd.CCP, ppd.ENTE_BENEFICIARIO , ppd.ID_DOMINIO ,
-		pp2.ID_PSP , pp2.BUSINESS_NAME , pp2.ID_CHANNEL 
+		pp2.ID_PSP , pp2.BUSINESS_NAME , pp2.ID_CHANNEL, ppd.IMPORTO 
         FROM AGID_USER.PP_USER pu 
         left JOIN AGID_USER.PP_TRANSACTION pt ON pu.ID_USER =pt.FK_USER 
         left JOIN AGID_USER.PP_PAYMENT pp ON pt.FK_PAYMENT = pp.ID 
