@@ -352,6 +352,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -495,6 +496,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -631,6 +633,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -804,6 +807,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -919,6 +923,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1028,6 +1033,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1155,6 +1161,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1282,6 +1289,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1412,6 +1420,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1542,6 +1551,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1672,6 +1682,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1772,6 +1783,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1875,6 +1887,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -1973,6 +1986,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -2096,6 +2110,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -2233,6 +2248,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -2373,6 +2389,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -2516,6 +2533,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -2659,6 +2677,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -2802,6 +2821,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -2958,6 +2978,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -3132,6 +3153,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -3324,6 +3346,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -3531,6 +3554,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -3687,6 +3711,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData
@@ -3792,6 +3817,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(null)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
@@ -3938,6 +3964,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                     PaymentDetailInfoDto()
                                         .subject(it.transactionDescription.value)
                                         .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
                                         .creditorInstitution(
                                             baseTransaction.transactionUserReceiptData

@@ -85,6 +85,7 @@ fun baseTransactionToTransactionInfoDtoV2(
                     PaymentDetailInfoDto()
                         .subject(it.transactionDescription.value)
                         .rptId(it.rptId.value)
+                        .amount(it.transactionAmount.value)
                         .paymentToken(it.paymentToken.value)
                         .amount(it.transactionAmount.value)
                         // TODO here set only the first into transferList or take it from rptId
