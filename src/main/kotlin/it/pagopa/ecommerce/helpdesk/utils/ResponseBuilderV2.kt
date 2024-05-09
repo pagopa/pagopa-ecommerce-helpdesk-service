@@ -87,7 +87,6 @@ fun baseTransactionToTransactionInfoDtoV2(
                         .rptId(it.rptId.value)
                         .amount(it.transactionAmount.value)
                         .paymentToken(it.paymentToken.value)
-                        .amount(it.transactionAmount.value)
                         // TODO here set only the first into transferList or take it from rptId
                         // object?
                         .paFiscalCode(it.transferList[0].paFiscalCode)
