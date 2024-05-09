@@ -8,7 +8,7 @@ db.getCollection('eventstore').insertMany([{
   "creationDate": "2023-08-07T15:32:56.592837917Z[Etc/UTC]",
   "data": {
     "email": {
-      "data": "b5fbc4de-945a-47f0-ab48-5ef09522a0f2"
+      "data": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     },
     "paymentNotices": [
       {
@@ -104,13 +104,44 @@ db.getCollection('eventstore').insertMany([{
     "paymentDescription": "Diritti di segreteria - accreditamento attività formative - codice evento: 23o13742"
   },
   "_class": "it.pagopa.ecommerce.commons.documents.v1.TransactionUserReceiptAddedEvent"
+},
+{
+  "_id": "3e798c60-4b57-4368-aeda-5645c57b5d6e",
+  "eventCode": "TRANSACTION_ACTIVATED_EVENT",
+  "transactionId": "d35da9bdc5554054a64abbec6efa6bab",
+  "creationDate": "2023-08-07T15:32:56.592837917Z[Etc/UTC]",
+  "data": {
+    "email": {
+      "data": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    },
+    "paymentNotices": [
+      {
+        "paymentToken": "1dd0db6d104e4ed3aaf261e8b28e9302",
+        "rptId": "97834130581302217169142236141",
+        "description": "Diritti di segreteria - accreditamento attività formative - codice evento: 23o13742",
+        "amount": 30000,
+        "transferList": [
+          {
+            "paFiscalCode": "97834130581",
+            "digitalStamp": false,
+            "transferAmount": 30000,
+            "transferCategory": "0101104TS"
+          }
+        ],
+        "isAllCCP": false
+      }
+    ],
+    "clientId": "CHECKOUT",
+    "paymentTokenValiditySeconds": 900
+  },
+  "_class": "it.pagopa.ecommerce.commons.documents.v2.TransactionActivatedEvent"
 }]);
 
-db.getCollection('transactions-view').insert({
+db.getCollection('transactions-view').insertMany([{
   "_id": "d35da9bdc5554054a64abbec6efa6baa",
   "clientId": "CHECKOUT",
   "email": {
-    "data": "b5fbc4de-945a-47f0-ab48-5ef09522a0f2"
+    "data": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
   },
   "status": "NOTIFIED_OK",
   "creationDate": "2023-08-07T15:32:56.686566542Z[Etc/UTC]",
@@ -136,4 +167,52 @@ db.getCollection('transactions-view').insert({
   "sendPaymentResultOutcome": "OK",
   "authorizationCode": "108811",
   "_class": "it.pagopa.ecommerce.commons.documents.v1.Transaction"
-});
+},
+{
+  "_id": "d35da9bdc5554054a64abbec6efa6bab",
+  "clientId": "CHECKOUT",
+  "email": {
+    "data": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  },
+  "status": "NOTIFIED_OK",
+  "creationDate": "2023-08-07T15:32:56.686566542Z[Etc/UTC]",
+  "paymentNotices": [
+    {
+      "paymentToken": "1dd0db6d104e4ed3aaf261e8b28e9302",
+      "rptId": "97834130581302217169142236141",
+      "description": "Diritti di segreteria - accreditamento attività formative - codice evento: 23o13742",
+      "amount": 30000,
+      "transferList": [
+        {
+          "paFiscalCode": "97834130581",
+          "digitalStamp": false,
+          "transferAmount": 30000,
+          "transferCategory": "0101104TS"
+        }
+      ],
+      "isAllCCP": false
+    }
+  ],
+  "rrn": "232190000291",
+  "paymentGateway": "VPOS",
+  "sendPaymentResultOutcome": "OK",
+  "authorizationCode": "108811",
+  "_class": "it.pagopa.ecommerce.commons.documents.v2.Transaction",
+  "transactionId": "d35da9bdc5554054a64abbec6efa6bab"
+}]);
+db.getCollection('dead-letter-events').insertMany([{
+"_id": "52c23cd0-2545-4815-a649-ca6aeb237bbb",
+"queueName": "test",
+"insertionDate": "2023-11-30T14:50:27.001Z",
+"data": "data"
+},{
+"_id": "8ce30990-917c-4969-8bab-36fdd5ca95c9",
+"queueName": "pagopa-ecommerce-transactions-dead-letter-queue",
+"insertionDate": "2023-11-30T14:50:27.001Z",
+"data": "ECOMMERCE"
+},{
+"_id": "351e228e-d2fb-47aa-9645-f750ae98b0ac",
+"queueName": "pagopa-ecommerce-notifications-service-errors-queue",
+"insertionDate": "2023-11-30T14:50:27.001Z",
+"data": "NOTIFICATIONS_SERVICE"
+}]);
