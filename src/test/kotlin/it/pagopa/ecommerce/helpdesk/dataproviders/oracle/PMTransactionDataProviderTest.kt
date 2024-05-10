@@ -125,7 +125,7 @@ class PMTransactionDataProviderTest {
                                             "/RFB/718173815252003/0.10/TXT/Pagamento di test 20"
                                         )
                                         .iuv("000000044060814")
-                                        .amount(100)
+                                        .amount(null)
                                         .creditorInstitution("RMIC81500N")
                                         .paFiscalCode("97061100588")
                                 )
@@ -226,7 +226,7 @@ class PMTransactionDataProviderTest {
                                             "/RFB/718173815252003/0.10/TXT/Pagamento di test 20"
                                         )
                                         .iuv("000000044060814")
-                                        .amount(100)
+                                        .amount(null)
                                         .creditorInstitution("RMIC81500N")
                                         .paFiscalCode("97061100588")
                                 )
