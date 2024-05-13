@@ -247,7 +247,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(null)
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -360,7 +360,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(null)
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -504,7 +504,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(null)
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -646,7 +646,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(null)
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -788,7 +788,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(null)
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -928,7 +928,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(null)
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -1070,7 +1070,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(null)
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -1177,7 +1177,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(null)
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -1286,7 +1286,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(null)
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -1390,7 +1390,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(null)
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -1529,7 +1529,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(null)
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -1680,10 +1680,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(
-                                            baseTransaction.transactionUserReceiptData
-                                                .receivingOfficeName
-                                        )
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -1834,10 +1831,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(
-                                            baseTransaction.transactionUserReceiptData
-                                                .receivingOfficeName
-                                        )
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -1991,10 +1985,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(
-                                            baseTransaction.transactionUserReceiptData
-                                                .receivingOfficeName
-                                        )
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -2149,10 +2140,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(
-                                            baseTransaction.transactionUserReceiptData
-                                                .receivingOfficeName
-                                        )
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -2306,10 +2294,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(
-                                            baseTransaction.transactionUserReceiptData
-                                                .receivingOfficeName
-                                        )
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -2479,10 +2464,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(
-                                            baseTransaction.transactionUserReceiptData
-                                                .receivingOfficeName
-                                        )
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -2669,10 +2651,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(
-                                            baseTransaction.transactionUserReceiptData
-                                                .receivingOfficeName
-                                        )
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -2878,10 +2857,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(
-                                            baseTransaction.transactionUserReceiptData
-                                                .receivingOfficeName
-                                        )
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -3101,10 +3077,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(
-                                            baseTransaction.transactionUserReceiptData
-                                                .receivingOfficeName
-                                        )
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -3272,10 +3245,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(
-                                            baseTransaction.transactionUserReceiptData
-                                                .receivingOfficeName
-                                        )
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -3383,7 +3353,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(null)
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -3536,10 +3506,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(
-                                            baseTransaction.transactionUserReceiptData
-                                                .receivingOfficeName
-                                        )
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
@@ -3702,10 +3669,7 @@ class EcommerceForTransactionV2DataProviderTest {
                                         .rptId(it.rptId.value)
                                         .amount(it.transactionAmount.value)
                                         .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(
-                                            baseTransaction.transactionUserReceiptData
-                                                .receivingOfficeName
-                                        )
+                                        .creditorInstitution(it.companyName.value)
                                         .paFiscalCode(it.transferList[0].paFiscalCode)
                                 }
                             )
