@@ -76,7 +76,7 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
                                 .subject(row[16, String::class.java])
                                 .iuv(row[17, String::class.java])
                                 .rptId(null)
-                                .amount(row[24, Int::class.java])
+                                .amount(row[24, BigDecimal::class.java]?.toInt())
                                 .paymentToken(null)
                                 .creditorInstitution(row[19, String::class.java])
                                 .paFiscalCode(row[20, String::class.java])
