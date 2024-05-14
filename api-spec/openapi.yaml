@@ -575,6 +575,8 @@ components:
       properties:
         origin:
           type: string
+        idTransaction:
+          type: string
         details:
           type: array
           items:
@@ -589,8 +591,8 @@ components:
           type: string
         rptId:
           type: string
-        idTransaction:
-          type: string
+        amount:
+          $ref: '#/components/schemas/AmountEuroCents'
         paymentToken:
           type: string
         creditorInstitution:

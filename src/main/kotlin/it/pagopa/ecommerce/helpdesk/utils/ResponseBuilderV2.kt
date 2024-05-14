@@ -78,12 +78,13 @@ fun baseTransactionToTransactionInfoDtoV2(
     val paymentInfo =
         PaymentInfoDto()
             .origin(baseTransaction.clientId.toString())
+            .idTransaction(baseTransaction.transactionId.value())
             .details(
                 baseTransaction.paymentNotices.map {
                     PaymentDetailInfoDto()
                         .subject(it.transactionDescription.value)
                         .rptId(it.rptId.value)
-                        .idTransaction(baseTransaction.transactionId.value())
+                        .amount(it.transactionAmount.value)
                         .paymentToken(it.paymentToken.value)
                         // TODO here set only the first into transferList or take it from rptId
                         // object?
