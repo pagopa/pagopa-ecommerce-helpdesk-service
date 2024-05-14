@@ -69,13 +69,14 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
             .paymentInfo(
                 PaymentInfoDto()
                     .origin(row[9, String::class.java])
+                    .idTransaction(row[18, String::class.java])
                     .details(
                         listOf(
                             PaymentDetailInfoDto()
                                 .subject(row[16, String::class.java])
                                 .iuv(row[17, String::class.java])
                                 .rptId(null)
-                                .idTransaction(row[18, String::class.java])
+                                .amount(row[24, BigDecimal::class.java]?.toInt())
                                 .paymentToken(null)
                                 .creditorInstitution(row[19, String::class.java])
                                 .paFiscalCode(row[20, String::class.java])
@@ -236,12 +237,13 @@ fun baseTransactionToTransactionInfoDtoV1(
     val paymentInfo =
         PaymentInfoDto()
             .origin(baseTransaction.clientId.toString())
+            .idTransaction(baseTransaction.transactionId.value())
             .details(
                 baseTransaction.paymentNotices.map {
                     PaymentDetailInfoDto()
                         .subject(it.transactionDescription.value)
                         .rptId(it.rptId.value)
-                        .idTransaction(baseTransaction.transactionId.value())
+                        .amount(it.transactionAmount.value)
                         .paymentToken(it.paymentToken.value)
                         // TODO here set only the first into transferList or take it from rptId
                         // object?
