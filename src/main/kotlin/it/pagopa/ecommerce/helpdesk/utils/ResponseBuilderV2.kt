@@ -6,6 +6,7 @@ import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestD
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData
 import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.*
+import it.pagopa.ecommerce.commons.documents.v2.refund.NpgGatewayRefundData
 import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.domain.v2.TransactionWithClosureError
 import it.pagopa.ecommerce.commons.domain.v2.pojos.*
@@ -15,6 +16,7 @@ import it.pagopa.ecommerce.commons.utils.v2.TransactionUtils.getTransactionFee
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 fun baseTransactionToTransactionInfoDtoV2(
     baseTransaction: BaseTransaction,
@@ -32,6 +34,8 @@ fun baseTransactionToTransactionInfoDtoV2(
         getGatewayAuthorizationData(
             transactionAuthorizationCompletedData?.transactionGatewayAuthorizationData
         )
+    val authorizationOperationId = getAuthorizationOperationId(baseTransaction)
+    val refundOperationId = getRefundOperationId(baseTransaction)
 
     // Build user info
 
@@ -42,6 +46,7 @@ fun baseTransactionToTransactionInfoDtoV2(
             // requests. Must be populated dynamically when logic will be updated eCommerce side
             // (event-dispatcher/transactions-service)
             .authenticationType(UserDto.TypeEnum.GUEST.toString())
+
     // build transaction info
     val transactionInfo =
         TransactionInfoDto()
@@ -58,6 +63,8 @@ fun baseTransactionToTransactionInfoDtoV2(
             .grandTotal(totalAmount)
             .rrn(transactionAuthorizationCompletedData?.rrn)
             .authorizationCode(transactionAuthorizationCompletedData?.authorizationCode)
+            .authorizationOperationId(authorizationOperationId)
+            .refundOperationId(refundOperationId)
             .paymentMethodName(transactionAuthorizationRequestData?.paymentMethodName)
             .brand(
                 getBrand(
@@ -247,3 +254,44 @@ fun getGatewayAuthorizationData(
         else -> null
     }
 }
+
+private fun getAuthorizationOperationId(baseTransaction: BaseTransaction): String? =
+    when (baseTransaction) {
+        is BaseTransactionExpired ->
+            getAuthorizationOperationId(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithClosureError ->
+            getAuthorizationOperationId(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithCompletedAuthorization -> {
+            val gatewayAuthData =
+                baseTransaction.transactionAuthorizationCompletedData
+                    .transactionGatewayAuthorizationData
+            when (gatewayAuthData) {
+                is NpgTransactionGatewayAuthorizationData -> gatewayAuthData.operationId
+                else -> null
+            }
+        }
+        is BaseTransactionWithRefundRequested -> {
+            val authorizationGatewayData =
+                baseTransaction.transactionAuthorizationGatewayData.getOrNull()
+
+            when (authorizationGatewayData) {
+                is NpgTransactionGatewayAuthorizationData -> authorizationGatewayData.operationId
+                else -> null
+            }
+        }
+        else -> null
+    }
+
+private fun getRefundOperationId(baseTransaction: BaseTransaction): String? =
+    when (baseTransaction) {
+        is BaseTransactionRefunded -> {
+            when (
+                val gatewayOperationData =
+                    baseTransaction.transactionRefundedData.gatewayOperationData
+            ) {
+                is NpgGatewayRefundData -> gatewayOperationData.operationId
+                else -> null
+            }
+        }
+        else -> null
+    }
