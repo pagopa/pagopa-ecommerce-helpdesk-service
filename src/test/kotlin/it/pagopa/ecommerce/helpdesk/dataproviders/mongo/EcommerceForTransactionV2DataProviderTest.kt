@@ -6,6 +6,7 @@ import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureData as Transa
 import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent as TransactionEventV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData as TransactionUserReceiptDataV2
 import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
+import it.pagopa.ecommerce.commons.documents.v2.authorization.NpgTransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.RedirectTransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGatewayAuthorizationRequestedData
@@ -470,6 +471,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as? NpgTransactionGatewayAuthorizationData)
+                                    ?.operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -615,6 +622,18 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -757,6 +776,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -897,6 +922,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -1039,6 +1070,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -1497,6 +1534,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -1649,6 +1692,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -1800,6 +1849,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -1954,6 +2009,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -2109,6 +2170,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -2263,6 +2330,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -2380,7 +2453,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionClosedRequestedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError
-                )
+                ),
+                transactionAuthorizationCompletedEvent.data.transactionGatewayAuthorizationData
             )
 
         val events =
@@ -2433,6 +2507,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -2549,7 +2629,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionClosedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError
-                )
+                ),
+                transactionAuthorizationCompletedEvent.data.transactionGatewayAuthorizationData
             )
         val transactionRefundErrorEvent =
             TransactionTestUtilsV2.transactionRefundErrorEvent(
@@ -2620,6 +2701,11 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (baseTransactionRefundRequested.transactionAuthorizationGatewayData
+                                        .get() as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -2736,7 +2822,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionClosedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError
-                )
+                ),
+                transactionAuthorizationCompletedEvent.data.transactionGatewayAuthorizationData
             )
         val transactionRefundErrorEvent =
             TransactionTestUtilsV2.transactionRefundErrorEvent(
@@ -2826,6 +2913,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -2955,7 +3048,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError,
                     transactionExpiredEvent
-                )
+                ),
+                transactionAuthorizationCompletedEvent.data.transactionGatewayAuthorizationData
             )
         val transactionRefundErrorEvent =
             TransactionTestUtilsV2.transactionRefundErrorEvent(
@@ -3046,6 +3140,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -3214,6 +3314,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -3472,6 +3578,11 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (authorizedEvent.data.transactionGatewayAuthorizationData
+                                        as? NpgTransactionGatewayAuthorizationData)
+                                    ?.operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -3638,6 +3749,11 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (authorizedEvent.data.transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -3706,3 +3822,6 @@ class EcommerceForTransactionV2DataProviderTest {
             .verifyComplete()
     }
 }
+
+// TODO: add test with no auth completed data -> no operationId
+// TODO: add test with: no auth data, refund without data, retry with data -> with operation id

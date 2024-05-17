@@ -532,6 +532,9 @@ components:
           type: string
         authorizationCode:
           type: string
+        authorizationOperationId:
+          type: string
+          description: Operation id for authorization. Present only if the payment gateway is NPG
         paymentMethodName:
           type: string
         brand:
@@ -562,6 +565,7 @@ components:
         grandTotal: 110
         rrn: "rrn"
         authorizationCode: "auth code"
+        authorizationOperationId: "009911013"
         paymentMethodName: "payment method name"
         brand: "brand"
         authorizationRequestId: "authorizationRequestId"

@@ -20,10 +20,10 @@ plugins {
   application
 }
 // eCommerce commons library version
-val ecommerceCommonsVersion = "1.16.0"
+val ecommerceCommonsVersion = "1.17.0"
 
 // eCommerce commons library git ref (by default tag)
-val ecommerceCommonsGitRef = ecommerceCommonsVersion
+val ecommerceCommonsGitRef = "CHK-2852-npg-refund-requested-domain"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 

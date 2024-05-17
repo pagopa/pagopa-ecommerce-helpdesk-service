@@ -15,6 +15,7 @@ import it.pagopa.ecommerce.commons.utils.v2.TransactionUtils.getTransactionFee
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 fun baseTransactionToTransactionInfoDtoV2(
     baseTransaction: BaseTransaction,
@@ -32,6 +33,7 @@ fun baseTransactionToTransactionInfoDtoV2(
         getGatewayAuthorizationData(
             transactionAuthorizationCompletedData?.transactionGatewayAuthorizationData
         )
+    val authorizationOperationId = getAuthorizationOperationId(baseTransaction)
 
     // Build user info
 
@@ -58,6 +60,7 @@ fun baseTransactionToTransactionInfoDtoV2(
             .grandTotal(totalAmount)
             .rrn(transactionAuthorizationCompletedData?.rrn)
             .authorizationCode(transactionAuthorizationCompletedData?.authorizationCode)
+            .authorizationOperationId(authorizationOperationId)
             .paymentMethodName(transactionAuthorizationRequestData?.paymentMethodName)
             .brand(
                 getBrand(
@@ -247,3 +250,29 @@ fun getGatewayAuthorizationData(
         else -> null
     }
 }
+
+private fun getAuthorizationOperationId(baseTransaction: BaseTransaction): String? =
+    when (baseTransaction) {
+        is BaseTransactionExpired -> getAuthorizationOperationId(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithClosureError ->
+            getAuthorizationOperationId(baseTransaction.transactionAtPreviousState)
+        is BaseTransactionWithCompletedAuthorization -> {
+            val gatewayAuthData =
+                baseTransaction.transactionAuthorizationCompletedData
+                    .transactionGatewayAuthorizationData
+            when (gatewayAuthData) {
+                is NpgTransactionGatewayAuthorizationData -> gatewayAuthData.operationId
+                else -> null
+            }
+        }
+        is BaseTransactionWithRefundRequested -> {
+            val authorizationGatewayData =
+                baseTransaction.transactionAuthorizationGatewayData.getOrNull()
+
+            when (authorizationGatewayData) {
+                is NpgTransactionGatewayAuthorizationData -> authorizationGatewayData.operationId
+                else -> null
+            }
+        }
+        else -> null
+    }
