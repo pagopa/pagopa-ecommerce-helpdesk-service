@@ -6,9 +6,11 @@ import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureData as Transa
 import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent as TransactionEventV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData as TransactionUserReceiptDataV2
 import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
+import it.pagopa.ecommerce.commons.documents.v2.authorization.NpgTransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.RedirectTransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGatewayAuthorizationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGatewayAuthorizationRequestedData
+import it.pagopa.ecommerce.commons.documents.v2.refund.NpgGatewayRefundData
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.domain.v2.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV2
@@ -470,6 +472,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as? NpgTransactionGatewayAuthorizationData)
+                                    ?.operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -615,6 +624,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -757,6 +773,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -897,6 +920,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -1039,6 +1069,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -1497,6 +1534,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -1649,6 +1693,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -1800,6 +1851,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -1954,6 +2012,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -2109,6 +2174,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -2263,6 +2335,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -2380,7 +2459,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionClosedRequestedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError
-                )
+                ),
+                transactionAuthorizationCompletedEvent.data.transactionGatewayAuthorizationData
             )
 
         val events =
@@ -2433,6 +2513,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -2549,7 +2636,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionClosedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError
-                )
+                ),
+                transactionAuthorizationCompletedEvent.data.transactionGatewayAuthorizationData
             )
         val transactionRefundErrorEvent =
             TransactionTestUtilsV2.transactionRefundErrorEvent(
@@ -2620,6 +2708,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (baseTransactionRefundRequested.transactionAuthorizationGatewayData
+                                        .get() as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -2695,6 +2789,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val pageNumber = 0
         val correlationId = UUID.randomUUID().toString()
         val orderId = "orderId"
+        val refundOperationId = "refundOperationId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.REFUNDED,
@@ -2736,7 +2831,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionClosedEvent,
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError
-                )
+                ),
+                transactionAuthorizationCompletedEvent.data.transactionGatewayAuthorizationData
             )
         val transactionRefundErrorEvent =
             TransactionTestUtilsV2.transactionRefundErrorEvent(
@@ -2763,7 +2859,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionUserReceiptError,
                     transactionRefundRequestedEvent,
                     transactionRefundErrorEvent
-                )
+                ),
+                NpgGatewayRefundData(refundOperationId)
             )
         val events =
             listOf(
@@ -2826,6 +2923,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(refundOperationId)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -2901,6 +3005,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val pageNumber = 0
         val correlationId = UUID.randomUUID().toString()
         val orderId = "orderId"
+        val refundOperationId = "refundOperationId"
         val transactionView =
             TransactionTestUtilsV2.transactionDocument(
                 TransactionStatusDto.REFUNDED,
@@ -2955,7 +3060,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionNotificationRequestedEvent,
                     transactionUserReceiptError,
                     transactionExpiredEvent
-                )
+                ),
+                transactionAuthorizationCompletedEvent.data.transactionGatewayAuthorizationData
             )
         val transactionRefundErrorEvent =
             TransactionTestUtilsV2.transactionRefundErrorEvent(
@@ -2982,7 +3088,8 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionExpiredEvent,
                     transactionRefundRequestedEvent,
                     transactionRefundErrorEvent
-                )
+                ),
+                NpgGatewayRefundData(refundOperationId)
             )
         val events =
             listOf(
@@ -3046,6 +3153,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(refundOperationId)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -3214,6 +3328,13 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -3340,6 +3461,8 @@ class EcommerceForTransactionV2DataProviderTest {
                             .rrn(null)
                             .authorizationCode(null)
                             .paymentMethodName(null)
+                            .authorizationRequestId(null)
+                            .refundOperationId(null)
                             .brand(null)
                     )
                     .paymentInfo(
@@ -3375,6 +3498,205 @@ class EcommerceForTransactionV2DataProviderTest {
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
+                    TransactionStatusDto.valueOf(it[0].transactionInfo.eventStatus.toString())
+                )
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should map successfully transaction v2 data into response searching by transaction id for transaction in REFUNDED FROM EXPIRED state outcome with first refund with no operation id`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
+        val pageSize = 100
+        val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
+        val refundOperationId = "refundOperationId"
+        val transactionView =
+            TransactionTestUtilsV2.transactionDocument(
+                TransactionStatusDto.REFUNDED,
+                ZonedDateTime.now()
+            )
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
+        val transactionAuthorizationRequestedEvent =
+            TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
+            )
+
+        val transactionExpiredEvent =
+            TransactionTestUtilsV2.transactionExpiredEvent(
+                TransactionTestUtilsV2.reduceEvents(
+                    transactionActivatedEvent,
+                    transactionAuthorizationRequestedEvent
+                )
+            )
+        val transactionRefundRequestedEvent =
+            TransactionTestUtilsV2.transactionRefundRequestedEvent(
+                TransactionTestUtilsV2.reduceEvents(
+                    transactionActivatedEvent,
+                    transactionAuthorizationRequestedEvent,
+                    transactionExpiredEvent
+                ),
+                null // N.B.: Is null when getting error while retrieving authorization data from
+                // gateway
+            )
+        val transactionRefundErrorEvent =
+            TransactionTestUtilsV2.transactionRefundErrorEvent(
+                TransactionTestUtilsV2.reduceEvents(
+                    transactionActivatedEvent,
+                    transactionAuthorizationRequestedEvent,
+                    transactionExpiredEvent,
+                    transactionRefundRequestedEvent
+                )
+            )
+        val transactionRefundRetryEvent =
+            TransactionTestUtilsV2.transactionRefundRetriedEvent(
+                1,
+                TransactionTestUtilsV2.npgTransactionGatewayAuthorizationData(
+                    OperationResultDto.EXECUTED
+                )
+            )
+        val transactionRefundedEvent =
+            TransactionTestUtilsV2.transactionRefundedEvent(
+                TransactionTestUtilsV2.reduceEvents(
+                    transactionActivatedEvent,
+                    transactionAuthorizationRequestedEvent,
+                    transactionExpiredEvent,
+                    transactionRefundRequestedEvent,
+                    transactionRefundErrorEvent,
+                    transactionRefundRetryEvent
+                ),
+                NpgGatewayRefundData(refundOperationId)
+            )
+        val events =
+            listOf(
+                transactionActivatedEvent,
+                transactionAuthorizationRequestedEvent,
+                transactionExpiredEvent,
+                transactionRefundRequestedEvent,
+                transactionRefundErrorEvent,
+                transactionRefundRetryEvent,
+                transactionRefundedEvent
+            )
+                as List<TransactionEventV2<Any>>
+        val baseTransactionRefunded =
+            TransactionTestUtilsV2.reduceEvents(*events.toTypedArray())
+                as BaseTransactionWithRefundRequestedV2
+
+        val baseTransactionRefundError =
+            baseTransactionRefunded.transactionAtPreviousState
+                as BaseTransactionWithRefundRequestedV2
+
+        val baseTransactionRefundRequested =
+            baseTransactionRefundError.transactionAtPreviousState
+                as BaseTransactionWithRefundRequestedV2
+
+        val baseTransaction =
+            baseTransactionRefundRequested.transactionAtPreviousState
+                as BaseTransactionWithRequestedAuthorizationV2
+        given(transactionsViewRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.just(transactionView))
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(EcommerceForTransactionV2DataProviderTest.TEST_EMAIL)))
+        val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
+        val fee = baseTransaction.transactionAuthorizationRequestData.fee
+        val totalAmount = amount.plus(fee)
+        val expected =
+            listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto()
+                            .authenticationType("GUEST")
+                            .notificationEmail(EcommerceForTransactionV2DataProviderTest.TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Cancellato")
+                            .statusDetails(null)
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(null)
+                            .authorizationOperationId(
+                                (transactionRefundRetryEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(refundOperationId)
+                            .authorizationCode(null)
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(null)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE)
+            )
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber
+                )
+            )
+            .consumeNextWith {
+                assertEquals(expected, it)
+                EcommerceForTransactionV2DataProviderTest.testedStatuses.add(
                     TransactionStatusDto.valueOf(it[0].transactionInfo.eventStatus.toString())
                 )
             }
@@ -3472,6 +3794,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (authorizedEvent.data.transactionGatewayAuthorizationData
+                                        as? NpgTransactionGatewayAuthorizationData)
+                                    ?.operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
@@ -3638,6 +3966,12 @@ class EcommerceForTransactionV2DataProviderTest {
                             .fee(fee)
                             .grandTotal(totalAmount)
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (authorizedEvent.data.transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
                             .authorizationCode(
                                 baseTransaction.transactionAuthorizationCompletedData
                                     .authorizationCode
