@@ -20,7 +20,7 @@ plugins {
   application
 }
 // eCommerce commons library version
-val ecommerceCommonsVersion = "1.18.0"
+val ecommerceCommonsVersion = "1.19.1"
 
 // eCommerce commons library git ref (by default tag)
 val ecommerceCommonsGitRef = ecommerceCommonsVersion
