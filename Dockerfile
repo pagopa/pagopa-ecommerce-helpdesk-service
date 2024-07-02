@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk as build
+FROM openjdk:17-jdk@sha256:528707081fdb9562eb819128a9f85ae7fe000e2fbaeaf9f87662e7b3f38cb7d8 as build
 WORKDIR /workspace/app
 
 RUN microdnf install git
@@ -17,7 +17,7 @@ COPY api-spec api-spec
 RUN ./gradlew build -x test -PbuildCommons
 RUN mkdir build/extracted && java -Djarmode=layertools -jar build/libs/*.jar extract --destination build/extracted
 
-FROM amazoncorretto:17-alpine
+FROM amazoncorretto:17-alpine@sha256:f769c08c8ffb23a6f8c5ac2f664b0c2f1f772593bd4e3753ec18cf943254bfb5
 
 RUN addgroup --system user && adduser --ingroup user --system user
 USER user:user

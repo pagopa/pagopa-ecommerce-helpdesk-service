@@ -33,7 +33,7 @@ services:
       - "spid-validator:127.0.0.1"
   mongo:
     container_name: pagopa-ecommerce-helpdesk-mongo
-    image: mongo
+    image: mongo@sha256:0cf7c3db50892da41c886e541693d6181ef77047414a8f7e15ae63e842ce65f5
     env_file: docker/mongoDB/conf/mongodb.env
     ports:
       - "27017:27017"
@@ -47,7 +47,7 @@ services:
 
   mongo-express:
     container_name: pagopa-ecommerce-helpdesk-express
-    image: mongo-express
+    image: mongo-express@sha256:1b23d7976f0210dbec74045c209e52fbb26d29b2e873d6c6fa3d3f0ae32c2a64
     env_file: docker/mongoDB/conf/mongo-express.env
     ports:
       - "8081:8081"
