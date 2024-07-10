@@ -26,4 +26,35 @@ class DeadLetterQueueSearchConfig {
         }
         return mapping
     }
+
+    /** Dead letter event source dto to dead letter name mapping */
+    @Bean
+    fun deadLetterQueueMappingV2(
+        @Value("#{\${deadLetter.queueMapping}}") deadLetterMapping: Map<String, String>
+    ): EnumMap<
+        it.pagopa.generated.ecommerce.helpdesk.v2.model.DeadLetterSearchEventSourceDto, String
+    > {
+        val mapping:
+            EnumMap<
+                it.pagopa.generated.ecommerce.helpdesk.v2.model.DeadLetterSearchEventSourceDto,
+                String
+            > =
+            EnumMap(
+                it.pagopa.generated.ecommerce.helpdesk.v2.model
+                        .DeadLetterSearchEventSourceDto::class
+                    .java
+            )
+        deadLetterMapping.forEach { (k, v) ->
+            mapping[
+                it.pagopa.generated.ecommerce.helpdesk.v2.model.DeadLetterSearchEventSourceDto
+                    .valueOf(k)] = v
+        }
+        val notConfiguredKeys =
+            it.pagopa.generated.ecommerce.helpdesk.v2.model.DeadLetterSearchEventSourceDto.values()
+                .filter { !mapping.containsKey(it) }
+        check(notConfiguredKeys.isEmpty()) {
+            "Misconfigured queue mapping, no mapping found for keys: $notConfiguredKeys"
+        }
+        return mapping
+    }
 }

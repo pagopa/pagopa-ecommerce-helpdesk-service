@@ -86,7 +86,7 @@ class ExceptionHandlerTest {
     @Test
     fun `Should handle InvalidSearchCriteriaException`() {
         val searchCriteria = "searchCriteria"
-        val exception = InvalidSearchCriteriaException(searchCriteria, ProductDto.PM)
+        val exception = InvalidSearchCriteriaException(searchCriteria, ProductDto.PM.name)
         val response = exceptionHandler.handleException(exception)
         assertEquals(
             HelpdeskTestUtils.buildProblemJson(

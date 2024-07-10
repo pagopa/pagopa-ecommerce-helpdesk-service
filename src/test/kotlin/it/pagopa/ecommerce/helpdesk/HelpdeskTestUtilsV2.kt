@@ -2,12 +2,12 @@ package it.pagopa.ecommerce.helpdesk
 
 import it.pagopa.ecommerce.commons.documents.DeadLetterEvent
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
-import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import java.time.OffsetDateTime
 import java.util.*
 import org.springframework.http.HttpStatus
 
-object HelpdeskTestUtils {
+object HelpdeskTestUtilsV2 {
 
     fun buildProblemJson(
         httpStatus: HttpStatus,
@@ -78,12 +78,13 @@ object HelpdeskTestUtils {
             .paymentInfo(
                 PaymentInfoDto()
                     .origin("origin")
+                    .idTransaction(TransactionTestUtils.TRANSACTION_ID)
                     .details(
                         listOf(
                             PaymentDetailInfoDto()
                                 .iuv("IUV")
                                 .rptId(null)
-                                .idTransaction(TransactionTestUtils.TRANSACTION_ID)
+                                .amount(500)
                                 .paymentToken(null)
                                 .creditorInstitution("creditor institution")
                                 .paFiscalCode(TransactionTestUtils.PA_FISCAL_CODE)
