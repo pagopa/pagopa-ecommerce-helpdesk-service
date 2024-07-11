@@ -9,13 +9,11 @@ import jakarta.validation.constraints.Min
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 @RestController("EcommerceV2Controller")
-@RequestMapping("ecommerce/v2")
 class EcommerceController(@Autowired val ecommerceService: EcommerceService) : EcommerceApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
@@ -26,14 +24,6 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
         logger.info("[HelpDesk controller] ecommerceSearchTransaction")
-        return ecommerceSearchTransactionRequestDto
-            .flatMap {
-                ecommerceService.searchTransaction(
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
-                    ecommerceSearchTransactionRequestDto = it
-                )
-            }
-            .map { ResponseEntity.ok(it) }
+        return Mono.empty()
     }
 }
