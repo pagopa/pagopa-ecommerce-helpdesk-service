@@ -15,7 +15,6 @@ import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 @RestController("EcommerceV2Controller")
-@RequestMapping("ecommerce/v2")
 class EcommerceController(@Autowired val ecommerceService: EcommerceService) : EcommerceApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 

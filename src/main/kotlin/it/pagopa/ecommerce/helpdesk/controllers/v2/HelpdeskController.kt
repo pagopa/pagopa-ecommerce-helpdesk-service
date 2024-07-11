@@ -15,7 +15,6 @@ import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 @RestController("HelpdeskV2Controller")
-@RequestMapping("helpdesk/v2")
 class HelpdeskController(
     @Autowired val helpdeskService: HelpdeskService,
 ) : HelpdeskApi {
