@@ -2,7 +2,8 @@ package it.pagopa.ecommerce.helpdesk.controllers.v2
 
 import it.pagopa.ecommerce.helpdesk.services.v2.EcommerceService
 import it.pagopa.generated.ecommerce.helpdesk.v2.api.EcommerceApi
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.EcommerceSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import org.slf4j.LoggerFactory
@@ -31,24 +32,6 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
                     pageNumber = pageNumber,
                     pageSize = pageSize,
                     ecommerceSearchTransactionRequestDto = it
-                )
-            }
-            .map { ResponseEntity.ok(it) }
-    }
-
-    override fun ecommerceSearchDeadLetterEvents(
-        @Min(0) pageNumber: Int,
-        @Min(1) @Max(20) pageSize: Int,
-        ecommerceSearchDeadLetterEventsRequestDto: Mono<EcommerceSearchDeadLetterEventsRequestDto>,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<SearchDeadLetterEventResponseDto>> {
-        logger.info("[HelpDesk controller] ecommerceSearchDeadLetterEvents")
-        return ecommerceSearchDeadLetterEventsRequestDto
-            .flatMap {
-                ecommerceService.searchDeadLetterEvents(
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
-                    searchRequest = it
                 )
             }
             .map { ResponseEntity.ok(it) }

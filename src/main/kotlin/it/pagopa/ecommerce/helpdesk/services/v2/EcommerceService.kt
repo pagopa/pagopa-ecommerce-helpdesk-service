@@ -2,14 +2,13 @@ package it.pagopa.ecommerce.helpdesk.services.v2
 
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.DataProvider
-import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.DeadLetterDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
-import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoderV2
-import it.pagopa.ecommerce.helpdesk.utils.v2.*
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
+import it.pagopa.ecommerce.helpdesk.utils.v2.buildTransactionSearchResponse
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.EcommerceSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +18,6 @@ import reactor.core.publisher.Mono
 @Service("EcommerceServiceV2")
 class EcommerceService(
     @Autowired private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
-    @Autowired private val deadLetterDataProvider: DeadLetterDataProvider,
     @Autowired private val confidentialDataManager: ConfidentialDataManager
 ) {
 
@@ -44,44 +42,6 @@ class EcommerceService(
             )
             .map { (results, totalCount) ->
                 buildTransactionSearchResponse(
-                    currentPage = pageNumber,
-                    totalCount = totalCount,
-                    pageSize = pageSize,
-                    results = results
-                )
-            }
-    }
-
-    fun searchDeadLetterEvents(
-        pageNumber: Int,
-        pageSize: Int,
-        searchRequest: EcommerceSearchDeadLetterEventsRequestDto
-    ): Mono<SearchDeadLetterEventResponseDto> {
-        logger.info(
-            "[helpDesk ecommerce service] search dead letter events, type: {}",
-            searchRequest.source
-        )
-        val timeRange: DeadLetterSearchDateTimeRangeDto? = searchRequest.timeRange
-        return mono { searchRequest }
-            .filter { timeRange == null || timeRange.startDate < timeRange.endDate }
-            .switchIfEmpty(
-                Mono.error(
-                    InvalidSearchCriteriaException(
-                        "Invalid time range: startDate [${timeRange?.startDate}] is not greater than endDate: [${timeRange?.endDate}]"
-                    )
-                )
-            )
-            .flatMap {
-                searchPaginatedResult(
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
-                    searchCriteria = searchRequest,
-                    searchCriteriaType = it.toString(),
-                    dataProvider = deadLetterDataProvider
-                )
-            }
-            .map { (results, totalCount) ->
-                buildDeadLetterEventsSearchResponse(
                     currentPage = pageNumber,
                     totalCount = totalCount,
                     pageSize = pageSize,

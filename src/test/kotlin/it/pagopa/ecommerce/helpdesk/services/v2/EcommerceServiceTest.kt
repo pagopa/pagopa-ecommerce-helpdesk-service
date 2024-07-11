@@ -10,14 +10,11 @@ import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsViewRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.DeadLetterDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
-import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import java.time.OffsetDateTime
 import java.time.ZonedDateTime
-import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
@@ -29,8 +26,6 @@ class EcommerceServiceTest {
 
     private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider = mock()
 
-    private val deadLetterDataProvider: DeadLetterDataProvider = mock()
-
     private val confidentialDataManager: ConfidentialDataManager = mock()
 
     private val testEmail = "test@test.it"
@@ -40,11 +35,7 @@ class EcommerceServiceTest {
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
 
     private val ecommerceService =
-        EcommerceService(
-            ecommerceTransactionDataProvider,
-            deadLetterDataProvider,
-            confidentialDataManager
-        )
+        EcommerceService(ecommerceTransactionDataProvider, confidentialDataManager)
 
     @Test
     fun `should return found transaction successfully`() {
@@ -118,122 +109,6 @@ class EcommerceServiceTest {
     }
 
     @Test
-    fun `Should return dead letter event for no input time range`() {
-        val request =
-            EcommerceSearchDeadLetterEventsRequestDto().source(DeadLetterSearchEventSourceDto.ALL)
-        val pageNumber = 0
-        val pageSize = 10
-        val deadLetterEventList =
-            listOf(
-                DeadLetterEventDto()
-                    .queueName("queueName1")
-                    .data("data1")
-                    .timestamp(OffsetDateTime.MIN),
-                DeadLetterEventDto()
-                    .queueName("queueName2")
-                    .data("data2")
-                    .timestamp(OffsetDateTime.MIN)
-            )
-        val expectedResponse =
-            SearchDeadLetterEventResponseDto()
-                .deadLetterEvents(deadLetterEventList)
-                .page(PageInfoDto().current(0).results(deadLetterEventList.size).total(1))
-        given(deadLetterDataProvider.totalRecordCount(request))
-            .willReturn(mono { deadLetterEventList.size })
-        given(deadLetterDataProvider.findResult(request, 0, 10))
-            .willReturn(mono { deadLetterEventList })
-        StepVerifier.create(
-                ecommerceService.searchDeadLetterEvents(
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
-                    searchRequest = request
-                )
-            )
-            .expectNext(expectedResponse)
-            .verifyComplete()
-    }
-
-    @Test
-    fun `Should return dead letter event with time range filter`() {
-        val request =
-            EcommerceSearchDeadLetterEventsRequestDto()
-                .source(DeadLetterSearchEventSourceDto.ALL)
-                .timeRange(
-                    DeadLetterSearchDateTimeRangeDto()
-                        .startDate(OffsetDateTime.MIN)
-                        .endDate(OffsetDateTime.MAX)
-                )
-        val pageNumber = 0
-        val pageSize = 10
-        val deadLetterEventList =
-            listOf(
-                DeadLetterEventDto()
-                    .queueName("queueName1")
-                    .data("data1")
-                    .timestamp(OffsetDateTime.MIN),
-                DeadLetterEventDto()
-                    .queueName("queueName2")
-                    .data("data2")
-                    .timestamp(OffsetDateTime.MIN)
-            )
-        val expectedResponse =
-            SearchDeadLetterEventResponseDto()
-                .deadLetterEvents(deadLetterEventList)
-                .page(PageInfoDto().current(0).results(deadLetterEventList.size).total(1))
-        given(deadLetterDataProvider.totalRecordCount(request))
-            .willReturn(mono { deadLetterEventList.size })
-        given(deadLetterDataProvider.findResult(request, 0, 10))
-            .willReturn(mono { deadLetterEventList })
-        StepVerifier.create(
-                ecommerceService.searchDeadLetterEvents(
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
-                    searchRequest = request
-                )
-            )
-            .expectNext(expectedResponse)
-            .verifyComplete()
-    }
-
-    @Test
-    fun `Should return error for invalid time range filter`() {
-        val request =
-            EcommerceSearchDeadLetterEventsRequestDto()
-                .source(DeadLetterSearchEventSourceDto.ALL)
-                .timeRange(
-                    DeadLetterSearchDateTimeRangeDto()
-                        .startDate(OffsetDateTime.MAX)
-                        .endDate(OffsetDateTime.MIN)
-                )
-        val pageNumber = 0
-        val pageSize = 10
-        val deadLetterEventList =
-            listOf(
-                DeadLetterEventDto()
-                    .queueName("queueName1")
-                    .data("data1")
-                    .timestamp(OffsetDateTime.MIN),
-                DeadLetterEventDto()
-                    .queueName("queueName2")
-                    .data("data2")
-                    .timestamp(OffsetDateTime.MIN)
-            )
-        given(deadLetterDataProvider.totalRecordCount(request))
-            .willReturn(mono { deadLetterEventList.size })
-        given(deadLetterDataProvider.findResult(request, 0, 10))
-            .willReturn(mono { deadLetterEventList })
-        StepVerifier.create(
-                ecommerceService.searchDeadLetterEvents(
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
-                    searchRequest = request
-                )
-            )
-            .expectError(InvalidSearchCriteriaException::class.java)
-            .verify()
-    }
-
-    @Test
     fun `should invoke PDV only once recovering found transaction successfully`() {
         val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByUserMail(testEmail)
         val pageSize = 10
@@ -277,8 +152,7 @@ class EcommerceServiceTest {
                     EcommerceTransactionDataProvider(
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
-                    ),
-                deadLetterDataProvider = deadLetterDataProvider
+                    )
             )
 
         StepVerifier.create(

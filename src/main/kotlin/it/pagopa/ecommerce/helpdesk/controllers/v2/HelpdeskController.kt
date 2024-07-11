@@ -1,9 +1,9 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v2
 
 import it.pagopa.ecommerce.helpdesk.services.v2.HelpdeskService
-import it.pagopa.ecommerce.helpdesk.services.v2.PmService
 import it.pagopa.generated.ecommerce.helpdesk.v2.api.HelpdeskApi
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.HelpDeskSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import org.slf4j.LoggerFactory
@@ -18,7 +18,6 @@ import reactor.core.publisher.Mono
 @RequestMapping("helpdesk/v2")
 class HelpdeskController(
     @Autowired val helpdeskService: HelpdeskService,
-    @Autowired val pmService: PmService
 ) : HelpdeskApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
     override fun helpDeskSearchTransaction(
@@ -36,14 +35,4 @@ class HelpdeskController(
                 )
             }
             .map { ResponseEntity.ok(it) }
-
-    override fun helpDeskSearchPaymentMethod(
-        pmSearchPaymentMethodRequestDto: Mono<PmSearchPaymentMethodRequestDto>,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<SearchPaymentMethodResponseDto>> {
-        logger.info("[HelpDesk controller] pmSearchPaymentMethod")
-        return pmSearchPaymentMethodRequestDto
-            .flatMap { pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = it) }
-            .map { ResponseEntity.ok(it) }
-    }
 }
