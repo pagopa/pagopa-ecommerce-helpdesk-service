@@ -11,11 +11,13 @@ import jakarta.validation.constraints.Min
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
-@RestController("PmControllerV2")
+@RestController("PmV2Controller")
+@RequestMapping("pm/v2")
 class PmController(@Autowired val pmService: PmService) : PmApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
