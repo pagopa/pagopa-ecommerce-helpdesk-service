@@ -3,7 +3,6 @@ package it.pagopa.ecommerce.helpdesk.controllers.v2
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.services.v2.HelpdeskService
-import it.pagopa.ecommerce.helpdesk.services.v2.PmService
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -26,8 +25,6 @@ class HelpdeskControllerTest {
     @Autowired lateinit var webClient: WebTestClient
 
     @MockBean lateinit var helpdeskService: HelpdeskService
-
-    @MockBean lateinit var pmService: PmService
 
     @Test
     fun `post search transaction succeeded searching by payment token`() = runTest {
@@ -327,137 +324,6 @@ class HelpdeskControllerTest {
                         .queryParam("pageSize", "{pageSize}")
                         .build(pageNumber, pageSize)
                 }
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(request)
-                .exchange()
-                .expectStatus()
-                .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-                .expectBody<ProblemJsonDto>()
-                .isEqualTo(expected)
-        }
-
-    @Test
-    fun `post search payment method succeeded searching by user fiscal code`() = runTest {
-        val request =
-            HelpdeskTestUtilsV2.buildPaymentMethodSearchRequestByUserFiscalCode("RHFGDH98HG02DH7U")
-        given(
-                pmService.searchPaymentMethod(
-                    pmSearchPaymentMethodRequestDto =
-                        argThat {
-                            this is SearchPaymentMethodRequestFiscalCodeDto &&
-                                this.userFiscalCode == request.userFiscalCode
-                        }
-                )
-            )
-            .willReturn(Mono.just(SearchPaymentMethodResponseDto()))
-        webClient
-            .post()
-            .uri { uriBuilder -> uriBuilder.path("/helpdesk/v2/searchPaymentMethod").build() }
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(request)
-            .exchange()
-            .expectStatus()
-            .isOk
-    }
-
-    @Test
-    fun `post search payment method failed for invalid fiscal code`() = runTest {
-        val request =
-            HelpdeskTestUtilsV2.buildPaymentMethodSearchRequestByUserFiscalCode("invalidFiscalCode")
-        given(
-                pmService.searchPaymentMethod(
-                    pmSearchPaymentMethodRequestDto =
-                        argThat {
-                            this is SearchPaymentMethodRequestFiscalCodeDto &&
-                                this.userFiscalCode == request.userFiscalCode
-                        }
-                )
-            )
-            .willReturn(Mono.just(SearchPaymentMethodResponseDto()))
-        webClient
-            .post()
-            .uri { uriBuilder -> uriBuilder.path("/helpdesk/v2/searchPaymentMethod").build() }
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(request)
-            .exchange()
-            .expectStatus()
-            .isBadRequest
-    }
-
-    @Test
-    fun `post search payment method succeeded searching by user email`() = runTest {
-        val request =
-            HelpdeskTestUtilsV2.buildPaymentMethodSearchRequestByUserEmail("mail.test@email.com")
-        given(
-                pmService.searchPaymentMethod(
-                    pmSearchPaymentMethodRequestDto =
-                        argThat {
-                            this is SearchPaymentMethodRequestEmailDto &&
-                                this.userEmail == request.userEmail
-                        }
-                )
-            )
-            .willReturn(Mono.just(SearchPaymentMethodResponseDto()))
-        webClient
-            .post()
-            .uri { uriBuilder -> uriBuilder.path("/helpdesk/v2/searchPaymentMethod").build() }
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(request)
-            .exchange()
-            .expectStatus()
-            .isOk
-    }
-
-    @Test
-    fun `post search payment method failed for invalid email`() = runTest {
-        val request =
-            HelpdeskTestUtilsV2.buildPaymentMethodSearchRequestByUserEmail("invalid_email")
-        given(
-                pmService.searchPaymentMethod(
-                    pmSearchPaymentMethodRequestDto =
-                        argThat {
-                            this is SearchPaymentMethodRequestEmailDto &&
-                                this.userEmail == request.userEmail
-                        }
-                )
-            )
-            .willReturn(Mono.just(SearchPaymentMethodResponseDto()))
-        webClient
-            .post()
-            .uri { uriBuilder -> uriBuilder.path("/helpdesk/v2/searchPaymentMethod").build() }
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(request)
-            .exchange()
-            .expectStatus()
-            .isBadRequest
-    }
-
-    @Test
-    fun `post search payment method should return 500 for unhandled error processing request`() =
-        runTest {
-            val request =
-                HelpdeskTestUtilsV2.buildPaymentMethodSearchRequestByUserEmail(
-                    "mail.test@email.com"
-                )
-            val expected =
-                HelpdeskTestUtilsV2.buildProblemJson(
-                    httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
-                    title = "Error processing the request",
-                    description = "Generic error occurred"
-                )
-            given(
-                    pmService.searchPaymentMethod(
-                        pmSearchPaymentMethodRequestDto =
-                            argThat {
-                                this is SearchPaymentMethodRequestEmailDto &&
-                                    this.userEmail == request.userEmail
-                            }
-                    )
-                )
-                .willReturn(Mono.error(RuntimeException("Unhandled error")))
-            webClient
-                .post()
-                .uri { uriBuilder -> uriBuilder.path("/helpdesk/v2/searchPaymentMethod").build() }
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()
