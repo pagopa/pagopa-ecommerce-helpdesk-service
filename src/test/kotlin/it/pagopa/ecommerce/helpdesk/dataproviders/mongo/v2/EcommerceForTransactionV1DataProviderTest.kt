@@ -27,7 +27,6 @@ import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoderV2
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.PaymentDetailInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.PaymentInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.ProductDto
@@ -226,23 +225,8 @@ class EcommerceForTransactionV1DataProviderTest {
     }
 
     @Test
-    fun `should return error for search by user fiscal code as invalid search criteria`() {
-        val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode("fiscal code")
-        StepVerifier.create(
-                ecommerceTransactionDataProvider.totalRecordCount(
-                    SearchParamDecoderV2(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    )
-                )
-            )
-            .expectError(InvalidSearchCriteriaException::class.java)
-            .verify()
-    }
-
-    @Test
     fun `should return error for search by unknown search criteria`() {
-        val searchCriteria: HelpDeskSearchTransactionRequestDto = mock()
+        val searchCriteria: EcommerceSearchTransactionRequestDto = mock()
         given(searchCriteria.type).willReturn("UNKNOWN")
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
@@ -687,27 +671,6 @@ class EcommerceForTransactionV1DataProviderTest {
     }
 
     @Test
-    fun `should return error for invalid search by user fiscal code`() {
-        val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode("fiscal code")
-        val pageSize = 100
-        val pageNumber = 0
-
-        StepVerifier.create(
-                ecommerceTransactionDataProvider.findResult(
-                    searchParams =
-                        SearchParamDecoderV2(
-                            searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                        ),
-                    skip = pageSize,
-                    limit = pageNumber
-                )
-            )
-            .expectError(InvalidSearchCriteriaException::class.java)
-            .verify()
-    }
-
-    @Test
     fun `should map successfully transaction data into response searching by user email id for NOTIFIED_OK transaction`() {
         val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByUserMail(TEST_EMAIL)
         val tokenizedEmail = UUID.randomUUID().toString()
@@ -857,7 +820,7 @@ class EcommerceForTransactionV1DataProviderTest {
 
     @Test
     fun `should return error for invalid search by unknown search criteria`() {
-        val searchCriteria: HelpDeskSearchTransactionRequestDto = mock()
+        val searchCriteria: EcommerceSearchTransactionRequestDto = mock()
         val pageSize = 100
         val pageNumber = 0
         given(searchCriteria.type).willReturn("UNKNOWN")

@@ -49,7 +49,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/v2/searchTransaction")
+                    .path("/v2/ecommerce/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -81,7 +81,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/v2/searchTransaction")
+                    .path("/v2/ecommerce/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -114,7 +114,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/v2/searchTransaction")
+                    .path("/v2/ecommerce/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -153,7 +153,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/v2/searchTransaction")
+                    .path("/v2/ecommerce/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -182,7 +182,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/ecommerce/v2/searchTransaction")
+                    .path("/v2/ecommerce/searchTransaction")
                     .queryParam("pageNumber", "{pageNumber}")
                     .queryParam("pageSize", "{pageSize}")
                     .build(pageNumber, pageSize)
@@ -213,7 +213,7 @@ class EcommerceControllerTest {
                 .post()
                 .uri { uriBuilder ->
                     uriBuilder
-                        .path("/ecommerce/v2/searchTransaction")
+                        .path("/v2/ecommerce/searchTransaction")
                         .queryParam("pageNumber", "{pageNumber}")
                         .queryParam("pageSize", "{pageSize}")
                         .build(pageNumber, pageSize)
@@ -255,7 +255,7 @@ class EcommerceControllerTest {
                 .post()
                 .uri { uriBuilder ->
                     uriBuilder
-                        .path("/ecommerce/v2/searchTransaction")
+                        .path("/v2/ecommerce/searchTransaction")
                         .queryParam("pageNumber", "{pageNumber}")
                         .queryParam("pageSize", "{pageSize}")
                         .build(pageNumber, pageSize)
