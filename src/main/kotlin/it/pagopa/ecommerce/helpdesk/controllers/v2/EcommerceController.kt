@@ -24,6 +24,14 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
         logger.info("[HelpDesk controller] ecommerceSearchTransaction")
-        return Mono.empty()
+        return ecommerceSearchTransactionRequestDto
+            .flatMap {
+                ecommerceService.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    ecommerceSearchTransactionRequestDto = it
+                )
+            }
+            .map { ResponseEntity.ok(it) }
     }
 }
