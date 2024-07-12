@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
-@RestController("HelpdeskV2Controller")
+@RestController("V2HelpdeskController")
 class HelpdeskController(
     @Autowired val helpdeskService: HelpdeskService,
 ) : HelpdeskApi {

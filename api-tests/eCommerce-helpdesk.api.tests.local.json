@@ -1041,13 +1041,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/v2/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/v2/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
 						"v2",
+						"ecommerce",
 						"searchTransaction"
 					],
 					"query": [
@@ -1109,13 +1109,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/v2/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/v2/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
 						"v2",
+						"ecommerce",
 						"searchTransaction"
 					],
 					"query": [
@@ -1177,13 +1177,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/v2/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/v2/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
 						"v2",
+						"ecommerce",
 						"searchTransaction"
 					],
 					"query": [
@@ -1245,13 +1245,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/helpdesk/v2/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/v2/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"helpdesk",
 						"v2",
+						"helpdesk",
 						"searchTransaction"
 					],
 					"query": [
@@ -1313,13 +1313,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/helpdesk/v2/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/v2/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"helpdesk",
 						"v2",
+						"helpdesk",
 						"searchTransaction"
 					],
 					"query": [
@@ -1381,13 +1381,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/helpdesk/v2/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/v2/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"helpdesk",
 						"v2",
+						"helpdesk",
 						"searchTransaction"
 					],
 					"query": [
@@ -1449,13 +1449,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/helpdesk/v2/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/v2/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"helpdesk",
 						"v2",
+						"helpdesk",
 						"searchTransaction"
 					],
 					"query": [
@@ -1512,13 +1512,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/helpdesk/v2/searchTransaction?pageNumber=0&pageSize=21",
+					"raw": "{{HOSTNAME}}/v2/helpdesk/searchTransaction?pageNumber=0&pageSize=21",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"helpdesk",
 						"v2",
+						"helpdesk",
 						"searchTransaction"
 					],
 					"query": [
@@ -1575,13 +1575,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/v2/searchTransaction?pageNumber=0&pageSize=21",
+					"raw": "{{HOSTNAME}}/v2/ecommerce/searchTransaction?pageNumber=0&pageSize=21",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
 						"v2",
+						"ecommerce",
 						"searchTransaction"
 					],
 					"query": [
