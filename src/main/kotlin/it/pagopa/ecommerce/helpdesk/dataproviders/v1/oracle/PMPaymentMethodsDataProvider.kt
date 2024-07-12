@@ -28,7 +28,7 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
         val searchCriteriaType = searchParams.type
         val invalidSearchCriteriaError =
             Mono.error<SearchPaymentMethodResponseDto>(
-                InvalidSearchCriteriaException(searchCriteriaType, ProductDto.PM.name)
+                InvalidSearchCriteriaException(searchCriteriaType, ProductDto.PM)
             )
         return when (searchParams) {
             is SearchPaymentMethodRequestEmailDto ->

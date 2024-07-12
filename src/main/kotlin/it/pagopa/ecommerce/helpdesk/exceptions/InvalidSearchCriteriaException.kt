@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.exceptions
 
+import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
 import org.springframework.http.HttpStatus
 
 class InvalidSearchCriteriaException(reason: String) : ApiError(reason) {
@@ -13,6 +14,11 @@ class InvalidSearchCriteriaException(reason: String) : ApiError(reason) {
 
     constructor(
         searchCriteriaType: String,
-        productDto: String
+        productDto: ProductDto
+    ) : this("Invalid search criteria with type: $searchCriteriaType for product: $productDto")
+
+    constructor(
+        searchCriteriaType: String,
+        productDto: it.pagopa.generated.ecommerce.helpdesk.v2.model.ProductDto
     ) : this("Invalid search criteria with type: $searchCriteriaType for product: $productDto")
 }

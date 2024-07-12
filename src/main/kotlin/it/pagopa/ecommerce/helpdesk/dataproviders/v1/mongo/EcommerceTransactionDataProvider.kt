@@ -31,7 +31,7 @@ class EcommerceTransactionDataProvider(
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
             decodedSearchParam.flatMap {
-                Mono.error<Long>(InvalidSearchCriteriaException(it.type, ProductDto.ECOMMERCE.name))
+                Mono.error<Long>(InvalidSearchCriteriaException(it.type, ProductDto.ECOMMERCE))
             }
         return decodedSearchParam
             .flatMap {
@@ -68,7 +68,7 @@ class EcommerceTransactionDataProvider(
         val invalidSearchCriteriaError =
             decodedSearchParam.flatMapMany {
                 Flux.error<BaseTransactionView>(
-                    InvalidSearchCriteriaException(it.type, ProductDto.ECOMMERCE.name)
+                    InvalidSearchCriteriaException(it.type, ProductDto.ECOMMERCE)
                 )
             }
 

@@ -32,7 +32,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
             decodedSearchParam.flatMap {
-                Mono.error<Int>(InvalidSearchCriteriaException(it.type, ProductDto.PM.name))
+                Mono.error<Int>(InvalidSearchCriteriaException(it.type, ProductDto.PM))
             }
         return decodedSearchParam.flatMap {
             when (it) {
@@ -60,7 +60,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
         val invalidSearchCriteriaError =
             decodedSearchParam.flatMap {
                 Mono.error<List<TransactionResultDto>>(
-                    InvalidSearchCriteriaException(it.type, ProductDto.PM.name)
+                    InvalidSearchCriteriaException(it.type, ProductDto.PM)
                 )
             }
         return decodedSearchParam.flatMap {
