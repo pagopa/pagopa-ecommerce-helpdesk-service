@@ -1,6 +1,5 @@
 package it.pagopa.ecommerce.helpdesk
 
-import it.pagopa.ecommerce.commons.documents.DeadLetterEvent
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import java.time.OffsetDateTime
@@ -27,11 +26,6 @@ object HelpdeskTestUtilsV2 {
         SearchTransactionRequestPaymentTokenDto()
             .paymentToken(TransactionTestUtils.PAYMENT_TOKEN)
             .type("PAYMENT_TOKEN")
-
-    fun buildSearchRequestByUserFiscalCode(
-        fiscalCode: String
-    ): SearchTransactionRequestFiscalCodeDto =
-        SearchTransactionRequestFiscalCodeDto().userFiscalCode(fiscalCode).type("USER_FISCAL_CODE")
 
     fun buildSearchRequestByUserMail(email: String): SearchTransactionRequestEmailDto =
         SearchTransactionRequestEmailDto().userEmail(email).type("USER_EMAIL")
@@ -86,12 +80,4 @@ object HelpdeskTestUtilsV2 {
                     .idChannel(TransactionTestUtils.PSP_CHANNEL_CODE)
             )
             .product(product)
-
-    fun buildDeadLetterEvent(queueName: String, data: String) =
-        DeadLetterEvent(
-            UUID.randomUUID().toString(),
-            queueName,
-            OffsetDateTime.now().toString(),
-            data
-        )
 }

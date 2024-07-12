@@ -8,7 +8,8 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v2.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoderV2
-import it.pagopa.ecommerce.helpdesk.utils.v2.*
+import it.pagopa.ecommerce.helpdesk.utils.v2.baseTransactionToTransactionInfoDtoV1
+import it.pagopa.ecommerce.helpdesk.utils.v2.baseTransactionToTransactionInfoDtoV2
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import java.util.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,7 +26,7 @@ class EcommerceTransactionDataProvider(
 ) : TransactionDataProvider {
 
     override fun totalRecordCount(
-        searchParams: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto>
+        searchParams: SearchParamDecoderV2<EcommerceSearchTransactionRequestDto>
     ): Mono<Int> {
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
@@ -51,7 +52,6 @@ class EcommerceTransactionDataProvider(
                         }
                     is SearchTransactionRequestEmailDto ->
                         transactionsViewRepository.countTransactionsWithEmail(it.userEmail)
-                    is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
                     else -> invalidSearchCriteriaError
                 }
             }
@@ -59,7 +59,7 @@ class EcommerceTransactionDataProvider(
     }
 
     override fun findResult(
-        searchParams: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto>,
+        searchParams: SearchParamDecoderV2<EcommerceSearchTransactionRequestDto>,
         skip: Int,
         limit: Int
     ): Mono<List<TransactionResultDto>> {
@@ -97,7 +97,6 @@ class EcommerceTransactionDataProvider(
                                 skip = skip,
                                 limit = limit
                             )
-                    is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
                     else -> invalidSearchCriteriaError
                 }
             }

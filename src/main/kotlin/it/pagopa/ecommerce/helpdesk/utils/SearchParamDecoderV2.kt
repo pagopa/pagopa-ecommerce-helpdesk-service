@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.utils
 
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.HelpDeskSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.EcommerceSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestEmailDto
 import reactor.core.publisher.Mono
 
@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono
 class SearchParamDecoderV2<out T>(
     val searchParameter: T,
     val confidentialMailUtils: ConfidentialMailUtils?
-) where T : HelpDeskSearchTransactionRequestDto {
+) where T : EcommerceSearchTransactionRequestDto {
 
     /**
      * Decode search parameter to the one to be used for transaction searching.
@@ -16,7 +16,7 @@ class SearchParamDecoderV2<out T>(
      * @return the decoded search parameter if a decoding operation is defined for input parameter
      *   or search parameter itself without any transformation
      */
-    fun decode(): Mono<out HelpDeskSearchTransactionRequestDto> =
+    fun decode(): Mono<out EcommerceSearchTransactionRequestDto> =
         when (searchParameter) {
             /*
              * Search parameter decoding is performed iff input search parameter is an email and the searching is performed for eCommerce transactions.
