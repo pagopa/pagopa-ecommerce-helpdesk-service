@@ -134,7 +134,7 @@ stages:
   # --- END Deploy DEV --- #
 
   # --- START API TEST for DEV DEPLOY --- #
-  - stage: "API_DEV_test V1"
+  - stage: "API_DEV_test_V1"
     displayName: 'Running API test on dev app V1'
     dependsOn: Deploy_for_DEV
     jobs:
@@ -148,7 +148,7 @@ stages:
               API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_DEV)
               USER_EMAIL: $(HELPDESK_TESTING_EMAIL_DEV)
               USER_FISCAL_CODE: $(HELPDESK_TESTING_FISCALCODE_DEV)
-  - stage: "API_DEV_test V2"
+  - stage: "API_DEV_test_V2"
     displayName: 'Running API test on dev app V2'
     dependsOn: Deploy_for_DEV
     jobs:
@@ -234,7 +234,7 @@ stages:
                     BLUE_VERSION: $(Build.SourceVersion)
 
   # --- START API TEST for BLUE UAT DEPLOY --- #
-  - stage: "Blue_API_UAT_test V1"
+  - stage: "Blue_API_UAT_test_V1"
     displayName: 'Running API test on blue app V1'
     dependsOn: Deploy_UAT_Blue
     jobs:
@@ -248,7 +248,7 @@ stages:
               API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_UAT)
               USER_EMAIL: $(HELPDESK_TESTING_EMAIL_UAT)
               USER_FISCAL_CODE: $(HELPDESK_TESTING_FISCALCODE_UAT)
-  - stage: "Blue_API_UAT_test V2"
+  - stage: "Blue_API_UAT_test_V2"
     displayName: 'Running API test on blue app V2'
     dependsOn: Deploy_UAT_Blue
     jobs:
@@ -384,7 +384,7 @@ stages:
   # --- END Deploy UAT --- #
 
   # --- START API TEST for GREEN UAT DEPLOY --- #
-  - stage: "Green_API_UAT_test V1"
+  - stage: "Green_API_UAT_test_V1"
     displayName: 'Running API test on green app V1'
     dependsOn: Deploy_UAT_Green
     jobs:
@@ -398,7 +398,7 @@ stages:
               API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_UAT)
               USER_EMAIL: $(HELPDESK_TESTING_EMAIL_UAT)
               USER_FISCAL_CODE: $(HELPDESK_TESTING_FISCALCODE_UAT)
-  - stage: "Green_API_UAT_test V2"
+  - stage: "Green_API_UAT_test_V2"
     displayName: 'Running API test on green app V2'
     dependsOn: Deploy_UAT_Green
     jobs:
