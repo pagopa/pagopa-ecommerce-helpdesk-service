@@ -1,13 +1,13 @@
 package it.pagopa.ecommerce.helpdesk.services.v1
 
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
-import it.pagopa.ecommerce.helpdesk.dataproviders.v1.DataProvider
+import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.DeadLetterDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
-import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
+import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildDeadLetterEventsSearchResponse
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.*

@@ -25,7 +25,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
-import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
+import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.ZonedDateTime
 import java.util.*

@@ -32,7 +32,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsEventStoreReposito
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
-import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoderV2
+import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.getGatewayAuthorizationData
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.PaymentDetailInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.PaymentInfoDto

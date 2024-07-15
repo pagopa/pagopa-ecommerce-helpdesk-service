@@ -7,7 +7,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
-import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoderV2
+import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.baseTransactionToTransactionInfoDtoV1
 import it.pagopa.ecommerce.helpdesk.utils.v2.baseTransactionToTransactionInfoDtoV2
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*

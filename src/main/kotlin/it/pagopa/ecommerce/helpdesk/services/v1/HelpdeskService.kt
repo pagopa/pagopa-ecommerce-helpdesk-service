@@ -6,7 +6,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataPro
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
-import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
+import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto

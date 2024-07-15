@@ -1,4 +1,4 @@
-package it.pagopa.ecommerce.helpdesk.dataproviders.v2
+package it.pagopa.ecommerce.helpdesk.dataproviders
 
 import reactor.core.publisher.Mono
 

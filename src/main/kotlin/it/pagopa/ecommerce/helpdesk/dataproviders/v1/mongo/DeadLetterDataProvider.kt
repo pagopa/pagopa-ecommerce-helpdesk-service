@@ -1,8 +1,8 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo
 
 import it.pagopa.ecommerce.commons.documents.DeadLetterEvent
+import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.DeadLetterRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.v1.DataProvider
 import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterEventDto
 import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchEventSourceDto
 import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchDeadLetterEventsRequestDto

@@ -5,7 +5,7 @@ import io.r2dbc.h2.H2ConnectionFactory
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
-import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
+import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import org.junit.jupiter.api.Test

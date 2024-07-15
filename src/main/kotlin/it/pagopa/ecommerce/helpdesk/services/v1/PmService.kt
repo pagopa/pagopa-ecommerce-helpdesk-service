@@ -3,7 +3,7 @@ package it.pagopa.ecommerce.helpdesk.services.v1
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
+import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestDto
