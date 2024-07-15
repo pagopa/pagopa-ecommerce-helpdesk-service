@@ -134,8 +134,8 @@ stages:
   # --- END Deploy DEV --- #
 
   # --- START API TEST for DEV DEPLOY --- #
-  - stage: "API_DEV_test"
-    displayName: 'Running API test on dev app'
+  - stage: "API_DEV_test V1"
+    displayName: 'Running API test on dev app V1'
     dependsOn: Deploy_for_DEV
     jobs:
       - job: newman_api_test
@@ -143,7 +143,21 @@ stages:
           - template: azure-templates/api-tests.yml
             parameters:
               ENV_FILE: "api-tests/env/helpDesk_dev.env.json"
-              API_TEST_FILE: "api-tests/eCommerce-helpdesk.api.tests.dev.json"
+              API_TEST_FILE: "api-tests/v1/eCommerce-helpdesk.api.tests.dev.json"
+              TEST_FILE_PREFIX: "dev"
+              API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_DEV)
+              USER_EMAIL: $(HELPDESK_TESTING_EMAIL_DEV)
+              USER_FISCAL_CODE: $(HELPDESK_TESTING_FISCALCODE_DEV)
+  - stage: "API_DEV_test V2"
+    displayName: 'Running API test on dev app V2'
+    dependsOn: Deploy_for_DEV
+    jobs:
+      - job: newman_api_test
+        steps:
+          - template: azure-templates/api-tests.yml
+            parameters:
+              ENV_FILE: "api-tests/env/helpDesk_dev.env.json"
+              API_TEST_FILE: "api-tests/v2/eCommerce-helpdesk.api.tests.dev.json"
               TEST_FILE_PREFIX: "dev"
               API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_DEV)
               USER_EMAIL: $(HELPDESK_TESTING_EMAIL_DEV)
@@ -220,8 +234,8 @@ stages:
                     BLUE_VERSION: $(Build.SourceVersion)
 
   # --- START API TEST for BLUE UAT DEPLOY --- #
-  - stage: "Blue_API_UAT_test"
-    displayName: 'Running API test on blue app'
+  - stage: "Blue_API_UAT_test V1"
+    displayName: 'Running API test on blue app V1'
     dependsOn: Deploy_UAT_Blue
     jobs:
       - job: newman_api_test
@@ -229,7 +243,21 @@ stages:
           - template: azure-templates/api-tests.yml
             parameters:
               ENV_FILE: "api-tests/env/helpDesk_uat_blue.env.json"
-              API_TEST_FILE: "api-tests/eCommerce-helpdesk.api.tests.uat.json"
+              API_TEST_FILE: "api-tests/v1/eCommerce-helpdesk.api.tests.uat.json"
+              TEST_FILE_PREFIX: "blue-uat"
+              API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_UAT)
+              USER_EMAIL: $(HELPDESK_TESTING_EMAIL_UAT)
+              USER_FISCAL_CODE: $(HELPDESK_TESTING_FISCALCODE_UAT)
+  - stage: "Blue_API_UAT_test V2"
+    displayName: 'Running API test on blue app V2'
+    dependsOn: Deploy_UAT_Blue
+    jobs:
+      - job: newman_api_test
+        steps:
+          - template: azure-templates/api-tests.yml
+            parameters:
+              ENV_FILE: "api-tests/env/helpDesk_uat_blue.env.json"
+              API_TEST_FILE: "api-tests/v2/eCommerce-helpdesk.api.tests.uat.json"
               TEST_FILE_PREFIX: "blue-uat"
               API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_UAT)
               USER_EMAIL: $(HELPDESK_TESTING_EMAIL_UAT)
@@ -356,8 +384,8 @@ stages:
   # --- END Deploy UAT --- #
 
   # --- START API TEST for GREEN UAT DEPLOY --- #
-  - stage: "Green_API_UAT_test"
-    displayName: 'Running API test on green app'
+  - stage: "Green_API_UAT_test V1"
+    displayName: 'Running API test on green app V1'
     dependsOn: Deploy_UAT_Green
     jobs:
       - job: newman_api_test
@@ -365,7 +393,21 @@ stages:
           - template: azure-templates/api-tests.yml
             parameters:
               ENV_FILE: "api-tests/env/helpDesk_uat.env.json"
-              API_TEST_FILE: "api-tests/eCommerce-helpdesk.api.tests.uat.json"
+              API_TEST_FILE: "api-tests/v1/eCommerce-helpdesk.api.tests.uat.json"
+              TEST_FILE_PREFIX: "green-uat"
+              API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_UAT)
+              USER_EMAIL: $(HELPDESK_TESTING_EMAIL_UAT)
+              USER_FISCAL_CODE: $(HELPDESK_TESTING_FISCALCODE_UAT)
+  - stage: "Green_API_UAT_test V2"
+    displayName: 'Running API test on green app V2'
+    dependsOn: Deploy_UAT_Green
+    jobs:
+      - job: newman_api_test
+        steps:
+          - template: azure-templates/api-tests.yml
+            parameters:
+              ENV_FILE: "api-tests/env/helpDesk_uat.env.json"
+              API_TEST_FILE: "api-tests/v2/eCommerce-helpdesk.api.tests.uat.json"
               TEST_FILE_PREFIX: "green-uat"
               API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_UAT)
               USER_EMAIL: $(HELPDESK_TESTING_EMAIL_UAT)
