@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "182d3cbd-6761-4cd6-b7d8-673bad79e088",
-		"name": "Ecommerce helpDesk-service DEV",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "23963988"
+		"_postman_id": "42fc5b60-7adb-44b9-8d47-372be5aa9e08",
+		"name": "Ecommerce helpDesk-service LOCAL",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "9864793"
 	},
 	"item": [
 		{
@@ -22,7 +22,8 @@
 							"    pm.expect(response.page.results).to.be.eq(1);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -50,14 +51,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"ecommerce",
 						"searchTransaction"
 					],
@@ -91,7 +89,8 @@
 							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -119,14 +118,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"ecommerce",
 						"searchTransaction"
 					],
@@ -160,7 +156,8 @@
 							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -188,14 +185,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"ecommerce",
 						"searchTransaction"
 					],
@@ -213,216 +207,6 @@
 			},
 			"response": []
 		},
-
-		{
-			"name": "eCommerce SearchTransaction (v2) TRANSACTION_ID",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"eCommerce SearchTransaction by TRANSACTION_ID - Status code is 200 with valid json response\", function () {",
-							"    pm.response.to.have.status(200);",
-							"    const response = pm.response.json();",
-							"    pm.expect(response.transactions.length).greaterThan(0);",
-							"    pm.expect(response.page.current).to.be.eq(0);",
-							"    pm.expect(response.page.total).to.be.eq(1);",
-							"    pm.expect(response.page.results).to.be.eq(1);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Ocp-Apim-Subscription-Key",
-						"value": "{{API_SUBSCRIPTION_KEY}}",
-						"type": "text"
-					},
-					{
-						"key": "deployment",
-						"value": "{{DEPLOYMENT}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"type\": \"TRANSACTION_ID\",\n  \"transactionId\": \"{{TRANSACTION_ID}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v2/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v2",
-						"ecommerce",
-						"searchTransaction"
-					],
-					"query": [
-						{
-							"key": "pageNumber",
-							"value": "0"
-						},
-						{
-							"key": "pageSize",
-							"value": "10"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "eCommerce SearchTransaction (v2) PAYMENT_TOKEN",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"eCommerce SearchTransaction by PAYMENT_TOKEN - Status code is 200 with valid json response\", function () {",
-							"    pm.response.to.have.status(200);",
-							"    const response = pm.response.json();",
-							"    pm.expect(response.transactions.length).greaterThan(0);",
-							"    pm.expect(response.page.current).to.be.eq(0);",
-							"    pm.expect(response.page.total).to.be.gt(0);",
-							"    pm.expect(response.page.results).to.be.lte(10);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Ocp-Apim-Subscription-Key",
-						"value": "{{API_SUBSCRIPTION_KEY}}",
-						"type": "text"
-					},
-					{
-						"key": "deployment",
-						"value": "{{DEPLOYMENT}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"type\": \"PAYMENT_TOKEN\",\n  \"paymentToken\": \"{{PAYMENT_TOKEN}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v2/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v2",
-						"ecommerce",
-						"searchTransaction"
-					],
-					"query": [
-						{
-							"key": "pageNumber",
-							"value": "0"
-						},
-						{
-							"key": "pageSize",
-							"value": "10"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "eCommerce SearchTransaction (v2) RPTID",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"eCommerce SearchTransaction by RPTID - Status code is 200 with valid json response\", function () {",
-							"    pm.response.to.have.status(200);",
-							"    const response = pm.response.json();",
-							"    pm.expect(response.transactions.length).greaterThan(0);",
-							"    pm.expect(response.page.current).to.be.eq(0);",
-							"    pm.expect(response.page.total).to.be.gt(0);",
-							"    pm.expect(response.page.results).to.be.lte(10);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Ocp-Apim-Subscription-Key",
-						"value": "{{API_SUBSCRIPTION_KEY}}",
-						"type": "text"
-					},
-					{
-						"key": "deployment",
-						"value": "{{DEPLOYMENT}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"type\": \"RPT_ID\",\n  \"rptId\": \"{{RPT_ID}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v2/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v2",
-						"ecommerce",
-						"searchTransaction"
-					],
-					"query": [
-						{
-							"key": "pageNumber",
-							"value": "0"
-						},
-						{
-							"key": "pageSize",
-							"value": "10"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-
-
 		{
 			"name": "Technical helpDesk SearchTransaction TRANSACTION_ID",
 			"event": [
@@ -439,7 +223,8 @@
 							"    pm.expect(response.page.results).to.be.eq(1);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -467,14 +252,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"helpdesk",
 						"searchTransaction"
 					],
@@ -508,7 +290,8 @@
 							"    pm.expect(response.page.results).to.be.eq(1);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -536,14 +319,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"helpdesk",
 						"searchTransaction"
 					],
@@ -577,7 +357,8 @@
 							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -605,14 +386,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"helpdesk",
 						"searchTransaction"
 					],
@@ -646,7 +424,8 @@
 							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -674,14 +453,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"helpdesk",
 						"searchTransaction"
 					],
@@ -715,7 +491,8 @@
 							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -743,14 +520,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"ecommerce",
 						"searchDeadLetterEvents"
 					],
@@ -784,7 +558,8 @@
 							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -812,14 +587,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"ecommerce",
 						"searchDeadLetterEvents"
 					],
@@ -853,7 +625,8 @@
 							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -881,14 +654,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"ecommerce",
 						"searchDeadLetterEvents"
 					],
@@ -922,7 +692,8 @@
 							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -950,14 +721,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
+					"raw": "{{HOSTNAME}}/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"ecommerce",
 						"searchDeadLetterEvents"
 					],
@@ -986,7 +754,8 @@
 							"    pm.response.to.have.status(400);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -1014,14 +783,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/pm/searchTransaction?pageNumber=0&pageSize=21",
+					"raw": "{{HOSTNAME}}/pm/searchTransaction?pageNumber=0&pageSize=21",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"pm",
 						"searchTransaction"
 					],
@@ -1050,7 +816,8 @@
 							"    pm.response.to.have.status(400);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -1078,14 +845,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=21",
+					"raw": "{{HOSTNAME}}/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=21",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"ecommerce",
 						"searchDeadLetterEvents"
 					],
@@ -1114,7 +878,8 @@
 							"    pm.response.to.have.status(400);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -1142,14 +907,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchTransaction?pageNumber=0&pageSize=21",
+					"raw": "{{HOSTNAME}}/helpdesk/searchTransaction?pageNumber=0&pageSize=21",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
 						"helpdesk",
 						"searchTransaction"
 					],
@@ -1167,7 +929,6 @@
 			},
 			"response": []
 		},
-
 		{
 			"name": "eCommerce SearchTransaction RPTID 400 page over sized",
 			"event": [
@@ -1179,7 +940,8 @@
 							"    pm.response.to.have.status(400);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -1207,78 +969,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchTransaction?pageNumber=0&pageSize=21",
+					"raw": "{{HOSTNAME}}/ecommerce/searchTransaction?pageNumber=0&pageSize=21",
 					"host": [
 						"{{HOSTNAME}}"
 					],
 					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
-						"ecommerce",
-						"searchTransaction"
-					],
-					"query": [
-						{
-							"key": "pageNumber",
-							"value": "0"
-						},
-						{
-							"key": "pageSize",
-							"value": "21"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "eCommerce SearchTransaction (v2) RPTID 400 page over sized",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"eCommerce SearchTransaction by RPTID - Status code is 400 for request with page size over 20\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Ocp-Apim-Subscription-Key",
-						"value": "{{API_SUBSCRIPTION_KEY}}",
-						"type": "text"
-					},
-					{
-						"key": "deployment",
-						"value": "{{DEPLOYMENT}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"type\": \"RPT_ID\",\n  \"rptId\": \"{{RPT_ID}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v2/ecommerce/searchTransaction?pageNumber=0&pageSize=21",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v2",
 						"ecommerce",
 						"searchTransaction"
 					],
