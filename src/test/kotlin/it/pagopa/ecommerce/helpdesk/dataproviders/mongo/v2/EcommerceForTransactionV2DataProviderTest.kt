@@ -234,6 +234,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Cancellato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -336,6 +337,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Cancellato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -473,6 +475,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Rifiutato")
                             .statusDetails(expectedErrorCode)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -625,6 +628,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -774,6 +778,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -921,6 +926,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1070,6 +1076,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1199,6 +1206,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Cancellato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1308,6 +1316,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Cancellato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1413,6 +1422,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Cancellato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1535,6 +1545,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Rifiutato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1694,6 +1705,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1852,6 +1864,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2013,6 +2026,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2175,6 +2189,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2336,6 +2351,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2514,6 +2530,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2709,6 +2726,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2924,6 +2942,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -3154,6 +3173,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -3329,6 +3349,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -3460,6 +3481,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Cancellato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -3632,6 +3654,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Cancellato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -3795,6 +3818,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -3967,6 +3991,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
                             .statusDetails(null)
+                            .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())

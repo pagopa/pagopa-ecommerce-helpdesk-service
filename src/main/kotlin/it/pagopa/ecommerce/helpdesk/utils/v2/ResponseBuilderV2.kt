@@ -58,6 +58,7 @@ fun baseTransactionToTransactionInfoDtoV2(
                     transactionAuthorizationCompletedData?.transactionGatewayAuthorizationData
                 )
             )
+            .events(emptyList())
             .eventStatus(TransactionStatusDto.valueOf(baseTransaction.status.toString()))
             .amount(amount)
             .fee(fee)
