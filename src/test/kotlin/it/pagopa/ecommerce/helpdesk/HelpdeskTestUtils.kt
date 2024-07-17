@@ -6,17 +6,18 @@ import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.EventInfoDto
 import java.time.OffsetDateTime
+import java.time.ZonedDateTime
 import java.util.*
 import org.springframework.http.HttpStatus
-import java.time.ZonedDateTime
 
 object HelpdeskTestUtils {
 
-    fun convertEventsToEventInfoList(
-        events: List<TransactionEvent<Any>>
-    ): List<EventInfoDto> = events.map{
-        EventInfoDto().eventCode(it.eventCode).creationDate(ZonedDateTime.parse(it.creationDate).toOffsetDateTime())
-    }
+    fun convertEventsToEventInfoList(events: List<TransactionEvent<Any>>): List<EventInfoDto> =
+        events.map {
+            EventInfoDto()
+                .eventCode(it.eventCode)
+                .creationDate(ZonedDateTime.parse(it.creationDate).toOffsetDateTime())
+        }
 
     fun buildProblemJson(
         httpStatus: HttpStatus,

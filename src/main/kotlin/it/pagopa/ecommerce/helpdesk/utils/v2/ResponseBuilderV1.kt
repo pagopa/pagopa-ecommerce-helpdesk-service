@@ -11,11 +11,10 @@ import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.utils.v1.TransactionUtils.getTransactionFee
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
-import java.time.OffsetDateTime
+import java.time.ZonedDateTime
 import java.util.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.ZonedDateTime
 
 object ResponseBuilderV1Logger {
     val logger: Logger = LoggerFactory.getLogger(ResponseBuilderV1Logger::class.java)

@@ -19,8 +19,8 @@ import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
-import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils.convertEventsToEventInfoList
+import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
@@ -311,7 +311,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -457,7 +456,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -596,7 +594,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -751,7 +748,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -886,7 +882,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Cancellato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -984,7 +979,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Cancellato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1111,7 +1105,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1241,7 +1234,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Rifiutato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1374,7 +1366,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1507,7 +1498,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1640,7 +1630,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1760,7 +1749,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Cancellato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -1839,7 +1827,6 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionExpiredEvent
             )
                 as List<TransactionEventV1<Any>>
-
 
         val baseTransaction = (TransactionTestUtils.reduceEvents(*events.toTypedArray()))
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
@@ -1968,7 +1955,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Cancellato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2077,7 +2063,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Rifiutato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2217,7 +2202,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2360,7 +2344,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2506,7 +2489,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2652,7 +2634,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2798,7 +2779,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -2957,7 +2937,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -3134,7 +3113,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -3329,7 +3307,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -3539,7 +3516,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -3698,7 +3674,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -3823,7 +3798,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Cancellato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())
@@ -3955,7 +3929,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             .status("Confermato")
                             .statusDetails(null)
                             .events(convertEventsToEventInfoList(events))
-
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
                                     .valueOf(transactionView.status.toString())

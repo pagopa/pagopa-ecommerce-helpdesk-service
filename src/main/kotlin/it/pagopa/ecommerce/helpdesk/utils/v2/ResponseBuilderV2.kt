@@ -17,7 +17,6 @@ import it.pagopa.ecommerce.commons.utils.v2.TransactionUtils.getTransactionFee
 import it.pagopa.ecommerce.helpdesk.utils.GatewayAuthorizationData
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
-import java.time.OffsetDateTime
 import java.time.ZonedDateTime
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
