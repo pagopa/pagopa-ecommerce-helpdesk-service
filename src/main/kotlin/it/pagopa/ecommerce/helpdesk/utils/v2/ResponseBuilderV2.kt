@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.utils.v2
 
+import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
 import it.pagopa.ecommerce.commons.documents.v2.TransactionActivatedData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationCompletedData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
@@ -16,12 +17,15 @@ import it.pagopa.ecommerce.commons.utils.v2.TransactionUtils.getTransactionFee
 import it.pagopa.ecommerce.helpdesk.utils.GatewayAuthorizationData
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
+import java.time.OffsetDateTime
+import java.time.ZonedDateTime
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 fun baseTransactionToTransactionInfoDtoV2(
     baseTransaction: BaseTransaction,
-    email: Optional<Email>
+    email: Optional<Email>,
+    events: List<BaseTransactionEvent<Any>>
 ): TransactionResultDto {
     val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
     val fee = getTransactionFees(baseTransaction).orElse(0)
@@ -48,6 +52,13 @@ fun baseTransactionToTransactionInfoDtoV2(
             // (event-dispatcher/transactions-service)
             .authenticationType(UserDto.TypeEnum.GUEST.toString())
 
+    val eventInfoList =
+        events.map { event ->
+            EventInfoDto()
+                .creationDate(ZonedDateTime.parse(event.creationDate).toOffsetDateTime())
+                .eventCode(event.eventCode)
+        }
+
     // build transaction info
     val transactionInfo =
         TransactionInfoDto()
@@ -58,7 +69,7 @@ fun baseTransactionToTransactionInfoDtoV2(
                     transactionAuthorizationCompletedData?.transactionGatewayAuthorizationData
                 )
             )
-            .events(emptyList())
+            .events(eventInfoList)
             .eventStatus(TransactionStatusDto.valueOf(baseTransaction.status.toString()))
             .amount(amount)
             .fee(fee)

@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.utils.v2
 
+import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
 import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationCompletedData
 import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.commons.documents.v1.TransactionUserReceiptData
@@ -10,9 +11,11 @@ import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.utils.v1.TransactionUtils.getTransactionFee
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
+import java.time.OffsetDateTime
 import java.util.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.time.ZonedDateTime
 
 object ResponseBuilderV1Logger {
     val logger: Logger = LoggerFactory.getLogger(ResponseBuilderV1Logger::class.java)
@@ -35,7 +38,8 @@ fun buildTransactionSearchResponse(
 
 fun baseTransactionToTransactionInfoDtoV1(
     baseTransaction: BaseTransaction,
-    email: Optional<Email>
+    email: Optional<Email>,
+    events: List<BaseTransactionEvent<Any>>
 ): TransactionResultDto {
     val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
     val fee = getTransactionFees(baseTransaction).orElse(0)
@@ -43,6 +47,14 @@ fun baseTransactionToTransactionInfoDtoV1(
     val transactionAuthorizationRequestData = getTransactionAuthRequestedData(baseTransaction)
     val transactionAuthorizationCompletedData = getTransactionAuthCompletedData(baseTransaction)
     val transactionUserReceiptData = getTransactionUserReceiptData(baseTransaction)
+
+    // get event info list
+    val eventInfoList =
+        events.map { event ->
+            EventInfoDto()
+                .creationDate(ZonedDateTime.parse(event.creationDate).toOffsetDateTime())
+                .eventCode(event.eventCode)
+        }
 
     // Build user info
 
@@ -59,7 +71,7 @@ fun baseTransactionToTransactionInfoDtoV1(
             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
             .status(getTransactionDetailsStatus(baseTransaction))
             .statusDetails(transactionAuthorizationCompletedData?.errorCode)
-            .events(emptyList())
+            .events(eventInfoList)
             .eventStatus(TransactionStatusDto.valueOf(baseTransaction.status.toString()))
             .amount(amount)
             .fee(fee)

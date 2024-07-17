@@ -402,6 +402,7 @@ components:
       properties:
         creationDate:
           type: string
+          format: date-time
         eventCode:
           type: string
       example:
