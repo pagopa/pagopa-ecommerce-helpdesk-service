@@ -16,4 +16,9 @@ class InvalidSearchCriteriaException(reason: String) : ApiError(reason) {
         searchCriteriaType: String,
         productDto: ProductDto
     ) : this("Invalid search criteria with type: $searchCriteriaType for product: $productDto")
+
+    constructor(
+        searchCriteriaType: String,
+        productDto: it.pagopa.generated.ecommerce.helpdesk.v2.model.ProductDto
+    ) : this("Invalid search criteria with type: $searchCriteriaType for product: $productDto")
 }

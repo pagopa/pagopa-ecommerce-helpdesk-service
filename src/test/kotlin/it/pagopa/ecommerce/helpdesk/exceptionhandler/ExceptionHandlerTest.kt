@@ -101,6 +101,27 @@ class ExceptionHandlerTest {
     }
 
     @Test
+    fun `Should handle InvalidSearchCriteriaException V2`() {
+        val searchCriteria = "searchCriteria"
+        val exception =
+            InvalidSearchCriteriaException(
+                searchCriteria,
+                it.pagopa.generated.ecommerce.helpdesk.v2.model.ProductDto.ECOMMERCE
+            )
+        val response = exceptionHandler.handleException(exception)
+        assertEquals(
+            HelpdeskTestUtils.buildProblemJson(
+                httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+                title = "Invalid search criteria",
+                description =
+                    "Invalid search criteria with type: $searchCriteria for product: ${it.pagopa.generated.ecommerce.helpdesk.v2.model.ProductDto.ECOMMERCE}"
+            ),
+            response.body
+        )
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.statusCode)
+    }
+
+    @Test
     fun `Should handle ConfidentialDataException`() {
         val exception =
             ConfidentialDataException(

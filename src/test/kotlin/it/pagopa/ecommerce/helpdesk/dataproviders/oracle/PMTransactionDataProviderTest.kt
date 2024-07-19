@@ -3,8 +3,9 @@ package it.pagopa.ecommerce.helpdesk.dataproviders.oracle
 import io.r2dbc.h2.H2ConnectionConfiguration
 import io.r2dbc.h2.H2ConnectionFactory
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
-import it.pagopa.ecommerce.helpdesk.utils.SearchParamDecoder
+import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import org.junit.jupiter.api.Test
@@ -117,7 +118,6 @@ class PMTransactionDataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin("origin")
-                            .idTransaction("MIUR20191119222949")
                             .details(
                                 listOf(
                                     PaymentDetailInfoDto()
@@ -125,7 +125,7 @@ class PMTransactionDataProviderTest {
                                             "/RFB/718173815252003/0.10/TXT/Pagamento di test 20"
                                         )
                                         .iuv("000000044060814")
-                                        .amount(500)
+                                        .idTransaction("MIUR20191119222949")
                                         .creditorInstitution("RMIC81500N")
                                         .paFiscalCode("97061100588")
                                 )
@@ -218,7 +218,6 @@ class PMTransactionDataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin("origin")
-                            .idTransaction("MIUR20191119222949")
                             .details(
                                 listOf(
                                     PaymentDetailInfoDto()
@@ -226,7 +225,7 @@ class PMTransactionDataProviderTest {
                                             "/RFB/718173815252003/0.10/TXT/Pagamento di test 20"
                                         )
                                         .iuv("000000044060814")
-                                        .amount(500)
+                                        .idTransaction("MIUR20191119222949")
                                         .creditorInstitution("RMIC81500N")
                                         .paFiscalCode("97061100588")
                                 )
