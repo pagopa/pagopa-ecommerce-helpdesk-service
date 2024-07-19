@@ -242,6 +242,10 @@ components:
           type: string
         statusDetails:
           type: string
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventInfo'
         eventStatus:
           $ref: "https://raw.githubusercontent.com/pagopa/pagopa-ecommerce-transactions-service/main/api-spec/v1/transactions-api.yaml#/components/schemas/TransactionStatus"
         amount:
@@ -392,6 +396,18 @@ components:
           PAYMENT_TOKEN: "#/components/schemas/SearchTransactionRequestPaymentToken"
           TRANSACTION_ID: "#/components/schemas/SearchTransactionRequestTransactionId"
           USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
+    EventInfo:
+      type: object
+      description: Event info
+      properties:
+        creationDate:
+          type: string
+          format: date-time
+        eventCode:
+          type: string
+      example:
+        creationDate: "2023-08-07T15:32:56.592837917Z[Etc/UTC]"
+        eventCode: "TRANSACTION_ACTIVATED_EVENT"
   requestBodies:
     EcommerceSearchTransactionRequest:
       required: true

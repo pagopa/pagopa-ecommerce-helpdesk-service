@@ -59,6 +59,7 @@ fun baseTransactionToTransactionInfoDtoV1(
             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
             .status(getTransactionDetailsStatus(baseTransaction))
             .statusDetails(transactionAuthorizationCompletedData?.errorCode)
+            .events(emptyList())
             .eventStatus(TransactionStatusDto.valueOf(baseTransaction.status.toString()))
             .amount(amount)
             .fee(fee)
