@@ -24,7 +24,6 @@ import kotlin.jvm.optionals.getOrNull
 fun baseTransactionToTransactionInfoDtoV2(
     baseTransaction: BaseTransaction,
     email: Optional<Email>,
-    events: List<BaseTransactionEvent<Any>>
 ): TransactionResultDto {
     val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
     val fee = getTransactionFees(baseTransaction).orElse(0)

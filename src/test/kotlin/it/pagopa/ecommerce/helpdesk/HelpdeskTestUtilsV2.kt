@@ -16,7 +16,6 @@ object HelpdeskTestUtilsV2 {
                 .eventCode(it.eventCode)
                 .creationDate(ZonedDateTime.parse(it.creationDate).toOffsetDateTime())
         }
-
     fun buildProblemJson(
         httpStatus: HttpStatus,
         title: String,

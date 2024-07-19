@@ -54,7 +54,6 @@ fun baseTransactionToTransactionInfoDtoV1(
                 .creationDate(ZonedDateTime.parse(event.creationDate).toOffsetDateTime())
                 .eventCode(event.eventCode)
         }
-
     // Build user info
 
     val userInfo =
