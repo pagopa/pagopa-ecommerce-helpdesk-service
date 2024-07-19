@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.utils
 
+import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.TransactionResultDto
 import java.util.stream.Stream
 import org.junit.jupiter.api.Assertions.*

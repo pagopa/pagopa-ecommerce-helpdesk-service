@@ -149,12 +149,41 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
   }
 }
 
-tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("helpdesk") {
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("helpdesk-v1") {
   generatorName.set("spring")
-  inputSpec.set("$rootDir/api-spec/openapi.yaml")
+  inputSpec.set("$rootDir/api-spec/v1/openapi.yaml")
   outputDir.set("$buildDir/generated")
   apiPackage.set("it.pagopa.generated.ecommerce.helpdesk.api")
   modelPackage.set("it.pagopa.generated.ecommerce.helpdesk.model")
+  generateApiTests.set(false)
+  generateApiDocumentation.set(false)
+  generateApiTests.set(false)
+  generateModelTests.set(false)
+  library.set("spring-boot")
+  modelNameSuffix.set("Dto")
+  configOptions.set(
+    mapOf(
+      "swaggerAnnotations" to "false",
+      "openApiNullable" to "true",
+      "interfaceOnly" to "true",
+      "hideGenerationTimestamp" to "true",
+      "skipDefaultInterface" to "true",
+      "useSwaggerUI" to "false",
+      "reactive" to "true",
+      "useSpringBoot3" to "true",
+      "oas3" to "true",
+      "generateSupportingFiles" to "true",
+      "enumPropertyNaming" to "UPPERCASE"
+    )
+  )
+}
+
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("helpdesk-v2") {
+  generatorName.set("spring")
+  inputSpec.set("$rootDir/api-spec/v2/openapi.yaml")
+  outputDir.set("$buildDir/generated")
+  apiPackage.set("it.pagopa.generated.ecommerce.helpdesk.v2.api")
+  modelPackage.set("it.pagopa.generated.ecommerce.helpdesk.v2.model")
   generateApiTests.set(false)
   generateApiDocumentation.set(false)
   generateApiTests.set(false)
@@ -216,7 +245,7 @@ tasks.register<Exec>("install-commons") {
 }
 
 tasks.withType<KotlinCompile> {
-  dependsOn("helpdesk", "nodo", "install-commons")
+  dependsOn("helpdesk-v1", "helpdesk-v2", "nodo", "install-commons")
   kotlinOptions.jvmTarget = "17"
 }
 
