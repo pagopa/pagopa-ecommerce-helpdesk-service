@@ -1363,7 +1363,7 @@ class EcommerceForTransactionV1DataProviderTest {
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
                             .status("Confermato")
-                            .statusDetails(null)
+                            .statusDetails(null
                             .events(emptyList())
                             .eventStatus(
                                 it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
