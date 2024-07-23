@@ -1,7 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v2
 
 import it.pagopa.ecommerce.helpdesk.services.v2.EcommerceService
-import it.pagopa.generated.ecommerce.helpdesk.v2.api.V2Api
+import it.pagopa.generated.ecommerce.helpdesk.v2.api.EcommerceApi
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.EcommerceSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
 import jakarta.validation.constraints.Max
@@ -14,7 +14,7 @@ import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 @RestController("EcommerceV2Controller")
-class EcommerceController(@Autowired val ecommerceService: EcommerceService) : V2Api {
+class EcommerceController(@Autowired val ecommerceService: EcommerceService) : EcommerceApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun ecommerceSearchTransaction(
