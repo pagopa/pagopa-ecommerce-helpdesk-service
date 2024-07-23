@@ -275,7 +275,7 @@
 		},
 
 		{
-			"name": "Technical helpDesk SearchTransaction TRANSACTION_ID",
+			"name": "Technical helpDesk SearchTransaction (v2)  TRANSACTION_ID",
 			"event": [
 				{
 					"listen": "test",
@@ -342,7 +342,7 @@
 			"response": []
 		},
 		{
-			"name": "Technical helpDesk SearchTransaction TRANSACTION_ID with V2 events",
+			"name": "Technical helpDesk SearchTransaction (v2)  TRANSACTION_ID with V2 events",
 			"event": [
 				{
 					"listen": "test",
@@ -409,7 +409,7 @@
 			"response": []
 		},
 		{
-			"name": "Technical helpDesk SearchTransaction PAYMENT_TOKEN",
+			"name": "Technical helpDesk SearchTransaction (v2)  PAYMENT_TOKEN",
 			"event": [
 				{
 					"listen": "test",
@@ -476,7 +476,7 @@
 			"response": []
 		},
 		{
-			"name": "Technical helpDesk SearchTransaction RPTID",
+			"name": "Technical helpDesk SearchTransaction (v2)  RPTID",
 			"event": [
 				{
 					"listen": "test",
@@ -543,7 +543,7 @@
 			"response": []
 		},
 		{
-			"name": "Technical helpDesk SearchTransaction TRANSACTION_ID 400 page over sized",
+			"name": "Technical helpDesk SearchTransaction (v2)  TRANSACTION_ID 400 page over sized",
 			"event": [
 				{
 					"listen": "test",
