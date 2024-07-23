@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 /** Service class that recover records from both eCommerce and PM DB merging results */
-@Service("HelpdeskServiceV1")
+@Service("HelpdeskServiceV2")
 class HelpdeskService(
     @Autowired val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
     @Autowired val pmTransactionDataProvider: PMTransactionDataProvider,

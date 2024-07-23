@@ -20,7 +20,7 @@ import reactor.kotlin.core.publisher.toMono
  *
  * @see TransactionDataProvider
  */
-@Component
+@Component("PMTransactionDataProviderV2")
 class PMTransactionDataProvider(@Autowired private val connectionFactory: ConnectionFactory) :
     TransactionDataProvider {
 

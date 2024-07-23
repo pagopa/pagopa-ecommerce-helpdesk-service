@@ -4,16 +4,21 @@ info:
   title: Pagopa eCommerce services for assistance api
   description: This microservice that expose eCommerce services for assistance api.
 servers:
-  - url: https://${host}/v2
+  - url: https://${host}
 tags:
-  - name: eCommerce
+  - name: ecommerce
     description: Api's for performing transaction search on ecommerce DB
+    externalDocs:
+      url: https://pagopa.atlassian.net/wiki/spaces/I/pages/492339720/pagoPA+eCommerce+Design+Review
+      description: Technical specifications
+  - name: helpdesk
+    description: Api's for performing transaction search on helpdesk DB
     externalDocs:
       url: https://pagopa.atlassian.net/wiki/spaces/I/pages/492339720/pagoPA+eCommerce+Design+Review
       description: Technical specifications
 
 paths:
-  /ecommerce/searchTransaction:
+  /v2/ecommerce/searchTransaction:
     post:
       parameters:
         - in: query
@@ -33,7 +38,7 @@ paths:
           required: true
           description: "Max element per page"
       tags:
-        - eCommerce
+        - ecommerce
       operationId: ecommerceSearchTransaction
       summary: Search transaction by input parameters
       description: 'GET with body payload - no resources created'
@@ -64,7 +69,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-  /helpdesk/searchTransaction:
+  /v2/helpdesk/searchTransaction:
     post:
       parameters:
         - in: query
@@ -84,7 +89,7 @@ paths:
           required: true
           description: "Max element per page"
       tags:
-        - helpDesk
+        - helpdesk
       operationId: helpDeskSearchTransaction
       summary: Search transaction by input parameters
       description: 'GET with body payload - no resources created'
