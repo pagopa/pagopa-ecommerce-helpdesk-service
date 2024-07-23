@@ -33,7 +33,7 @@ paths:
           required: true
           description: "Max element per page"
       tags:
-        - eCommerce
+        - ecommerce
       operationId: ecommerceSearchTransaction
       summary: Search transaction by input parameters
       description: 'GET with body payload - no resources created'
