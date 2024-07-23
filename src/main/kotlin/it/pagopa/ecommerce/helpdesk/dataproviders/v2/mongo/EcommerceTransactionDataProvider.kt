@@ -145,10 +145,10 @@ class EcommerceTransactionDataProvider(
                         ::Pair
                     )
                     .zipWith(events.collectList(), ::Pair)
-                    .map { (baseTransactionEmail, events) ->
+                    .map { (baseTransactionAndEmailPair, events) ->
                         baseTransactionToTransactionInfoDtoV1(
-                            baseTransactionEmail.first,
-                            baseTransactionEmail.second,
+                            baseTransactionAndEmailPair.first,
+                            baseTransactionAndEmailPair.second,
                             events
                         )
                     }
@@ -179,10 +179,10 @@ class EcommerceTransactionDataProvider(
                         ::Pair
                     )
                     .zipWith(events.collectList(), ::Pair)
-                    .map { (baseTransactionEmail, events) ->
+                    .map { (baseTransactionAndEmailPair, events) ->
                         baseTransactionToTransactionInfoDtoV2(
-                            baseTransactionEmail.first,
-                            baseTransactionEmail.second,
+                            baseTransactionAndEmailPair.first,
+                            baseTransactionAndEmailPair.second,
                             events
                         )
                     }
