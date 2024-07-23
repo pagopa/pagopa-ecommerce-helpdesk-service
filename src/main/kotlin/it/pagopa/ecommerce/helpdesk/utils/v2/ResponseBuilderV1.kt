@@ -38,7 +38,6 @@ fun buildTransactionSearchResponse(
         )
         .transactions(results)
 
-// TODO
 fun resultToTransactionInfoDto(
     result: Result
 ): Publisher<it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionResultDto> =
