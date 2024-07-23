@@ -26,7 +26,7 @@ class EcommerceTransactionDataProvider(
 ) : TransactionDataProvider {
 
     override fun totalRecordCount(
-        searchParams: SearchParamDecoderV2<EcommerceSearchTransactionRequestDto>
+        searchParams: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto>
     ): Mono<Int> {
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
@@ -59,7 +59,7 @@ class EcommerceTransactionDataProvider(
     }
 
     override fun findResult(
-        searchParams: SearchParamDecoderV2<EcommerceSearchTransactionRequestDto>,
+        searchParams: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto>,
         skip: Int,
         limit: Int
     ): Mono<List<TransactionResultDto>> {

@@ -213,7 +213,6 @@
 			},
 			"response": []
 		},
-
 		{
 			"name": "Technical helpDesk SearchTransaction TRANSACTION_ID",
 			"event": [
@@ -958,7 +957,6 @@
 			},
 			"response": []
 		},
-
 		{
 			"name": "eCommerce SearchTransaction RPTID 400 page over sized",
 			"event": [

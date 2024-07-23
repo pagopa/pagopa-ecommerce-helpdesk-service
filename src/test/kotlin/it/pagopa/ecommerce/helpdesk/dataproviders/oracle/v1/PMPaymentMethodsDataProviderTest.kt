@@ -1,4 +1,4 @@
-package it.pagopa.ecommerce.helpdesk.dataproviders.oracle
+package it.pagopa.ecommerce.helpdesk.dataproviders.oracle.v1
 
 import io.r2dbc.h2.H2ConnectionConfiguration
 import io.r2dbc.h2.H2ConnectionFactory

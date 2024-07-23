@@ -1,12 +1,12 @@
-package it.pagopa.ecommerce.helpdesk.dataproviders.oracle
+package it.pagopa.ecommerce.helpdesk.dataproviders.oracle.v2
 
 import io.r2dbc.h2.H2ConnectionConfiguration
 import io.r2dbc.h2.H2ConnectionFactory
-import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
-import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
+import it.pagopa.ecommerce.helpdesk.dataproviders.v2.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
-import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
-import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import java.time.OffsetDateTime
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.given
@@ -31,9 +31,9 @@ class PMTransactionDataProviderTest {
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    SearchParamDecoder(
+                    SearchParamDecoderV2(
                         searchParameter =
-                            HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it"),
+                            HelpdeskTestUtilsV2.buildSearchRequestByUserMail("test@test.it"),
                         confidentialMailUtils = null
                     )
                 )
@@ -47,9 +47,9 @@ class PMTransactionDataProviderTest {
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    SearchParamDecoder(
+                    SearchParamDecoderV2(
                         searchParameter =
-                            HelpdeskTestUtils.buildSearchRequestByUserMail("unknown@test.it"),
+                            HelpdeskTestUtilsV2.buildSearchRequestByUserMail("unknown@test.it"),
                         confidentialMailUtils = null
                     ),
                 )
@@ -63,8 +63,8 @@ class PMTransactionDataProviderTest {
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    SearchParamDecoder(
-                        searchParameter = HelpdeskTestUtils.buildSearchRequestByTransactionId(),
+                    SearchParamDecoderV2(
+                        searchParameter = HelpdeskTestUtilsV2.buildSearchRequestByTransactionId(),
                         confidentialMailUtils = null
                     ),
                 )
@@ -80,7 +80,7 @@ class PMTransactionDataProviderTest {
         given(searchCriteria.type).willReturn("UNKNOWN")
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
-                    searchParams = SearchParamDecoder(searchParameter = searchCriteria, null),
+                    searchParams = SearchParamDecoderV2(searchParameter = searchCriteria, null),
                     skip = 0,
                     limit = 0
                 )
@@ -118,14 +118,15 @@ class PMTransactionDataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin("origin")
+                            .idTransaction("MIUR20191119222949")
                             .details(
                                 listOf(
                                     PaymentDetailInfoDto()
                                         .subject(
                                             "/RFB/718173815252003/0.10/TXT/Pagamento di test 20"
                                         )
+                                        .amount(100)
                                         .iuv("000000044060814")
-                                        .idTransaction("MIUR20191119222949")
                                         .creditorInstitution("RMIC81500N")
                                         .paFiscalCode("97061100588")
                                 )
@@ -142,9 +143,9 @@ class PMTransactionDataProviderTest {
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
                     searchParams =
-                        SearchParamDecoder(
+                        SearchParamDecoderV2(
                             searchParameter =
-                                HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it"),
+                                HelpdeskTestUtilsV2.buildSearchRequestByUserMail("test@test.it"),
                             confidentialMailUtils = null
                         ),
                     limit = 10,
@@ -160,9 +161,9 @@ class PMTransactionDataProviderTest {
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    SearchParamDecoder(
+                    SearchParamDecoderV2(
                         searchParameter =
-                            HelpdeskTestUtils.buildSearchRequestByUserFiscalCode("fiscal_code"),
+                            HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode("fiscal_code"),
                         confidentialMailUtils = null
                     ),
                 )
@@ -176,9 +177,9 @@ class PMTransactionDataProviderTest {
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    SearchParamDecoder(
+                    SearchParamDecoderV2(
                         searchParameter =
-                            HelpdeskTestUtils.buildSearchRequestByUserFiscalCode(
+                            HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode(
                                 "unknown-fiscal_code"
                             ),
                         confidentialMailUtils = null
@@ -218,6 +219,7 @@ class PMTransactionDataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin("origin")
+                            .idTransaction("MIUR20191119222949")
                             .details(
                                 listOf(
                                     PaymentDetailInfoDto()
@@ -225,7 +227,7 @@ class PMTransactionDataProviderTest {
                                             "/RFB/718173815252003/0.10/TXT/Pagamento di test 20"
                                         )
                                         .iuv("000000044060814")
-                                        .idTransaction("MIUR20191119222949")
+                                        .amount(100)
                                         .creditorInstitution("RMIC81500N")
                                         .paFiscalCode("97061100588")
                                 )
@@ -242,9 +244,11 @@ class PMTransactionDataProviderTest {
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
                     searchParams =
-                        SearchParamDecoder(
+                        SearchParamDecoderV2(
                             searchParameter =
-                                HelpdeskTestUtils.buildSearchRequestByUserFiscalCode("fiscal_code"),
+                                HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode(
+                                    "fiscal_code"
+                                ),
                             confidentialMailUtils = null
                         ),
                     limit = 10,
@@ -261,8 +265,8 @@ class PMTransactionDataProviderTest {
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
                     searchParams =
-                        SearchParamDecoder(
-                            searchParameter = HelpdeskTestUtils.buildSearchRequestByRptId(),
+                        SearchParamDecoderV2(
+                            searchParameter = HelpdeskTestUtilsV2.buildSearchRequestByRptId(),
                             confidentialMailUtils = null
                         ),
                 )
@@ -277,7 +281,7 @@ class PMTransactionDataProviderTest {
         given(searchCriteria.type).willReturn("UNKNOWN")
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    searchParams = SearchParamDecoder(searchParameter = searchCriteria, null),
+                    searchParams = SearchParamDecoderV2(searchParameter = searchCriteria, null),
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -290,8 +294,8 @@ class PMTransactionDataProviderTest {
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
                     searchParams =
-                        SearchParamDecoder(
-                            searchParameter = HelpdeskTestUtils.buildSearchRequestByRptId(),
+                        SearchParamDecoderV2(
+                            searchParameter = HelpdeskTestUtilsV2.buildSearchRequestByRptId(),
                             confidentialMailUtils = null
                         ),
                     limit = 0,

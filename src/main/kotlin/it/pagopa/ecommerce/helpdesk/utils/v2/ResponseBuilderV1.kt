@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.utils.v2
 
+import io.r2dbc.spi.Result
 import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationCompletedData
 import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.commons.documents.v1.TransactionUserReceiptData
@@ -10,7 +11,11 @@ import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.utils.v1.TransactionUtils.getTransactionFee
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
+import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.*
+import org.reactivestreams.Publisher
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -32,6 +37,65 @@ fun buildTransactionSearchResponse(
                 .results(results.size)
         )
         .transactions(results)
+
+fun resultToTransactionInfoDto(
+    result: Result
+): Publisher<it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionResultDto> =
+    result.map { row ->
+        it.pagopa.generated.ecommerce.helpdesk.v2.model
+            .TransactionResultDto()
+            .userInfo(
+                it.pagopa.generated.ecommerce.helpdesk.v2.model
+                    .UserInfoDto()
+                    .userFiscalCode(row[0, String::class.java])
+                    .notificationEmail(row[1, String::class.java])
+                    .surname(row[2, String::class.java])
+                    .name(row[3, String::class.java])
+                    .username(row[4, String::class.java])
+                    .authenticationType(row[5, String::class.java])
+            )
+            .transactionInfo(
+                it.pagopa.generated.ecommerce.helpdesk.v2.model
+                    .TransactionInfoDto()
+                    .creationDate(row[6, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2")))
+                    .status(row[7, String::class.java])
+                    .statusDetails(row[8, String::class.java])
+                    .amount(row[10, BigDecimal::class.java]?.toInt())
+                    .fee(row[11, BigDecimal::class.java]?.toInt())
+                    .grandTotal(row[12, BigDecimal::class.java]?.toInt())
+                    .rrn(row[13, String::class.java])
+                    .authorizationCode(row[14, String::class.java])
+                    .paymentMethodName(row[15, String::class.java])
+                    .brand(null)
+            )
+            .paymentInfo(
+                it.pagopa.generated.ecommerce.helpdesk.v2.model
+                    .PaymentInfoDto()
+                    .origin(row[9, String::class.java])
+                    .idTransaction(row[18, String::class.java])
+                    .details(
+                        listOf(
+                            it.pagopa.generated.ecommerce.helpdesk.v2.model
+                                .PaymentDetailInfoDto()
+                                .subject(row[16, String::class.java])
+                                .iuv(row[17, String::class.java])
+                                .rptId(null)
+                                .amount(row[24, BigDecimal::class.java]?.toInt())
+                                .paymentToken(null)
+                                .creditorInstitution(row[19, String::class.java])
+                                .paFiscalCode(row[20, String::class.java])
+                        )
+                    )
+            )
+            .pspInfo(
+                it.pagopa.generated.ecommerce.helpdesk.v2.model
+                    .PspInfoDto()
+                    .pspId(row[21, String::class.java])
+                    .businessName(row[22, String::class.java])
+                    .idChannel(row[23, String::class.java])
+            )
+            .product(it.pagopa.generated.ecommerce.helpdesk.v2.model.ProductDto.PM)
+    }
 
 fun baseTransactionToTransactionInfoDtoV1(
     baseTransaction: BaseTransaction,
