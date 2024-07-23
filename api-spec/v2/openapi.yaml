@@ -33,12 +33,63 @@ paths:
           required: true
           description: "Max element per page"
       tags:
-        - eCommerce
+        - ecommerce
       operationId: ecommerceSearchTransaction
       summary: Search transaction by input parameters
       description: 'GET with body payload - no resources created'
       requestBody:
         $ref: "#/components/requestBodies/EcommerceSearchTransactionRequest"
+      responses:
+        '200':
+          description: Transactions found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchTransactionResponse'
+        '400':
+          description: Formally invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+  /v2/helpdesk/searchTransaction:
+    post:
+      parameters:
+        - in: query
+          name: pageNumber
+          schema:
+            type: integer
+            default: 0
+          required: true
+          description: "Searched page number, starting from 0"
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 10
+          required: true
+          description: "Max element per page"
+      tags:
+        - helpdesk
+      operationId: helpDeskSearchTransaction
+      summary: Search transaction by input parameters
+      description: 'GET with body payload - no resources created'
+      requestBody:
+        $ref: "#/components/requestBodies/SearchTransactionRequest"
       responses:
         '200':
           description: Transactions found
@@ -108,6 +159,22 @@ components:
       maximum: 600
       exclusiveMaximum: true
       example: 200
+    SearchTransactionRequestFiscalCode:
+      type: object
+      description: Search transaction by user fiscal code
+      properties:
+        type:
+          type: string
+        userFiscalCode:
+          type: string
+          minLength: 16
+          maxLength: 16
+      required:
+        - type
+        - userFiscalCode
+      example:
+        type: "USER_FISCAL_CODE"
+        userFiscalCode: "MRGHRN97L02C469W"
     SearchTransactionRequestEmail:
       type: object
       description: Search transaction by user fiscal code
@@ -181,6 +248,16 @@ components:
       example:
         type: "TRANSACTION_ID"
         transactionId: "c9644451389e47b0a7d8e9d488fcd502"
+    PmSearchTransactionRequest:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/SearchTransactionRequestFiscalCode'
+        - $ref: '#/components/schemas/SearchTransactionRequestEmail'
+      discriminator:
+        propertyName: type
+        mapping:
+          USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
+          USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
     TransactionResult:
       type: object
       description: TransactionResponse
@@ -380,7 +457,7 @@ components:
         - total
     Product:
       type: string
-      enum: [ "ECOMMERCE" ]
+      enum: [ "PM", "ECOMMERCE" ]
       description: Product from which transaction belongs
     EcommerceSearchTransactionRequest:
       type: object
@@ -432,3 +509,40 @@ components:
               value:
                 type: USER_EMAIL
                 userEmail: "test@test.it"
+    SearchTransactionRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/PmSearchTransactionRequest'
+              - $ref: '#/components/schemas/EcommerceSearchTransactionRequest'
+            discriminator:
+              propertyName: type
+              mapping:
+                USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
+                USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
+                RPT_ID: "#/components/schemas/SearchTransactionRequestRptId"
+                PAYMENT_TOKEN: "#/components/schemas/SearchTransactionRequestPaymentToken"
+                TRANSACTION_ID: "#/components/schemas/SearchTransactionRequestTransactionId"
+          examples:
+            search by user fiscal code:
+              value:
+                type: USER_FISCAL_CODE
+                userFiscalCode: "user_fiscal_code"
+            search by user email:
+              value:
+                type: USER_EMAIL
+                userEmail: "test@test.it"
+            search by rpt id:
+              value:
+                type: RPT_ID
+                rptId: "77777777777111111111111111111"
+            search by payment token:
+              value:
+                type: PAYMENT_TOKEN
+                paymentToken: "paymentToken"
+            search by transaction id:
+              value:
+                type: TRANSACTION_ID
+                transactionId: "transactionId"

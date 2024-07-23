@@ -202,7 +202,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
       "useSpringBoot3" to "true",
       "oas3" to "true",
       "generateSupportingFiles" to "true",
-      "enumPropertyNaming" to "UPPERCASE"
+      "enumPropertyNaming" to "UPPERCASE",
+      "useTags" to "true"
     )
   )
 }
