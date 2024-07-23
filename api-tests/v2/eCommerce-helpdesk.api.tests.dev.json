@@ -276,6 +276,346 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Technical helpDesk SearchTransaction (v2) TRANSACTION_ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Technical helpDesk SearchTransaction by TRANSACTION_ID - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.eq(1);",
+							"    pm.expect(response.page.results).to.be.eq(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"TRANSACTION_ID\",\n  \"transactionId\": \"{{TRANSACTION_ID}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v2/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v2",
+						"helpdesk",
+						"searchTransaction"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Technical helpDesk SearchTransaction (v2) TRANSACTION_ID with V2 events",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Technical helpDesk SearchTransaction by TRANSACTION_ID with V2 events - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.eq(1);",
+							"    pm.expect(response.page.results).to.be.eq(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"TRANSACTION_ID\",\n  \"transactionId\": \"{{TRANSACTION_ID_V2}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v2/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v2",
+						"helpdesk",
+						"searchTransaction"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Technical helpDesk SearchTransaction (v2) PAYMENT_TOKEN",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Technical helpDesk SearchTransaction by PAYMENT_TOKEN - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"PAYMENT_TOKEN\",\n  \"paymentToken\": \"{{PAYMENT_TOKEN}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v2/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v2",
+						"helpdesk",
+						"searchTransaction"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Technical helpDesk SearchTransaction (v2) RPTID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Technical helpDesk SearchTransaction by RPTID - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"RPT_ID\",\n  \"rptId\": \"{{RPT_ID}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v2/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v2",
+						"helpdesk",
+						"searchTransaction"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Technical helpDesk SearchTransaction (v2) TRANSACTION_ID 400 page over sized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Technical helpDesk SearchTransaction by TRANSACTION_ID - Status code is 400 for request with page size over 20\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"TRANSACTION_ID\",\n  \"transactionId\": \"{{TRANSACTION_ID}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v2/helpdesk/searchTransaction?pageNumber=0&pageSize=21",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v2",
+						"helpdesk",
+						"searchTransaction"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "21"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
