@@ -38,6 +38,11 @@ object HelpdeskTestUtilsV2 {
     fun buildSearchRequestByUserMail(email: String): SearchTransactionRequestEmailDto =
         SearchTransactionRequestEmailDto().userEmail(email).type("USER_EMAIL")
 
+    fun buildSearchRequestByUserFiscalCode(
+        fiscalCode: String
+    ): SearchTransactionRequestFiscalCodeDto =
+        SearchTransactionRequestFiscalCodeDto().userFiscalCode(fiscalCode).type("USER_FISCAL_CODE")
+
     fun buildTransactionResultDto(
         creationDate: OffsetDateTime,
         product: ProductDto
