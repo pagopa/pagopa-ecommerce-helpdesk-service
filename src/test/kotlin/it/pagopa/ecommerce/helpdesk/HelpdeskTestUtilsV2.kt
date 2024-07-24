@@ -16,7 +16,6 @@ object HelpdeskTestUtilsV2 {
                 .eventCode(it.eventCode)
                 .creationDate(ZonedDateTime.parse(it.creationDate).toOffsetDateTime())
         }
-
     fun buildProblemJson(
         httpStatus: HttpStatus,
         title: String,
@@ -38,6 +37,11 @@ object HelpdeskTestUtilsV2 {
 
     fun buildSearchRequestByUserMail(email: String): SearchTransactionRequestEmailDto =
         SearchTransactionRequestEmailDto().userEmail(email).type("USER_EMAIL")
+
+    fun buildSearchRequestByUserFiscalCode(
+        fiscalCode: String
+    ): SearchTransactionRequestFiscalCodeDto =
+        SearchTransactionRequestFiscalCodeDto().userFiscalCode(fiscalCode).type("USER_FISCAL_CODE")
 
     fun buildTransactionResultDto(
         creationDate: OffsetDateTime,

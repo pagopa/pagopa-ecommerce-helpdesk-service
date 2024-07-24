@@ -26,7 +26,7 @@ class EcommerceTransactionDataProvider(
 ) : TransactionDataProvider {
 
     override fun totalRecordCount(
-        searchParams: SearchParamDecoderV2<EcommerceSearchTransactionRequestDto>
+        searchParams: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto>
     ): Mono<Int> {
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
@@ -59,7 +59,7 @@ class EcommerceTransactionDataProvider(
     }
 
     override fun findResult(
-        searchParams: SearchParamDecoderV2<EcommerceSearchTransactionRequestDto>,
+        searchParams: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto>,
         skip: Int,
         limit: Int
     ): Mono<List<TransactionResultDto>> {
@@ -145,10 +145,10 @@ class EcommerceTransactionDataProvider(
                         ::Pair
                     )
                     .zipWith(events.collectList(), ::Pair)
-                    .map { (baseTransactionEmail, events) ->
+                    .map { (baseTransactionAndEmailPair, events) ->
                         baseTransactionToTransactionInfoDtoV1(
-                            baseTransactionEmail.first,
-                            baseTransactionEmail.second,
+                            baseTransactionAndEmailPair.first,
+                            baseTransactionAndEmailPair.second,
                             events
                         )
                     }
@@ -179,10 +179,10 @@ class EcommerceTransactionDataProvider(
                         ::Pair
                     )
                     .zipWith(events.collectList(), ::Pair)
-                    .map { (baseTransactionEmail, events) ->
+                    .map { (baseTransactionAndEmailPair, events) ->
                         baseTransactionToTransactionInfoDtoV2(
-                            baseTransactionEmail.first,
-                            baseTransactionEmail.second,
+                            baseTransactionAndEmailPair.first,
+                            baseTransactionAndEmailPair.second,
                             events
                         )
                     }
