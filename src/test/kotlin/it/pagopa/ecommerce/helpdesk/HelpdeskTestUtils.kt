@@ -1,13 +1,23 @@
 package it.pagopa.ecommerce.helpdesk
 
 import it.pagopa.ecommerce.commons.documents.DeadLetterEvent
+import it.pagopa.ecommerce.commons.documents.v1.TransactionEvent
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.EventInfoDto
 import java.time.OffsetDateTime
+import java.time.ZonedDateTime
 import java.util.*
 import org.springframework.http.HttpStatus
 
 object HelpdeskTestUtils {
+
+    fun convertEventsToEventInfoList(events: List<TransactionEvent<Any>>): List<EventInfoDto> =
+        events.map {
+            EventInfoDto()
+                .eventCode(it.eventCode)
+                .creationDate(ZonedDateTime.parse(it.creationDate).toOffsetDateTime())
+        }
 
     fun buildProblemJson(
         httpStatus: HttpStatus,
