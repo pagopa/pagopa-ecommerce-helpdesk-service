@@ -144,12 +144,11 @@ class EcommerceTransactionDataProvider(
                         },
                         ::Pair
                     )
-                     .flatMap { (baseTransaction, email) ->
+                    .flatMap { (baseTransaction, email) ->
                         events.collectList().map { Triple(baseTransaction, email, it) }
                     }
                     .map { (baseTransaction, email, events) ->
                         baseTransactionToTransactionInfoDtoV1(baseTransaction, email, events)
-                    }
                     }
             is it.pagopa.ecommerce.commons.documents.v2.Transaction ->
                 events
@@ -177,13 +176,11 @@ class EcommerceTransactionDataProvider(
                         },
                         ::Pair
                     )
-                    .zipWith(events.collectList(), ::Pair)
-                    .map { (baseTransactionAndEmailPair, events) ->
-                        baseTransactionToTransactionInfoDtoV2(
-                            baseTransactionAndEmailPair.first,
-                            baseTransactionAndEmailPair.second,
-                            events
-                        )
+                    .flatMap { (baseTransaction, email) ->
+                        events.collectList().map { Triple(baseTransaction, email, it) }
+                    }
+                    .map { (baseTransaction, email, events) ->
+                        baseTransactionToTransactionInfoDtoV2(baseTransaction, email, events)
                     }
             else ->
                 Mono.error(
