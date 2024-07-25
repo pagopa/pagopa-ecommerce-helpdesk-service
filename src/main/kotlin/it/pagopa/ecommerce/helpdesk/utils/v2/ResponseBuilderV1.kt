@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.utils.v2
 
 import io.r2dbc.spi.Result
+import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
 import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationCompletedData
 import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.commons.documents.v1.TransactionUserReceiptData
@@ -14,6 +15,7 @@ import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.util.*
 import org.reactivestreams.Publisher
 import org.slf4j.Logger
@@ -99,7 +101,8 @@ fun resultToTransactionInfoDto(
 
 fun baseTransactionToTransactionInfoDtoV1(
     baseTransaction: BaseTransaction,
-    email: Optional<Email>
+    email: Optional<Email>,
+    events: List<BaseTransactionEvent<Any>>
 ): TransactionResultDto {
     val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
     val fee = getTransactionFees(baseTransaction).orElse(0)
@@ -108,6 +111,13 @@ fun baseTransactionToTransactionInfoDtoV1(
     val transactionAuthorizationCompletedData = getTransactionAuthCompletedData(baseTransaction)
     val transactionUserReceiptData = getTransactionUserReceiptData(baseTransaction)
 
+    // get event info list
+    val eventInfoList =
+        events.map { event ->
+            EventInfoDto()
+                .creationDate(ZonedDateTime.parse(event.creationDate).toOffsetDateTime())
+                .eventCode(event.eventCode)
+        }
     // Build user info
 
     val userInfo =
@@ -123,7 +133,7 @@ fun baseTransactionToTransactionInfoDtoV1(
             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
             .status(getTransactionDetailsStatus(baseTransaction))
             .statusDetails(transactionAuthorizationCompletedData?.errorCode)
-            .events(emptyList())
+            .events(eventInfoList)
             .eventStatus(TransactionStatusDto.valueOf(baseTransaction.status.toString()))
             .amount(amount)
             .fee(fee)
