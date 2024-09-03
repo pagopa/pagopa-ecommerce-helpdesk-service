@@ -217,7 +217,7 @@ object HelpdeskTestUtils {
                 NpgTransactionInfoDetailsData(
                     OperationResultDto.EXECUTED.takeIf { !partial },
                     "operationResult".takeIf { !partial },
-                    UUID.randomUUID().takeIf { !partial }
+                    UUID.randomUUID().toString().takeIf { !partial }
                 )
             PaymentGateway.REDIRECT ->
                 RedirectTransactionInfoDetailsData("outcome".takeIf { !partial })

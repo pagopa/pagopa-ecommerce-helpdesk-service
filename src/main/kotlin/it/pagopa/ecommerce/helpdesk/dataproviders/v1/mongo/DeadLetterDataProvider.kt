@@ -203,7 +203,7 @@ class DeadLetterDataProvider(
                     .type(details.type.toString())
                     .operationId(details.operationId)
                     .operationResult(details.operationResult?.value)
-                    .correlationId(details.correlationId)
+                    .correlationId(details.correlationId?.let { UUID.fromString(it) })
             is RedirectTransactionInfoDetailsData ->
                 RedirectTransactionInfoDetailsDataDto()
                     .type(details.type.toString())
