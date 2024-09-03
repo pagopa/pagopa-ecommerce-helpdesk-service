@@ -3,10 +3,10 @@ package it.pagopa.ecommerce.helpdesk
 import it.pagopa.ecommerce.commons.documents.DeadLetterEvent
 import it.pagopa.ecommerce.commons.documents.v1.TransactionEvent
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData.PaymentGateway
-import it.pagopa.ecommerce.commons.documents.v2.info.NpgTransactionInfoDetailsData
-import it.pagopa.ecommerce.commons.documents.v2.info.RedirectTransactionInfoDetailsData
-import it.pagopa.ecommerce.commons.documents.v2.info.TransactionInfo
-import it.pagopa.ecommerce.commons.documents.v2.info.TransactionInfoDetailsData
+import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterNpgTransactionInfoDetailsData
+import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterRedirectTransactionInfoDetailsData
+import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransactionInfo
+import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransactionInfoDetailsData
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto
 import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
@@ -194,8 +194,11 @@ object HelpdeskTestUtils {
             null
         )
 
-    private fun buildTransactionInfo(gateway: PaymentGateway, partial: Boolean): TransactionInfo =
-        TransactionInfo(
+    private fun buildTransactionInfo(
+        gateway: PaymentGateway,
+        partial: Boolean
+    ): DeadLetterTransactionInfo =
+        DeadLetterTransactionInfo(
             "transactionId".takeIf { !partial },
             "authorizationRequestId".takeIf { !partial },
             TransactionStatusDto.EXPIRED_NOT_AUTHORIZED.takeIf { !partial },
@@ -211,16 +214,16 @@ object HelpdeskTestUtils {
     private fun buildTransactionInfoDetails(
         gateway: PaymentGateway,
         partial: Boolean
-    ): TransactionInfoDetailsData? =
+    ): DeadLetterTransactionInfoDetailsData? =
         when (gateway) {
             PaymentGateway.NPG ->
-                NpgTransactionInfoDetailsData(
+                DeadLetterNpgTransactionInfoDetailsData(
                     OperationResultDto.EXECUTED.takeIf { !partial },
                     "operationResult".takeIf { !partial },
                     UUID.randomUUID().toString().takeIf { !partial }
                 )
             PaymentGateway.REDIRECT ->
-                RedirectTransactionInfoDetailsData("outcome".takeIf { !partial })
+                DeadLetterRedirectTransactionInfoDetailsData("outcome".takeIf { !partial })
             else -> null
         }
 }

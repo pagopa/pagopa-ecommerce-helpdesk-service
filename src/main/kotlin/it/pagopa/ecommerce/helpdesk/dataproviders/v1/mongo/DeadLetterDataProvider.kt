@@ -1,10 +1,10 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo
 
 import it.pagopa.ecommerce.commons.documents.DeadLetterEvent
-import it.pagopa.ecommerce.commons.documents.v2.info.NpgTransactionInfoDetailsData
-import it.pagopa.ecommerce.commons.documents.v2.info.RedirectTransactionInfoDetailsData
-import it.pagopa.ecommerce.commons.documents.v2.info.TransactionInfo
-import it.pagopa.ecommerce.commons.documents.v2.info.TransactionInfoDetailsData
+import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterNpgTransactionInfoDetailsData
+import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterRedirectTransactionInfoDetailsData
+import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransactionInfo
+import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransactionInfoDetailsData
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.DeadLetterRepository
 import it.pagopa.generated.ecommerce.helpdesk.model.*
@@ -178,7 +178,7 @@ class DeadLetterDataProvider(
             .transactionInfo(deadLetterEvent.transactionInfo?.let { mapToTransactionInfoDto(it) })
 
     private fun mapToTransactionInfoDto(
-        transactionInfo: TransactionInfo
+        transactionInfo: DeadLetterTransactionInfo
     ): DeadLetterTransactionInfoDto =
         DeadLetterTransactionInfoDto()
             .transactionId(transactionInfo.transactionId)
@@ -195,16 +195,16 @@ class DeadLetterDataProvider(
             .details(mapToTransactionInfoDetailsDto(transactionInfo.details))
 
     private fun mapToTransactionInfoDetailsDto(
-        details: TransactionInfoDetailsData?
+        details: DeadLetterTransactionInfoDetailsData?
     ): DeadLetterTransactionInfoDetailsDto? =
         when (details) {
-            is NpgTransactionInfoDetailsData ->
+            is DeadLetterNpgTransactionInfoDetailsData ->
                 NpgTransactionInfoDetailsDataDto()
                     .type(details.type.toString())
                     .operationId(details.operationId)
                     .operationResult(details.operationResult?.value)
                     .correlationId(details.correlationId?.let { UUID.fromString(it) })
-            is RedirectTransactionInfoDetailsData ->
+            is DeadLetterRedirectTransactionInfoDetailsData ->
                 RedirectTransactionInfoDetailsDataDto()
                     .type(details.type.toString())
                     .outcome(details.outcome)
