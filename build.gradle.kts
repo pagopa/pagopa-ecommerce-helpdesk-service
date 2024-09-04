@@ -23,7 +23,7 @@ plugins {
 val ecommerceCommonsVersion = "1.25.1"
 
 // eCommerce commons library git ref (by default tag)
-val ecommerceCommonsGitRef = "CHK-3137-remove-xpayvpos-refs"
+val ecommerceCommonsGitRef = ecommerceCommonsVersion
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
