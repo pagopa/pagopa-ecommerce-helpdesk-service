@@ -182,7 +182,7 @@ object HelpdeskTestUtils {
             queueName,
             OffsetDateTime.now().toString(),
             data,
-            buildTransactionInfo(gateway, partialTransactionInfo)
+            null
         )
 
     fun buildDeadLetterEventWithoutTransactionInfo(queueName: String, data: String) =
