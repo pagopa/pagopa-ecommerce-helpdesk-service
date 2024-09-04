@@ -169,6 +169,7 @@ object HelpdeskTestUtils {
             UUID.randomUUID().toString(),
             queueName,
             OffsetDateTime.now().toString(),
-            data
+            data,
+            null
         )
 }
