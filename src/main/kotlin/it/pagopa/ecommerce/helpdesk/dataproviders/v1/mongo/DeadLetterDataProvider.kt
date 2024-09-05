@@ -1,11 +1,13 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo
 
 import it.pagopa.ecommerce.commons.documents.DeadLetterEvent
+import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterNpgTransactionInfoDetailsData
+import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterRedirectTransactionInfoDetailsData
+import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransactionInfo
+import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransactionInfoDetailsData
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.DeadLetterRepository
-import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterEventDto
-import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchEventSourceDto
-import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchDeadLetterEventsRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import java.util.*
 import org.slf4j.LoggerFactory
@@ -168,9 +170,44 @@ class DeadLetterDataProvider(
             .collectList()
     }
 
-    private fun mapToDeadLetterEventDto(deadLetterEvent: DeadLetterEvent): DeadLetterEventDto =
+    fun mapToDeadLetterEventDto(deadLetterEvent: DeadLetterEvent): DeadLetterEventDto =
         DeadLetterEventDto()
             .data(deadLetterEvent.data)
             .queueName(deadLetterEvent.queueName)
             .timestamp(OffsetDateTime.parse(deadLetterEvent.insertionDate))
+            .transactionInfo(deadLetterEvent.transactionInfo?.let { mapToTransactionInfoDto(it) })
+
+    private fun mapToTransactionInfoDto(
+        transactionInfo: DeadLetterTransactionInfo
+    ): DeadLetterTransactionInfoDto =
+        DeadLetterTransactionInfoDto()
+            .transactionId(transactionInfo.transactionId)
+            .authorizationRequestId(transactionInfo.authorizationRequestId)
+            .eCommerceStatus(
+                transactionInfo.eCommerceStatus?.let { TransactionStatusDto.valueOf(it.value) }
+            )
+            .paymentGateway(transactionInfo.gateway?.name)
+            .paymentTokens(transactionInfo.paymentTokens)
+            .pspId(transactionInfo.pspId)
+            .paymentMethodName(transactionInfo.paymentMethodName)
+            .grandTotal(transactionInfo.grandTotal)
+            .rrn(transactionInfo.rrn)
+            .details(mapToTransactionInfoDetailsDto(transactionInfo.details))
+
+    private fun mapToTransactionInfoDetailsDto(
+        details: DeadLetterTransactionInfoDetailsData?
+    ): DeadLetterTransactionInfoDetailsDto? =
+        when (details) {
+            is DeadLetterNpgTransactionInfoDetailsData ->
+                NpgTransactionInfoDetailsDataDto()
+                    .type(details.type.toString())
+                    .operationId(details.operationId)
+                    .operationResult(details.operationResult?.value)
+                    .correlationId(details.correlationId?.let { UUID.fromString(it) })
+            is DeadLetterRedirectTransactionInfoDetailsData ->
+                RedirectTransactionInfoDetailsDataDto()
+                    .type(details.type.toString())
+                    .outcome(details.outcome)
+            else -> null
+        }
 }

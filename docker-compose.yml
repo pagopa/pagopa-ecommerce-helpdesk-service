@@ -57,7 +57,7 @@ services:
       - mongo
 
   pagopa-pdv-mock:
-    container_name: pagopa-pdv-mock
+    container_name: pagopa-pdv-mock-helpdesk
     build:
       context: docker/pagopa-personal-data-vault-tokenizer/
       dockerfile: Dockerfile.pdv
