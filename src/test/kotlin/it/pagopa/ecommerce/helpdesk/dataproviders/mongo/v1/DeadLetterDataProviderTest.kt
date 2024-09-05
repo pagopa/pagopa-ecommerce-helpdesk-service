@@ -1,9 +1,9 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo.v1
 
+import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.DeadLetterRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.DeadLetterDataProvider
-import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterEventDto
 import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchDateTimeRangeDto
 import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchEventSourceDto
 import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchDeadLetterEventsRequestDto
@@ -136,16 +136,26 @@ class DeadLetterDataProviderTest {
                 .timeRange(null)
         val deadLetterEvents =
             listOf(
-                HelpdeskTestUtils.buildDeadLetterEvent("queue1", "test1"),
-                HelpdeskTestUtils.buildDeadLetterEvent("queue2", "test2")
+                HelpdeskTestUtils.buildDeadLetterEvent(
+                    "queue1",
+                    "test1",
+                    TransactionAuthorizationRequestData.PaymentGateway.NPG
+                ),
+                HelpdeskTestUtils.buildDeadLetterEvent(
+                    "queue2",
+                    "test2",
+                    TransactionAuthorizationRequestData.PaymentGateway.REDIRECT,
+                    true
+                ),
+                HelpdeskTestUtils.buildDeadLetterEventWithoutTransactionInfo("queue3", "test3"),
+                HelpdeskTestUtils.buildDeadLetterEvent(
+                    "queue4",
+                    "test4",
+                    TransactionAuthorizationRequestData.PaymentGateway.VPOS
+                )
             )
         val expectedDeadLetterDtoList =
-            deadLetterEvents.map {
-                DeadLetterEventDto()
-                    .data(it.data)
-                    .queueName(it.queueName)
-                    .timestamp(OffsetDateTime.parse(it.insertionDate))
-            }
+            deadLetterEvents.map { deadLetterDataProvider.mapToDeadLetterEventDto(it) }
         val skip = 0
         val limit = 10
         given(
@@ -191,16 +201,21 @@ class DeadLetterDataProviderTest {
                 )
         val deadLetterEvents =
             listOf(
-                HelpdeskTestUtils.buildDeadLetterEvent("queue1", "test1"),
-                HelpdeskTestUtils.buildDeadLetterEvent("queue2", "test2")
+                HelpdeskTestUtils.buildDeadLetterEvent(
+                    "queue1",
+                    "test1",
+                    TransactionAuthorizationRequestData.PaymentGateway.NPG,
+                    true
+                ),
+                HelpdeskTestUtils.buildDeadLetterEvent(
+                    "queue2",
+                    "test2",
+                    TransactionAuthorizationRequestData.PaymentGateway.REDIRECT
+                ),
+                HelpdeskTestUtils.buildDeadLetterEventWithoutTransactionInfo("queue3", "test3")
             )
         val expectedDeadLetterDtoList =
-            deadLetterEvents.map {
-                DeadLetterEventDto()
-                    .data(it.data)
-                    .queueName(it.queueName)
-                    .timestamp(OffsetDateTime.parse(it.insertionDate))
-            }
+            deadLetterEvents.map { deadLetterDataProvider.mapToDeadLetterEventDto(it) }
         val skip = 0
         val limit = 10
         given(
@@ -248,16 +263,21 @@ class DeadLetterDataProviderTest {
                 .timeRange(null)
         val deadLetterEvents =
             listOf(
-                HelpdeskTestUtils.buildDeadLetterEvent(source, "test1"),
-                HelpdeskTestUtils.buildDeadLetterEvent(source, "test2")
+                HelpdeskTestUtils.buildDeadLetterEvent(
+                    "queue1",
+                    "test1",
+                    TransactionAuthorizationRequestData.PaymentGateway.NPG
+                ),
+                HelpdeskTestUtils.buildDeadLetterEvent(
+                    "queue2",
+                    "test2",
+                    TransactionAuthorizationRequestData.PaymentGateway.REDIRECT,
+                    true
+                ),
+                HelpdeskTestUtils.buildDeadLetterEventWithoutTransactionInfo("queue3", "test3")
             )
         val expectedDeadLetterDtoList =
-            deadLetterEvents.map {
-                DeadLetterEventDto()
-                    .data(it.data)
-                    .queueName(it.queueName)
-                    .timestamp(OffsetDateTime.parse(it.insertionDate))
-            }
+            deadLetterEvents.map { deadLetterDataProvider.mapToDeadLetterEventDto(it) }
         val skip = 0
         val limit = 10
         given(
@@ -307,16 +327,21 @@ class DeadLetterDataProviderTest {
                 )
         val deadLetterEvents =
             listOf(
-                HelpdeskTestUtils.buildDeadLetterEvent(source, "test1"),
-                HelpdeskTestUtils.buildDeadLetterEvent(source, "test2")
+                HelpdeskTestUtils.buildDeadLetterEvent(
+                    "queue1",
+                    "test1",
+                    TransactionAuthorizationRequestData.PaymentGateway.NPG,
+                    true
+                ),
+                HelpdeskTestUtils.buildDeadLetterEvent(
+                    "queue2",
+                    "test2",
+                    TransactionAuthorizationRequestData.PaymentGateway.REDIRECT
+                ),
+                HelpdeskTestUtils.buildDeadLetterEventWithoutTransactionInfo("queue3", "test3")
             )
         val expectedDeadLetterDtoList =
-            deadLetterEvents.map {
-                DeadLetterEventDto()
-                    .data(it.data)
-                    .queueName(it.queueName)
-                    .timestamp(OffsetDateTime.parse(it.insertionDate))
-            }
+            deadLetterEvents.map { deadLetterDataProvider.mapToDeadLetterEventDto(it) }
         val skip = 0
         val limit = 10
         given(
