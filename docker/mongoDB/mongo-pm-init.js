@@ -1,7 +1,6 @@
 conn = new Mongo();
 db = conn.getDB("pm");
 
-// Create collection
 db.getCollection('pm-transactions-view').insertMany([{
     "userInfo": {
         "userFiscalCode": "RSSMRA80A01H501U",

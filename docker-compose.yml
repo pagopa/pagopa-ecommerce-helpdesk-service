@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   pagopa-ecommerce-helpdesk-service:
     container_name: pagopa-ecommerce-helpdesk-service
