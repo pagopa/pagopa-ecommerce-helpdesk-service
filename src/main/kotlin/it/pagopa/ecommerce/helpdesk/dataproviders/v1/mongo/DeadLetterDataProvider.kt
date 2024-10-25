@@ -6,7 +6,7 @@ import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterRedirectTra
 import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransactionInfo
 import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransactionInfoDetailsData
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
-import it.pagopa.ecommerce.helpdesk.dataproviders.DeadLetterRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.DeadLetterRepository
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import java.util.*
