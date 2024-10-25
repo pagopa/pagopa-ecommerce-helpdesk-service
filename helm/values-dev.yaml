@@ -89,6 +89,7 @@ microservice-chart:
     MONGO_HEARTBEAT_FREQUENCY_MS: "5000"
     SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
       {ALL: '*', ECOMMERCE: 'pagopa-d-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-d-weu-ecommerce-notifications-service-errors-queue'}
+    SEARCH_V2_ENABLED: "false"
 
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header

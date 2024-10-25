@@ -45,6 +45,7 @@ microservice-chart:
       MONGO_REPLICA_SET_OPTION: "&replicaSet=globaldb"
       SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
         {ALL: '*', ECOMMERCE: 'pagopa-p-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-p-weu-ecommerce-notifications-service-errors-queue'}
+      SEARCH_V2_ENABLED: "false"
 
     envSecret:
       OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
@@ -140,6 +141,7 @@ microservice-chart:
     MONGO_REPLICA_SET_OPTION: "&replicaSet=globaldb"
     SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
       {ALL: '*', ECOMMERCE: 'pagopa-p-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-p-weu-ecommerce-notifications-service-errors-queue'}
+    SEARCH_V2_ENABLED: "false"
 
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
