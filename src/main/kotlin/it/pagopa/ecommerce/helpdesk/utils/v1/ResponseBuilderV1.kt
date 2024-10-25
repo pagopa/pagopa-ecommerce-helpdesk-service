@@ -9,6 +9,7 @@ import it.pagopa.ecommerce.commons.domain.v1.TransactionWithClosureError
 import it.pagopa.ecommerce.commons.domain.v1.pojos.*
 import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.utils.v1.TransactionUtils.getTransactionFee
+import it.pagopa.ecommerce.helpdesk.documents.PmTransaction
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
@@ -90,6 +91,65 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
             )
             .product(ProductDto.PM)
     }
+
+fun pmTransactionToTransactionInfoDtoV1(
+    pmTransaction: PmTransaction
+): TransactionResultDto {
+    val amount = pmTransaction.transactionInfo.amount
+    val fee = pmTransaction.transactionInfo.fee
+    val grandTotal = pmTransaction.transactionInfo.grandTotal
+    val email = pmTransaction.userInfo.notificationEmail
+    // Build user info
+
+    val userInfo =
+        UserInfoDto()
+            .notificationEmail(email)
+            .authenticationType(UserDto.TypeEnum.GUEST.toString())
+    // build transaction info
+    val transactionInfo =
+        TransactionInfoDto()
+            .creationDate(pmTransaction.transactionInfo.creationDate)
+            .status(pmTransaction.transactionInfo.status.toString()) //TODO
+            .statusDetails(pmTransaction.transactionInfo.statusDetail.toString()) //TODO
+            .eventStatus(null)
+            .amount(amount)
+            .fee(fee)
+            .grandTotal(grandTotal)
+            .rrn(pmTransaction.transactionInfo.rrn)
+            .authorizationCode(pmTransaction.transactionInfo.authorizationCode)
+            .paymentMethodName(pmTransaction.transactionInfo.paymentMethodName)
+            .brand(null)
+            .authorizationRequestId(null)
+            .paymentGateway(null)
+    // build payment info
+    val paymentInfo =
+        PaymentInfoDto()
+            .origin(pmTransaction.paymentInfo.origin)
+            .details(
+                pmTransaction.paymentInfo.details.map {
+                    PaymentDetailInfoDto()
+                        .subject(it.subject)
+                        .iuv(it.iuv)
+                        .rptId(null)
+                        .idTransaction(it.idTransaction)
+                        .paymentToken(null)
+                        .paFiscalCode(it.paFiscalCode)
+                        .creditorInstitution(it.creditorInstitution)
+                }
+            )
+    // build psp info
+    val pspInfo =
+        PspInfoDto()
+            .pspId(pmTransaction.pspInfo.pspId)
+            .idChannel(pmTransaction.pspInfo.idChannel)
+            .businessName(pmTransaction.pspInfo.businessName)
+    return TransactionResultDto()
+        .product(ProductDto.PM)
+        .userInfo(userInfo)
+        .transactionInfo(transactionInfo)
+        .paymentInfo(paymentInfo)
+        .pspInfo(pspInfo)
+}
 
 fun resultToPaymentMethodDtoList(
     results: List<Result>,
