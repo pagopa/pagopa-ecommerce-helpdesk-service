@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   pagopa-ecommerce-helpdesk-service:
     container_name: pagopa-ecommerce-helpdesk-service
@@ -55,6 +53,31 @@ services:
       - pagopa-ecommerce-net
     depends_on:
       - mongo
+
+  mongo-pm:
+    container_name: pagopa-pm-helpdesk-mongo
+    image: mongo
+    env_file: docker/mongoDB/conf/mongodb-pm.env
+    ports:
+      - "27018:27017"
+    networks:
+      - pagopa-ecommerce-net
+    healthcheck:
+      test: echo "db.stats().ok" | mongo --quiet
+      interval: 10s
+    volumes:
+      - ./docker/mongoDB/mongo-pm-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  mongo-express-pm:
+    container_name: pagopa-pm-helpdesk-express
+    image: mongo-express
+    env_file: docker/mongoDB/conf/mongo-express-pm.env
+    ports:
+      - "8082:8081"
+    networks:
+      - pagopa-ecommerce-net
+    depends_on:
+      - mongo-pm
 
   pagopa-pdv-mock:
     container_name: pagopa-pdv-mock-helpdesk
