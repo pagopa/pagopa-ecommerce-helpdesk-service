@@ -19,7 +19,8 @@ import reactor.core.publisher.Mono
 @RestController("PmV1Controller")
 class PmController(
     @Autowired val pmService: PmService,
-    @Value("\${search.pm.in.ecommerce.history.enabled:false}") private val searchPmInEcommerceHistory: Boolean
+    @Value("\${search.pm.in.ecommerce.history.enabled:false}")
+    private val searchPmInEcommerceHistory: Boolean
 ) : PmApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
