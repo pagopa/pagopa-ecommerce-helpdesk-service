@@ -8,8 +8,8 @@ import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
-import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsEventStoreRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsViewRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
