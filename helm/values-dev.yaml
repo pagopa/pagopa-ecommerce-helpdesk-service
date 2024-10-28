@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaecommercehelpdeskservice
-    tag: "1.14.0"
+    tag: "1.15.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -89,8 +89,8 @@ microservice-chart:
     MONGO_HEARTBEAT_FREQUENCY_MS: "5000"
     SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
       {ALL: '*', ECOMMERCE: 'pagopa-d-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-d-weu-ecommerce-notifications-service-errors-queue'}
-    SEARCH_PM_IN_ECOMMERCE_HISTORY_ENABLED: "false"
 
+    SEARCH_PM_IN_ECOMMERCE_HISTORY_ENABLED: "false"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
