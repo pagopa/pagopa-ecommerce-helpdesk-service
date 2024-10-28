@@ -43,6 +43,18 @@ the [OpenAPI 3 here.](https://editor.swagger.io/?url=https://raw.githubuserconte
 
 ---
 
+## Working with Windows
+
+If you are developing on Windows, it is recommended the use of WSL2 combined with IntelliJ IDEA.
+
+The IDE should be installed on Windows, with the repository cloned into a folder in WSL2. All the necessary tools will be installed in the Linux distro of your choice.
+
+You can find more info on how to set up the environment following the link below.
+
+https://www.jetbrains.com/help/idea/how-to-use-wsl-development-environment-in-product.html
+
+After setting up the WSL environment, you can test the application by building it through either Docker or Spring Boot (useful for local development).
+
 ## Start Project Locally 🚀
 
 ### Prerequisites
