@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono
 @RestController("PmV1Controller")
 class PmController(
     @Autowired val pmService: PmService,
-    @Value("\${search.v2.enabled:false}") private val isV2SearchEnabled: Boolean
+    @Value("\${search.pm.in.ecommerce.history.enabled:false}") private val searchPmInEcommerceHistory: Boolean
 ) : PmApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
@@ -30,7 +30,7 @@ class PmController(
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
         logger.info(
-            "[HelpDesk controller] SearchTransaction using ${if (isV2SearchEnabled) "v2 (ecommerce db)" else "v1 (history db)"} search"
+            "[HelpDesk controller] SearchTransaction using ${if (searchPmInEcommerceHistory) "v2 (ecommerce db)" else "v1 (history db)"} search"
         )
         return pmSearchTransactionRequestDto
             .flatMap {
