@@ -30,7 +30,7 @@ class PmController(
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
         logger.info(
-            "[HelpDesk controller] SearchTransaction using ${if (isV2SearchEnabled) "v2 (ecommerce db)" else "v1 (PM db)"} search"
+            "[HelpDesk controller] SearchTransaction using ${if (isV2SearchEnabled) "v2 (ecommerce db)" else "v1 (history db)"} search"
         )
         return pmSearchTransactionRequestDto
             .flatMap {

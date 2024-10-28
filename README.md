@@ -91,7 +91,7 @@ If you want to customize the application environment, reference this table:
 | PM_ORACLE_USERNAME                | PM Oracle DB username                                                                                                                                      | string             |         |
 | PM_ORACLE_PASSWORD                | PM Oracle DB password                                                                                                                                      | string             |         |
 | SEARCH_DEAD_LETTER_QUEUE_MAPPING  | Dead letter search criteria to queue name mapping                                                                                                          | map(string,string) |         |
-| SEARCH_V2_ENABLED                 | Whether the search by fiscal code is made through PM (false) or ECOMMERCE (true)                                                                           | string             | false   |
+| SEARCH_V2_ENABLED                 | Whether the search by fiscal code is made through the history (false) or ecommerce (true) database                                                         | string             | false   |
 
 (*): for Mongo connection string options
 see [docs](https://www.mongodb.com/docs/drivers/java/sync/v4.3/fundamentals/connection/connection-options/#connection-options)
