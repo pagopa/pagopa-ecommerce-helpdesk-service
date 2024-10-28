@@ -56,10 +56,10 @@ services:
     depends_on:
       - mongo
 
-  mongo-pm:
-    container_name: pagopa-pm-helpdesk-mongo
+  mongo-history:
+    container_name: pagopa-history-helpdesk-mongo
     image: mongo
-    env_file: docker/mongoDB/conf/mongodb-pm.env
+    env_file: docker/mongoDB/conf/mongodb-history.env
     ports:
       - "27018:27017"
     networks:
@@ -68,18 +68,18 @@ services:
       test: echo "db.stats().ok" | mongo --quiet
       interval: 10s
     volumes:
-      - ./docker/mongoDB/mongo-pm-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./docker/mongoDB/mongo-history-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
-  mongo-express-pm:
-    container_name: pagopa-pm-helpdesk-express
+  mongo-express-history:
+    container_name: pagopa-history-helpdesk-express
     image: mongo-express
-    env_file: docker/mongoDB/conf/mongo-express-pm.env
+    env_file: docker/mongoDB/conf/mongo-express-history.env
     ports:
       - "8082:8081"
     networks:
       - pagopa-ecommerce-net
     depends_on:
-      - mongo-pm
+      - mongo-history
 
   pagopa-pdv-mock:
     container_name: pagopa-pdv-mock-helpdesk
