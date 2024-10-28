@@ -1,4 +1,4 @@
-package it.pagopa.ecommerce.helpdesk.dataproviders
+package it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce
 
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
 import org.springframework.data.mongodb.repository.Aggregation

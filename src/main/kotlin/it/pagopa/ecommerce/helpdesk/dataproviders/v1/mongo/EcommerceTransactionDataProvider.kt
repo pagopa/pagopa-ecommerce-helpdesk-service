@@ -2,8 +2,8 @@ package it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo
 
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
-import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsEventStoreRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsViewRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
