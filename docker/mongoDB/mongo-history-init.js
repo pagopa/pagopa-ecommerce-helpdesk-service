@@ -1,7 +1,7 @@
 conn = new Mongo();
-db = conn.getDB("pm");
+db = conn.getDB("history");
 
-db.getCollection('pm-transactions-view').insertMany([{
+db.getCollection('pm-transactions-history').insertMany([{
     "userInfo": {
         "userFiscalCode": "RSSMRA80A01H501U",
         "notificationEmail": "mario.rossi@example.com",
