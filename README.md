@@ -43,6 +43,18 @@ the [OpenAPI 3 here.](https://editor.swagger.io/?url=https://raw.githubuserconte
 
 ---
 
+## Working with Windows
+
+If you are developing on Windows, it is recommended the use of WSL2 combined with IntelliJ IDEA.
+
+The IDE should be installed on Windows, with the repository cloned into a folder in WSL2. All the necessary tools will be installed in the Linux distro of your choice.
+
+You can find more info on how to set up the environment following the link below.
+
+https://www.jetbrains.com/help/idea/how-to-use-wsl-development-environment-in-product.html
+
+After setting up the WSL environment, you can test the application by building it through either Docker or Spring Boot (useful for local development).
+
 ## Start Project Locally 🚀
 
 ### Prerequisites
@@ -63,34 +75,35 @@ to get a good default configuration.
 
 If you want to customize the application environment, reference this table:
 
-| Variable name                     | Description                                                                                                                                                | type               | default |
-|-----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|---------|
-| DEFAULT_LOGGING_LEVEL             | Default root application logging level                                                                                                                     | string             | INFO    |
-| APP_LOGGING_LEVEL                 | Application logging level                                                                                                                                  | string             | INFO    |
-| WEB_LOGGING_LEVEL                 | Web logging level                                                                                                                                          | string             | INFO    |
-| MONGO_HOST                        | MongoDB ecommerce hostname instance                                                                                                                        | hostname (string)  |         |
-| MONGO_PORT                        | Port where MongoDB is bound to in MongoDB host                                                                                                             | number             |         |
-| MONGO_USERNAME                    | MongoDB username used to connect to the database                                                                                                           | string             |         |
-| MONGO_PASSWORD                    | MongoDB password used to connect to the database                                                                                                           | string             |         |
-| MONGO_SSL_ENABLED                 | Whether SSL is enabled while connecting to MongoDB                                                                                                         | string             |         |
-| MONGO_PORT                        | Port used for connecting to MongoDB instance                                                                                                               | string             |         |
-| MONGO_MIN_POOL_SIZE               | Min amount of connections to be retained into connection pool. See docs *                                                                                  | string             |         |
-| MONGO_MAX_POOL_SIZE               | Max amount of connections to be retained into connection pool.See docs *                                                                                   | string             |         |
-| MONGO_MAX_IDLE_TIMEOUT_MS         | Max timeout after which an idle connection is killed in milliseconds. See docs *                                                                           | string             |         |
-| MONGO_CONNECTION_TIMEOUT_MS       | Max time to wait for a connection to be opened. See docs *                                                                                                 | string             |         |
-| MONGO_SOCKET_TIMEOUT_MS           | Max time to wait for a command send or receive before timing out. See docs *                                                                               | string             |         |
-| MONGO_SERVER_SELECTION_TIMEOUT_MS | Max time to wait for a server to be selected while performing a communication with Mongo in milliseconds. See docs *                                       | string             |         |
-| MONGO_WAITING_QUEUE_MS            | Max time a thread has to wait for a connection to be available in milliseconds. See docs *                                                                 | string             |         |
-| MONGO_HEARTBEAT_FREQUENCY_MS      | Hearth beat frequency in milliseconds. This is an hello command that is sent periodically on each active connection to perform an health check. See docs * | string             |         |
-| MONGO_REPLICA_SET_OPTION          | The replica set connection string option valued with the name of the replica set. See docs *                                                               | string             |         |
-| PERSONAL_DATA_VAULT_API_KEY       | API Key for Personal Data Vault (PDV is used to safely encrypt PIIs, e.g. the user's email address)                                                        | string             |         |         
-| PERSONAL_DATA_VAULT_API_BASE_PATH | API base path for Personal Data Vault                                                                                                                      | string             |         |         
-| PM_ORACLE_HOST                    | PM Oracle DB hostname instance                                                                                                                             | hostname (string)  |         |
-| PM_ORACLE_PORT                    | PM Oracle DB port                                                                                                                                          | int                |         |
-| PM_ORACLE_DATABASE_NAME           | PM Oracle DB database name                                                                                                                                 | string             |         |
-| PM_ORACLE_USERNAME                | PM Oracle DB username                                                                                                                                      | string             |         |
-| PM_ORACLE_PASSWORD                | PM Oracle DB password                                                                                                                                      | string             |         |
-| SEARCH_DEAD_LETTER_QUEUE_MAPPING  | Dead letter search criteria to queue name mapping                                                                                                          | map(string,string) |         |
+| Variable name                          | Description                                                                                                                                                | type               | default |
+|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|---------|
+| DEFAULT_LOGGING_LEVEL                  | Default root application logging level                                                                                                                     | string             | INFO    |
+| APP_LOGGING_LEVEL                      | Application logging level                                                                                                                                  | string             | INFO    |
+| WEB_LOGGING_LEVEL                      | Web logging level                                                                                                                                          | string             | INFO    |
+| MONGO_HOST                             | MongoDB ecommerce hostname instance                                                                                                                        | hostname (string)  |         |
+| MONGO_PORT                             | Port where MongoDB is bound to in MongoDB host                                                                                                             | number             |         |
+| MONGO_USERNAME                         | MongoDB username used to connect to the database                                                                                                           | string             |         |
+| MONGO_PASSWORD                         | MongoDB password used to connect to the database                                                                                                           | string             |         |
+| MONGO_SSL_ENABLED                      | Whether SSL is enabled while connecting to MongoDB                                                                                                         | string             |         |
+| MONGO_PORT                             | Port used for connecting to MongoDB instance                                                                                                               | string             |         |
+| MONGO_MIN_POOL_SIZE                    | Min amount of connections to be retained into connection pool. See docs *                                                                                  | string             |         |
+| MONGO_MAX_POOL_SIZE                    | Max amount of connections to be retained into connection pool.See docs *                                                                                   | string             |         |
+| MONGO_MAX_IDLE_TIMEOUT_MS              | Max timeout after which an idle connection is killed in milliseconds. See docs *                                                                           | string             |         |
+| MONGO_CONNECTION_TIMEOUT_MS            | Max time to wait for a connection to be opened. See docs *                                                                                                 | string             |         |
+| MONGO_SOCKET_TIMEOUT_MS                | Max time to wait for a command send or receive before timing out. See docs *                                                                               | string             |         |
+| MONGO_SERVER_SELECTION_TIMEOUT_MS      | Max time to wait for a server to be selected while performing a communication with Mongo in milliseconds. See docs *                                       | string             |         |
+| MONGO_WAITING_QUEUE_MS                 | Max time a thread has to wait for a connection to be available in milliseconds. See docs *                                                                 | string             |         |
+| MONGO_HEARTBEAT_FREQUENCY_MS           | Hearth beat frequency in milliseconds. This is an hello command that is sent periodically on each active connection to perform an health check. See docs * | string             |         |
+| MONGO_REPLICA_SET_OPTION               | The replica set connection string option valued with the name of the replica set. See docs *                                                               | string             |         |
+| PERSONAL_DATA_VAULT_API_KEY            | API Key for Personal Data Vault (PDV is used to safely encrypt PIIs, e.g. the user's email address)                                                        | string             |         |         
+| PERSONAL_DATA_VAULT_API_BASE_PATH      | API base path for Personal Data Vault                                                                                                                      | string             |         |         
+| PM_ORACLE_HOST                         | PM Oracle DB hostname instance                                                                                                                             | hostname (string)  |         |
+| PM_ORACLE_PORT                         | PM Oracle DB port                                                                                                                                          | int                |         |
+| PM_ORACLE_DATABASE_NAME                | PM Oracle DB database name                                                                                                                                 | string             |         |
+| PM_ORACLE_USERNAME                     | PM Oracle DB username                                                                                                                                      | string             |         |
+| PM_ORACLE_PASSWORD                     | PM Oracle DB password                                                                                                                                      | string             |         |
+| SEARCH_DEAD_LETTER_QUEUE_MAPPING       | Dead letter search criteria to queue name mapping                                                                                                          | map(string,string) |         |
+| SEARCH_PM_IN_ECOMMERCE_HISTORY_ENABLED | Whether the search by fiscal code is made through the history (false) or ecommerce (true) database                                                         | string             | false   |
 
 (*): for Mongo connection string options
 see [docs](https://www.mongodb.com/docs/drivers/java/sync/v4.3/fundamentals/connection/connection-options/#connection-options)
