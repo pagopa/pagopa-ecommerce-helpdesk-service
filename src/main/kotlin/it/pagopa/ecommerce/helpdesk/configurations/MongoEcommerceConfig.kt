@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 class MongoEcommerceConfig() {
     @Bean(name = ["ecommerceReactiveMongoClient"])
     fun ecommerceReactiveMongoClient(
-        @Value("\${ecommerce.mongodb.uri}") uri: String,
+        @Value("\${mongodb.uri}") uri: String,
     ): MongoClient {
         val connectionString = ConnectionString(uri)
         val settings = MongoClientSettings.builder().applyConnectionString(connectionString).build()
@@ -24,7 +24,15 @@ class MongoEcommerceConfig() {
     @Bean(name = ["ecommerceReactiveMongoTemplate"])
     fun ecommerceReactiveMongoTemplate(
         @Qualifier("ecommerceReactiveMongoClient") mongoClient: MongoClient,
-        @Value("\${ecommerce.mongodb.database}") database: String
+        @Value("\${mongodb.ecommerce.database}") database: String
+    ): ReactiveMongoTemplate {
+        return ReactiveMongoTemplate(mongoClient, database)
+    }
+
+    @Bean(name = ["ecommerceHistoryReactiveMongoTemplate"])
+    fun ecommerceHistoryReactiveMongoTemplate(
+        @Qualifier("ecommerceReactiveMongoClient") mongoClient: MongoClient,
+        @Value("\${mongodb.ecommerce_history.database}") database: String
     ): ReactiveMongoTemplate {
         return ReactiveMongoTemplate(mongoClient, database)
     }
