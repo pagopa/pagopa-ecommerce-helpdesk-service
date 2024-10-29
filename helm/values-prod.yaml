@@ -43,6 +43,18 @@ microservice-chart:
       MONGO_WAITING_QUEUE_MS: "2000"
       MONGO_HEARTBEAT_FREQUENCY_MS: "5000"
       MONGO_REPLICA_SET_OPTION: "&replicaSet=globaldb"
+      ECOMMERCE_HISTORY_MONGO_HOST: pagopa-d-weu-ecommerce-cosmos-account.mongo.cosmos.azure.com
+      ECOMMERCE_HISTORY_MONGO_USERNAME: pagopa-d-weu-ecommerce-cosmos-account
+      ECOMMERCE_HISTORY_MONGO_PORT: "10255"
+      ECOMMERCE_HISTORY_MONGO_SSL_ENABLED: "true"
+      ECOMMERCE_HISTORY_MONGO_MIN_POOL_SIZE: "0"
+      ECOMMERCE_HISTORY_MONGO_MAX_POOL_SIZE: "50"
+      ECOMMERCE_HISTORY_MONGO_MAX_IDLE_TIMEOUT_MS: "600000"
+      ECOMMERCE_HISTORY_MONGO_CONNECTION_TIMEOUT_MS: "2000"
+      ECOMMERCE_HISTORY_MONGO_SOCKET_TIMEOUT_MS: "10000"
+      ECOMMERCE_HISTORY_MONGO_SERVER_SELECTION_TIMEOUT_MS: "2000"
+      ECOMMERCE_HISTORY_MONGO_WAITING_QUEUE_MS: "2000"
+      ECOMMERCE_HISTORY_MONGO_HEARTBEAT_FREQUENCY_MS: "5000"
       SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
         {ALL: '*', ECOMMERCE: 'pagopa-p-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-p-weu-ecommerce-notifications-service-errors-queue'}
 
@@ -53,6 +65,7 @@ microservice-chart:
       PM_ORACLE_PASSWORD: pm-oracle-db-password
       PM_ORACLE_HOST: pm-oracle-db-host
       MONGO_PASSWORD: mongo-ecommerce-password
+      ECOMMERCE_HISTORY_MONGO_PASSWORD: mongo-ecommerce-password
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaecommercehelpdeskservice
     tag: "1.15.0"
@@ -139,6 +152,18 @@ microservice-chart:
     MONGO_WAITING_QUEUE_MS: "2000"
     MONGO_HEARTBEAT_FREQUENCY_MS: "5000"
     MONGO_REPLICA_SET_OPTION: "&replicaSet=globaldb"
+    ECOMMERCE_HISTORY_MONGO_HOST: pagopa-d-weu-ecommerce-cosmos-account.mongo.cosmos.azure.com
+    ECOMMERCE_HISTORY_MONGO_USERNAME: pagopa-d-weu-ecommerce-cosmos-account
+    ECOMMERCE_HISTORY_MONGO_PORT: "10255"
+    ECOMMERCE_HISTORY_MONGO_SSL_ENABLED: "true"
+    ECOMMERCE_HISTORY_MONGO_MIN_POOL_SIZE: "0"
+    ECOMMERCE_HISTORY_MONGO_MAX_POOL_SIZE: "50"
+    ECOMMERCE_HISTORY_MONGO_MAX_IDLE_TIMEOUT_MS: "600000"
+    ECOMMERCE_HISTORY_MONGO_CONNECTION_TIMEOUT_MS: "2000"
+    ECOMMERCE_HISTORY_MONGO_SOCKET_TIMEOUT_MS: "10000"
+    ECOMMERCE_HISTORY_MONGO_SERVER_SELECTION_TIMEOUT_MS: "2000"
+    ECOMMERCE_HISTORY_MONGO_WAITING_QUEUE_MS: "2000"
+    ECOMMERCE_HISTORY_MONGO_HEARTBEAT_FREQUENCY_MS: "5000"
     SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
       {ALL: '*', ECOMMERCE: 'pagopa-p-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-p-weu-ecommerce-notifications-service-errors-queue'}
 
@@ -149,6 +174,7 @@ microservice-chart:
     PM_ORACLE_PASSWORD: pm-oracle-db-password
     PM_ORACLE_HOST: pm-oracle-db-host
     MONGO_PASSWORD: mongo-ecommerce-password
+    ECOMMERCE_HISTORY_MONGO_PASSWORD: mongo-ecommerce-password
   keyvault:
     name: "pagopa-p-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"

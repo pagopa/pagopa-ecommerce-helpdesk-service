@@ -1,5 +1,5 @@
 conn = new Mongo();
-db = conn.getDB("history");
+db = conn.getDB("ecommerce-history");
 
 db.getCollection('pm-transactions-history').insertMany([{
     "userInfo": {
