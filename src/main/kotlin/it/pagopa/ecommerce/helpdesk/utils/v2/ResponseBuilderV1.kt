@@ -10,11 +10,15 @@ import it.pagopa.ecommerce.commons.domain.v1.TransactionWithClosureError
 import it.pagopa.ecommerce.commons.domain.v1.pojos.*
 import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.utils.v1.TransactionUtils.getTransactionFee
-import it.pagopa.ecommerce.helpdesk.documents.PmTransaction
+import it.pagopa.ecommerce.helpdesk.documents.AccountingStatus
+import it.pagopa.ecommerce.helpdesk.documents.PaymentStatus
+import it.pagopa.ecommerce.helpdesk.documents.PmTransactionHistory
+import it.pagopa.ecommerce.helpdesk.documents.UserStatus
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.*
@@ -101,31 +105,36 @@ fun resultToTransactionInfoDto(
     }
 
 fun pmTransactionToTransactionInfoDtoV2(
-    pmTransaction: PmTransaction
+    pmTransactionHistory: PmTransactionHistory
 ): TransactionResultDto {
-    val amount = pmTransaction.transactionInfo.amount
-    val fee = pmTransaction.transactionInfo.fee
-    val grandTotal = pmTransaction.transactionInfo.grandTotal
-    val email = pmTransaction.userInfo.notificationEmail
+    val amount = pmTransactionHistory.transactionInfo.amount
+    val fee = pmTransactionHistory.transactionInfo.fee
+    val grandTotal = pmTransactionHistory.transactionInfo.grandTotal
+    val email = pmTransactionHistory.userInfo.notificationEmail
     // Build user info
 
     val userInfo =
         UserInfoDto()
             .notificationEmail(email)
-            .authenticationType(UserDto.TypeEnum.GUEST.toString())
+            .userFiscalCode(pmTransactionHistory.userInfo.userFiscalCode)
+            .authenticationType(
+                UserStatus.fromCode(pmTransactionHistory.userInfo.authenticationType)
+            )
     // build transaction info
     val transactionInfo =
         TransactionInfoDto()
-            .creationDate(pmTransaction.transactionInfo.creationDate)
-            .status(pmTransaction.transactionInfo.status.toString()) //TODO
-            .statusDetails(pmTransaction.transactionInfo.statusDetail.toString()) //TODO
+            .creationDate(OffsetDateTime.parse(pmTransactionHistory.transactionInfo.creationDate))
+            .status(PaymentStatus.fromCode(pmTransactionHistory.transactionInfo.status))
+            .statusDetails(
+                AccountingStatus.fromCode(pmTransactionHistory.transactionInfo.statusDetails)
+            )
             .eventStatus(null)
             .amount(amount)
             .fee(fee)
             .grandTotal(grandTotal)
-            .rrn(pmTransaction.transactionInfo.rrn)
-            .authorizationCode(pmTransaction.transactionInfo.authorizationCode)
-            .paymentMethodName(pmTransaction.transactionInfo.paymentMethodName)
+            .rrn(pmTransactionHistory.transactionInfo.rrn)
+            .authorizationCode(pmTransactionHistory.transactionInfo.authorizationCode)
+            .paymentMethodName(pmTransactionHistory.transactionInfo.paymentMethodName)
             .brand(null)
             .authorizationRequestId(null)
             .paymentGateway(null)
@@ -134,10 +143,10 @@ fun pmTransactionToTransactionInfoDtoV2(
     // build payment info
     val paymentInfo =
         PaymentInfoDto()
-            .origin(pmTransaction.paymentInfo.origin)
-            .idTransaction(pmTransaction.paymentInfo.details.get(0).idTransaction)
+            .origin(pmTransactionHistory.paymentInfo.origin)
+            .idTransaction(pmTransactionHistory.paymentInfo.details[0].idTransaction)
             .details(
-                pmTransaction.paymentInfo.details.map {
+                pmTransactionHistory.paymentInfo.details.map {
                     PaymentDetailInfoDto()
                         .subject(it.subject)
                         .iuv(it.iuv)
@@ -151,9 +160,9 @@ fun pmTransactionToTransactionInfoDtoV2(
     // build psp info
     val pspInfo =
         PspInfoDto()
-            .pspId(pmTransaction.pspInfo.pspId)
-            .idChannel(pmTransaction.pspInfo.idChannel)
-            .businessName(pmTransaction.pspInfo.businessName)
+            .pspId(pmTransactionHistory.pspInfo.pspId)
+            .idChannel(pmTransactionHistory.pspInfo.idChannel)
+            .businessName(pmTransactionHistory.pspInfo.businessName)
     return TransactionResultDto()
         .product(ProductDto.PM)
         .userInfo(userInfo)

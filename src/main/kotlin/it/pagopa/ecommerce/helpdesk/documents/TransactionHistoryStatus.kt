@@ -13,7 +13,6 @@ enum class UserStatus(val code: Int, val description: String) {
     companion object {
         fun fromCode(code: Int): String {
             return UserStatus.values().find { it.code == code }?.name ?: code.toString()
-
         }
     }
 }
@@ -44,7 +43,6 @@ enum class PaymentStatus(val code: Int, val description: String) {
     companion object {
         fun fromCode(code: Int): String {
             return values().find { it.code == code }?.name ?: code.toString()
-
         }
     }
 }
@@ -60,7 +58,6 @@ enum class AccountingStatus(val code: Int, val description: String) {
     companion object {
         fun fromCode(code: Int): String {
             return AccountingStatus.values().find { it.code == code }?.name ?: code.toString()
-
         }
     }
 }

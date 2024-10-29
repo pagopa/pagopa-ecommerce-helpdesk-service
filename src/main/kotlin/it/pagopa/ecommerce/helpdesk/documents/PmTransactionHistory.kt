@@ -1,6 +1,5 @@
 package it.pagopa.ecommerce.helpdesk.documents
 
-import java.time.Instant
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 

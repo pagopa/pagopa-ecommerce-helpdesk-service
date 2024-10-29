@@ -1,24 +1,23 @@
-package it.pagopa.ecommerce.helpdesk.dataproviders
+package it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history
 
-import it.pagopa.ecommerce.helpdesk.documents.PmTransaction
+import it.pagopa.ecommerce.helpdesk.documents.PmTransactionHistory
 import org.springframework.data.mongodb.repository.Aggregation
 import org.springframework.data.mongodb.repository.Query
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
+interface PmTransactionsRepository : ReactiveCrudRepository<PmTransactionHistory, String> {
 
-interface PmTransactionsViewRepository: ReactiveCrudRepository<PmTransaction , String> {
-
-    @Query("{'email.data': '?0'}", count = true)
+    @Query("{'userInfo.notificationEmail': '?0'}", count = true)
     fun countTransactionsWithEmail(email: String): Mono<Long>
 
-    @Query("{'fiscalcode.data': '?0'}", count = true)
+    @Query("{'userInfo.notificationEmail': '?0'}", count = true)
     fun countTransactionsWithUserFiscalCode(userFiscalCode: String): Mono<Long>
 
     @Aggregation(
-        "{\$match: {'email.data': '?0'}}",
-        "{\$sort: {'creationDate': -1}}",
+        "{\$match: {'userInfo.notificationEmail': '?0'}}",
+        "{\$sort: {'transactionInfo.creationDate': -1}}",
         "{\$skip: ?1}",
         "{\$limit: ?2}",
     )
@@ -26,11 +25,11 @@ interface PmTransactionsViewRepository: ReactiveCrudRepository<PmTransaction , S
         email: String,
         skip: Int,
         limit: Int
-    ): Flux<PmTransaction>
+    ): Flux<PmTransactionHistory>
 
     @Aggregation(
-        "{\$match: {'email.data': '?0'}}",
-        "{\$sort: {'creationDate': -1}}",
+        "{\$match: {'userInfo.userFiscalCode': '?0'}}",
+        "{\$sort: {'transactionInfo.creationDate': -1}}",
         "{\$skip: ?1}",
         "{\$limit: ?2}",
     )
@@ -38,7 +37,5 @@ interface PmTransactionsViewRepository: ReactiveCrudRepository<PmTransaction , S
         userFiscalCode: String,
         skip: Int,
         limit: Int
-    ): Flux<PmTransaction>
-
-
+    ): Flux<PmTransactionHistory>
 }
