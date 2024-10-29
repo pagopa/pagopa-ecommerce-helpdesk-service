@@ -21,8 +21,8 @@ import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils.convertEventsToEventInfoList
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
-import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsEventStoreRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.TransactionsViewRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
