@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v1
 
 import it.pagopa.ecommerce.helpdesk.services.v1.PmService
+import it.pagopa.ecommerce.helpdesk.utils.PmProviderType
 import it.pagopa.generated.ecommerce.helpdesk.api.PmApi
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestDto
@@ -31,14 +32,17 @@ class PmController(
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
         logger.info(
-            "[HelpDesk controller] SearchTransaction using ${if (searchPmInEcommerceHistory) "v2 (ecommerce db)" else "v1 (history db)"} search"
+            "[PM V1 controller] SearchTransaction using ${if (searchPmInEcommerceHistory) "v2 (ecommerce history db)" else "v1 (pm legacy db)"} search"
         )
         return pmSearchTransactionRequestDto
             .flatMap {
                 pmService.searchTransaction(
                     pageSize = pageSize,
                     pageNumber = pageNumber,
-                    pmSearchTransactionRequestDto = it
+                    pmSearchTransactionRequestDto = it,
+                    pmProviderType =
+                        if (searchPmInEcommerceHistory) PmProviderType.ECOMMERCE_HISTORY
+                        else PmProviderType.PM_LEGACY
                 )
             }
             .map { ResponseEntity.ok(it) }
