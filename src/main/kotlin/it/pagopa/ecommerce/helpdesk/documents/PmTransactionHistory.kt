@@ -21,7 +21,7 @@ data class UserInfo(
 )
 
 data class TransactionInfo(
-    val creationDate: Instant,
+    val creationDate: String,
     val status: Int,
     val statusDetails: Int,
     val amount: Int,

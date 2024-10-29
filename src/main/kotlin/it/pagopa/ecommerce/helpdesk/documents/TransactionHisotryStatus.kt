@@ -11,7 +11,10 @@ enum class UserStatus(val code: Int, val description: String) {
     REGISTERED_WITH_CIE(12, "Utente registrato su IO con CIE");
 
     companion object {
-        fun fromCode(code: Int): UserStatus? = values().find { it.code == code }
+        fun fromCode(code: Int): String {
+            return UserStatus.values().find { it.code == code }?.name ?: code.toString()
+
+        }
     }
 }
 
@@ -39,7 +42,10 @@ enum class PaymentStatus(val code: Int, val description: String) {
     PAYMENT_AUTHORIZED_BY_GATEWAY(21, "Pagamento Autorizzato dal Payment Gateway");
 
     companion object {
-        fun fromCode(code: Int): PaymentStatus? = values().find { it.code == code }
+        fun fromCode(code: Int): String {
+            return values().find { it.code == code }?.name ?: code.toString()
+
+        }
     }
 }
 
@@ -52,6 +58,9 @@ enum class AccountingStatus(val code: Int, val description: String) {
     RECEIPT_CREATED(5, "Ricevuta creata");
 
     companion object {
-        fun fromCode(code: Int): AccountingStatus? = values().find { it.code == code }
+        fun fromCode(code: Int): String {
+            return AccountingStatus.values().find { it.code == code }?.name ?: code.toString()
+
+        }
     }
 }
