@@ -1,14 +1,14 @@
-package it.pagopa.ecommerce.helpdesk.dataproviders.mongo.v1
+package it.pagopa.ecommerce.helpdesk.dataproviders.mongo.v2
 
-import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.PmTransactionsRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.PmTransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.PmTransactionHistoryDataProvider
 import it.pagopa.ecommerce.helpdesk.documents.AccountingStatus
 import it.pagopa.ecommerce.helpdesk.documents.PaymentStatus
 import it.pagopa.ecommerce.helpdesk.documents.UserStatus
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
-import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
-import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import java.time.OffsetDateTime
 import java.util.stream.Stream
 import kotlinx.coroutines.reactor.mono
@@ -22,34 +22,34 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
-class PmTransactionDataProviderTest {
+class PmTransactionHistoryDataProviderTestV2 {
 
     private val testEmail = "test@test.it"
     private val fiscalCode = "fiscal code"
     private val pmTransactionsRepository: PmTransactionsRepository = mock()
-    private val pmTransactionDataProvider: PmTransactionDataProvider =
-        PmTransactionDataProvider(pmTransactionsRepository = pmTransactionsRepository)
+    private val pmTransactionHistoryDataProvider: PmTransactionHistoryDataProvider =
+        PmTransactionHistoryDataProvider(pmTransactionsRepository = pmTransactionsRepository)
 
     companion object {
 
         @JvmStatic
         fun differentSearchCriteria(): Stream<Arguments> =
             Stream.of(
-                Arguments.of(HelpdeskTestUtils.buildSearchRequestByRptId()),
-                Arguments.of(HelpdeskTestUtils.buildSearchRequestByTransactionId()),
-                Arguments.of(HelpdeskTestUtils.buildSearchRequestByPaymentToken())
+                Arguments.of(HelpdeskTestUtilsV2.buildSearchRequestByRptId()),
+                Arguments.of(HelpdeskTestUtilsV2.buildSearchRequestByTransactionId()),
+                Arguments.of(HelpdeskTestUtilsV2.buildSearchRequestByPaymentToken())
             )
     }
 
     @Test
     fun `Should count total transactions by email successfully`() {
         val count = 2L
-        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail(testEmail)
+        val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByUserMail(testEmail)
         given(pmTransactionsRepository.countTransactionsWithEmail(searchCriteria.userEmail))
             .willReturn(mono { count })
         StepVerifier.create(
-                pmTransactionDataProvider.totalRecordCount(
-                    SearchParamDecoder(
+                pmTransactionHistoryDataProvider.totalRecordCount(
+                    SearchParamDecoderV2(
                         searchParameter = searchCriteria,
                         confidentialMailUtils = null
                     )
@@ -62,7 +62,7 @@ class PmTransactionDataProviderTest {
     @Test
     fun `Should count total transaction by fiscalCode successfully`() {
         val count = 2L
-        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserFiscalCode(fiscalCode)
+        val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode(fiscalCode)
         given(
                 pmTransactionsRepository.countTransactionsWithUserFiscalCode(
                     searchCriteria.userFiscalCode
@@ -70,8 +70,8 @@ class PmTransactionDataProviderTest {
             )
             .willReturn(mono { count })
         StepVerifier.create(
-                pmTransactionDataProvider.totalRecordCount(
-                    SearchParamDecoder(
+                pmTransactionHistoryDataProvider.totalRecordCount(
+                    SearchParamDecoderV2(
                         searchParameter = searchCriteria,
                         confidentialMailUtils = null
                     )
@@ -87,8 +87,8 @@ class PmTransactionDataProviderTest {
         searchTransaction: HelpDeskSearchTransactionRequestDto
     ) {
         StepVerifier.create(
-                pmTransactionDataProvider.totalRecordCount(
-                    SearchParamDecoder(
+                pmTransactionHistoryDataProvider.totalRecordCount(
+                    SearchParamDecoderV2(
                         searchParameter = searchTransaction,
                         confidentialMailUtils = null
                     )
@@ -103,8 +103,8 @@ class PmTransactionDataProviderTest {
         val searchCriteria: HelpDeskSearchTransactionRequestDto = mock()
         given(searchCriteria.type).willReturn("UNKNOWN")
         StepVerifier.create(
-                pmTransactionDataProvider.totalRecordCount(
-                    SearchParamDecoder(
+                pmTransactionHistoryDataProvider.totalRecordCount(
+                    SearchParamDecoderV2(
                         searchParameter = searchCriteria,
                         confidentialMailUtils = null
                     )
@@ -116,11 +116,11 @@ class PmTransactionDataProviderTest {
 
     @Test
     fun `Should map successfully pmTransaction data into response by email`() {
-        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail(testEmail)
+        val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByUserMail(testEmail)
         val pageSize = 100
         val pageNumber = 0
         val pmTransaction =
-            HelpdeskTestUtils.buildPmTransactionHisotryResultDto(
+            HelpdeskTestUtilsV2.buildPmTransactionHisotryResultDto(
                 OffsetDateTime.now(),
                 ProductDto.PM
             )
@@ -153,14 +153,15 @@ class PmTransactionDataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(pmTransaction.paymentInfo.origin)
+                            .idTransaction(details.idTransaction)
                             .details(
                                 listOf(
                                     PaymentDetailInfoDto()
                                         .subject(details.subject)
                                         .iuv(details.iuv)
-                                        .idTransaction(details.idTransaction)
                                         .creditorInstitution(details.creditorInstitution)
                                         .paFiscalCode(details.paFiscalCode)
+                                        .amount(details.amount)
                                 )
                             )
                     )
@@ -181,9 +182,9 @@ class PmTransactionDataProviderTest {
             )
             .willReturn(Flux.just(pmTransaction))
         StepVerifier.create(
-                pmTransactionDataProvider.findResult(
+                pmTransactionHistoryDataProvider.findResult(
                     searchParams =
-                        SearchParamDecoder(
+                        SearchParamDecoderV2(
                             searchParameter = searchCriteria,
                             confidentialMailUtils = null
                         ),
@@ -197,11 +198,11 @@ class PmTransactionDataProviderTest {
 
     @Test
     fun `Should map successfully pmTransaction data into response by fiscalCode`() {
-        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserFiscalCode(fiscalCode)
+        val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode(fiscalCode)
         val pageSize = 100
         val pageNumber = 0
         val pmTransaction =
-            HelpdeskTestUtils.buildPmTransactionHisotryResultDto(
+            HelpdeskTestUtilsV2.buildPmTransactionHisotryResultDto(
                 OffsetDateTime.now(),
                 ProductDto.PM
             )
@@ -234,14 +235,15 @@ class PmTransactionDataProviderTest {
                     .paymentInfo(
                         PaymentInfoDto()
                             .origin(pmTransaction.paymentInfo.origin)
+                            .idTransaction(details.idTransaction)
                             .details(
                                 listOf(
                                     PaymentDetailInfoDto()
                                         .subject(details.subject)
                                         .iuv(details.iuv)
-                                        .idTransaction(details.idTransaction)
                                         .creditorInstitution(details.creditorInstitution)
                                         .paFiscalCode(details.paFiscalCode)
+                                        .amount(details.amount)
                                 )
                             )
                     )
@@ -265,9 +267,9 @@ class PmTransactionDataProviderTest {
             .willReturn(Flux.just(pmTransaction))
 
         StepVerifier.create(
-                pmTransactionDataProvider.findResult(
+                pmTransactionHistoryDataProvider.findResult(
                     searchParams =
-                        SearchParamDecoder(
+                        SearchParamDecoderV2(
                             searchParameter = searchCriteria,
                             confidentialMailUtils = null
                         ),
@@ -281,12 +283,12 @@ class PmTransactionDataProviderTest {
 
     @Test
     fun `Should return error for search by unknown search criteria`() {
-        val searchCriteria: SearchParamDecoder<HelpDeskSearchTransactionRequestDto> = mock()
+        val searchCriteria: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto> = mock()
         val helpDeskSearchTransactionRequestDto: HelpDeskSearchTransactionRequestDto = mock()
         given(helpDeskSearchTransactionRequestDto.type).willReturn("UNKNOWN")
         given(searchCriteria.decode()).willReturn(Mono.just(helpDeskSearchTransactionRequestDto))
         StepVerifier.create(
-                pmTransactionDataProvider.findResult(
+                pmTransactionHistoryDataProvider.findResult(
                     searchParams = searchCriteria,
                     skip = 0,
                     limit = 0
@@ -301,10 +303,10 @@ class PmTransactionDataProviderTest {
     fun `Should return error for search by invalid search criteria`(
         searchTransaction: HelpDeskSearchTransactionRequestDto
     ) {
-        val searchParamDecoder: SearchParamDecoder<HelpDeskSearchTransactionRequestDto> = mock()
+        val searchParamDecoder: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto> = mock()
         given(searchParamDecoder.decode()).willReturn(Mono.just(searchTransaction))
         StepVerifier.create(
-                pmTransactionDataProvider.findResult(
+                pmTransactionHistoryDataProvider.findResult(
                     searchParams = searchParamDecoder,
                     skip = 0,
                     limit = 0

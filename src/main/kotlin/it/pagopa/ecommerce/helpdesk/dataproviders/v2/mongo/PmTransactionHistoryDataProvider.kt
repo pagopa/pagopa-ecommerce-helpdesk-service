@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-class PmTransactionDataProvider(
+class PmTransactionHistoryDataProvider(
     @Autowired private val pmTransactionsRepository: PmTransactionsRepository
 ) : TransactionDataProvider {
     override fun totalRecordCount(
