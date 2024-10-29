@@ -288,7 +288,11 @@ class PmTransactionDataProviderTestV2 {
         given(helpDeskSearchTransactionRequestDto.type).willReturn("UNKNOWN")
         given(searchCriteria.decode()).willReturn(Mono.just(helpDeskSearchTransactionRequestDto))
         StepVerifier.create(
-                pmTransactionDataProvider.findResult(searchParams = searchCriteria, skip = 0, limit = 0)
+                pmTransactionDataProvider.findResult(
+                    searchParams = searchCriteria,
+                    skip = 0,
+                    limit = 0
+                )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
@@ -302,7 +306,11 @@ class PmTransactionDataProviderTestV2 {
         val searchParamDecoder: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto> = mock()
         given(searchParamDecoder.decode()).willReturn(Mono.just(searchTransaction))
         StepVerifier.create(
-                pmTransactionDataProvider.findResult(searchParams = searchParamDecoder, skip = 0, limit = 0)
+                pmTransactionDataProvider.findResult(
+                    searchParams = searchParamDecoder,
+                    skip = 0,
+                    limit = 0
+                )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()

@@ -13,8 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-class PmTransactionDataProvider(@Autowired private val pmTransactionsRepository: PmTransactionsRepository) :
-    TransactionDataProvider {
+class PmTransactionDataProvider(
+    @Autowired private val pmTransactionsRepository: PmTransactionsRepository
+) : TransactionDataProvider {
     override fun totalRecordCount(
         searchParams: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto>
     ): Mono<Int> {
