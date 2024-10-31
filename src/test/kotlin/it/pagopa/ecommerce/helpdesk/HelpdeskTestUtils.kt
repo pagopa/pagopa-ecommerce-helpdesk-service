@@ -10,7 +10,6 @@ import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransaction
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto
 import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
-import it.pagopa.ecommerce.helpdesk.documents.PmTransactionHistory
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.EventInfoDto
 import java.time.OffsetDateTime
@@ -115,54 +114,6 @@ object HelpdeskTestUtils {
                     .idChannel(TransactionTestUtils.PSP_CHANNEL_CODE)
             )
             .product(product)
-
-    fun buildPmTransactionHisotryResultDto(
-        creationDate: OffsetDateTime,
-        product: ProductDto
-    ): PmTransactionHistory =
-        PmTransactionHistory(
-            id = UUID.randomUUID().toString(),
-            userInfo =
-                it.pagopa.ecommerce.helpdesk.documents.UserInfo(
-                    userFiscalCode = "user fiscal code",
-                    notificationEmail = TransactionTestUtils.EMAIL_STRING,
-                    authenticationType = 0
-                ),
-            transactionInfo =
-                it.pagopa.ecommerce.helpdesk.documents.TransactionInfo(
-                    creationDate = creationDate.toString(),
-                    status = 0,
-                    statusDetails = 0,
-                    amount = 500,
-                    fee = 200,
-                    grandTotal = 700,
-                    rrn = "rrn",
-                    authorizationCode = "authorization code",
-                    paymentMethodName = "payment method name"
-                ),
-            paymentInfo =
-                it.pagopa.ecommerce.helpdesk.documents.PaymentInfo(
-                    origin = "origin",
-                    details =
-                        listOf(
-                            it.pagopa.ecommerce.helpdesk.documents.PaymentDetailInfo(
-                                subject = "subject name",
-                                iuv = "IUV",
-                                idTransaction = TransactionTestUtils.TRANSACTION_ID,
-                                creditorInstitution = "creditor institution",
-                                paFiscalCode = TransactionTestUtils.PA_FISCAL_CODE,
-                                amount = 500
-                            )
-                        )
-                ),
-            pspInfo =
-                it.pagopa.ecommerce.helpdesk.documents.PspInfo(
-                    pspId = TransactionTestUtils.PSP_ID,
-                    businessName = TransactionTestUtils.PSP_BUSINESS_NAME,
-                    idChannel = TransactionTestUtils.PSP_CHANNEL_CODE
-                ),
-            product = product.name
-        )
 
     fun buildSearchPaymentMethodResponseDto(): SearchPaymentMethodResponseDto =
         SearchPaymentMethodResponseDto()
