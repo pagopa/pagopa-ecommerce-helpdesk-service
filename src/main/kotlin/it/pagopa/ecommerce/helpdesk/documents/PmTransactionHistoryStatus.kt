@@ -42,7 +42,7 @@ enum class PaymentStatus(val code: Int, val description: String) {
 
     companion object {
         fun fromCode(code: Int): String {
-            return values().find { it.code == code }?.name ?: code.toString()
+            return PaymentStatus.values().find { it.code == code }?.name ?: code.toString()
         }
     }
 }

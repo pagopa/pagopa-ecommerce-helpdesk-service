@@ -12,6 +12,7 @@ import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import java.time.OffsetDateTime
 import java.util.stream.Stream
 import kotlinx.coroutines.reactor.mono
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -315,4 +316,16 @@ class PmTransactionHistoryDataProviderTestV2 {
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
     }
+
+    @Test
+    fun `Should return the input number as string for UserStatus enum`() =
+        assertEquals("13", UserStatus.fromCode(13))
+
+    @Test
+    fun `Should return the input number as string for PaymentStatus enum`() =
+        assertEquals("22", PaymentStatus.fromCode(22))
+
+    @Test
+    fun `Should return the input number as string for AccountingStatus enum`() =
+        assertEquals("6", AccountingStatus.fromCode(6))
 }
