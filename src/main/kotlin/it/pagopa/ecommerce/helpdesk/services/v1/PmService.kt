@@ -1,8 +1,10 @@
 package it.pagopa.ecommerce.helpdesk.services.v1
 
+import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.PmTransactionHistoryDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.PmProviderType
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodRequestDto
@@ -17,7 +19,8 @@ import reactor.core.publisher.Mono
 @Service("PmServiceV1")
 class PmService(
     @Autowired val pmTransactionDataProvider: PMTransactionDataProvider,
-    @Autowired val pmPaymentMethodsDataProvider: PMPaymentMethodsDataProvider
+    @Autowired val pmPaymentMethodsDataProvider: PMPaymentMethodsDataProvider,
+    @Autowired val pmTransactionHistoryDataProvider: PmTransactionHistoryDataProvider
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -25,13 +28,17 @@ class PmService(
     fun searchTransaction(
         pageNumber: Int,
         pageSize: Int,
-        pmSearchTransactionRequestDto: PmSearchTransactionRequestDto
+        pmSearchTransactionRequestDto: PmSearchTransactionRequestDto,
+        pmProviderType: PmProviderType = PmProviderType.PM_LEGACY
     ): Mono<SearchTransactionResponseDto> {
         logger.info(
             "[helpDesk pm service] searchTransaction method, search type: {}",
             pmSearchTransactionRequestDto.type
         )
-        return pmTransactionDataProvider
+        return when (pmProviderType) {
+                PmProviderType.PM_LEGACY -> pmTransactionDataProvider
+                PmProviderType.ECOMMERCE_HISTORY -> pmTransactionHistoryDataProvider
+            }
             .totalRecordCount(
                 SearchParamDecoder(
                     searchParameter = pmSearchTransactionRequestDto,
@@ -40,7 +47,10 @@ class PmService(
             )
             .flatMap { totalCount ->
                 if (totalCount > 0) {
-                    pmTransactionDataProvider
+                    when (pmProviderType) {
+                            PmProviderType.PM_LEGACY -> pmTransactionDataProvider
+                            PmProviderType.ECOMMERCE_HISTORY -> pmTransactionHistoryDataProvider
+                        }
                         .findResult(
                             searchParams =
                                 SearchParamDecoder(
