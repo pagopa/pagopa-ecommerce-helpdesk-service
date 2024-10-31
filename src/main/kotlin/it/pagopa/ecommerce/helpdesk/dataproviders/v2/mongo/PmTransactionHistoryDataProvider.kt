@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-@Component
+@Component("PmTransactionHistoryDataProviderV2")
 class PmTransactionHistoryDataProvider(
     @Autowired private val pmTransactionsRepository: PmTransactionsRepository
 ) : TransactionDataProvider {
