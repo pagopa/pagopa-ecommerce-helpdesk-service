@@ -354,7 +354,8 @@ db2.getCollection('pm-transactions-history').insertMany([{
                 "iuv": "02055446688775544",
                 "idTransaction": "feae3da1480841a6ba11520cbd36090b",
                 "creditorInstitution": "EC_TE",
-                "paFiscalCode": "77777777777"
+                "paFiscalCode": "77777777777",
+                "amount": 30000
             }
         ]
     },
@@ -390,7 +391,8 @@ db2.getCollection('pm-transactions-history').insertMany([{
                 "iuv": "02055446688775545",
                 "idTransaction": "feae3da1480841a6ba11520cbd36091c",
                 "creditorInstitution": "EC_TE",
-                "paFiscalCode": "77777777777"
+                "paFiscalCode": "77777777777",
+                "amount": 45000
             }
         ]
     },
