@@ -2,7 +2,7 @@ package it.pagopa.ecommerce.helpdesk.dataproviders.mongo.v1
 
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
-import it.pagopa.ecommerce.helpdesk.dataproviders.DeadLetterRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.DeadLetterRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.DeadLetterDataProvider
 import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchDateTimeRangeDto
 import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchEventSourceDto
