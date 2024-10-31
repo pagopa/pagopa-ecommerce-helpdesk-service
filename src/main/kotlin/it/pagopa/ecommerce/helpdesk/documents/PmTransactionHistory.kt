@@ -3,7 +3,7 @@ package it.pagopa.ecommerce.helpdesk.documents
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
-@Document(collection = "pm-transactions-view")
+@Document(collection = "pm-transactions-history")
 data class PmTransactionHistory(
     @Id val id: String,
     val userInfo: UserInfo,
