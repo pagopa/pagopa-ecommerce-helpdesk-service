@@ -12,7 +12,7 @@ interface PmTransactionsRepository : ReactiveCrudRepository<PmTransactionHistory
     @Query("{'userInfo.notificationEmail': '?0'}", count = true)
     fun countTransactionsWithEmail(email: String): Mono<Long>
 
-    @Query("{'userInfo.notificationEmail': '?0'}", count = true)
+    @Query("{'userInfo.userFiscalCode': '?0'}", count = true)
     fun countTransactionsWithUserFiscalCode(userFiscalCode: String): Mono<Long>
 
     @Aggregation(
