@@ -10,9 +10,11 @@ import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionResultDto
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
+@Component
 class PmTransactionHistoryDataProvider(
     @Autowired private val pmTransactionsRepository: PmTransactionsRepository
 ) : TransactionDataProvider {
