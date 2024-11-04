@@ -30,28 +30,17 @@ class HelpdeskController(
         logger.info(
             "[HelpDesk V2 controller] SearchTransaction using ${if (searchPmInEcommerceHistory) "v2 (ecommerce history db)" else "v1 (pm legacy db)"} search"
         )
-        return if (searchPmInEcommerceHistory) {
-            helpDeskSearchTransactionRequestDto
-                .flatMap {
-                    helpdeskService.searchTransaction(
-                        pageNumber = pageNumber,
-                        pageSize = pageSize,
-                        searchTransactionRequestDto = it,
-                        pmProviderType = PmProviderType.ECOMMERCE_HISTORY
-                    )
-                }
-                .map { ResponseEntity.ok(it) }
-        } else {
-            helpDeskSearchTransactionRequestDto
-                .flatMap {
-                    helpdeskService.searchTransaction(
-                        pageNumber = pageNumber,
-                        pageSize = pageSize,
-                        searchTransactionRequestDto = it,
-                        pmProviderType = PmProviderType.PM_LEGACY
-                    )
-                }
-                .map { ResponseEntity.ok(it) }
-        }
+        return helpDeskSearchTransactionRequestDto
+            .flatMap {
+                helpdeskService.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchTransactionRequestDto = it,
+                    pmProviderType =
+                        if (searchPmInEcommerceHistory) PmProviderType.ECOMMERCE_HISTORY
+                        else PmProviderType.PM_LEGACY
+                )
+            }
+            .map { ResponseEntity.ok(it) }
     }
 }

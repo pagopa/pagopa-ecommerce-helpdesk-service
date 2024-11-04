@@ -2,12 +2,10 @@ package it.pagopa.ecommerce.helpdesk.services.v1
 
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
-import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.PmTransactionHistoryDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
-import it.pagopa.ecommerce.helpdesk.utils.PmProviderType
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
@@ -22,8 +20,7 @@ import reactor.core.publisher.Mono
 class HelpdeskService(
     @Autowired val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
     @Autowired val pmTransactionDataProvider: PMTransactionDataProvider,
-    @Autowired val confidentialDataManager: ConfidentialDataManager,
-    @Autowired val pmEcommerceHistoryDataProvider: PmTransactionHistoryDataProvider
+    @Autowired val confidentialDataManager: ConfidentialDataManager
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -31,8 +28,7 @@ class HelpdeskService(
     fun searchTransaction(
         pageNumber: Int,
         pageSize: Int,
-        searchTransactionRequestDto: HelpDeskSearchTransactionRequestDto,
-        pmProviderType: PmProviderType = PmProviderType.PM_LEGACY
+        searchTransactionRequestDto: HelpDeskSearchTransactionRequestDto
     ): Mono<SearchTransactionResponseDto> {
         val confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
         val totalEcommerceCount =
@@ -45,10 +41,7 @@ class HelpdeskService(
                 )
                 .onErrorResume(InvalidSearchCriteriaException::class.java) { Mono.just(0) }
         val totalPmCount =
-            when (pmProviderType) {
-                    PmProviderType.PM_LEGACY -> pmTransactionDataProvider
-                    PmProviderType.ECOMMERCE_HISTORY -> pmEcommerceHistoryDataProvider
-                }
+            pmTransactionDataProvider
                 .totalRecordCount(
                     SearchParamDecoder(
                         searchParameter = searchTransactionRequestDto,
@@ -127,11 +120,7 @@ class HelpdeskService(
                                 Mono.just(emptyList())
                             }
                             .flatMap { ecommerceRecords ->
-                                when (pmProviderType) {
-                                        PmProviderType.PM_LEGACY -> pmTransactionDataProvider
-                                        PmProviderType.ECOMMERCE_HISTORY ->
-                                            pmEcommerceHistoryDataProvider
-                                    }
+                                pmTransactionDataProvider
                                     .findResult(
                                         searchParams =
                                             SearchParamDecoder(
@@ -150,10 +139,7 @@ class HelpdeskService(
                 } else {
                     val skipFromPmDB = skip - totalEcommerceCount
                     logger.info("Recovering records from PM DB, Skip: {}", skipFromPmDB)
-                    when (pmProviderType) {
-                            PmProviderType.PM_LEGACY -> pmTransactionDataProvider
-                            PmProviderType.ECOMMERCE_HISTORY -> pmEcommerceHistoryDataProvider
-                        }
+                    pmTransactionDataProvider
                         .findResult(
                             searchParams =
                                 SearchParamDecoder(
