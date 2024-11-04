@@ -11,8 +11,10 @@ import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.PmTransactionHistoryDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.PmProviderType
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.PageInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.ProductDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestEmailDto
@@ -35,11 +37,14 @@ class HelpdeskServiceTest {
 
     private val confidentialDataManager: ConfidentialDataManager = mock()
 
+    private val pmEcommerceHistoryDataProvider: PmTransactionHistoryDataProvider = mock()
+
     private val helpdeskService =
         HelpdeskService(
             pmTransactionDataProvider = pmTransactionDataProvider,
             ecommerceTransactionDataProvider = ecommerceTransactionDataProvider,
-            confidentialDataManager = confidentialDataManager
+            confidentialDataManager = confidentialDataManager,
+            pmEcommerceHistoryDataProvider = pmEcommerceHistoryDataProvider
         )
 
     private val testEmail = "test@test.it"
@@ -588,7 +593,8 @@ class HelpdeskServiceTest {
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
                     ),
-                confidentialDataManager = confidentialDataManager
+                confidentialDataManager = confidentialDataManager,
+                pmEcommerceHistoryDataProvider = pmEcommerceHistoryDataProvider
             )
         given(confidentialDataManager.encrypt(Email(testEmail)))
             .willReturn(Mono.just(Confidential(encryptedEmail)))
@@ -652,7 +658,8 @@ class HelpdeskServiceTest {
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
                     ),
-                confidentialDataManager = confidentialDataManager
+                confidentialDataManager = confidentialDataManager,
+                pmEcommerceHistoryDataProvider = pmEcommerceHistoryDataProvider
             )
         val pmResults =
             listOf(
@@ -741,7 +748,8 @@ class HelpdeskServiceTest {
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
                     ),
-                confidentialDataManager = confidentialDataManager
+                confidentialDataManager = confidentialDataManager,
+                pmEcommerceHistoryDataProvider = pmEcommerceHistoryDataProvider
             )
         val pmResults =
             listOf(
@@ -808,5 +816,201 @@ class HelpdeskServiceTest {
             .verifyComplete()
         verify(confidentialDataManager, times(1)).encrypt(any())
         verify(confidentialDataManager, times(0)).decrypt(any<Confidential<Email>>(), any())
+    }
+
+    @Test
+    fun `Should recover records from eCommerce DB and ECOMMERCE_HISTORY`() {
+        val totalEcommerceCount = 5
+        val totalPmCount = 5
+        val pageSize = 4
+        val pageNumber = 1
+        val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByUserMail(testEmail)
+        val ecommerceResults =
+            listOf(
+                HelpdeskTestUtilsV2.buildTransactionResultDto(
+                    OffsetDateTime.now(),
+                    ProductDto.ECOMMERCE
+                )
+            )
+        val pmHistoryResults =
+            listOf(
+                HelpdeskTestUtilsV2.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM)
+            )
+        given(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    argThat {
+                        (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                            testEmail
+                    }
+                )
+            )
+            .willReturn(Mono.just(totalEcommerceCount))
+        given(
+                pmEcommerceHistoryDataProvider.totalRecordCount(
+                    argThat {
+                        (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                            testEmail
+                    }
+                )
+            )
+            .willReturn(Mono.just(totalPmCount))
+        given(
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        argThat {
+                            (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                                testEmail
+                        },
+                    limit = any(),
+                    skip = any()
+                )
+            )
+            .willReturn(Mono.just(ecommerceResults))
+        given(
+                pmEcommerceHistoryDataProvider.findResult(
+                    searchParams =
+                        argThat {
+                            (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                                testEmail
+                        },
+                    limit = any(),
+                    skip = any()
+                )
+            )
+            .willReturn(Mono.just(pmHistoryResults))
+
+        StepVerifier.create(
+                helpdeskService.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchTransactionRequestDto = searchCriteria,
+                    pmProviderType = PmProviderType.ECOMMERCE_HISTORY
+                )
+            )
+            .expectNext(
+                SearchTransactionResponseDto()
+                    .transactions(ecommerceResults + pmHistoryResults)
+                    .page(PageInfoDto().current(1).total(3).results(2))
+            )
+            .verifyComplete()
+        verify(pmEcommerceHistoryDataProvider, times(1))
+            .totalRecordCount(
+                argThat {
+                    (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                        testEmail
+                }
+            )
+        verify(ecommerceTransactionDataProvider, times(1))
+            .totalRecordCount(
+                argThat {
+                    (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                        testEmail
+                }
+            )
+        verify(ecommerceTransactionDataProvider, times(1))
+            .findResult(
+                searchParams =
+                    argThat {
+                        (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                            testEmail
+                    },
+                skip = eq(4),
+                limit = eq(1)
+            )
+        verify(pmEcommerceHistoryDataProvider, times(1))
+            .findResult(
+                searchParams =
+                    argThat {
+                        (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                            testEmail
+                    },
+                skip = eq(0),
+                limit = eq(3)
+            )
+    }
+
+    @Test
+    fun `Should recover records from PM ECOMMERCE_HISTORY only`() {
+        val totalEcommerceCount = 5
+        val totalPmCount = 5
+        val pageSize = 4
+        val pageNumber = 2
+        val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByUserMail(testEmail)
+        val pmHistoryResults =
+            listOf(
+                HelpdeskTestUtilsV2.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM)
+            )
+        given(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    argThat {
+                        (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                            testEmail
+                    }
+                )
+            )
+            .willReturn(Mono.just(totalEcommerceCount))
+        given(
+                pmEcommerceHistoryDataProvider.totalRecordCount(
+                    argThat {
+                        (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                            testEmail
+                    }
+                )
+            )
+            .willReturn(Mono.just(totalPmCount))
+
+        given(
+                pmEcommerceHistoryDataProvider.findResult(
+                    searchParams =
+                        argThat {
+                            (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                                testEmail
+                        },
+                    limit = any(),
+                    skip = any()
+                )
+            )
+            .willReturn(Mono.just(pmHistoryResults))
+
+        StepVerifier.create(
+                helpdeskService.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchTransactionRequestDto = searchCriteria,
+                    pmProviderType = PmProviderType.ECOMMERCE_HISTORY
+                )
+            )
+            .expectNext(
+                SearchTransactionResponseDto()
+                    .transactions(pmHistoryResults)
+                    .page(PageInfoDto().current(2).total(3).results(1))
+            )
+            .verifyComplete()
+        verify(pmEcommerceHistoryDataProvider, times(1))
+            .totalRecordCount(
+                argThat {
+                    (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                        testEmail
+                }
+            )
+        verify(ecommerceTransactionDataProvider, times(1))
+            .totalRecordCount(
+                argThat {
+                    (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                        testEmail
+                }
+            )
+        verify(ecommerceTransactionDataProvider, times(0))
+            .findResult(skip = any(), limit = any(), searchParams = any())
+        verify(pmEcommerceHistoryDataProvider, times(1))
+            .findResult(
+                searchParams =
+                    argThat {
+                        (this.searchParameter as SearchTransactionRequestEmailDto).userEmail ==
+                            testEmail
+                    },
+                skip = eq(3),
+                limit = eq(4)
+            )
     }
 }
