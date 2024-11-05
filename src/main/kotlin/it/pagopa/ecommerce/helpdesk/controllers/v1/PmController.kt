@@ -10,18 +10,13 @@ import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 @RestController("PmV1Controller")
-class PmController(
-    @Autowired val pmService: PmService,
-    @Value("\${search.pm.in.ecommerce.history.enabled:false}")
-    private val searchPmInEcommerceHistory: Boolean
-) : PmApi {
+class PmController(@Autowired val pmService: PmService) : PmApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun pmSearchTransaction(
@@ -30,9 +25,7 @@ class PmController(
         pmSearchTransactionRequestDto: Mono<PmSearchTransactionRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
-        logger.info(
-            "[HelpDesk controller] SearchTransaction using ${if (searchPmInEcommerceHistory) "v2 (ecommerce db)" else "v1 (history db)"} search"
-        )
+        logger.info("[HelpDesk controller] pmSearchTransaction")
         return pmSearchTransactionRequestDto
             .flatMap {
                 pmService.searchTransaction(
