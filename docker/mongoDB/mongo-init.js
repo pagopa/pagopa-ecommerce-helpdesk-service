@@ -329,7 +329,7 @@ db.getCollection('dead-letter-events').insertMany([{
 
 db2 = conn.getDB("ecommerce-history");
 
-db2.getCollection('pm-transactions-history').insertMany([{
+db2.getCollection('pm-transactions-view').insertMany([{
     "userInfo": {
         "userFiscalCode": "RSSMRA80A01H501U",
         "notificationEmail": "mario.rossi@example.com",
