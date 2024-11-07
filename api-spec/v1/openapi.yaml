@@ -988,6 +988,9 @@ components:
           type: string
           format: uuid
           description: correlation id for a transaction executed with NPG
+        paymentEndToEndId:
+          type: string
+          description: NPG payment end to end id
       required:
         - type
     RedirectTransactionInfoDetailsData:
