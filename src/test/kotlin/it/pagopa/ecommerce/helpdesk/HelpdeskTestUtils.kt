@@ -220,6 +220,7 @@ object HelpdeskTestUtils {
                 DeadLetterNpgTransactionInfoDetailsData(
                     OperationResultDto.EXECUTED.takeIf { !partial },
                     "operationResult".takeIf { !partial },
+                    UUID.randomUUID().toString().takeIf { !partial },
                     UUID.randomUUID().toString().takeIf { !partial }
                 )
             PaymentGateway.REDIRECT ->
