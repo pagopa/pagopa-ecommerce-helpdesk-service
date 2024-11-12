@@ -204,6 +204,7 @@ class DeadLetterDataProvider(
                     .operationId(details.operationId)
                     .operationResult(details.operationResult?.value)
                     .correlationId(details.correlationId?.let { UUID.fromString(it) })
+                    .paymentEndToEndId(details.paymentEndToEndId)
             is DeadLetterRedirectTransactionInfoDetailsData ->
                 RedirectTransactionInfoDetailsDataDto()
                     .type(details.type.toString())
