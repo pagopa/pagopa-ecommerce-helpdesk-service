@@ -147,7 +147,7 @@ stages:
               TEST_FILE_PREFIX: "dev"
               API_SUBSCRIPTION_KEY: $(HELPDESK_TESTING_API_KEY_DEV)
               USER_EMAIL: $(HELPDESK_TESTING_EMAIL_DEV)
-              HISTORY_USER_EMAIL: $(HELPDESK_TESTING_EMAIL_DEV)
+              HISTORY_USER_EMAIL: $(HELPDESK_TESTING_EMAIL_HISTORY_DEV)
               USER_FISCAL_CODE: $(HELPDESK_TESTING_FISCALCODE_DEV)
   - stage: "API_DEV_test_V2"
     displayName: 'Running API test on dev app V2'
