@@ -66,6 +66,22 @@ services:
     networks:
       - pagopa-ecommerce-net
 
+  pagopa-npg-mock:
+    container_name: pagopa-NPG-mock-helpdesk
+    build:
+      context: docker/npg-mock/
+      dockerfile: Dockerfile.npg-mock
+    ports:
+      - "3000:3000"
+    volumes:
+      - type: bind
+        source: ./docker/npg-mock
+        target: /config
+        read_only: true
+    networks:
+      - pagopa-ecommerce-net
+
+
 networks:
   pagopa-ecommerce-net:
     name: pagopa-ecommerce-net
