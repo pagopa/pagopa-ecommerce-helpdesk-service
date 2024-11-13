@@ -1,0 +1,3 @@
+{
+    "*/psp/api/v1/orders/:orderId": "/order-response"
+}
