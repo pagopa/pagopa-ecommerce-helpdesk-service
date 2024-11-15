@@ -295,21 +295,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-  /helpdesk/searchTransactionStatus:
+  /helpdesk/searchNpgOperations:
     post:
       tags:
-        - hdSearchTransactionStatus
-      summary: Search transaction status by TransactionId
-      description: ''
+        - hdSearchNpgOperations
+      summary: Search npg operations by TransactionId
+      description: 'GET with body payload - no resources created'
       requestBody:
-        $ref: '#/components/requestBodies/SearchTransactionStatusRequest'
+        $ref: '#/components/requestBodies/SearchNpgOperationsRequest'
       responses:
         '200':
           description: Transaction status found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SearchTransactionStatusResponse'
+                $ref: '#/components/schemas/SearchNpgOperationsResponse'
         '400':
           description: Formally invalid input
           content:
@@ -1033,7 +1033,7 @@ components:
           type: string
       required:
         - type
-    SearchTransactionStatusRequest:
+    SearchNpgOperationsRequest:
       type: object
       description: ''
       properties:
@@ -1045,7 +1045,7 @@ components:
           example: 3fa85f6457174562b3fc2c963f66afa6
       required:
         - idTransaction
-    SearchTransactionStatusResponse:
+    SearchNpgOperationsResponse:
       type: object
       description: ''
       properties:
@@ -1058,17 +1058,18 @@ components:
       properties:
         additionalData:
           type: object
-          additionalProperties: { }
-          description: Map of additional fields specific to the chosen payment method
+          properties:
+            authorizationCode:
+              type: string
+              description: A string representing the authorization code for the transaction.
+            rrn:
+              type: string
+              description: A string representing the retrieval reference number (RRN) for the transaction.
+          additionalProperties: false
+          description: Object containing additional fields specific to the chosen payment method
           example:
             authorizationCode: "647189"
-            cardCountry: ITA
-            threeDS: FULL_SECURE
-            schemaTID: MCS01198U
-            multiCurrencyConversion:
-              amount: "2662"
-              currency: JPY
-              exchangeRate: "0.007510523"
+            rrn: "BWtmt0ykQma3PElZ_k25vg"
         operationAmount:
           type: string
           description: Operation amount in the payment currency
@@ -1312,9 +1313,9 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/SearchPaymentMethodResponse'
-    SearchTransactionStatusRequest:
+    SearchNpgOperationsRequest:
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/SearchTransactionStatusRequest'
+            $ref: '#/components/schemas/SearchNpgOperationsRequest'
