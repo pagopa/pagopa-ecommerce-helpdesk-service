@@ -87,11 +87,14 @@ microservice-chart:
     MONGO_SERVER_SELECTION_TIMEOUT_MS: "2000"
     MONGO_WAITING_QUEUE_MS: "2000"
     MONGO_HEARTBEAT_FREQUENCY_MS: "5000"
+    NPG_URI: "https://stg-ta.nexigroup.com/api/phoenix-0.0"
+    NPG_READ_TIMEOUT: "10000"
+    NPG_CONNECTION_TIMEOUT: "10000"
     SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
       {ALL: '*', ECOMMERCE: 'pagopa-d-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-d-weu-ecommerce-notifications-service-errors-queue'}
-
     SEARCH_PM_IN_ECOMMERCE_HISTORY_ENABLED: "true"
   envSecret:
+    NPG_API_KEY: npg-api-key
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
     PM_ORACLE_PASSWORD: pm-oracle-db-password
