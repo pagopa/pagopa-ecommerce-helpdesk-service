@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaecommercehelpdeskservice
-    tag: "1.25.1"
+    tag: "1.26.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -92,6 +92,7 @@ microservice-chart:
     NPG_CONNECTION_TIMEOUT: "10000"
     SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
       {ALL: '*', ECOMMERCE: 'pagopa-d-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-d-weu-ecommerce-notifications-service-errors-queue'}
+
     SEARCH_PM_IN_ECOMMERCE_HISTORY_ENABLED: "true"
   envSecret:
     NPG_API_KEY: npg-api-key
