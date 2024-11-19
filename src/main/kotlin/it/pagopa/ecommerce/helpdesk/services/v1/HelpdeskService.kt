@@ -11,7 +11,6 @@ import it.pagopa.ecommerce.commons.exceptions.NpgResponseException
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OrderResponseDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.utils.NpgApiKeyConfiguration
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.*
@@ -34,8 +33,7 @@ class HelpdeskService(
     @Autowired val pmTransactionDataProvider: PMTransactionDataProvider,
     @Autowired val confidentialDataManager: ConfidentialDataManager,
     @Autowired val npgClient: NpgClient,
-    @Autowired val npgApiKeyConfiguration: NpgApiKeyConfiguration,
-    @Autowired val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any>,
+    @Autowired val npgApiKeyConfiguration: NpgApiKeyConfiguration
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -260,9 +258,9 @@ class HelpdeskService(
     ): Mono<NTuple4<String, String, String, PaymentMethod>> {
         return Mono.just(transactionId)
             .flatMapMany {
-                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                    transactionId
-                )
+                ecommerceTransactionDataProvider
+                    .getTransactionsEventStoreRepository()
+                    .findByTransactionIdOrderByCreationDateAsc(transactionId)
             }
             .reduce(
                 it.pagopa.ecommerce.commons.domain.v2.EmptyTransaction(),

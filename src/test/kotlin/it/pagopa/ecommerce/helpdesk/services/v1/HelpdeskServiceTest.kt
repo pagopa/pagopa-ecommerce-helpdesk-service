@@ -1,27 +1,42 @@
 package it.pagopa.ecommerce.helpdesk.services.v1
 
+import io.vavr.control.Either
+import it.pagopa.ecommerce.commons.client.NpgClient
 import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
+import it.pagopa.ecommerce.commons.documents.v2.TransactionActivatedData
+import it.pagopa.ecommerce.commons.documents.v2.TransactionActivatedEvent
+import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.domain.Email
+import it.pagopa.ecommerce.commons.domain.v2.TransactionActivated
+import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithRequestedAuthorization
+import it.pagopa.ecommerce.commons.exceptions.NpgResponseException
+import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationTypeDto
+import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OrderResponseDto
 import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
+import it.pagopa.ecommerce.commons.utils.NpgApiKeyConfiguration
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
+import it.pagopa.ecommerce.commons.v2.TransactionTestUtils.*
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.generated.ecommerce.helpdesk.model.PageInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestEmailDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadGatewayException
+import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadRequestException
+import it.pagopa.ecommerce.helpdesk.utils.TransactionInfoUtils
+import it.pagopa.ecommerce.helpdesk.utils.TransactionInfoUtils.Companion.buildOrderResponseDtoNullOperation
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import java.time.ZonedDateTime
+import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
+import org.springframework.http.HttpStatus
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Hooks
 import reactor.core.publisher.Mono
@@ -30,20 +45,21 @@ import reactor.test.StepVerifier
 class HelpdeskServiceTest {
 
     private val pmTransactionDataProvider: PMTransactionDataProvider = mock()
-
     private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider = mock()
-
     private val confidentialDataManager: ConfidentialDataManager = mock()
+    private val npgApiKeyConfiguration: NpgApiKeyConfiguration = mock()
+    private val npgClient: NpgClient = mock()
 
     private val helpdeskService =
         HelpdeskService(
             pmTransactionDataProvider = pmTransactionDataProvider,
             ecommerceTransactionDataProvider = ecommerceTransactionDataProvider,
-            confidentialDataManager = confidentialDataManager
+            confidentialDataManager = confidentialDataManager,
+            npgClient = npgClient,
+            npgApiKeyConfiguration = npgApiKeyConfiguration
         )
 
     private val testEmail = "test@test.it"
-
     private val encryptedEmail = TransactionTestUtils.EMAIL.opaqueData
     private val transactionsViewRepository: TransactionsViewRepository = mock()
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
@@ -582,7 +598,9 @@ class HelpdeskServiceTest {
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
                     ),
-                confidentialDataManager = confidentialDataManager
+                confidentialDataManager = confidentialDataManager,
+                npgClient = npgClient,
+                npgApiKeyConfiguration = npgApiKeyConfiguration
             )
         given(confidentialDataManager.encrypt(Email(testEmail)))
             .willReturn(Mono.just(Confidential(encryptedEmail)))
@@ -646,7 +664,9 @@ class HelpdeskServiceTest {
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
                     ),
-                confidentialDataManager = confidentialDataManager
+                confidentialDataManager = confidentialDataManager,
+                npgClient = npgClient,
+                npgApiKeyConfiguration = npgApiKeyConfiguration
             )
         val pmResults =
             listOf(HelpdeskTestUtils.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM))
@@ -733,7 +753,9 @@ class HelpdeskServiceTest {
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
                     ),
-                confidentialDataManager = confidentialDataManager
+                confidentialDataManager = confidentialDataManager,
+                npgClient = npgClient,
+                npgApiKeyConfiguration = npgApiKeyConfiguration
             )
         val pmResults =
             listOf(HelpdeskTestUtils.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM))
@@ -798,5 +820,169 @@ class HelpdeskServiceTest {
             .verifyComplete()
         verify(confidentialDataManager, times(1)).encrypt(any())
         verify(confidentialDataManager, times(0)).decrypt(any<Confidential<Email>>(), any())
+    }
+
+    companion object {
+        private val correlationId = UUID.randomUUID().toString()
+        private const val OPERATION_ID = "operationId"
+    }
+
+    @Test
+    fun `Should successfully retrieve NPG operations`() {
+        val orderId = AUTHORIZATION_REQUEST_ID
+        val pspId = PSP_ID
+        val correlationId = UUID.randomUUID().toString()
+        val paymentMethod = NpgClient.PaymentMethod.CARDS
+
+        // Create activated transaction event instead of base transaction
+        val transactionEvent = mock<TransactionActivatedEvent>()
+        val transaction = mock<TransactionActivated>()
+        val transactionData = mock<TransactionActivatedData>()
+
+        val events =
+            TransactionInfoUtils.buildEventsList(
+                correlationId,
+                TransactionAuthorizationRequestData.PaymentGateway.NPG
+            )
+
+        given(ecommerceTransactionDataProvider.getTransactionsEventStoreRepository())
+            .willReturn(transactionsEventStoreRepository)
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    TRANSACTION_ID
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+
+        given(transactionEvent.data).willReturn(transactionData)
+        given(transaction.transactionActivatedData).willReturn(transactionData)
+
+        val npgOperation =
+            it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationDto().apply {
+                operationId = OPERATION_ID
+                operationType = OperationTypeDto.AUTHORIZATION
+                operationResult =
+                    it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto.EXECUTED
+                additionalData = mapOf("authorizationCode" to "auth123", "rrn" to "rrn123")
+            }
+        val orderResponse = OrderResponseDto().apply { operations = listOf(npgOperation) }
+
+        given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("apiKey"))
+        given(npgClient.getOrder(any(), eq("apiKey"), eq(orderId)))
+            .willReturn(Mono.just(orderResponse))
+
+        StepVerifier.create(helpdeskService.searchNpgOperations(TRANSACTION_ID))
+            .expectNextMatches { response ->
+                response.operations?.size == 1 &&
+                    response.operations?.first()?.operationResult == OperationResultDto.EXECUTED
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should handle missing operation data`() {
+        val transactionEvent =
+            mock<BaseTransactionEvent<BaseTransactionWithRequestedAuthorization>>()
+        val baseTransaction = mock<BaseTransactionWithRequestedAuthorization>()
+        val authRequestData = mock<TransactionAuthorizationRequestData>()
+
+        val events =
+            TransactionInfoUtils.buildEventsList(
+                correlationId,
+                TransactionAuthorizationRequestData.PaymentGateway.NPG
+            )
+
+        given(ecommerceTransactionDataProvider.getTransactionsEventStoreRepository())
+            .willReturn(transactionsEventStoreRepository)
+
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    TRANSACTION_ID
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+
+        given(transactionEvent.data).willReturn(baseTransaction)
+        given(baseTransaction.transactionAuthorizationRequestData).willReturn(authRequestData)
+        given(authRequestData.paymentMethodName).willReturn("CARDS")
+        given(authRequestData.pspId).willReturn("pspId")
+        given(npgApiKeyConfiguration[any<NpgClient.PaymentMethod>(), any()])
+            .willReturn(Either.right("apiKey"))
+        given(npgClient.getOrder(any(), any(), any()))
+            .willReturn(buildOrderResponseDtoNullOperation())
+
+        StepVerifier.create(helpdeskService.searchNpgOperations(TRANSACTION_ID))
+            .expectNext(SearchNpgOperationsResponseDto().apply { operations = null })
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should handle NPG server error`() {
+        val events =
+            TransactionInfoUtils.buildEventsList(
+                correlationId,
+                TransactionAuthorizationRequestData.PaymentGateway.NPG
+            )
+
+        given(ecommerceTransactionDataProvider.getTransactionsEventStoreRepository())
+            .willReturn(transactionsEventStoreRepository)
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    TRANSACTION_ID
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+        given(npgApiKeyConfiguration[any<NpgClient.PaymentMethod>(), any()])
+            .willReturn(Either.right("apiKey"))
+        given(npgClient.getOrder(any(), any(), any()))
+            .willReturn(
+                Mono.error(
+                    NpgResponseException(
+                        "error",
+                        emptyList(),
+                        Optional.of(HttpStatus.INTERNAL_SERVER_ERROR),
+                        RuntimeException()
+                    )
+                )
+            )
+
+        StepVerifier.create(helpdeskService.searchNpgOperations(TRANSACTION_ID))
+            .expectError(NpgBadGatewayException::class.java)
+            .verify()
+    }
+
+    @Test
+    fun `Should handle NPG client error`() {
+        val events =
+            TransactionInfoUtils.buildEventsList(
+                correlationId,
+                TransactionAuthorizationRequestData.PaymentGateway.NPG
+            )
+
+        given(ecommerceTransactionDataProvider.getTransactionsEventStoreRepository())
+            .willReturn(transactionsEventStoreRepository)
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    TRANSACTION_ID
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+        given(npgApiKeyConfiguration[any<NpgClient.PaymentMethod>(), any()])
+            .willReturn(Either.right("apiKey"))
+        given(npgClient.getOrder(any(), any(), any()))
+            .willReturn(
+                Mono.error(
+                    NpgResponseException(
+                        "error",
+                        emptyList(),
+                        Optional.of(HttpStatus.BAD_REQUEST),
+                        RuntimeException()
+                    )
+                )
+            )
+
+        StepVerifier.create(helpdeskService.searchNpgOperations(TRANSACTION_ID))
+            .expectError(NpgBadRequestException::class.java)
+            .verify()
     }
 }

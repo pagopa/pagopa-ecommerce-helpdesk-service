@@ -186,4 +186,8 @@ class EcommerceTransactionDataProvider(
                 )
         }
     }
+
+    fun getTransactionsEventStoreRepository(): TransactionsEventStoreRepository<Any> {
+        return transactionsEventStoreRepository
+    }
 }
