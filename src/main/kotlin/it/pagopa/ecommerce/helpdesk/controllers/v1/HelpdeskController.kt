@@ -46,9 +46,11 @@ class HelpdeskController(
     }
 
     override fun helpdeskSearchNpgOperationsPost(
-        searchNpgOperationsRequestDto: Mono<SearchNpgOperationsRequestDto>?,
+        searchNpgOperationsRequestDto: Mono<SearchNpgOperationsRequestDto>,
         exchange: ServerWebExchange?
     ): Mono<ResponseEntity<SearchNpgOperationsResponseDto>> {
-        TODO("Not yet implemented")
+        return searchNpgOperationsRequestDto
+            .flatMap { helpdeskService.searchNpgOperations(transactionId = it.idTransaction) }
+            .map { ResponseEntity.ok(it) }
     }
 }
