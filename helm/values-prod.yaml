@@ -55,7 +55,7 @@ microservice-chart:
       MONGO_PASSWORD: mongo-ecommerce-password
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaecommercehelpdeskservice
-    tag: "1.25.1"
+    tag: "1.26.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -146,11 +146,15 @@ microservice-chart:
     MONGO_WAITING_QUEUE_MS: "2000"
     MONGO_HEARTBEAT_FREQUENCY_MS: "5000"
     MONGO_REPLICA_SET_OPTION: "&replicaSet=globaldb"
+    NPG_URI: https://xpay.nexigroup.com/api/phoenix-0.0
+    NPG_READ_TIMEOUT: "10000"
+    NPG_CONNECTION_TIMEOUT: "10000"
     SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
       {ALL: '*', ECOMMERCE: 'pagopa-p-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-p-weu-ecommerce-notifications-service-errors-queue'}
 
     SEARCH_PM_IN_ECOMMERCE_HISTORY_ENABLED: "false"
   envSecret:
+    NPG_API_KEY: npg-api-key
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
     PM_ORACLE_PASSWORD: pm-oracle-db-password
