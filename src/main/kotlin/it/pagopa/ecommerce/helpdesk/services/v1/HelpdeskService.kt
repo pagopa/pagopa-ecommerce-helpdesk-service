@@ -253,7 +253,7 @@ class HelpdeskService(
             }
     }
 
-    private fun retrieveTransactionDetails(
+    fun retrieveTransactionDetails(
         transactionId: String
     ): Mono<NTuple4<String, String, String, PaymentMethod>> {
         return Mono.just(transactionId)

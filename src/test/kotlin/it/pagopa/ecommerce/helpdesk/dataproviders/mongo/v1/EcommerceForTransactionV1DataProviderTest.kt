@@ -3976,4 +3976,13 @@ class EcommerceForTransactionV1DataProviderTest {
             .expectNext(expected)
             .verifyComplete()
     }
+
+    @Test
+    fun `Should return transactions event store repository instance`() {
+
+        val result = ecommerceTransactionDataProvider.getTransactionsEventStoreRepository()
+
+        assertEquals(result, transactionsEventStoreRepository)
+        verifyNoMoreInteractions(transactionsEventStoreRepository)
+    }
 }

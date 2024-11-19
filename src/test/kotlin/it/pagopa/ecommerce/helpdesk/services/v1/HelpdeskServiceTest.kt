@@ -4,12 +4,12 @@ import io.vavr.control.Either
 import it.pagopa.ecommerce.commons.client.NpgClient
 import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
-import it.pagopa.ecommerce.commons.documents.v2.TransactionActivatedData
-import it.pagopa.ecommerce.commons.documents.v2.TransactionActivatedEvent
-import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
+import it.pagopa.ecommerce.commons.documents.v2.*
+import it.pagopa.ecommerce.commons.documents.v2.authorization.NpgTransactionGatewayAuthorizationRequestedData
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.domain.v2.TransactionActivated
+import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithPaymentToken
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithRequestedAuthorization
 import it.pagopa.ecommerce.commons.exceptions.NpgResponseException
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationTypeDto
@@ -24,6 +24,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.Transac
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.exceptions.NoOperationDataFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadGatewayException
 import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadRequestException
@@ -831,16 +832,14 @@ class HelpdeskServiceTest {
     fun `Should successfully retrieve NPG operations`() {
         val orderId = AUTHORIZATION_REQUEST_ID
         val pspId = PSP_ID
-        val correlationId = UUID.randomUUID().toString()
         val paymentMethod = NpgClient.PaymentMethod.CARDS
 
-        // Create activated transaction event instead of base transaction
         val transactionEvent = mock<TransactionActivatedEvent>()
         val transaction = mock<TransactionActivated>()
         val transactionData = mock<TransactionActivatedData>()
 
         val events =
-            TransactionInfoUtils.buildEventsList(
+            TransactionInfoUtils.buildSimpleEventsList(
                 correlationId,
                 TransactionAuthorizationRequestData.PaymentGateway.NPG
             )
@@ -887,7 +886,7 @@ class HelpdeskServiceTest {
         val authRequestData = mock<TransactionAuthorizationRequestData>()
 
         val events =
-            TransactionInfoUtils.buildEventsList(
+            TransactionInfoUtils.buildSimpleEventsList(
                 correlationId,
                 TransactionAuthorizationRequestData.PaymentGateway.NPG
             )
@@ -919,7 +918,7 @@ class HelpdeskServiceTest {
     @Test
     fun `Should handle NPG server error`() {
         val events =
-            TransactionInfoUtils.buildEventsList(
+            TransactionInfoUtils.buildSimpleEventsList(
                 correlationId,
                 TransactionAuthorizationRequestData.PaymentGateway.NPG
             )
@@ -954,7 +953,7 @@ class HelpdeskServiceTest {
     @Test
     fun `Should handle NPG client error`() {
         val events =
-            TransactionInfoUtils.buildEventsList(
+            TransactionInfoUtils.buildSimpleEventsList(
                 correlationId,
                 TransactionAuthorizationRequestData.PaymentGateway.NPG
             )
@@ -983,6 +982,381 @@ class HelpdeskServiceTest {
 
         StepVerifier.create(helpdeskService.searchNpgOperations(TRANSACTION_ID))
             .expectError(NpgBadRequestException::class.java)
+            .verify()
+    }
+
+    @Test
+    fun `Should throw NoOperationDataFoundException when correlation ID is missing`() {
+        val baseTransaction = mock<BaseTransactionWithPaymentToken>()
+        val activatedData = mock<TransactionActivatedData>()
+        val events =
+            TransactionInfoUtils.buildSimpleEventsList(
+                null,
+                TransactionAuthorizationRequestData.PaymentGateway.NPG
+            )
+
+        given(baseTransaction.transactionActivatedData).willReturn(activatedData)
+        given(activatedData.transactionGatewayActivationData).willReturn(null)
+
+        given(ecommerceTransactionDataProvider.getTransactionsEventStoreRepository())
+            .willReturn(transactionsEventStoreRepository)
+
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    TRANSACTION_ID
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+
+        StepVerifier.create(helpdeskService.retrieveTransactionDetails(TRANSACTION_ID))
+            .expectErrorMatches { error ->
+                error is NoOperationDataFoundException &&
+                    error.message == "No correlation ID found for transaction $TRANSACTION_ID"
+            }
+            .verify()
+    }
+
+    @Test
+    fun `Should throw NoOperationDataFoundException when authorization request id is missing`() {
+        val baseTransaction = mock<BaseTransactionWithRequestedAuthorization>()
+        val authRequestData = mock<TransactionAuthorizationRequestData>()
+
+        given(baseTransaction.transactionAuthorizationRequestData).willReturn(authRequestData)
+        given(authRequestData.authorizationRequestId).willReturn(null)
+
+        val events =
+            TransactionInfoUtils.buildEventsList(
+                correlationId,
+                TransactionAuthorizationRequestedEvent(
+                    TRANSACTION_ID,
+                    TransactionAuthorizationRequestData(
+                        100,
+                        10,
+                        "paymentInstrumentId",
+                        "pspId",
+                        "CP",
+                        "brokerName",
+                        "pspChannelCode",
+                        "CARDS",
+                        "pspBusinessName",
+                        false,
+                        null,
+                        TransactionAuthorizationRequestData.PaymentGateway.NPG,
+                        "paymentMethodDescription",
+                        NpgTransactionGatewayAuthorizationRequestedData()
+                    )
+                )
+            )
+
+        given(ecommerceTransactionDataProvider.getTransactionsEventStoreRepository())
+            .willReturn(transactionsEventStoreRepository)
+
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    TRANSACTION_ID
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+
+        StepVerifier.create(helpdeskService.retrieveTransactionDetails(TRANSACTION_ID))
+            .expectErrorMatches { error ->
+                error is NoOperationDataFoundException &&
+                    error.message ==
+                        "No authorization request ID found for transaction $TRANSACTION_ID"
+            }
+            .verify()
+    }
+
+    @Test
+    fun `Should throw NoOperationDataFoundException when psp id is missing`() {
+        val baseTransaction = mock<BaseTransactionWithRequestedAuthorization>()
+        val authRequestData = mock<TransactionAuthorizationRequestData>()
+
+        given(baseTransaction.transactionAuthorizationRequestData).willReturn(authRequestData)
+        given(authRequestData.pspId).willReturn(null)
+
+        val events =
+            TransactionInfoUtils.buildEventsList(
+                correlationId,
+                TransactionAuthorizationRequestedEvent(
+                    TRANSACTION_ID,
+                    TransactionAuthorizationRequestData(
+                        100,
+                        10,
+                        "paymentInstrumentId",
+                        null,
+                        "CP",
+                        "brokerName",
+                        "pspChannelCode",
+                        "CARDS",
+                        "pspBusinessName",
+                        false,
+                        AUTHORIZATION_REQUEST_ID,
+                        TransactionAuthorizationRequestData.PaymentGateway.NPG,
+                        "paymentMethodDescription",
+                        NpgTransactionGatewayAuthorizationRequestedData()
+                    )
+                )
+            )
+
+        given(ecommerceTransactionDataProvider.getTransactionsEventStoreRepository())
+            .willReturn(transactionsEventStoreRepository)
+
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    TRANSACTION_ID
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+
+        StepVerifier.create(helpdeskService.retrieveTransactionDetails(TRANSACTION_ID))
+            .expectErrorMatches { error ->
+                error is NoOperationDataFoundException &&
+                    error.message == "No PSP ID found for transaction $TRANSACTION_ID"
+            }
+            .verify()
+    }
+
+    @Test
+    fun `Should throw NoOperationDataFoundException when payment method is missing`() {
+        val baseTransaction = mock<BaseTransactionWithRequestedAuthorization>()
+        val authRequestData = mock<TransactionAuthorizationRequestData>()
+
+        given(baseTransaction.transactionAuthorizationRequestData).willReturn(authRequestData)
+        given(authRequestData.paymentMethodName).willReturn(null)
+
+        val events =
+            TransactionInfoUtils.buildEventsList(
+                correlationId,
+                TransactionAuthorizationRequestedEvent(
+                    TRANSACTION_ID,
+                    TransactionAuthorizationRequestData(
+                        100,
+                        10,
+                        "paymentInstrumentId",
+                        "pspId",
+                        "CP",
+                        "brokerName",
+                        "pspChannelCode",
+                        null,
+                        "pspBusinessName",
+                        false,
+                        AUTHORIZATION_REQUEST_ID,
+                        TransactionAuthorizationRequestData.PaymentGateway.NPG,
+                        null,
+                        NpgTransactionGatewayAuthorizationRequestedData()
+                    )
+                )
+            )
+
+        given(ecommerceTransactionDataProvider.getTransactionsEventStoreRepository())
+            .willReturn(transactionsEventStoreRepository)
+
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    TRANSACTION_ID
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+
+        StepVerifier.create(helpdeskService.retrieveTransactionDetails(TRANSACTION_ID))
+            .expectErrorMatches { error ->
+                error is NoOperationDataFoundException &&
+                    error.message == "No payment method found for transaction $TRANSACTION_ID"
+            }
+            .verify()
+    }
+
+    @Test
+    fun `Should handle NPG operations with no operations in order response`() {
+        val orderId = AUTHORIZATION_REQUEST_ID
+        val pspId = PSP_ID
+        val paymentMethod = NpgClient.PaymentMethod.CARDS
+
+        val events =
+            TransactionInfoUtils.buildSimpleEventsList(
+                correlationId,
+                TransactionAuthorizationRequestData.PaymentGateway.NPG
+            )
+
+        val orderResponse = OrderResponseDto().apply { operations = null }
+
+        given(ecommerceTransactionDataProvider.getTransactionsEventStoreRepository())
+            .willReturn(transactionsEventStoreRepository)
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    TRANSACTION_ID
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+        given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("apiKey"))
+        given(npgClient.getOrder(any(), eq("apiKey"), eq(orderId)))
+            .willReturn(Mono.just(orderResponse))
+
+        StepVerifier.create(helpdeskService.searchNpgOperations(TRANSACTION_ID))
+            .expectNext(SearchNpgOperationsResponseDto().apply { operations = null })
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should handle NPG operations with no RRN in additional data`() {
+        val orderId = AUTHORIZATION_REQUEST_ID
+        val pspId = PSP_ID
+        val paymentMethod = NpgClient.PaymentMethod.CARDS
+
+        val events =
+            TransactionInfoUtils.buildSimpleEventsList(
+                correlationId,
+                TransactionAuthorizationRequestData.PaymentGateway.NPG
+            )
+
+        val npgOperation =
+            it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationDto().apply {
+                operationId = OPERATION_ID
+                operationType = OperationTypeDto.AUTHORIZATION
+                operationResult =
+                    it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto.EXECUTED
+                additionalData = mapOf("authorizationCode" to AUTHORIZATION_CODE)
+            }
+
+        val orderResponse = OrderResponseDto().apply { operations = listOf(npgOperation) }
+
+        given(ecommerceTransactionDataProvider.getTransactionsEventStoreRepository())
+            .willReturn(transactionsEventStoreRepository)
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    TRANSACTION_ID
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+        given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("apiKey"))
+        given(npgClient.getOrder(any(), eq("apiKey"), eq(orderId)))
+            .willReturn(Mono.just(orderResponse))
+
+        StepVerifier.create(helpdeskService.searchNpgOperations(TRANSACTION_ID))
+            .expectNextMatches { response ->
+                response.operations?.size == 1 &&
+                    response.operations?.first()?.additionalData?.rrn == null
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should handle NPG operations with no payment method`() {
+        val orderId = AUTHORIZATION_REQUEST_ID
+        val pspId = PSP_ID
+        val paymentMethod = NpgClient.PaymentMethod.CARDS
+
+        val events =
+            TransactionInfoUtils.buildSimpleEventsList(
+                correlationId,
+                TransactionAuthorizationRequestData.PaymentGateway.NPG
+            )
+
+        val npgOperation =
+            it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationDto().apply {
+                operationId = OPERATION_ID
+                operationType = OperationTypeDto.AUTHORIZATION
+                operationResult =
+                    it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto.EXECUTED
+                this.paymentMethod = null
+            }
+
+        val orderResponse = OrderResponseDto().apply { operations = listOf(npgOperation) }
+
+        given(ecommerceTransactionDataProvider.getTransactionsEventStoreRepository())
+            .willReturn(transactionsEventStoreRepository)
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    TRANSACTION_ID
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+        given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("apiKey"))
+        given(npgClient.getOrder(any(), eq("apiKey"), eq(orderId)))
+            .willReturn(Mono.just(orderResponse))
+
+        StepVerifier.create(helpdeskService.searchNpgOperations(TRANSACTION_ID))
+            .expectNextMatches { response ->
+                response.operations?.size == 1 &&
+                    response.operations?.first()?.paymentMethod == null
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should handle transaction without payment token and authorization data`() {
+        val transactionId = TRANSACTION_ID
+
+        val events =
+            listOf(
+                TransactionActivatedEvent(
+                    transactionId,
+                    TransactionActivatedData().apply {
+                        email = mock()
+                        paymentNotices = emptyList()
+                        faultCode = null
+                        faultCodeString = null
+                        clientId = null
+                        idCart = null
+                        paymentTokenValiditySeconds = 900
+                        transactionGatewayActivationData = null
+                        userId = null
+                    }
+                )
+                    as BaseTransactionEvent<Any>
+            )
+
+        given(ecommerceTransactionDataProvider.getTransactionsEventStoreRepository())
+            .willReturn(transactionsEventStoreRepository)
+
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionId
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+
+        StepVerifier.create(helpdeskService.retrieveTransactionDetails(transactionId))
+            .expectError(NoOperationDataFoundException::class.java)
+            .verify()
+    }
+
+    @Test
+    fun `should handle transaction with payment token but without authorization data`() {
+        val transactionId = TRANSACTION_ID
+
+        val events =
+            listOf(
+                TransactionActivatedEvent(
+                    transactionId,
+                    TransactionActivatedData().apply {
+                        email = mock()
+                        paymentNotices = emptyList()
+                        faultCode = null
+                        faultCodeString = null
+                        clientId = Transaction.ClientId.CHECKOUT
+                        idCart = null
+                        paymentTokenValiditySeconds = 900
+                        transactionGatewayActivationData = null
+                        userId = null
+                    }
+                )
+                    as BaseTransactionEvent<Any>
+            )
+
+        given(ecommerceTransactionDataProvider.getTransactionsEventStoreRepository())
+            .willReturn(transactionsEventStoreRepository)
+
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionId
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+
+        StepVerifier.create(helpdeskService.retrieveTransactionDetails(transactionId))
+            .expectError(NoOperationDataFoundException::class.java)
             .verify()
     }
 }

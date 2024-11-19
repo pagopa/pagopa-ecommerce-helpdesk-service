@@ -1,10 +1,9 @@
 package it.pagopa.ecommerce.helpdesk.utils
 
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
+import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestedEvent
 import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent
 import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
-import it.pagopa.ecommerce.commons.documents.v2.refund.NpgGatewayRefundData
-import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OrderResponseDto
 import it.pagopa.ecommerce.commons.v2.TransactionTestUtils
 import reactor.core.publisher.Mono
@@ -12,14 +11,13 @@ import reactor.core.publisher.Mono
 class TransactionInfoUtils {
     companion object {
         val orderId = "orderId"
-        val refundOperationId = "refundOperationId"
 
         fun buildOrderResponseDtoNullOperation(): Mono<OrderResponseDto> {
             val orderResponseDto = OrderResponseDto()
             return Mono.just(orderResponseDto)
         }
-        fun buildEventsList(
-            correlationId: String,
+        fun buildSimpleEventsList(
+            correlationId: String?,
             gateway: TransactionAuthorizationRequestData.PaymentGateway
         ): List<TransactionEvent<Any>> {
             val transactionActivatedEvent =
@@ -29,62 +27,20 @@ class TransactionInfoUtils {
             val transactionAuthorizationRequestedEvent =
                 TransactionTestUtils.transactionAuthorizationRequestedEvent(gateway)
 
-            TransactionTestUtils.transactionAuthorizationRequestedEvent(gateway)
+            return (listOf(transactionActivatedEvent, transactionAuthorizationRequestedEvent)
+                as List<TransactionEvent<Any>>)
+        }
 
-            val transactionExpiredEvent =
-                TransactionTestUtils.transactionExpiredEvent(
-                    TransactionTestUtils.reduceEvents(
-                        transactionActivatedEvent,
-                        transactionAuthorizationRequestedEvent
-                    )
-                )
-            val transactionRefundRequestedEvent =
-                TransactionTestUtils.transactionRefundRequestedEvent(
-                    TransactionTestUtils.reduceEvents(
-                        transactionActivatedEvent,
-                        transactionAuthorizationRequestedEvent,
-                        transactionExpiredEvent
-                    ),
-                    null
-                )
-            val transactionRefundErrorEvent =
-                TransactionTestUtils.transactionRefundErrorEvent(
-                    TransactionTestUtils.reduceEvents(
-                        transactionActivatedEvent,
-                        transactionAuthorizationRequestedEvent,
-                        transactionExpiredEvent,
-                        transactionRefundRequestedEvent
-                    )
-                )
-            val transactionRefundRetryEvent =
-                TransactionTestUtils.transactionRefundRetriedEvent(
-                    1,
-                    TransactionTestUtils.npgTransactionGatewayAuthorizationData(
-                        OperationResultDto.EXECUTED
-                    )
-                )
-            val transactionRefundedEvent =
-                TransactionTestUtils.transactionRefundedEvent(
-                    TransactionTestUtils.reduceEvents(
-                        transactionActivatedEvent,
-                        transactionAuthorizationRequestedEvent,
-                        transactionExpiredEvent,
-                        transactionRefundRequestedEvent,
-                        transactionRefundErrorEvent,
-                        transactionRefundRetryEvent
-                    ),
-                    NpgGatewayRefundData(refundOperationId)
+        fun buildEventsList(
+            correlationId: String,
+            transactionAuthorizationRequestedEvent: TransactionAuthorizationRequestedEvent
+        ): List<TransactionEvent<Any>> {
+            val transactionActivatedEvent =
+                TransactionTestUtils.transactionActivateEvent(
+                    NpgTransactionGatewayActivationData(orderId, correlationId)
                 )
 
-            return (listOf(
-                transactionActivatedEvent,
-                transactionAuthorizationRequestedEvent,
-                transactionExpiredEvent,
-                transactionRefundRequestedEvent,
-                transactionRefundErrorEvent,
-                transactionRefundRetryEvent,
-                transactionRefundedEvent
-            )
+            return (listOf(transactionActivatedEvent, transactionAuthorizationRequestedEvent)
                 as List<TransactionEvent<Any>>)
         }
     }

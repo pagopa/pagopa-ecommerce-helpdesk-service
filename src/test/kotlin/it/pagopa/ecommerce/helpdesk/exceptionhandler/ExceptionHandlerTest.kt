@@ -3,12 +3,14 @@ package it.pagopa.ecommerce.helpdesk.exceptionhandler
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
+import it.pagopa.ecommerce.helpdesk.exceptions.NoOperationDataFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.RestApiException
 import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
 import jakarta.xml.bind.ValidationException
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientResponseException
 
@@ -137,5 +139,23 @@ class ExceptionHandlerTest {
             response.body
         )
         assertEquals(HttpStatus.BAD_GATEWAY, response.statusCode)
+    }
+
+    @Test
+    fun `should create exception with custom message`() {
+        val errorMessage = "No operation data found for transaction XYZ"
+        val exception = NoOperationDataFoundException(errorMessage)
+
+        assertEquals(errorMessage, exception.message)
+    }
+
+    @Test
+    fun `should be able to catch as RuntimeException`() {
+        val errorMessage = "Test error message"
+        val exception =
+            assertThrows<RuntimeException> { throw NoOperationDataFoundException(errorMessage) }
+
+        assertTrue(exception is NoOperationDataFoundException)
+        assertEquals(errorMessage, exception.message)
     }
 }
