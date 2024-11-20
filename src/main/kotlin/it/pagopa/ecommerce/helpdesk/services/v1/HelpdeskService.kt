@@ -2,11 +2,7 @@ package it.pagopa.ecommerce.helpdesk.services.v1
 
 import it.pagopa.ecommerce.commons.client.NpgClient
 import it.pagopa.ecommerce.commons.client.NpgClient.PaymentMethod
-import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
 import it.pagopa.ecommerce.commons.domain.TransactionId
-import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransaction
-import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithPaymentToken
-import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithRequestedAuthorization
 import it.pagopa.ecommerce.commons.exceptions.NpgResponseException
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OrderResponseDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
@@ -179,12 +175,14 @@ class HelpdeskService(
 
     /**
      * Used by the API that searches for NPG operations. Starting from the transaction id, first it
-     * retrieves the transaction details calling the [retrieveTransactionDetails] that returns a
-     * [NTuple4], then it uses the details to call the [performGetOrderNPG]. Returns a
+     * retrieves the transaction details calling the
+     * [EcommerceTransactionDataProvider.retrieveTransactionDetails] that returns an object of the
+     * data class [NTuple4], then it uses the details to call the [performGetOrderNPG]. Returns a
      * [SearchNpgOperationsResponseDto], representing a subset of [OrderResponseDto] data.
      */
     fun searchNpgOperations(transactionId: String): Mono<SearchNpgOperationsResponseDto> {
-        return retrieveTransactionDetails(transactionId)
+        return ecommerceTransactionDataProvider
+            .retrieveTransactionDetails(transactionId)
             .flatMap { details ->
                 performGetOrderNPG(
                     transactionId = TransactionId(transactionId),
@@ -249,60 +247,6 @@ class HelpdeskService(
                     "Retrieved NPG operations for transaction [{}]: found {} operations",
                     transactionId,
                     orderResponse.operations?.size ?: 0
-                )
-            }
-    }
-
-    fun retrieveTransactionDetails(
-        transactionId: String
-    ): Mono<NTuple4<String, String, String, PaymentMethod>> {
-        return Mono.just(transactionId)
-            .flatMapMany {
-                ecommerceTransactionDataProvider
-                    .getTransactionsEventStoreRepository()
-                    .findByTransactionIdOrderByCreationDateAsc(transactionId)
-            }
-            .reduce(
-                it.pagopa.ecommerce.commons.domain.v2.EmptyTransaction(),
-                it.pagopa.ecommerce.commons.domain.v2.Transaction::applyEvent
-            )
-            .cast(BaseTransaction::class.java)
-            .map { baseTransaction ->
-                val transactionActivatedData =
-                    if (baseTransaction is BaseTransactionWithPaymentToken) {
-                        baseTransaction.transactionActivatedData
-                    } else null
-
-                val authRequestData =
-                    when (baseTransaction) {
-                        is BaseTransactionWithRequestedAuthorization ->
-                            baseTransaction.transactionAuthorizationRequestData
-                        else -> null
-                    }
-
-                val correlationId =
-                    (transactionActivatedData?.transactionGatewayActivationData
-                            as? NpgTransactionGatewayActivationData) // also contains orderId
-                        ?.correlationId
-                        ?: throw NoOperationDataFoundException(
-                            "No correlation ID found for transaction $transactionId"
-                        )
-                NTuple4(
-                    authRequestData?.authorizationRequestId
-                        ?: throw NoOperationDataFoundException(
-                            "No authorization request ID found for transaction $transactionId"
-                        ),
-                    authRequestData.pspId
-                        ?: throw NoOperationDataFoundException(
-                            "No PSP ID found for transaction $transactionId"
-                        ),
-                    correlationId,
-                    PaymentMethod.valueOf(
-                        authRequestData.paymentMethodName
-                            ?: throw NoOperationDataFoundException(
-                                "No payment method found for transaction $transactionId"
-                            )
-                    )
                 )
             }
     }

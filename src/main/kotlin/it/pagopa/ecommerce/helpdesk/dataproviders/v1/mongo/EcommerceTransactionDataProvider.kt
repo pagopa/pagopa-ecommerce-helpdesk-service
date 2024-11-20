@@ -1,11 +1,18 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo
 
+import it.pagopa.ecommerce.commons.client.NpgClient.PaymentMethod
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
+import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
+import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransaction
+import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithPaymentToken
+import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithRequestedAuthorization
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
+import it.pagopa.ecommerce.helpdesk.exceptions.NoOperationDataFoundException
+import it.pagopa.ecommerce.helpdesk.services.v1.NTuple4
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.baseTransactionToTransactionInfoDtoV1
@@ -187,7 +194,57 @@ class EcommerceTransactionDataProvider(
         }
     }
 
-    fun getTransactionsEventStoreRepository(): TransactionsEventStoreRepository<Any> {
-        return transactionsEventStoreRepository
+    fun retrieveTransactionDetails(
+        transactionId: String
+    ): Mono<NTuple4<String, String, String, PaymentMethod>> {
+        return Mono.just(transactionId)
+            .flatMapMany {
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionId
+                )
+            }
+            .reduce(
+                it.pagopa.ecommerce.commons.domain.v2.EmptyTransaction(),
+                it.pagopa.ecommerce.commons.domain.v2.Transaction::applyEvent
+            )
+            .cast(BaseTransaction::class.java)
+            .map { baseTransaction ->
+                val transactionActivatedData =
+                    if (baseTransaction is BaseTransactionWithPaymentToken) {
+                        baseTransaction.transactionActivatedData
+                    } else null
+
+                val authRequestData =
+                    when (baseTransaction) {
+                        is BaseTransactionWithRequestedAuthorization ->
+                            baseTransaction.transactionAuthorizationRequestData
+                        else -> null
+                    }
+
+                val correlationId =
+                    (transactionActivatedData?.transactionGatewayActivationData
+                            as? NpgTransactionGatewayActivationData) // also contains orderId
+                        ?.correlationId
+                        ?: throw NoOperationDataFoundException(
+                            "No correlation ID found for transaction $transactionId"
+                        )
+                NTuple4(
+                    authRequestData?.authorizationRequestId
+                        ?: throw NoOperationDataFoundException(
+                            "No authorization request ID found for transaction $transactionId"
+                        ),
+                    authRequestData.pspId
+                        ?: throw NoOperationDataFoundException(
+                            "No PSP ID found for transaction $transactionId"
+                        ),
+                    correlationId,
+                    PaymentMethod.valueOf(
+                        authRequestData.paymentMethodName
+                            ?: throw NoOperationDataFoundException(
+                                "No payment method found for transaction $transactionId"
+                            )
+                    )
+                )
+            }
     }
 }
