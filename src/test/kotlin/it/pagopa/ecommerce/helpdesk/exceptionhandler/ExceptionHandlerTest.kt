@@ -2,10 +2,7 @@ package it.pagopa.ecommerce.helpdesk.exceptionhandler
 
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
-import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
-import it.pagopa.ecommerce.helpdesk.exceptions.NoOperationDataFoundException
-import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.ecommerce.helpdesk.exceptions.RestApiException
+import it.pagopa.ecommerce.helpdesk.exceptions.*
 import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
 import jakarta.xml.bind.ValidationException
 import org.junit.jupiter.api.Assertions.*
@@ -157,5 +154,24 @@ class ExceptionHandlerTest {
 
         assertTrue(exception is NoOperationDataFoundException)
         assertEquals(errorMessage, exception.message)
+    }
+
+    @Test
+    fun `should handle UnsupportedTransactionVersionException`() {
+        val transactionId = "transactionId"
+        val reason =
+            "Transaction $transactionId is not a V2 transaction. Please use a V2 transaction ID."
+        val exception = UnsupportedTransactionVersionException(reason)
+        val response = exceptionHandler.handleException(exception)
+        assertEquals(
+            HelpdeskTestUtils.buildProblemJson(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                title = "Unsupported version",
+                description =
+                    "Transaction $transactionId is not a V2 transaction. Please use a V2 transaction ID."
+            ),
+            response.body
+        )
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.statusCode)
     }
 }

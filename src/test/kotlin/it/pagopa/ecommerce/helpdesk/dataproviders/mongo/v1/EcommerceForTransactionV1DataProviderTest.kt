@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo.v1
 
 import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
+import it.pagopa.ecommerce.commons.documents.v1.Transaction as TransactionV1
 import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationRequestData as TransactionAuthorizationRequestDataV1
 import it.pagopa.ecommerce.commons.documents.v1.TransactionClosureData as TransactionClosureDataV1
 import it.pagopa.ecommerce.commons.documents.v1.TransactionEvent as TransactionEventV1
@@ -35,6 +36,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.Transac
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoOperationDataFoundException
+import it.pagopa.ecommerce.helpdesk.exceptions.UnsupportedTransactionVersionException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.TransactionInfoUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
@@ -98,6 +100,48 @@ class EcommerceForTransactionV1DataProviderTest {
             transactionsViewRepository,
             transactionsEventStoreRepository
         )
+
+    @Test
+    fun `Should handle transaction ACTIVATED status for V2`() {
+        val transactionView = mock<Transaction>()
+        given(transactionsViewRepository.findById(TRANSACTION_ID))
+            .willReturn(Mono.just(transactionView))
+
+        val events =
+            TransactionInfoUtils.buildSimpleEventsList(
+                correlationId,
+                TransactionAuthorizationRequestData.PaymentGateway.NPG
+            )
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    TRANSACTION_ID
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.retrieveTransactionDetails(TRANSACTION_ID)
+            )
+            .expectNextCount(1)
+            .verifyComplete()
+
+        testedStatuses.add(TransactionStatusDto.ACTIVATED)
+    }
+
+    @Test
+    fun `Should reject V1 ACTIVATED transaction as unsupported`() {
+        val transactionView = mock<TransactionV1>()
+        given(transactionsViewRepository.findById(TRANSACTION_ID))
+            .willReturn(Mono.just(transactionView))
+
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.retrieveTransactionDetails(TRANSACTION_ID)
+            )
+            .expectError(UnsupportedTransactionVersionException::class.java)
+            .verify()
+
+        testedStatuses.add(TransactionStatusDto.ACTIVATED)
+    }
 
     @Test
     fun `should count total transactions by rptId successfully`() {
@@ -3999,7 +4043,9 @@ class EcommerceForTransactionV1DataProviderTest {
                 null,
                 TransactionAuthorizationRequestData.PaymentGateway.NPG
             )
-
+        val transactionView = mock<Transaction>()
+        given(transactionsViewRepository.findById(TRANSACTION_ID))
+            .willReturn(Mono.just(transactionView))
         given(baseTransaction.transactionActivatedData).willReturn(activatedData)
         given(activatedData.transactionGatewayActivationData).willReturn(null)
 
@@ -4051,7 +4097,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-
+        val transactionView = mock<Transaction>()
+        given(transactionsViewRepository.findById(TRANSACTION_ID))
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     TRANSACTION_ID
@@ -4101,7 +4149,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-
+        val transactionView = mock<Transaction>()
+        given(transactionsViewRepository.findById(TRANSACTION_ID))
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     TRANSACTION_ID
@@ -4150,7 +4200,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-
+        val transactionView = mock<Transaction>()
+        given(transactionsViewRepository.findById(TRANSACTION_ID))
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     TRANSACTION_ID
@@ -4190,7 +4242,9 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
                     as BaseTransactionEvent<Any>
             )
-
+        val transactionView = mock<Transaction>()
+        given(transactionsViewRepository.findById(TRANSACTION_ID))
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionId
@@ -4227,6 +4281,9 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
                     as BaseTransactionEvent<Any>
             )
+        val transactionView = mock<Transaction>()
+        given(transactionsViewRepository.findById(TRANSACTION_ID))
+            .willReturn(Mono.just(transactionView))
 
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
@@ -4239,6 +4296,31 @@ class EcommerceForTransactionV1DataProviderTest {
                 ecommerceTransactionDataProvider.retrieveTransactionDetails(transactionId)
             )
             .expectError(NoOperationDataFoundException::class.java)
+            .verify()
+    }
+
+    @Test
+    fun `Should throw UnsupportedTransactionVersionException when transaction is not V2`() {
+        clearInvocations(transactionsViewRepository)
+        val transactionView = mock<TransactionV1>()
+
+        given(transactionsViewRepository.findById(TRANSACTION_ID))
+            .willReturn(Mono.just(transactionView))
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    TRANSACTION_ID
+                )
+            )
+            .willReturn(Flux.empty())
+
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.retrieveTransactionDetails(TRANSACTION_ID)
+            )
+            .expectErrorMatches { error ->
+                error is UnsupportedTransactionVersionException &&
+                    error.message ==
+                        "Transaction $TRANSACTION_ID is not a V2 transaction. Please use a V2 transaction ID."
+            }
             .verify()
     }
 }
