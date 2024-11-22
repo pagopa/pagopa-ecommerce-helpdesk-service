@@ -44,11 +44,4 @@ class HelpdeskController(
             .flatMap { pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = it) }
             .map { ResponseEntity.ok(it) }
     }
-
-    override fun helpdeskSearchNpgOperationsPost(
-        searchNpgOperationsRequestDto: Mono<SearchNpgOperationsRequestDto>?,
-        exchange: ServerWebExchange?
-    ): Mono<ResponseEntity<SearchNpgOperationsResponseDto>> {
-        TODO("Not yet implemented")
-    }
 }

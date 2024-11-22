@@ -295,10 +295,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-  /helpdesk/searchNpgOperations:
+  /ecommerce/searchNpgOperations:
     post:
       tags:
-        - hdSearchNpgOperations
+        - eCommerce
       summary: Search npg operations by TransactionId
       description: 'GET with body payload - no resources created'
       requestBody:
@@ -318,6 +318,12 @@ paths:
                 $ref: '#/components/schemas/ProblemJson'
         '404':
           description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '422':
+          description: Unsupported version
           content:
             application/json:
               schema:

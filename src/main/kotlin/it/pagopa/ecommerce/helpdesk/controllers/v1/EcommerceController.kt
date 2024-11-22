@@ -2,10 +2,7 @@ package it.pagopa.ecommerce.helpdesk.controllers.v1
 
 import it.pagopa.ecommerce.helpdesk.services.v1.EcommerceService
 import it.pagopa.generated.ecommerce.helpdesk.api.EcommerceApi
-import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchDeadLetterEventsRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchDeadLetterEventResponseDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import org.slf4j.LoggerFactory
@@ -53,5 +50,12 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
                 )
             }
             .map { ResponseEntity.ok(it) }
+    }
+
+    override fun ecommerceSearchNpgOperationsPost(
+        searchNpgOperationsRequestDto: Mono<SearchNpgOperationsRequestDto>?,
+        exchange: ServerWebExchange?
+    ): Mono<ResponseEntity<SearchNpgOperationsResponseDto>> {
+        TODO("Not yet implemented")
     }
 }
