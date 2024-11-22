@@ -301,6 +301,23 @@ paths:
         - eCommerce
       summary: Search npg operations by TransactionId
       description: 'GET with body payload - no resources created'
+      parameters:
+        - in: query
+          name: pageNumber
+          schema:
+            type: integer
+            default: 0
+          required: true
+          description: "Searched page number, starting from 0"
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 10
+          required: true
+          description: "Max element per page"
       requestBody:
         $ref: '#/components/requestBodies/SearchNpgOperationsRequest'
       responses:
@@ -1062,6 +1079,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
+        page:
+          $ref: '#/components/schemas/PageInfo'
     Operation:
       type: object
       properties:
