@@ -53,7 +53,9 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
     }
 
     override fun ecommerceSearchNpgOperationsPost(
-        searchNpgOperationsRequestDto: Mono<SearchNpgOperationsRequestDto>?,
+        @Min(0) pageNumber: Int,
+        @Min(1) @Max(20) pageSize: Int,
+        searchNpgOperationsRequestDto: Mono<SearchNpgOperationsRequestDto>,
         exchange: ServerWebExchange?
     ): Mono<ResponseEntity<SearchNpgOperationsResponseDto>> {
         TODO("Not yet implemented")
