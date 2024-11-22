@@ -13,13 +13,21 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.Transac
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoOperationDataFoundException
+import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.UnsupportedTransactionVersionException
 import it.pagopa.ecommerce.helpdesk.services.v1.NTuple4
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.baseTransactionToTransactionInfoDtoV1
 import it.pagopa.ecommerce.helpdesk.utils.v1.baseTransactionToTransactionInfoDtoV2
-import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestEmailDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestFiscalCodeDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestPaymentTokenDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestRptIdDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestTransactionIdDto
+import it.pagopa.generated.ecommerce.helpdesk.model.TransactionResultDto
 import java.util.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -201,6 +209,7 @@ class EcommerceTransactionDataProvider(
     ): Mono<NTuple4<String, String, String, PaymentMethod>> {
         return Mono.just(transactionId)
             .flatMap { transactionsViewRepository.findById(it) }
+            .switchIfEmpty(Mono.error(NoResultFoundException(transactionId)))
             .flatMap { transactionView ->
                 when (transactionView) {
                     is TransactionV2 -> {
