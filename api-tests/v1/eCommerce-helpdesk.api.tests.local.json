@@ -990,6 +990,167 @@
 				}
 			},
 			"response": []
+		},
+		{
+		  "name": "eCommerce SearchNpgOperations TRANSACTION_ID - Success",
+		  "event": [
+			{
+			  "listen": "test",
+			  "script": {
+				"exec": [
+				  "pm.test(\"eCommerce SearchNpgOperations SearchNpgOperations by TRANSACTION_ID - Status code is 200 with valid json response\", function () {",
+				  "    pm.response.to.have.status(200);",
+				  "    const response = pm.response.json();",
+				  "    pm.expect(response.idTransaction).to.be.eq(\"{{TRANSACTION_ID_V2}}\");",
+				  "});"
+				],
+				"type": "text/javascript"
+			  }
+			}
+		  ],
+		  "request": {
+			"method": "POST",
+			"header": [
+			  {
+				"key": "Ocp-Apim-Subscription-Key",
+				"value": "{{API_SUBSCRIPTION_KEY}}",
+				"type": "text"
+			  },
+			  {
+				"key": "deployment",
+				"value": "{{DEPLOYMENT}}",
+				"type": "text"
+			  }
+			],
+			"body": {
+			  "mode": "raw",
+			  "raw": "{\n  \"idTransaction\": \"{{TRANSACTION_ID_V2}}\"\n}",
+			  "options": {
+				"raw": {
+				  "language": "json"
+				}
+			  }
+			},
+			"url": {
+			  "raw": "{{HOSTNAME}}/ecommerce/searchNpgOperations",
+			  "host": [
+				"{{HOSTNAME}}"
+			  ],
+			  "path": [
+				"ecommerce",
+				"searchNpgOperations"
+			  ]
+			}
+		  },
+		  "response": []
+		},
+		{
+		  "name": "eCommerce SearchNpgOperations TRANSACTION_ID - Not Found",
+		  "event": [
+			{
+			  "listen": "test",
+			  "script": {
+				"exec": [
+				  "pm.test(\"eCommerce SearchNpgOperations - Status code is 404 for no operations found\", function () {",
+				  "    pm.response.to.have.status(404);",
+				  "    const response = pm.response.json();",
+				  "    pm.expect(response.title).to.be.eq(\"No result found\");",
+				  "    pm.expect(response.description).to.include(\"{{NOT_FOUND_TRANSACTION_ID}}\");",
+				  "});"
+				],
+				"type": "text/javascript"
+			  }
+			}
+		  ],
+		  "request": {
+			"method": "POST",
+			"header": [
+			  {
+				"key": "Ocp-Apim-Subscription-Key",
+				"value": "{{API_SUBSCRIPTION_KEY}}",
+				"type": "text"
+			  },
+			  {
+				"key": "deployment",
+				"value": "{{DEPLOYMENT}}",
+				"type": "text"
+			  }
+			],
+			"body": {
+			  "mode": "raw",
+			  "raw": "{\n  \"idTransaction\": \"{{NOT_FOUND_TRANSACTION_ID}}\"\n}",
+			  "options": {
+				"raw": {
+				  "language": "json"
+				}
+			  }
+			},
+			"url": {
+			  "raw": "{{HOSTNAME}}/ecommerce/searchNpgOperations",
+			  "host": [
+				"{{HOSTNAME}}"
+			  ],
+			  "path": [
+				"ecommerce",
+				"searchNpgOperations"
+			  ]
+			}
+		  },
+		  "response": []
+		},
+		{
+		  "name": "eCommerce SearchNpgOperations TRANSACTION_ID - Bad Request",
+		  "event": [
+			{
+			  "listen": "test",
+			  "script": {
+				"exec": [
+				  "pm.test(\"eCommerce SearchNpgOperations - Status code is 400 for invalid request body\", function () {",
+				  "    pm.response.to.have.status(400);",
+				  "    const response = pm.response.json();",
+				  "    pm.expect(response.title).to.be.eq(\"Bad request\");",
+				  "    pm.expect(response.description).to.include(\"idTransaction\");",
+				  "});"
+				],
+				"type": "text/javascript"
+			  }
+			}
+		  ],
+		  "request": {
+			"method": "POST",
+			"header": [
+			  {
+				"key": "Ocp-Apim-Subscription-Key",
+				"value": "{{API_SUBSCRIPTION_KEY}}",
+				"type": "text"
+			  },
+			  {
+				"key": "deployment",
+				"value": "{{DEPLOYMENT}}",
+				"type": "text"
+			  }
+			],
+			"body": {
+			  "mode": "raw",
+			  "raw": "{\n  \"idTransaction\": \"\"\n}",
+			  "options": {
+				"raw": {
+				  "language": "json"
+				}
+			  }
+			},
+			"url": {
+			  "raw": "{{HOSTNAME}}/ecommerce/searchNpgOperations",
+			  "host": [
+				"{{HOSTNAME}}"
+			  ],
+			  "path": [
+				"ecommerce",
+				"searchNpgOperations"
+			  ]
+			}
+		  },
+		  "response": []
 		}
 	]
 }
