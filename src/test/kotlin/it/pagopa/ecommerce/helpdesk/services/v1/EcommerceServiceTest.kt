@@ -1,12 +1,24 @@
 package it.pagopa.ecommerce.helpdesk.services.v1
 
+import io.vavr.control.Either
+import it.pagopa.ecommerce.commons.client.NpgClient
+import it.pagopa.ecommerce.commons.client.NpgClient.PaymentMethod
 import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.domain.Email
+import it.pagopa.ecommerce.commons.exceptions.NpgResponseException
+import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationDto as OperationDtoV1
+import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto as OperationResultDtoV1
+import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationTypeDto as OperationTypeDtoV1
+import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OrderResponseDto as OrderResponseDtoV1
 import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
+import it.pagopa.ecommerce.commons.utils.NpgApiKeyConfiguration
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
+import it.pagopa.ecommerce.commons.v2.TransactionTestUtils.AUTHORIZATION_REQUEST_ID
+import it.pagopa.ecommerce.commons.v2.TransactionTestUtils.PSP_ID
+import it.pagopa.ecommerce.commons.v2.TransactionTestUtils.TRANSACTION_ID
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
@@ -14,13 +26,34 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.DeadLetterDataProvide
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadGatewayException
+import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadRequestException
+import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterEventDto
+import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchDateTimeRangeDto
+import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchEventSourceDto
+import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchDeadLetterEventsRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.OperationResultDto as OperationResultModelV1
+import it.pagopa.generated.ecommerce.helpdesk.model.PageInfoDto
+import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchDeadLetterEventResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.PspInfoDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionInfoDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionResultDto
 import java.time.OffsetDateTime
 import java.time.ZonedDateTime
+import java.util.*
 import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.given
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.springframework.http.HttpStatus
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
@@ -28,22 +61,26 @@ import reactor.test.StepVerifier
 class EcommerceServiceTest {
 
     private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider = mock()
-
+    private val ecommerceTransactionDataProviderV2:
+        it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider =
+        mock()
     private val deadLetterDataProvider: DeadLetterDataProvider = mock()
-
     private val confidentialDataManager: ConfidentialDataManager = mock()
-
     private val testEmail = "test@test.it"
-
     private val encryptedEmail = TransactionTestUtils.EMAIL.opaqueData
     private val transactionsViewRepository: TransactionsViewRepository = mock()
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
+    private val npgApiKeyConfiguration: NpgApiKeyConfiguration = mock()
+    private val npgClient: NpgClient = mock()
 
     private val ecommerceService =
         EcommerceService(
             ecommerceTransactionDataProvider,
+            ecommerceTransactionDataProviderV2,
             deadLetterDataProvider,
-            confidentialDataManager
+            confidentialDataManager,
+            npgClient = npgClient,
+            npgApiKeyConfiguration = npgApiKeyConfiguration
         )
 
     @Test
@@ -278,7 +315,15 @@ class EcommerceServiceTest {
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
                     ),
-                deadLetterDataProvider = deadLetterDataProvider
+                ecommerceTransactionDataProviderV2 =
+                    it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo
+                        .EcommerceTransactionDataProvider(
+                            transactionsViewRepository = transactionsViewRepository,
+                            transactionsEventStoreRepository = transactionsEventStoreRepository
+                        ),
+                deadLetterDataProvider = deadLetterDataProvider,
+                npgClient = npgClient,
+                npgApiKeyConfiguration = npgApiKeyConfiguration
             )
 
         StepVerifier.create(
@@ -298,5 +343,369 @@ class EcommerceServiceTest {
 
         verify(confidentialDataManager, times(1)).encrypt(any())
         verify(confidentialDataManager, times(0)).decrypt(any<Confidential<Email>>(), any())
+    }
+
+    companion object {
+        private val correlationId = UUID.randomUUID()
+        private const val OPERATION_ID = "operationId"
+    }
+
+    @Test
+    fun `Should successfully map NPG operation response with all fields`() {
+        val authorizationRequestId = AUTHORIZATION_REQUEST_ID
+        val pspId = PSP_ID
+        val paymentMethod = PaymentMethod.CARDS
+
+        val transactionInfo =
+            TransactionInfoDto()
+                .correlationId(correlationId)
+                .authorizationRequestId(authorizationRequestId)
+                .paymentMethodName(paymentMethod.serviceName)
+
+        val pspInfo = PspInfoDto().pspId(pspId)
+
+        val transactionResultDto =
+            TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
+
+        val npgOperation =
+            OperationDtoV1().apply {
+                operationId = OPERATION_ID
+                operationType = OperationTypeDtoV1.AUTHORIZATION
+                operationResult = OperationResultDtoV1.EXECUTED
+                additionalData = mapOf("authorizationCode" to "auth123", "rrn" to "rrn123")
+            }
+        val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
+
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+            .willReturn(Mono.just(listOf(transactionResultDto)))
+
+        given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("test-api-key"))
+        given(npgClient.getOrder(any(), eq("test-api-key"), eq(authorizationRequestId)))
+            .willReturn(Mono.just(orderResponse))
+
+        StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
+            .expectNextMatches { response ->
+                response.operations?.size == 1 &&
+                    response.operations?.first()?.operationResult == OperationResultModelV1.EXECUTED
+            }
+            .verifyComplete()
+
+        verify(npgClient)
+            .getOrder(eq(correlationId), eq("test-api-key"), eq(authorizationRequestId))
+    }
+
+    @Test
+    fun `Should handle NPG operation with missing additionalData`() {
+        val authorizationRequestId = AUTHORIZATION_REQUEST_ID
+        val pspId = PSP_ID
+        val paymentMethod = PaymentMethod.CARDS
+
+        val transactionInfo =
+            TransactionInfoDto()
+                .correlationId(correlationId)
+                .authorizationRequestId(authorizationRequestId)
+                .paymentMethodName(paymentMethod.serviceName)
+
+        val pspInfo = PspInfoDto().pspId(pspId)
+
+        val transactionResultDto =
+            TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
+
+        val npgOperation =
+            OperationDtoV1().apply {
+                operationId = OPERATION_ID
+                operationType = OperationTypeDtoV1.AUTHORIZATION
+                operationResult = OperationResultDtoV1.EXECUTED
+                additionalData = null
+            }
+        val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
+
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+            .willReturn(Mono.just(listOf(transactionResultDto)))
+        given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
+            .willReturn(Either.right("test-api-key"))
+        given(npgClient.getOrder(any(), any(), any())).willReturn(Mono.just(orderResponse))
+
+        StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
+            .expectNextMatches { response ->
+                response.operations?.first()?.additionalData?.authorizationCode == null &&
+                    response.operations?.first()?.additionalData?.rrn == null
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should handle NPG operation with missing authorization code`() {
+        val authorizationRequestId = AUTHORIZATION_REQUEST_ID
+        val pspId = PSP_ID
+        val paymentMethod = PaymentMethod.CARDS
+
+        val transactionInfo =
+            TransactionInfoDto()
+                .correlationId(correlationId)
+                .authorizationRequestId(authorizationRequestId)
+                .paymentMethodName(paymentMethod.serviceName)
+
+        val pspInfo = PspInfoDto().pspId(pspId)
+
+        val transactionResultDto =
+            TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
+
+        val npgOperation =
+            OperationDtoV1().apply {
+                operationId = OPERATION_ID
+                operationType = OperationTypeDtoV1.AUTHORIZATION
+                operationResult = OperationResultDtoV1.EXECUTED
+                additionalData = mapOf("rrn" to "rrn123")
+            }
+        val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
+
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+            .willReturn(Mono.just(listOf(transactionResultDto)))
+        given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
+            .willReturn(Either.right("test-api-key"))
+        given(npgClient.getOrder(any(), any(), any())).willReturn(Mono.just(orderResponse))
+
+        StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
+            .expectNextMatches { response ->
+                response.operations?.first()?.additionalData?.authorizationCode == null &&
+                    response.operations?.first()?.additionalData?.rrn == "rrn123"
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should handle NPG operation with missing rrn`() {
+        val authorizationRequestId = AUTHORIZATION_REQUEST_ID
+        val pspId = PSP_ID
+        val paymentMethod = PaymentMethod.CARDS
+
+        val transactionInfo =
+            TransactionInfoDto()
+                .correlationId(correlationId)
+                .authorizationRequestId(authorizationRequestId)
+                .paymentMethodName(paymentMethod.serviceName)
+
+        val pspInfo = PspInfoDto().pspId(pspId)
+
+        val transactionResultDto =
+            TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
+
+        val npgOperation =
+            OperationDtoV1().apply {
+                operationId = OPERATION_ID
+                operationType = OperationTypeDtoV1.AUTHORIZATION
+                operationResult = OperationResultDtoV1.EXECUTED
+                additionalData = mapOf("authorizationCode" to "auth123")
+            }
+        val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
+
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+            .willReturn(Mono.just(listOf(transactionResultDto)))
+        given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
+            .willReturn(Either.right("test-api-key"))
+        given(npgClient.getOrder(any(), any(), any())).willReturn(Mono.just(orderResponse))
+
+        StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
+            .expectNextMatches { response ->
+                response.operations?.first()?.additionalData?.authorizationCode == "auth123" &&
+                    response.operations?.first()?.additionalData?.rrn == null
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should handle NPG response with null operations list`() {
+        val authorizationRequestId = AUTHORIZATION_REQUEST_ID
+        val paymentMethodName = "CARDS"
+        val pspId = PSP_ID
+
+        val transactionInfo =
+            TransactionInfoDto()
+                .correlationId(correlationId)
+                .authorizationRequestId(authorizationRequestId)
+                .paymentMethodName(paymentMethodName)
+
+        val pspInfo = PspInfoDto().pspId(pspId)
+
+        val transactionResultDto =
+            TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
+
+        val orderResponse = OrderResponseDtoV1().apply { operations = null }
+
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+            .willReturn(Mono.just(listOf(transactionResultDto)))
+        given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
+            .willReturn(Either.right("test-api-key"))
+        given(npgClient.getOrder(any(), any(), any())).willReturn(Mono.just(orderResponse))
+
+        StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
+            .expectNextMatches { response -> response.operations == null }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should handle NPG operation with null paymentMethod`() {
+        val authorizationRequestId = AUTHORIZATION_REQUEST_ID
+        val paymentMethodName = "CARDS"
+        val pspId = PSP_ID
+
+        val transactionInfo =
+            TransactionInfoDto()
+                .correlationId(correlationId)
+                .authorizationRequestId(authorizationRequestId)
+                .paymentMethodName(paymentMethodName)
+
+        val pspInfo = PspInfoDto().pspId(pspId)
+
+        val transactionResultDto =
+            TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
+
+        val npgOperation =
+            it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationDto().apply {
+                operationId = OPERATION_ID
+                operationType = OperationTypeDtoV1.AUTHORIZATION
+                operationResult = OperationResultDtoV1.EXECUTED
+                paymentMethod = null
+            }
+
+        val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
+
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+            .willReturn(Mono.just(listOf(transactionResultDto)))
+        given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
+            .willReturn(Either.right("test-api-key"))
+        given(npgClient.getOrder(any(), any(), any())).willReturn(Mono.just(orderResponse))
+
+        StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
+            .expectNextMatches { response -> response.operations?.first()?.paymentMethod == null }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should handle NPG server error`() {
+        val authorizationRequestId = AUTHORIZATION_REQUEST_ID
+        val pspId = PSP_ID
+        val paymentMethod = PaymentMethod.CARDS
+
+        val transactionInfo =
+            TransactionInfoDto()
+                .correlationId(correlationId)
+                .authorizationRequestId(authorizationRequestId)
+                .paymentMethodName(paymentMethod.serviceName)
+
+        val pspInfo = PspInfoDto().pspId(pspId)
+
+        val transactionResultDto =
+            TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
+
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+            .willReturn(Mono.just(listOf(transactionResultDto)))
+
+        given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("test-api-key"))
+
+        given(npgClient.getOrder(any(), any(), any()))
+            .willReturn(
+                Mono.error(
+                    NpgResponseException(
+                        "error",
+                        emptyList(),
+                        Optional.of(HttpStatus.INTERNAL_SERVER_ERROR),
+                        RuntimeException()
+                    )
+                )
+            )
+
+        StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
+            .expectError(NpgBadGatewayException::class.java)
+            .verify()
+
+        verify(npgClient)
+            .getOrder(eq(correlationId), eq("test-api-key"), eq(authorizationRequestId))
+    }
+
+    @Test
+    fun `Should handle NPG client error`() {
+        val authorizationRequestId = AUTHORIZATION_REQUEST_ID
+        val pspId = PSP_ID
+        val paymentMethod = PaymentMethod.CARDS
+
+        val transactionInfo =
+            TransactionInfoDto()
+                .correlationId(correlationId)
+                .authorizationRequestId(authorizationRequestId)
+                .paymentMethodName(paymentMethod.serviceName)
+
+        val pspInfo = PspInfoDto().pspId(pspId)
+
+        val transactionResultDto =
+            TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
+
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+            .willReturn(Mono.just(listOf(transactionResultDto)))
+
+        given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("test-api-key"))
+
+        given(npgClient.getOrder(any(), any(), any()))
+            .willReturn(
+                Mono.error(
+                    NpgResponseException(
+                        "error",
+                        emptyList(),
+                        Optional.of(HttpStatus.BAD_REQUEST),
+                        RuntimeException()
+                    )
+                )
+            )
+
+        StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
+            .expectError(NpgBadRequestException::class.java)
+            .verify()
+
+        verify(npgClient)
+            .getOrder(eq(correlationId), eq("test-api-key"), eq(authorizationRequestId))
+    }
+
+    @Test
+    fun `Should throw NoResultFoundException when findResult returns empty list`() {
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+            .willReturn(Mono.just(emptyList()))
+
+        StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
+            .expectError(NoResultFoundException::class.java)
+            .verify()
+    }
+
+    @Test
+    fun `Should throw NoResultFoundException when transaction info is null`() {
+        val transactionResultDto = TransactionResultDto()
+
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+            .willReturn(Mono.just(listOf(transactionResultDto)))
+
+        StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
+            .expectError(NoResultFoundException::class.java)
+            .verify()
+    }
+
+    @Test
+    fun `Should throw NoResultFoundException when correlationId is null`() {
+        val transactionInfo =
+            TransactionInfoDto()
+                .correlationId(null)
+                .authorizationRequestId(AUTHORIZATION_REQUEST_ID)
+                .paymentMethodName(PaymentMethod.CARDS.serviceName)
+
+        val pspInfo = PspInfoDto().pspId(PSP_ID)
+
+        val transactionResultDto =
+            TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
+
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+            .willReturn(Mono.just(listOf(transactionResultDto)))
+
+        StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
+            .expectError(NoResultFoundException::class.java)
+            .verify()
     }
 }
