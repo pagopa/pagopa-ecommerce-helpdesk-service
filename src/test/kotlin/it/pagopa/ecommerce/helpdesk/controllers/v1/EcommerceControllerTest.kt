@@ -303,4 +303,73 @@ class EcommerceControllerTest {
                 .expectBody<SearchDeadLetterEventResponseDto>()
                 .isEqualTo(expected)
         }
+
+    @Test
+    fun `post search NPG operations succeeded`() = runTest {
+        val transactionId = "3fa85f6457174562b3fc2c963f66afa6"
+        val request = SearchNpgOperationsRequestDto().idTransaction(transactionId)
+        val response = SearchNpgOperationsResponseDto()
+
+        given(ecommerceService.searchNpgOperations(transactionId = eq(transactionId)))
+            .willReturn(Mono.just(response))
+
+        webClient
+            .post()
+            .uri { uriBuilder -> uriBuilder.path("/ecommerce/searchNpgOperations").build() }
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<SearchNpgOperationsResponseDto>()
+            .isEqualTo(response)
+    }
+
+    @Test
+    fun `post search NPG operations should return 404 for no operations found`() = runTest {
+        val transactionId = "3fa85f6457174562b3fc2c963f66afa7"
+        val request = SearchNpgOperationsRequestDto().idTransaction(transactionId)
+        val expectedProblemJson =
+            HelpdeskTestUtils.buildProblemJson(
+                httpStatus = HttpStatus.NOT_FOUND,
+                title = "No result found",
+                description = "No result can be found searching for criteria $transactionId"
+            )
+
+        given(ecommerceService.searchNpgOperations(transactionId = eq(transactionId)))
+            .willReturn(Mono.error(NoResultFoundException(transactionId)))
+
+        webClient
+            .post()
+            .uri { uriBuilder -> uriBuilder.path("/ecommerce/searchNpgOperations").build() }
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isNotFound
+            .expectBody<ProblemJsonDto>()
+            .isEqualTo(expectedProblemJson)
+    }
+
+    @Test
+    fun `post search NPG operations should return 400 for invalid request body`() = runTest {
+        val request = SearchNpgOperationsRequestDto().idTransaction("")
+        val expectedProblemJson =
+            HelpdeskTestUtils.buildProblemJson(
+                httpStatus = HttpStatus.BAD_REQUEST,
+                title = "Bad request",
+                description = "Input request is invalid. Invalid fields: idTransaction"
+            )
+
+        webClient
+            .post()
+            .uri { uriBuilder -> uriBuilder.path("/ecommerce/searchNpgOperations").build() }
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isBadRequest
+            .expectBody(ProblemJsonDto::class.java)
+            .isEqualTo(expectedProblemJson)
+    }
 }
