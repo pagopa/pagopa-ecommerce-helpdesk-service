@@ -1,8 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.services.v1
 
-import it.pagopa.ecommerce.commons.client.NpgClient
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
-import it.pagopa.ecommerce.commons.utils.NpgApiKeyConfiguration
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
@@ -22,9 +20,7 @@ import reactor.core.publisher.Mono
 class HelpdeskService(
     @Autowired val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
     @Autowired val pmTransactionDataProvider: PMTransactionDataProvider,
-    @Autowired val confidentialDataManager: ConfidentialDataManager,
-    @Autowired val npgClient: NpgClient,
-    @Autowired val npgApiKeyConfiguration: NpgApiKeyConfiguration
+    @Autowired val confidentialDataManager: ConfidentialDataManager
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
