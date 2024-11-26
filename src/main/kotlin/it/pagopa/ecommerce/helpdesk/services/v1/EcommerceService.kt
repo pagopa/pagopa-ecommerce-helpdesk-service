@@ -9,7 +9,8 @@ import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.utils.NpgApiKeyConfiguration
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.DeadLetterDataProvider
-import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider as EcommerceTransactionDataProviderV1
+import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider as EcommerceTransactionDataProviderV2
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadGatewayException
@@ -18,6 +19,7 @@ import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildDeadLetterEventsSearchResponse
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
+import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchDateTimeRangeDto
 import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchDeadLetterEventsRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchTransactionRequestDto
@@ -29,6 +31,7 @@ import it.pagopa.generated.ecommerce.helpdesk.model.PaymentMethodDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchDeadLetterEventResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestTransactionIdDto as SearchTransactionRequestTransactionIdDtoV2
 import java.util.*
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
@@ -38,7 +41,8 @@ import reactor.core.publisher.Mono
 
 @Service("EcommerceServiceV1")
 class EcommerceService(
-    @Autowired private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
+    @Autowired private val ecommerceTransactionDataProvider: EcommerceTransactionDataProviderV1,
+    @Autowired private val ecommerceTransactionDataProviderV2: EcommerceTransactionDataProviderV2,
     @Autowired private val deadLetterDataProvider: DeadLetterDataProvider,
     @Autowired private val confidentialDataManager: ConfidentialDataManager,
     @Autowired val npgClient: NpgClient,
@@ -113,81 +117,97 @@ class EcommerceService(
     }
 
     /**
-     * Used by the API that searches for NPG operations. Starting from the transaction id, first it
-     * retrieves the transaction details calling the
-     * [EcommerceTransactionDataProvider.retrieveTransactionDetails] that returns an object of the
-     * data class [NTuple4], then it uses the details to call the [performGetOrderNPG]. Returns a
-     * [SearchNpgOperationsResponseDto], representing a subset of [OrderResponseDto] data.
+     * Searches for NPG operations associated with a given transaction ID.
+     *
+     * The search process follows these steps:
+     * 1. Searches for the transaction using [EcommerceTransactionDataProviderV2.findResult]
+     * 2. If found and has a valid correlationId, retrieves NPG order details using
+     *    [performGetOrderNPG]
+     * 3. Maps the NPG order response to a [SearchNpgOperationsResponseDto] containing operation
+     *    details
+     *
+     * @param transactionId The ID of the transaction to search for
+     * @return Mono<SearchNpgOperationsResponseDto> containing the NPG operations data, or
+     *   NoResultFoundException if the transaction is not found or lacks required data
      */
     fun searchNpgOperations(transactionId: String): Mono<SearchNpgOperationsResponseDto> {
-        return ecommerceTransactionDataProvider
-            .retrieveTransactionDetails(transactionId)
-            .flatMap { details ->
-                performGetOrderNPG(
-                    transactionId = TransactionId(transactionId),
-                    orderId = details.first,
-                    pspId = details.second,
-                    correlationId = details.third,
-                    paymentMethod = details.fourth
-                )
-            }
-            .doOnNext { order ->
-                logger.info(
-                    "Performed get order for transaction with id: [{}], last operation result: [{}], operations: [{}]",
-                    transactionId,
-                    order.orderStatus?.lastOperationType,
-                    order.operations?.joinToString { "${it.operationType}-${it.operationResult}" },
-                )
-            }
-            .map { orderResponse ->
-                SearchNpgOperationsResponseDto().apply {
-                    operations =
-                        orderResponse.operations
-                            ?.map { operation ->
-                                OperationDto().apply {
-                                    // Extract authorizationCode and rrn if they exist
-                                    logger.debug(
-                                        "NPG operation additionalData: {}",
-                                        operation.additionalData
-                                    )
-                                    additionalData =
-                                        OperationAdditionalDataDto().apply {
-                                            authorizationCode =
-                                                operation.additionalData
-                                                    ?.get("authorizationCode")
-                                                    ?.toString()
-                                            rrn = operation.additionalData?.get("rrn")?.toString()
-                                        }
+        val searchCriteria =
+            SearchParamDecoderV2(
+                searchParameter =
+                    SearchTransactionRequestTransactionIdDtoV2().apply {
+                        this.transactionId = transactionId
+                        this.type = "TRANSACTION_ID"
+                    },
+                confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+            )
 
-                                    operationAmount = operation.operationAmount
-                                    operationCurrency = operation.operationCurrency
-                                    operationId = operation.operationId
-                                    operationResult =
-                                        OperationResultDto.valueOf(
-                                            operation.operationResult.toString()
-                                        )
-                                    operationTime = operation.operationTime
-                                    operationType =
-                                        OperationTypeDto.valueOf(operation.operationType.toString())
-                                    orderId = operation.orderId
-                                    paymentCircuit = operation.paymentCircuit
-                                    paymentEndToEndId = operation.paymentEndToEndId
-                                    paymentMethod =
-                                        operation.paymentMethod?.let {
-                                            PaymentMethodDto.valueOf(it.toString())
+        return ecommerceTransactionDataProviderV2.findResult(searchCriteria, 0, 1).flatMap { list ->
+            val optionalResult = list.firstOrNull()?.let { Optional.of(it) } ?: Optional.empty()
+            if (
+                optionalResult.isPresent &&
+                    optionalResult.get().transactionInfo?.correlationId != null
+            ) {
+                performGetOrderNPG(
+                        transactionId = TransactionId(transactionId),
+                        orderId = optionalResult.get().transactionInfo.authorizationRequestId,
+                        pspId = optionalResult.get().pspInfo.pspId,
+                        correlationId =
+                            optionalResult.get().transactionInfo.correlationId.toString(),
+                        paymentMethod =
+                            NpgClient.PaymentMethod.valueOf(
+                                optionalResult.get().transactionInfo.paymentMethodName
+                            )
+                    )
+                    .map { orderResponse ->
+                        SearchNpgOperationsResponseDto().apply {
+                            operations =
+                                orderResponse.operations
+                                    ?.map { operation ->
+                                        OperationDto().apply {
+                                            logger.debug(
+                                                "NPG operation additionalData: {}",
+                                                operation.additionalData
+                                            )
+                                            additionalData =
+                                                OperationAdditionalDataDto().apply {
+                                                    authorizationCode =
+                                                        operation.additionalData
+                                                            ?.get("authorizationCode")
+                                                            ?.toString()
+                                                    rrn =
+                                                        operation.additionalData
+                                                            ?.get("rrn")
+                                                            ?.toString()
+                                                }
+
+                                            operationAmount = operation.operationAmount
+                                            operationCurrency = operation.operationCurrency
+                                            operationId = operation.operationId
+                                            operationResult =
+                                                OperationResultDto.valueOf(
+                                                    operation.operationResult.toString()
+                                                )
+                                            operationTime = operation.operationTime
+                                            operationType =
+                                                OperationTypeDto.valueOf(
+                                                    operation.operationType.toString()
+                                                )
+                                            orderId = operation.orderId
+                                            paymentCircuit = operation.paymentCircuit
+                                            paymentEndToEndId = operation.paymentEndToEndId
+                                            paymentMethod =
+                                                operation.paymentMethod?.let {
+                                                    PaymentMethodDto.valueOf(it.toString())
+                                                }
                                         }
-                                }
-                            }
-                            ?.toList()
-                }
+                                    }
+                                    ?.toList()
+                        }
+                    }
+            } else {
+                Mono.error(NoResultFoundException(transactionId))
             }
-            .doOnNext { orderResponse ->
-                logger.info(
-                    "Retrieved NPG operations for transaction [{}]: found {} operations",
-                    transactionId,
-                    orderResponse.operations?.size ?: 0
-                )
-            }
+        }
     }
 
     /**
@@ -258,5 +278,3 @@ class EcommerceService(
         }
     }
 }
-
-data class NTuple4<T1, T2, T3, T4>(val first: T1, val second: T2, val third: T3, val fourth: T4)
