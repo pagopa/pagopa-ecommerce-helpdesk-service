@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaecommercehelpdeskservice
-    tag: "1.26.0"
+    tag: "1.27.1"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -90,12 +90,24 @@ microservice-chart:
     NPG_URI: "https://stg-ta.nexigroup.com/api/phoenix-0.0"
     NPG_READ_TIMEOUT: "10000"
     NPG_CONNECTION_TIMEOUT: "10000"
+    NPG_CARDS_PSP_LIST: "BCITITMM,CIPBITMM,BIC36019,UNCRITMM,BPPIITRRXXX,PPAYITR1XXX,BNLIITRR,PASCITMM,WOLLNLB1,IFSPIT21"
+    NPG_PAYPAL_PSP_LIST: "BCITITMM,SIGPITM1XXX"
+    NPG_MYBANK_PSP_LIST: "BCITITMM,UNCRITMM"
+    NPG_BANCOMATPAY_PSP_LIST: "BCITITMM"
+    NPG_SATISPAY_PSP_LIST: "SATYLUL1"
+    NPG_APPLEPAY_PSP_LIST: "SIGPITM1XXX"
     SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
       {ALL: '*', ECOMMERCE: 'pagopa-d-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-d-weu-ecommerce-notifications-service-errors-queue'}
 
     SEARCH_PM_IN_ECOMMERCE_HISTORY_ENABLED: "true"
   envSecret:
     NPG_API_KEY: npg-api-key
+    NPG_CARDS_PSP_KEYS: npg-cards-psp-keys
+    NPG_PAYPAL_PSP_KEYS: npg-paypal-psp-keys
+    NPG_BANCOMATPAY_PSP_KEYS: npg-bancomatpay-psp-keys
+    NPG_MYBANK_PSP_KEYS: npg-mybank-psp-keys
+    NPG_SATISPAY_PSP_KEYS: npg-satispay-psp-keys
+    NPG_APPLEPAY_PSP_KEYS: npg-apple-pay-psp-keys
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
     PM_ORACLE_PASSWORD: pm-oracle-db-password
