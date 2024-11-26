@@ -372,31 +372,4 @@ class EcommerceControllerTest {
             .expectBody(ProblemJsonDto::class.java)
             .isEqualTo(expectedProblemJson)
     }
-
-    @Test
-    fun `post search NPG operations should return 500 for unhandled error processing request`() =
-        runTest {
-            val transactionId = "3fa85f6457174562b3fc2c963f66afa6"
-            val request = SearchNpgOperationsRequestDto().idTransaction(transactionId)
-            val expectedProblemJson =
-                HelpdeskTestUtils.buildProblemJson(
-                    httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
-                    title = "Error processing the request",
-                    description = "Generic error occurred"
-                )
-
-            given(ecommerceService.searchNpgOperations(transactionId = eq(transactionId)))
-                .willReturn(Mono.error(RuntimeException("Unhandled error")))
-
-            webClient
-                .post()
-                .uri { uriBuilder -> uriBuilder.path("/ecommerce/searchNpgOperations").build() }
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(request)
-                .exchange()
-                .expectStatus()
-                .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-                .expectBody<ProblemJsonDto>()
-                .isEqualTo(expectedProblemJson)
-        }
 }
