@@ -53,9 +53,11 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
     }
 
     override fun ecommerceSearchNpgOperationsPost(
-        searchNpgOperationsRequestDto: Mono<SearchNpgOperationsRequestDto>?,
+        searchNpgOperationsRequestDto: Mono<SearchNpgOperationsRequestDto>,
         exchange: ServerWebExchange?
     ): Mono<ResponseEntity<SearchNpgOperationsResponseDto>> {
-        TODO("Not yet implemented")
+        return searchNpgOperationsRequestDto
+            .flatMap { ecommerceService.searchNpgOperations(transactionId = it.idTransaction) }
+            .map { ResponseEntity.ok(it) }
     }
 }
