@@ -1001,7 +1001,9 @@
 				  "pm.test(\"eCommerce SearchNpgOperations SearchNpgOperations by TRANSACTION_ID - Status code is 200 with valid json response\", function () {",
 				  "    pm.response.to.have.status(200);",
 				  "    const response = pm.response.json();",
-				  "    pm.expect(response.idTransaction).to.be.eq(\"{{TRANSACTION_ID_V2}}\");",
+				  "    pm.expect(response).to.have.property('operations');",
+				  "    pm.expect(response.operations).to.be.an('array');",
+				  "    pm.expect(response.operations).to.not.be.empty; ",
 				  "});"
 				],
 				"type": "text/javascript"
@@ -1054,8 +1056,9 @@
 				  "pm.test(\"eCommerce SearchNpgOperations - Status code is 404 for no operations found\", function () {",
 				  "    pm.response.to.have.status(404);",
 				  "    const response = pm.response.json();",
+				  "    const requestBody = JSON.parse(pm.request.body.raw);",
 				  "    pm.expect(response.title).to.be.eq(\"No result found\");",
-				  "    pm.expect(response.description).to.include(\"{{NOT_FOUND_TRANSACTION_ID}}\");",
+				  "    pm.expect(response.detail).to.include(requestBody.idTransaction);",
 				  "});"
 				],
 				"type": "text/javascript"
@@ -1109,7 +1112,7 @@
 				  "    pm.response.to.have.status(400);",
 				  "    const response = pm.response.json();",
 				  "    pm.expect(response.title).to.be.eq(\"Bad request\");",
-				  "    pm.expect(response.description).to.include(\"idTransaction\");",
+				  "    pm.expect(response.detail).to.include(\"Input request is invalid\");",
 				  "});"
 				],
 				"type": "text/javascript"
