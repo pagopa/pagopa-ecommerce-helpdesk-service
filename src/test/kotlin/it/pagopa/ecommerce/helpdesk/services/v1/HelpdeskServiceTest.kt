@@ -1,13 +1,11 @@
 package it.pagopa.ecommerce.helpdesk.services.v1
 
-import it.pagopa.ecommerce.commons.client.NpgClient
 import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
-import it.pagopa.ecommerce.commons.utils.NpgApiKeyConfiguration
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
@@ -34,16 +32,12 @@ class HelpdeskServiceTest {
     private val pmTransactionDataProvider: PMTransactionDataProvider = mock()
     private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider = mock()
     private val confidentialDataManager: ConfidentialDataManager = mock()
-    private val npgApiKeyConfiguration: NpgApiKeyConfiguration = mock()
-    private val npgClient: NpgClient = mock()
 
     private val helpdeskService =
         HelpdeskService(
             pmTransactionDataProvider = pmTransactionDataProvider,
             ecommerceTransactionDataProvider = ecommerceTransactionDataProvider,
-            confidentialDataManager = confidentialDataManager,
-            npgClient = npgClient,
-            npgApiKeyConfiguration = npgApiKeyConfiguration
+            confidentialDataManager = confidentialDataManager
         )
 
     private val testEmail = "test@test.it"
@@ -585,9 +579,7 @@ class HelpdeskServiceTest {
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
                     ),
-                confidentialDataManager = confidentialDataManager,
-                npgClient = npgClient,
-                npgApiKeyConfiguration = npgApiKeyConfiguration
+                confidentialDataManager = confidentialDataManager
             )
         given(confidentialDataManager.encrypt(Email(testEmail)))
             .willReturn(Mono.just(Confidential(encryptedEmail)))
@@ -651,9 +643,7 @@ class HelpdeskServiceTest {
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
                     ),
-                confidentialDataManager = confidentialDataManager,
-                npgClient = npgClient,
-                npgApiKeyConfiguration = npgApiKeyConfiguration
+                confidentialDataManager = confidentialDataManager
             )
         val pmResults =
             listOf(HelpdeskTestUtils.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM))
@@ -740,9 +730,7 @@ class HelpdeskServiceTest {
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
                     ),
-                confidentialDataManager = confidentialDataManager,
-                npgClient = npgClient,
-                npgApiKeyConfiguration = npgApiKeyConfiguration
+                confidentialDataManager = confidentialDataManager
             )
         val pmResults =
             listOf(HelpdeskTestUtils.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM))
