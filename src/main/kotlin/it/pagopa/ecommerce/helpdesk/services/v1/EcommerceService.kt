@@ -164,10 +164,6 @@ class EcommerceService(
                                 orderResponse.operations
                                     ?.map { operation ->
                                         OperationDto().apply {
-                                            logger.debug(
-                                                "NPG operation additionalData: {}",
-                                                operation.additionalData
-                                            )
                                             additionalData =
                                                 OperationAdditionalDataDto().apply {
                                                     authorizationCode =
