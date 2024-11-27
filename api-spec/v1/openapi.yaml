@@ -413,6 +413,10 @@ components:
       type: object
       description: Search transaction by date and time range
       properties:
+        type:
+          type: string
+          default: "DATE_TIME_RANGE"
+          example: "DATE_TIME_RANGE"
         startDate:
           type: string
           format: date-time
