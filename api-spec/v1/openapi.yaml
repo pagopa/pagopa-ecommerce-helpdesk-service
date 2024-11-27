@@ -409,6 +409,21 @@ components:
       example:
         type: "USER_EMAIL"
         userEmail: "mario.rossi@pagopa.it"
+    SearchTransactionRequestDateTimeRange:
+      type: object
+      description: Search transaction by date and time range
+      properties:
+        startDate:
+          type: string
+          format: date-time
+          description: Search start date
+        endDate:
+          type: string
+          format: date-time
+          description: Search end date
+      required:
+        - startDate
+        - endDate
     SearchTransactionResponse:
       type: object
       description: TransactionResponse
@@ -690,11 +705,13 @@ components:
       oneOf:
         - $ref: '#/components/schemas/SearchTransactionRequestFiscalCode'
         - $ref: '#/components/schemas/SearchTransactionRequestEmail'
+        - $ref: '#/components/schemas/SearchTransactionRequestDateTimeRange'
       discriminator:
         propertyName: type
         mapping:
           USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
           USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
+          DATE_TIME_RANGE: "#/components/schemas/SearchTransactionRequestDateTimeRange"
     EcommerceSearchTransactionRequest:
       type: object
       oneOf:
@@ -1112,7 +1129,7 @@ components:
             Required for circuid reconciliation purposes.
           example: e723hedsdew
         paymentMethod:
-          $ref: '#/components/schemas/PaymentMethod'  
+          $ref: '#/components/schemas/PaymentMethod'
     OperationResult:
       type: string
       description: "Transaction output:\n* AUTHORIZED - Payment authorized\n* EXECUTED
@@ -1174,11 +1191,13 @@ components:
             oneOf:
               - $ref: '#/components/schemas/SearchTransactionRequestFiscalCode'
               - $ref: '#/components/schemas/SearchTransactionRequestEmail'
+              - $ref: '#/components/schemas/SearchTransactionRequestDateTimeRange'
             discriminator:
               propertyName: type
               mapping:
                 USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
                 USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
+                DATE_TIME_RANGE: "#/components/schemas/SearchTransactionRequestDateTimeRange"
           examples:
             search by user fiscal code:
               value:
@@ -1188,6 +1207,11 @@ components:
               value:
                 type: USER_EMAIL
                 userEmail: "test@test.it"
+            search by date and time range:
+              value:
+                timeRange:
+                  startDate: "2023-01-01T00:00:00.000"
+                  endDate: "2023-01-01T02:00:00.000"
     PmSearchTransactionResponse:
       required: true
       content:
