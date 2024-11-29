@@ -31,6 +31,17 @@ services:
       - "spid-testenv2-2:127.0.0.1"
       - "pagopa-dev:127.0.0.1"
       - "spid-validator:127.0.0.1"
+  oracle-pm:
+    container_name: pagopa-ecommerce-helpdesk-oracle-pm
+    build:
+      context: ./docker/oracleDB/liquibase/
+      dockerfile: Dockerfile.PM
+    ports:
+      - 1523:1521
+    expose:
+      - '1523'
+    networks:
+      - pagopa-ecommerce-net
   mongo:
     container_name: pagopa-ecommerce-helpdesk-mongo
     image: mongo@sha256:3984cf5a234e525253619060fcbff12449db0597d62a6d4e18991a18f2365c36
