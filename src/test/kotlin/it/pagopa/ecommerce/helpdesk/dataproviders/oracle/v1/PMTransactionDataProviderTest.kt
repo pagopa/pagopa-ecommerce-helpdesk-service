@@ -301,4 +301,63 @@ class PMTransactionDataProviderTest {
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
     }
+
+    @Test
+    fun `Should count total record successfully for transactions within date range`() {
+        Hooks.onOperatorDebug()
+        StepVerifier.create(
+                pmTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter =
+                            HelpdeskTestUtils.buildSearchTransactionRequestDateTimeRangeDto(
+                                type = "DATE_TIME_RANGE",
+                                startDate = OffsetDateTime.parse("2018-06-25T00:00:00+02:00"),
+                                endDate = OffsetDateTime.parse("2018-06-27T00:00:00+02:00")
+                            ),
+                        confidentialMailUtils = null
+                    )
+                )
+            )
+            .expectNext(1)
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should handle no transactions found within date range`() {
+        Hooks.onOperatorDebug()
+        StepVerifier.create(
+                pmTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter =
+                                HelpdeskTestUtils.buildSearchTransactionRequestDateTimeRangeDto(
+                                    type = "DATE_RANGE",
+                                    startDate = OffsetDateTime.parse("2025-06-25T00:00:00+02:00"),
+                                    endDate = OffsetDateTime.parse("2025-06-27T00:00:00+02:00")
+                                ),
+                            confidentialMailUtils = null
+                        ),
+                    limit = 10,
+                    skip = 0
+                )
+            )
+            .expectNextMatches { it.isEmpty() }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should throw InvalidSearchCriteriaException for unsupported search type in date range`() {
+        Hooks.onOperatorDebug()
+        val searchCriteria: HelpDeskSearchTransactionRequestDto = mock()
+        given(searchCriteria.type).willReturn("UNKNOWN")
+        StepVerifier.create(
+                pmTransactionDataProvider.findResult(
+                    searchParams = SearchParamDecoder(searchParameter = searchCriteria, null),
+                    skip = 0,
+                    limit = 0
+                )
+            )
+            .expectError(InvalidSearchCriteriaException::class.java)
+            .verify()
+    }
 }
