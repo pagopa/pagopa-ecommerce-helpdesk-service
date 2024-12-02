@@ -31,11 +31,11 @@ services:
       - "spid-testenv2-2:127.0.0.1"
       - "pagopa-dev:127.0.0.1"
       - "spid-validator:127.0.0.1"
-  oracle-pm:
-    container_name: pagopa-ecommerce-helpdesk-oracle-pm
+  oracle-ext:
+    container_name: pagopa-ecommerce-helpdesk-oracle-ext
     build:
       context: ./docker/oracleDB/liquibase/
-      dockerfile: Dockerfile.PM
+      dockerfile: Dockerfile.ext
     ports:
       - 1523:1521
     expose:
