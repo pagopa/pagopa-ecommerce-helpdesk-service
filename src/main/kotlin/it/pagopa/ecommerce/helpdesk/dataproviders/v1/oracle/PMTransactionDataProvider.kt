@@ -6,7 +6,16 @@ import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToTransactionInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestDateDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestEmailDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestFiscalCodeDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestPaymentTokenDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestRptIdDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestTransactionIdDto
+import it.pagopa.generated.ecommerce.helpdesk.model.TransactionResultDto
+import java.time.OffsetDateTime
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -46,6 +55,12 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         totalRecordCountQuery = userFiscalCodeCountQuery,
                         searchParam = it.userFiscalCode
                     )
+                is SearchTransactionRequestDateDto ->
+                    getTotalResultCountFromDateTimeRange(
+                        totalRecordCountQuery = timestampRangeCountQuery,
+                        startDate = it.timeRange.startDate,
+                        endDate = it.timeRange.endDate
+                    )
                 else -> invalidSearchCriteriaError
             }
         }
@@ -84,6 +99,15 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         searchParam = it.userFiscalCode,
                         searchType = it.type
                     )
+                is SearchTransactionRequestDateDto ->
+                    getResultSetFromDateTimeRangeQuery(
+                        resultQuery = timestampRangePaginatedQuery,
+                        skip = skip,
+                        limit = limit,
+                        type = it.type,
+                        startDate = it.timeRange.startDate,
+                        endDate = it.timeRange.endDate
+                    )
                 else -> invalidSearchCriteriaError
             }
         }
@@ -97,6 +121,30 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                             connection
                                 .createStatement(totalRecordCountQuery)
                                 .bind(0, searchParam)
+                                .execute()
+                        )
+                        .flatMap { result ->
+                            result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
+                        }
+                        .doOnNext { logger.info("Total transaction found: $it") }
+                },
+                { it.close() }
+            )
+            .toMono()
+
+    private fun getTotalResultCountFromDateTimeRange(
+        totalRecordCountQuery: String,
+        startDate: OffsetDateTime,
+        endDate: OffsetDateTime
+    ): Mono<Int> =
+        Flux.usingWhen(
+                connectionFactory.create(),
+                { connection ->
+                    Flux.from(
+                            connection
+                                .createStatement(totalRecordCountQuery)
+                                .bind(0, startDate)
+                                .bind(1, endDate)
                                 .execute()
                         )
                         .flatMap { result ->
@@ -136,4 +184,37 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
             )
             .collectList()
             .switchIfEmpty { Mono.error(NoResultFoundException(searchType)) }
+
+    private fun getResultSetFromDateTimeRangeQuery(
+        resultQuery: String,
+        skip: Int,
+        limit: Int,
+        type: String,
+        startDate: OffsetDateTime,
+        endDate: OffsetDateTime,
+    ): Mono<List<TransactionResultDto>> {
+        return Flux.usingWhen(
+                connectionFactory.create(),
+                { connection ->
+                    logger.info(
+                        "Retrieving transactions from PM database. Skipping: $skip, limit: $limit."
+                    )
+                    Flux.from(
+                            connection
+                                .createStatement(resultQuery)
+                                .apply {
+                                    bind(0, startDate)
+                                    bind(1, endDate)
+                                    bind(2, skip)
+                                    bind(3, limit)
+                                }
+                                .execute()
+                        )
+                        .flatMap { result -> resultToTransactionInfoDto(result) }
+                },
+                { connection -> connection.close() }
+            )
+            .collectList()
+            .switchIfEmpty { Mono.error(NoResultFoundException(type)) }
+    }
 }
