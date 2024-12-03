@@ -431,7 +431,6 @@
 							"pm.test(\"PM SearchTransaction by DATE_TIME_RANGE - Status code is 404 for no transactions found\", function () {",
 							"    pm.response.to.have.status(404);",
 							"    const response = pm.response.json();",
-							"    const requestBody = JSON.parse(pm.request.body.raw);",
 							"    pm.expect(response.title).to.be.eq(\"No result found\");",
 							"});"
 						],
