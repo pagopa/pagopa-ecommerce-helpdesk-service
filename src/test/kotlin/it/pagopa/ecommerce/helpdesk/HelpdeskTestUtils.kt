@@ -227,4 +227,10 @@ object HelpdeskTestUtils {
                 DeadLetterRedirectTransactionInfoDetailsData("outcome".takeIf { !partial })
             else -> null
         }
+
+    fun buildSearchTransactionRequestDateTimeRangeDto(
+        type: String,
+        timeRangeDto: SearchTransactionRequestDateTimeRangeDto
+    ): SearchTransactionRequestDateDto =
+        SearchTransactionRequestDateDto().type(type).timeRange(timeRangeDto)
 }
