@@ -36,6 +36,8 @@ services:
     build:
       context: ./docker/oracleDB/liquibase/
       dockerfile: Dockerfile.ext
+    profiles:
+      - arm64
     ports:
       - 1523:1521
     expose:
