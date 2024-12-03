@@ -18,11 +18,11 @@ USER oracle
 ADD lib/com.oracle.ojdbc8-12.2.0.1.jar /home/oracle/liquibase/
 ADD wait_for_it.sh /home/oracle/
 ADD wait_and_migrate.sh /home/oracle/
-ADD agid_user/run_image.sh /home/oracle/
+ADD ext/run_image.sh /home/oracle/
 ADD changelogs/ /home/oracle/changelogs
-ADD agid_user/changelogs/payment-manager/scripts/schema-creation/V0__CREATE_USER.sql /home/oracle/changelogs/payment-manager/scripts/schema-creation/
-ADD agid_user/changelogs/payment-manager/scripts/data-insert/V37__PM__INSERT_TRANSACTION.sql /home/oracle/changelogs/payment-manager/scripts/data-insert/
-ADD agid_user/changelogs/payment-manager/data-insert-changelog.xml /home/oracle/changelogs/payment-manager/
+ADD ext/changelogs/payment-manager/scripts/schema-creation/V0__CREATE_USER.sql /home/oracle/changelogs/payment-manager/scripts/schema-creation/
+ADD ext/changelogs/payment-manager/scripts/data-insert/V37__PM__INSERT_TRANSACTION.sql /home/oracle/changelogs/payment-manager/scripts/data-insert/
+ADD ext/changelogs/payment-manager/data-insert-changelog.xml /home/oracle/changelogs/payment-manager/
 
 USER root
 
