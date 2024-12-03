@@ -311,8 +311,12 @@ class PMTransactionDataProviderTest {
                         searchParameter =
                             HelpdeskTestUtils.buildSearchTransactionRequestDateTimeRangeDto(
                                 type = "DATE_TIME_RANGE",
-                                startDate = OffsetDateTime.parse("2018-06-25T00:00:00+02:00"),
-                                endDate = OffsetDateTime.parse("2018-06-27T00:00:00+02:00")
+                                timeRangeDto =
+                                    SearchTransactionRequestDateTimeRangeDto()
+                                        .startDate(
+                                            OffsetDateTime.parse("2018-06-25T00:00:00+02:00")
+                                        )
+                                        .endDate(OffsetDateTime.parse("2018-06-27T00:00:00+02:00"))
                             ),
                         confidentialMailUtils = null
                     )
@@ -332,8 +336,14 @@ class PMTransactionDataProviderTest {
                             searchParameter =
                                 HelpdeskTestUtils.buildSearchTransactionRequestDateTimeRangeDto(
                                     type = "DATE_RANGE",
-                                    startDate = OffsetDateTime.parse("2025-06-25T00:00:00+02:00"),
-                                    endDate = OffsetDateTime.parse("2025-06-27T00:00:00+02:00")
+                                    timeRangeDto =
+                                        SearchTransactionRequestDateTimeRangeDto()
+                                            .startDate(
+                                                OffsetDateTime.parse("2025-06-25T00:00:00+02:00")
+                                            )
+                                            .endDate(
+                                                OffsetDateTime.parse("2025-06-27T00:00:00+02:00")
+                                            )
                                 ),
                             confidentialMailUtils = null
                         ),

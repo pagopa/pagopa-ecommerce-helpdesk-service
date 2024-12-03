@@ -230,8 +230,7 @@ object HelpdeskTestUtils {
 
     fun buildSearchTransactionRequestDateTimeRangeDto(
         type: String,
-        startDate: OffsetDateTime,
-        endDate: OffsetDateTime
-    ): SearchTransactionRequestDateTimeRangeDto =
-        SearchTransactionRequestDateTimeRangeDto().type(type).startDate(startDate).endDate(endDate)
+        timeRangeDto: SearchTransactionRequestDateTimeRangeDto
+    ): SearchTransactionRequestDateDto =
+        SearchTransactionRequestDateDto().type(type).timeRange(timeRangeDto)
 }

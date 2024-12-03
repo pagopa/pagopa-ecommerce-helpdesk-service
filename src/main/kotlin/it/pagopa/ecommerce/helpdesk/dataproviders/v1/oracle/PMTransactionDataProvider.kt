@@ -6,7 +6,15 @@ import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToTransactionInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestDateDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestEmailDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestFiscalCodeDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestPaymentTokenDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestRptIdDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestTransactionIdDto
+import it.pagopa.generated.ecommerce.helpdesk.model.TransactionResultDto
 import java.time.OffsetDateTime
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -47,11 +55,11 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         totalRecordCountQuery = userFiscalCodeCountQuery,
                         searchParam = it.userFiscalCode
                     )
-                is SearchTransactionRequestDateTimeRangeDto ->
+                is SearchTransactionRequestDateDto ->
                     getTotalResultCountFromDateTimeRange(
                         totalRecordCountQuery = timestampRangeCountQuery,
-                        startDate = it.startDate,
-                        endDate = it.endDate
+                        startDate = it.timeRange.startDate,
+                        endDate = it.timeRange.endDate
                     )
                 else -> invalidSearchCriteriaError
             }
@@ -91,14 +99,14 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         searchParam = it.userFiscalCode,
                         searchType = it.type
                     )
-                is SearchTransactionRequestDateTimeRangeDto ->
+                is SearchTransactionRequestDateDto ->
                     getResultSetFromDateTimeRangeQuery(
                         resultQuery = timestampRangePaginatedQuery,
                         skip = skip,
                         limit = limit,
                         type = it.type,
-                        startDate = it.startDate,
-                        endDate = it.endDate
+                        startDate = it.timeRange.startDate,
+                        endDate = it.timeRange.endDate
                     )
                 else -> invalidSearchCriteriaError
             }
