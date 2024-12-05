@@ -58,7 +58,7 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
         @Parameter(hidden = true) exchange: ServerWebExchange?
     ): Mono<ResponseEntity<Flux<TransactionBulkResultDto>>>? {
         val mockedResults: Flux<TransactionBulkResultDto> =
-            Flux.range(1, 1000).map { index ->
+            Flux.range(1, 10000).map { index ->
                 TransactionBulkResultDto()
                     .id(UUID.randomUUID().toString())
                     .transactionInfo(
