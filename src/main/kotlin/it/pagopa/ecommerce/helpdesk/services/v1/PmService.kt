@@ -1,23 +1,23 @@
 package it.pagopa.ecommerce.helpdesk.services.v1
 
+import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMBulkTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
-import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchPaymentMethodResponseDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Service("PmServiceV1")
 class PmService(
     @Autowired val pmTransactionDataProvider: PMTransactionDataProvider,
-    @Autowired val pmPaymentMethodsDataProvider: PMPaymentMethodsDataProvider
+    @Autowired val pmPaymentMethodsDataProvider: PMPaymentMethodsDataProvider,
+    @Autowired val pmBulkTransactionDataProvider: PMBulkTransactionDataProvider
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -72,5 +72,15 @@ class PmService(
             pmSearchPaymentMethodRequestDto.type
         )
         return pmPaymentMethodsDataProvider.findResult(pmSearchPaymentMethodRequestDto)
+    }
+
+    fun searchBulkTransaction(
+        pmSearchBulkTransactionRequestDto: PmSearchBulkTransactionRequestDto
+    ): Flux<TransactionBulkResultDto> {
+        logger.info(
+            "[helpDesk PM service] searchBulkTransaction method, search type: {}",
+            pmSearchBulkTransactionRequestDto.type
+        )
+        return pmBulkTransactionDataProvider.findResult(pmSearchBulkTransactionRequestDto)
     }
 }

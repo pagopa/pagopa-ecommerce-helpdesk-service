@@ -7,8 +7,6 @@ import it.pagopa.generated.ecommerce.helpdesk.model.*
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
-import java.time.OffsetDateTime
-import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -54,45 +52,13 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
         @Parameter(description = "", name = "PmSearchBulkTransactionRequestDto", required = true)
         @Valid
         @RequestBody
-        pmSearchBulkTransactionRequestDto: @Valid Mono<PmSearchBulkTransactionRequestDto>?,
-        @Parameter(hidden = true) exchange: ServerWebExchange?
-    ): Mono<ResponseEntity<Flux<TransactionBulkResultDto>>>? {
-        val mockedResults: Flux<TransactionBulkResultDto> =
-            Flux.range(1, 10000).map { index ->
-                TransactionBulkResultDto()
-                    .id(UUID.randomUUID().toString())
-                    .transactionInfo(
-                        TransactionInfoDto()
-                            .creationDate(OffsetDateTime.now().minusDays(index.toLong()))
-                            .status(if (index % 2 == 0) "COMPLETED" else "PENDING")
-                            .statusDetails(
-                                if (index % 2 == 0) "Payment successful"
-                                else "Awaiting confirmation"
-                            )
-                            .eventStatus(TransactionStatusDto.NOTIFIED_OK)
-                            .amount((index + 1) * 1000)
-                            .fee(100)
-                            .grandTotal((index + 1) * 1000 + 100)
-                            .rrn("RRN_$index")
-                            .authorizationCode("AUTH_$index")
-                            .paymentMethodName(if (index % 3 == 0) "CARD" else "BANK_TRANSFER")
-                            .brand(if (index % 3 == 0) "VISA" else "MASTERCARD")
-                            .authorizationRequestId("REQ_$index")
-                            .paymentGateway("GATEWAY_$index")
-                            .correlationId(UUID.randomUUID())
-                            .gatewayAuthorizationStatus(
-                                if (index % 2 == 0) "AUTHORIZED" else "PENDING"
-                            )
-                            .gatewayErrorCode(if (index % 2 == 0) null else "ERR_$index"),
-                    )
-                    .userInfo(
-                        UserInfoBulkDto()
-                            .userFiscalCode("FISCALCODE$index".padEnd(16, 'X'))
-                            .notificationEmail("user$index@example.com")
-                            .authenticationType("SPID")
-                    )
-            }
-
-        return Mono.just(ResponseEntity.ok(mockedResults))
+        pmSearchBulkTransactionRequestDto: @Valid Mono<PmSearchBulkTransactionRequestDto>,
+        @Parameter(hidden = true) exchange: ServerWebExchange
+    ): Mono<ResponseEntity<Flux<TransactionBulkResultDto>>> {
+        logger.info("[HelpDesk controller] pmSearchBulkTransaction")
+        return pmSearchBulkTransactionRequestDto
+            .flatMapMany { pmService.searchBulkTransaction(it) }
+            .collectList()
+            .map { ResponseEntity.ok(Flux.fromIterable(it)) }
     }
 }
