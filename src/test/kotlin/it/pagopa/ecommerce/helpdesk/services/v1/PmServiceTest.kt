@@ -5,9 +5,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMBulkTransactionDat
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.generated.ecommerce.helpdesk.model.PageInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
@@ -127,5 +125,29 @@ class PmServiceTest {
         verify(pmTransactionDataProvider, times(0)).totalRecordCount(any())
         verify(pmTransactionDataProvider, times(0)).findResult(any(), any(), any())
         verify(pmPaymentMethodsDataProvider, times(1)).findResult(any())
+    }
+
+    @Test
+    fun `should return found bulk transaction successfully`() {
+        val transactionIdRangeDto =
+            SearchTransactionRequestTransactionIdRangeTransactionIdRangeDto()
+                .startTransactionId("1")
+                .endTransactionId("1000")
+        val searchCriteria =
+            HelpdeskTestUtils.buildBulkSearchRequest("TRANSACTION_ID_RANGE", transactionIdRangeDto)
+        val transactions = listOf(TransactionBulkResultDto(), TransactionBulkResultDto())
+
+        given(
+                pmBulkTransactionDataProvider.findResult(
+                    searchParams = searchCriteria,
+                )
+            )
+            .willReturn(Mono.just(transactions))
+        val expectedResponse = transactions
+        StepVerifier.create(pmService.searchBulkTransaction(searchCriteria))
+            .expectNext(expectedResponse)
+            .verifyComplete()
+
+        verify(pmBulkTransactionDataProvider, times(1)).findResult(any())
     }
 }
