@@ -468,6 +468,27 @@ components:
       required:
         - type
         - timeRange
+    SearchTransactionRequestTransactionIdRange:
+      type: object
+      description: Search transaction by transactionId range
+      properties:
+        type:
+          type: string
+        transactionIdRange:
+          type: object
+          properties:
+            startTransactionId:
+              type: string
+              description: Search start transactionId
+            endTransactionId:
+              type: string
+              description: Search end transactionId
+          required:
+            - startTransactionId
+            - endTransactionId
+      required:
+        - type
+        - transactionIdRange
     SearchTransactionResponse:
       type: object
       description: TransactionResponse
@@ -1311,10 +1332,12 @@ components:
           schema:
             oneOf:
               - $ref: '#/components/schemas/SearchTransactionRequestDate'
+              - $ref: '#/components/schemas/SearchTransactionRequestTransactionIdRange'
             discriminator:
               propertyName: type
               mapping:
                 DATE_TIME_RANGE: "#/components/schemas/SearchTransactionRequestDate"
+                TRANSACTION_ID_RANGE: "#/components/schemas/SearchTransactionRequestTransactionIdRange"
           examples:
             search by date and time range:
               value:
@@ -1322,6 +1345,12 @@ components:
                 timeRange:
                   startDate: "2022-11-30T14:50:27.001Z"
                   endDate: "2023-11-30T14:50:27.001Z"
+            search by transactionId range:
+              value:
+                type: TRANSACTION_ID_RANGE
+                timeRange:
+                  startTransactionId: "1"
+                  endTransactionId: "1000"
     PmSearchTransactionResponse:
       required: true
       content:
