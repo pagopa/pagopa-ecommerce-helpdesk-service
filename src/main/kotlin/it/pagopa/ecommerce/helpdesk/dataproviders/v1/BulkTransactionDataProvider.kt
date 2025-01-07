@@ -4,7 +4,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchBulkTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestTransactionIdRangeDto
 import it.pagopa.generated.ecommerce.helpdesk.model.TransactionBulkResultDto
-import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 /**
  * Transaction data provider interface. This interface models common function for transaction data
@@ -22,5 +22,5 @@ interface BulkTransactionDataProvider {
      */
     fun findResult(
         searchParams: PmSearchBulkTransactionRequestDto,
-    ): Flux<TransactionBulkResultDto>
+    ): Mono<List<TransactionBulkResultDto>>
 }

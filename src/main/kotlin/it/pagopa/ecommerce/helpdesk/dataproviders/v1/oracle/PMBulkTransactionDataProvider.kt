@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 /**
  * PMBulkTransactionDataProvider implementation that searches bulk transactions in PM DB
@@ -24,10 +25,10 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
 
     override fun findResult(
         searchParams: PmSearchBulkTransactionRequestDto
-    ): Flux<TransactionBulkResultDto> {
+    ): Mono<List<TransactionBulkResultDto>> {
 
         val invalidSearchCriteriaError =
-            Flux.error<TransactionBulkResultDto>(
+            Mono.error<List<TransactionBulkResultDto>>(
                 InvalidSearchCriteriaException(searchParams.type, ProductDto.PM)
             )
 
@@ -49,8 +50,9 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
         resultQuery: String,
         type: String,
         startTransactionId: String,
-        endTransactionId: String,
-    ): Flux<TransactionBulkResultDto> {
+        endTransactionId: String
+    ): Mono<List<TransactionBulkResultDto>> {
+
         return Flux.usingWhen(
                 connectionFactory.create(),
                 { connection ->
@@ -61,8 +63,8 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
                             connection
                                 .createStatement(resultQuery)
                                 .apply {
-                                    bind(0, startTransactionId)
-                                    bind(1, endTransactionId)
+                                    bind(0, startTransactionId.toLong())
+                                    bind(1, endTransactionId.toLong())
                                 }
                                 .execute()
                         )
@@ -76,11 +78,16 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
                     connection.close()
                 }
             )
-            .switchIfEmpty {
-                logger.warn(
-                    "No results found for transactionId range [$startTransactionId, $endTransactionId]."
-                )
-                Flux.error<TransactionBulkResultDto>(NoResultFoundException(type))
+            .collectList()
+            .flatMap { results ->
+                if (results.isEmpty()) {
+                    logger.warn(
+                        "No results found for transactionId range [$startTransactionId, $endTransactionId]."
+                    )
+                    Mono.error(NoResultFoundException(type))
+                } else {
+                    Mono.just(results)
+                }
             }
     }
 }

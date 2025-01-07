@@ -10,7 +10,6 @@ import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Service("PmServiceV1")
@@ -76,7 +75,7 @@ class PmService(
 
     fun searchBulkTransaction(
         pmSearchBulkTransactionRequestDto: PmSearchBulkTransactionRequestDto
-    ): Flux<TransactionBulkResultDto> {
+    ): Mono<List<TransactionBulkResultDto>> {
         logger.info(
             "[helpDesk PM service] searchBulkTransaction method, search type: {}",
             pmSearchBulkTransactionRequestDto.type

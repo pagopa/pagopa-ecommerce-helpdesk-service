@@ -57,8 +57,7 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
     ): Mono<ResponseEntity<Flux<TransactionBulkResultDto>>> {
         logger.info("[HelpDesk controller] pmSearchBulkTransaction")
         return pmSearchBulkTransactionRequestDto
-            .flatMapMany { pmService.searchBulkTransaction(it) }
-            .collectList()
+            .flatMap { pmService.searchBulkTransaction(it) }
             .map { ResponseEntity.ok(Flux.fromIterable(it)) }
     }
 }
