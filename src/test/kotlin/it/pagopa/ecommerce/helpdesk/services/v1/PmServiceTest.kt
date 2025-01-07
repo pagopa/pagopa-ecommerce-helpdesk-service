@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.services.v1
 
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMBulkTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
@@ -17,8 +18,13 @@ class PmServiceTest {
 
     private val pmTransactionDataProvider: PMTransactionDataProvider = mock()
     private val pmPaymentMethodsDataProvider: PMPaymentMethodsDataProvider = mock()
-
-    private val pmService = PmService(pmTransactionDataProvider, pmPaymentMethodsDataProvider)
+    private val pmBulkTransactionDataProvider: PMBulkTransactionDataProvider = mock()
+    private val pmService =
+        PmService(
+            pmTransactionDataProvider,
+            pmPaymentMethodsDataProvider,
+            pmBulkTransactionDataProvider
+        )
 
     @Test
     fun `should return found transaction successfully`() {

@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -362,4 +363,34 @@ class PmControllerTest {
                 .expectBody<ProblemJsonDto>()
                 .isEqualTo(expected)
         }
+
+    @Test
+    fun `post search bulk transaction succeeded`() = runTest {
+        val transactionIdRangeDto =
+            SearchTransactionRequestTransactionIdRangeTransactionIdRangeDto()
+                .startTransactionId("1")
+                .endTransactionId("1000")
+        val request =
+            HelpdeskTestUtils.buildBulkSearchRequest("TRANSACTION_ID_RANGE", transactionIdRangeDto)
+        val responseList = listOf(TransactionBulkResultDto(), TransactionBulkResultDto())
+        given(
+                pmService.searchBulkTransaction(
+                    argThat {
+                        this is SearchTransactionRequestTransactionIdRangeDto &&
+                            this.transactionIdRange == request.transactionIdRange
+                    }
+                )
+            )
+            .willReturn(Flux.fromIterable(responseList))
+
+        webClient
+            .post()
+            .uri { uriBuilder -> uriBuilder.path("/pm/searchBulkTransaction").build() }
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBodyList(TransactionBulkResultDto::class.java)
+    }
 }
