@@ -99,7 +99,7 @@ fun resultToBulkTransactionInfoDto(result: Result): Publisher<TransactionBulkRes
                 UserInfoBulkDto()
                     .userFiscalCode(row[1, String::class.java])
                     .notificationEmail(row[2, String::class.java])
-                    .authenticationType(row[3,BigDecimal::class.java]?.toString())
+                    .authenticationType(row[3, BigDecimal::class.java]?.toString())
             )
             .transactionInfo(
                 TransactionInfoDto()
