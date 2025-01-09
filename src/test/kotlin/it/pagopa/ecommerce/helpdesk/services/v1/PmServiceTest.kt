@@ -17,11 +17,14 @@ class PmServiceTest {
     private val pmTransactionDataProvider: PMTransactionDataProvider = mock()
     private val pmPaymentMethodsDataProvider: PMPaymentMethodsDataProvider = mock()
     private val pmBulkTransactionDataProvider: PMBulkTransactionDataProvider = mock()
+    private val transactionIdRangeMax: Int = 10
+
     private val pmService =
         PmService(
             pmTransactionDataProvider,
             pmPaymentMethodsDataProvider,
-            pmBulkTransactionDataProvider
+            pmBulkTransactionDataProvider,
+            transactionIdRangeMax
         )
 
     @Test
@@ -132,7 +135,7 @@ class PmServiceTest {
         val transactionIdRangeDto =
             SearchTransactionRequestTransactionIdRangeTransactionIdRangeDto()
                 .startTransactionId("1")
-                .endTransactionId("1000")
+                .endTransactionId("10")
         val searchCriteria =
             HelpdeskTestUtils.buildBulkSearchRequest("TRANSACTION_ID_RANGE", transactionIdRangeDto)
         val transactions = listOf(TransactionBulkResultDto(), TransactionBulkResultDto())

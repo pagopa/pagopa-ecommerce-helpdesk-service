@@ -9,6 +9,7 @@ import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -16,7 +17,8 @@ import reactor.core.publisher.Mono
 class PmService(
     @Autowired val pmTransactionDataProvider: PMTransactionDataProvider,
     @Autowired val pmPaymentMethodsDataProvider: PMPaymentMethodsDataProvider,
-    @Autowired val pmBulkTransactionDataProvider: PMBulkTransactionDataProvider
+    @Autowired val pmBulkTransactionDataProvider: PMBulkTransactionDataProvider,
+    @Value("\${search.pm.transactionIdRangeMax}") private val transactionIdRangeMax: Int
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -76,10 +78,24 @@ class PmService(
     fun searchBulkTransaction(
         pmSearchBulkTransactionRequestDto: PmSearchBulkTransactionRequestDto
     ): Mono<List<TransactionBulkResultDto>> {
-        logger.info(
-            "[helpDesk PM service] searchBulkTransaction method, search type: {}",
-            pmSearchBulkTransactionRequestDto.type
-        )
-        return pmBulkTransactionDataProvider.findResult(pmSearchBulkTransactionRequestDto)
+
+        val isTransactionIdRangeExceeded =
+            pmSearchBulkTransactionRequestDto is SearchTransactionRequestTransactionIdRangeDto &&
+                (pmSearchBulkTransactionRequestDto.transactionIdRange.endTransactionId.toLong() -
+                    pmSearchBulkTransactionRequestDto.transactionIdRange.startTransactionId
+                        .toLong()) > transactionIdRangeMax
+
+        return Mono.just(isTransactionIdRangeExceeded)
+            .filter { !it }
+            .switchIfEmpty(
+                Mono.error(NoResultFoundException(pmSearchBulkTransactionRequestDto.type))
+            )
+            .flatMap {
+                logger.info(
+                    "[helpDesk PM service] searchBulkTransaction method, search type: {}",
+                    pmSearchBulkTransactionRequestDto.type
+                )
+                pmBulkTransactionDataProvider.findResult(pmSearchBulkTransactionRequestDto)
+            }
     }
 }
