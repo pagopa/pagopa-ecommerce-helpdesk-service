@@ -47,6 +47,7 @@ microservice-chart:
         {ALL: '*', ECOMMERCE: 'pagopa-p-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-p-weu-ecommerce-notifications-service-errors-queue'}
 
       SEARCH_PM_IN_ECOMMERCE_HISTORY_ENABLED: "false"
+      SEARCH_PM_TRANSACTION_ID_RANGE_MAX: "100"
     envSecret:
       OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
       PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key

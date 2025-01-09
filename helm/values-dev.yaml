@@ -73,8 +73,8 @@ microservice-chart:
     OTEL_TRACES_SAMPLER: "always_on"
     PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.uat.tokenizer.pdv.pagopa.it/tokenizer/v1"
     PM_ORACLE_PORT: "1523"
-    PM_ORACLE_DATABASE_NAME: "AGIDAD"
-    PM_ORACLE_USERNAME: "pagopa_SV"
+    PM_ORACLE_DATABASE_NAME: "AGIDT"
+    PM_ORACLE_USERNAME: "PAGOPA_READ_INT_SV"
     MONGO_HOST: pagopa-d-weu-ecommerce-cosmos-account.mongo.cosmos.azure.com
     MONGO_USERNAME: pagopa-d-weu-ecommerce-cosmos-account
     MONGO_PORT: "10255"
@@ -100,6 +100,7 @@ microservice-chart:
       {ALL: '*', ECOMMERCE: 'pagopa-d-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-d-weu-ecommerce-notifications-service-errors-queue'}
 
     SEARCH_PM_IN_ECOMMERCE_HISTORY_ENABLED: "true"
+    SEARCH_PM_TRANSACTION_ID_RANGE_MAX: "10000"
   envSecret:
     NPG_API_KEY: npg-api-key
     NPG_CARDS_PSP_KEYS: npg-cards-psp-keys

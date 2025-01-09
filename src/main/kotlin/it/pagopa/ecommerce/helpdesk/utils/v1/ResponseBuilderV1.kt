@@ -91,6 +91,51 @@ fun resultToTransactionInfoDto(result: Result): Publisher<TransactionResultDto> 
             .product(ProductDto.PM)
     }
 
+fun resultToBulkTransactionInfoDto(result: Result): Publisher<TransactionBulkResultDto> =
+    result.map { row ->
+        TransactionBulkResultDto()
+            .id(row[0, BigDecimal::class.java]?.toString())
+            .userInfo(
+                UserInfoBulkDto()
+                    .userFiscalCode(row[1, String::class.java])
+                    .notificationEmail(row[2, String::class.java])
+                    .authenticationType(row[3, BigDecimal::class.java]?.toString())
+            )
+            .transactionInfo(
+                TransactionInfoDto()
+                    .creationDate(row[4, LocalDateTime::class.java]?.atOffset(ZoneOffset.of("+2")))
+                    .status(row[5, BigDecimal::class.java]?.toString())
+                    .statusDetails(row[6, BigDecimal::class.java]?.toString())
+                    .amount(row[7, BigDecimal::class.java]?.toInt())
+                    .fee(row[8, BigDecimal::class.java]?.toInt())
+                    .grandTotal(row[9, BigDecimal::class.java]?.toInt())
+                    .rrn(row[10, String::class.java])
+                    .authorizationCode(row[11, String::class.java])
+                    .paymentMethodName(row[12, String::class.java])
+            )
+            .paymentInfo(
+                PaymentInfoDto()
+                    .origin(row[13, String::class.java])
+                    .details(
+                        listOf(
+                            PaymentDetailInfoDto()
+                                .subject(row[14, String::class.java])
+                                .iuv(row[15, String::class.java])
+                                .idTransaction(row[16, String::class.java])
+                                .creditorInstitution(row[17, String::class.java])
+                                .paFiscalCode(row[18, String::class.java])
+                        )
+                    )
+            )
+            .pspInfo(
+                PspInfoDto()
+                    .pspId(row[19, String::class.java])
+                    .businessName(row[20, String::class.java])
+                    .idChannel(row[21, String::class.java])
+            )
+            .product(ProductDto.PM)
+    }
+
 fun resultToPaymentMethodDtoList(
     results: List<Result>,
     searchType: String

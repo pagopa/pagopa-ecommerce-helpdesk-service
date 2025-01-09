@@ -233,4 +233,12 @@ object HelpdeskTestUtils {
         timeRangeDto: SearchTransactionRequestDateTimeRangeDto
     ): SearchTransactionRequestDateDto =
         SearchTransactionRequestDateDto().type(type).timeRange(timeRangeDto)
+
+    fun buildBulkSearchRequest(
+        type: String,
+        transactionIdRangeDto: SearchTransactionRequestTransactionIdRangeTransactionIdRangeDto
+    ): SearchTransactionRequestTransactionIdRangeDto =
+        SearchTransactionRequestTransactionIdRangeDto()
+            .type(type)
+            .transactionIdRange(transactionIdRangeDto)
 }

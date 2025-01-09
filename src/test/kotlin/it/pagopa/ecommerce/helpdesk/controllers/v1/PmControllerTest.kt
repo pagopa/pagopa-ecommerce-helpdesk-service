@@ -362,4 +362,100 @@ class PmControllerTest {
                 .expectBody<ProblemJsonDto>()
                 .isEqualTo(expected)
         }
+
+    @Test
+    fun `post search bulk transaction succeeded`() = runTest {
+        val transactionIdRangeDto =
+            SearchTransactionRequestTransactionIdRangeTransactionIdRangeDto()
+                .startTransactionId("1")
+                .endTransactionId("1000")
+        val request =
+            HelpdeskTestUtils.buildBulkSearchRequest("TRANSACTION_ID_RANGE", transactionIdRangeDto)
+        val responseList = listOf(TransactionBulkResultDto(), TransactionBulkResultDto())
+        given(
+                pmService.searchBulkTransaction(
+                    argThat {
+                        this is SearchTransactionRequestTransactionIdRangeDto &&
+                            this.transactionIdRange == request.transactionIdRange
+                    }
+                )
+            )
+            .willReturn(Mono.just(responseList))
+
+        webClient
+            .post()
+            .uri { uriBuilder -> uriBuilder.path("/pm/searchBulkTransaction").build() }
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBodyList(TransactionBulkResultDto::class.java)
+    }
+
+    @Test
+    fun `post search bulk transaction should return 400 for bad request`() = runTest {
+        val transactionIdRangeDto =
+            SearchTransactionRequestTransactionIdRangeTransactionIdRangeDto()
+                .startTransactionId("1")
+        val request =
+            HelpdeskTestUtils.buildBulkSearchRequest("TRANSACTION_ID_RANGE", transactionIdRangeDto)
+
+        val expectedProblemJson =
+            HelpdeskTestUtils.buildProblemJson(
+                httpStatus = HttpStatus.BAD_REQUEST,
+                title = "Bad request",
+                description =
+                    "Input request is invalid. Invalid fields: transactionIdRange.endTransactionId"
+            )
+        webClient
+            .post()
+            .uri { uriBuilder -> uriBuilder.path("/pm/searchBulkTransaction").build() }
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isBadRequest
+            .expectBody(ProblemJsonDto::class.java)
+            .isEqualTo(expectedProblemJson)
+    }
+
+    @Test
+    fun `post search bulk transaction should return 500 for unhandled error processing request`() =
+        runTest {
+            val transactionIdRangeDto =
+                SearchTransactionRequestTransactionIdRangeTransactionIdRangeDto()
+                    .startTransactionId("1")
+                    .endTransactionId("100")
+            val request =
+                HelpdeskTestUtils.buildBulkSearchRequest(
+                    "TRANSACTION_ID_RANGE",
+                    transactionIdRangeDto
+                )
+            val expected =
+                HelpdeskTestUtils.buildProblemJson(
+                    httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+                    title = "Error processing the request",
+                    description = "Generic error occurred"
+                )
+            given(
+                    pmService.searchBulkTransaction(
+                        argThat {
+                            this is SearchTransactionRequestTransactionIdRangeDto &&
+                                this.transactionIdRange == request.transactionIdRange
+                        }
+                    )
+                )
+                .willReturn(Mono.error(RuntimeException("Unhandled error")))
+            webClient
+                .post()
+                .uri { uriBuilder -> uriBuilder.path("/pm/searchBulkTransaction").build() }
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus()
+                .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+                .expectBody<ProblemJsonDto>()
+                .isEqualTo(expected)
+        }
 }
