@@ -151,6 +151,7 @@ microservice-chart:
       {ALL: '*', ECOMMERCE: 'pagopa-u-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-u-weu-ecommerce-notifications-service-errors-queue'}
 
     SEARCH_PM_IN_ECOMMERCE_HISTORY_ENABLED: "false"
+    SEARCH_PM_TRANSACTION_ID_RANGE_MAX: "10000"
   envSecret:
     NPG_API_KEY: npg-api-key
     NPG_CARDS_PSP_KEYS: npg-cards-psp-keys
