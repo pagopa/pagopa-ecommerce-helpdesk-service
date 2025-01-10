@@ -138,7 +138,7 @@ class PmServiceTest {
                 .endTransactionId("10")
         val searchCriteria =
             HelpdeskTestUtils.buildBulkSearchRequest("TRANSACTION_ID_RANGE", transactionIdRangeDto)
-        val transactions = listOf(TransactionBulkResultDto(), TransactionBulkResultDto())
+        val transactions = HelpdeskTestUtils.buildBulkTransactionResultDtoWithSingleElement("1")
 
         given(
                 pmBulkTransactionDataProvider.findResult(
@@ -147,6 +147,56 @@ class PmServiceTest {
             )
             .willReturn(Mono.just(transactions))
         val expectedResponse = transactions
+        StepVerifier.create(pmService.searchBulkTransaction(searchCriteria))
+            .expectNext(expectedResponse)
+            .verifyComplete()
+
+        verify(pmBulkTransactionDataProvider, times(1)).findResult(any())
+    }
+
+    @Test
+    fun `should return found bulk transaction aggregated successfully`() {
+        val transactionIdRangeDto =
+            SearchTransactionRequestTransactionIdRangeTransactionIdRangeDto()
+                .startTransactionId("1")
+                .endTransactionId("10")
+        val searchCriteria =
+            HelpdeskTestUtils.buildBulkSearchRequest("TRANSACTION_ID_RANGE", transactionIdRangeDto)
+        val transactions =
+            listOf(
+                HelpdeskTestUtils.buildBulkTransactionResultDtoWithSingleElement("1000000000")
+                    .first(),
+                HelpdeskTestUtils.buildBulkTransactionResultDtoWithSingleElement("1000000000")
+                    .first(),
+                HelpdeskTestUtils.buildBulkTransactionResultDtoWithSingleElement("992992929")
+                    .first()
+            )
+
+        given(
+                pmBulkTransactionDataProvider.findResult(
+                    searchParams = searchCriteria,
+                )
+            )
+            .willReturn(Mono.just(transactions))
+        val expectedResponse =
+            transactions
+                .groupBy { it.id }
+                .map { (id, transactions) ->
+                    val baseTransaction = transactions.first()
+                    val aggregatedDetails =
+                        transactions.flatMap { it.paymentInfo.details.orEmpty() }
+                    TransactionBulkResultDto()
+                        .id(baseTransaction.id)
+                        .userInfo(baseTransaction.userInfo)
+                        .transactionInfo(baseTransaction.transactionInfo)
+                        .paymentInfo(
+                            PaymentInfoDto()
+                                .origin(baseTransaction.paymentInfo.origin)
+                                .details(aggregatedDetails)
+                        )
+                        .pspInfo(baseTransaction.pspInfo)
+                        .product(baseTransaction.product)
+                }
         StepVerifier.create(pmService.searchBulkTransaction(searchCriteria))
             .expectNext(expectedResponse)
             .verifyComplete()
