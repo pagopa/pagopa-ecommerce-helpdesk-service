@@ -115,6 +115,54 @@ object HelpdeskTestUtils {
             )
             .product(product)
 
+    fun buildBulkTransactionResultDtoWithSingleElement(id: String
+    ): List<TransactionBulkResultDto> =
+        listOf(
+            TransactionBulkResultDto()
+                .id(id)
+                .userInfo(
+                    UserInfoBulkDto()
+                        .userFiscalCode("user fiscal code")
+                        .notificationEmail(TransactionTestUtils.EMAIL_STRING)
+                        .authenticationType("auth type")
+                )
+                .transactionInfo(
+                    TransactionInfoDto()
+                        .status("status")
+                        .statusDetails("status detail")
+                        .amount(500)
+                        .fee(200)
+                        .grandTotal(700)
+                        .rrn("rrn")
+                        .authorizationCode("authorization code")
+                        .paymentMethodName("payment method name")
+                        .brand(null)
+                )
+                .paymentInfo(
+                    PaymentInfoDto()
+                        .origin("origin")
+                        .details(
+                            listOf(
+                                PaymentDetailInfoDto()
+                                    .iuv("IUV")
+                                    .rptId(null)
+                                    .idTransaction(TransactionTestUtils.TRANSACTION_ID)
+                                    .paymentToken(null)
+                                    .creditorInstitution("creditor institution")
+                                    .paFiscalCode(TransactionTestUtils.PA_FISCAL_CODE)
+                            )
+                        )
+                )
+                .pspInfo(
+                    PspInfoDto()
+                        .pspId(TransactionTestUtils.PSP_ID)
+                        .businessName(TransactionTestUtils.PSP_BUSINESS_NAME)
+                        .idChannel(TransactionTestUtils.PSP_CHANNEL_CODE)
+                )
+                .product(ProductDto.PM)
+        )
+
+
     fun buildSearchPaymentMethodResponseDto(): SearchPaymentMethodResponseDto =
         SearchPaymentMethodResponseDto()
             .name("name")

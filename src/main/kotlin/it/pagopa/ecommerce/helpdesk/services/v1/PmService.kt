@@ -97,5 +97,25 @@ class PmService(
                 )
                 pmBulkTransactionDataProvider.findResult(pmSearchBulkTransactionRequestDto)
             }
+            .map { transactionList ->
+                transactionList
+                    .groupBy { it.id }
+                    .map { (id, transactions) ->
+                        val baseTransaction = transactions.first()
+                        val aggregatedDetails =
+                            transactions.flatMap { it.paymentInfo.details.orEmpty() }
+                        TransactionBulkResultDto()
+                            .id(baseTransaction.id)
+                            .userInfo(baseTransaction.userInfo)
+                            .transactionInfo(baseTransaction.transactionInfo)
+                            .paymentInfo(
+                                PaymentInfoDto()
+                                    .origin(baseTransaction.paymentInfo.origin)
+                                    .details(aggregatedDetails)
+                            )
+                            .pspInfo(baseTransaction.pspInfo)
+                            .product(baseTransaction.product)
+                    }
+            }
     }
 }
