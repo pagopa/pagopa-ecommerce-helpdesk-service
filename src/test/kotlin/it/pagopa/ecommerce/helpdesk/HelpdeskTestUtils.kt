@@ -115,8 +115,7 @@ object HelpdeskTestUtils {
             )
             .product(product)
 
-    fun buildBulkTransactionResultDtoWithSingleElement(id: String
-    ): List<TransactionBulkResultDto> =
+    fun buildBulkTransactionResultDtoWithSingleElement(id: String): List<TransactionBulkResultDto> =
         listOf(
             TransactionBulkResultDto()
                 .id(id)
@@ -161,7 +160,6 @@ object HelpdeskTestUtils {
                 )
                 .product(ProductDto.PM)
         )
-
 
     fun buildSearchPaymentMethodResponseDto(): SearchPaymentMethodResponseDto =
         SearchPaymentMethodResponseDto()
