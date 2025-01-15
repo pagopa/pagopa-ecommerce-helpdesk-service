@@ -474,18 +474,18 @@ components:
       properties:
         type:
           type: string
-        transactionIdRange:
+        tR:
           type: object
           properties:
-            startTransactionId:
+            sTId:
               type: string
               description: Search start transactionId
-            endTransactionId:
+            eTId:
               type: string
               description: Search end transactionId
           required:
-            - startTransactionId
-            - endTransactionId
+            - sTId
+            - eTId
       required:
         - type
         - transactionIdRange
@@ -1337,7 +1337,7 @@ components:
               propertyName: type
               mapping:
                 DATE_TIME_RANGE: "#/components/schemas/SearchTransactionRequestDate"
-                TRANSACTION_ID_RANGE: "#/components/schemas/SearchTransactionRequestTransactionIdRange"
+                T_ID_R: "#/components/schemas/SearchTransactionRequestTransactionIdRange"
           examples:
             search by date and time range:
               value:
@@ -1347,7 +1347,7 @@ components:
                   endDate: "2023-11-30T14:50:27.001Z"
             search by transactionId range:
               value:
-                type: TRANSACTION_ID_RANGE
+                type: T_ID_R
                 timeRange:
                   startTransactionId: "1"
                   endTransactionId: "1000"
