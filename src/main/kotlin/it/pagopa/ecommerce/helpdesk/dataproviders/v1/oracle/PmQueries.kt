@@ -162,9 +162,9 @@ val timestampRangePaginatedQuery =
             pu.SURNAME, 
             pu.NAME, 
             pu.USERNAME, 
-            pu.STATUS,
+            pu.STATUS as PU_STATUS,
             pt.CREATION_DATE, 
-            pt.STATUS,
+            pt.STATUS as PT_STATUS,
             pt.ACCOUNTING_STATUS,
             PP.ORIGIN,
             pt.AMOUNT, 
@@ -288,5 +288,43 @@ val searchWalletByUserEmail =
         AND pw.FL_ENABLED ='1' AND pw.FL_VISIBLE ='1'
         AND ((pw.FK_SATISPAY IS NULL AND pp.ID_PSP != 'SATYLUL1') OR (pw.FK_SATISPAY IS NULL AND pp.ID_PSP IS NULL) OR  (pw.FK_SATISPAY IS NOT NULL ))
         ORDER BY Pw.CREATION_DATE DESC 
+    """
+        .trimIndent()
+
+val transactionIdRangeQuery =
+    """
+        SELECT  
+            pt.ID,
+            pu.FISCAL_CODE, 
+            pu.NOTIFICATION_EMAIL, 
+            pu.STATUS,
+            pt.CREATION_DATE, 
+            pt.STATUS,
+            pt.ACCOUNTING_STATUS, 
+            pt.AMOUNT, 
+            pt.FEE, 
+            pt.GRAND_TOTAL,
+            pt.rrn,  
+            pt.AUTHORIZATION_CODE,
+            pt.SERVICE_NAME,
+            PP.ORIGIN,
+            pp.SUBJECT,
+            ppd.IUV, 
+            ppd.CCP, 
+            ppd.ENTE_BENEFICIARIO, 
+            ppd.ID_DOMINIO,
+            pp2.ID_PSP, 
+            pp2.BUSINESS_NAME, 
+            pp2.ID_CHANNEL
+        FROM AGID_USER.PP_PAYMENT pp
+        LEFT JOIN AGID_USER.PP_TRANSACTION pt 
+            ON pt.FK_PAYMENT = pp.ID 
+        LEFT JOIN AGID_USER.PP_USER pu 
+            ON pu.ID_USER = pt.FK_USER 
+        LEFT JOIN AGID_USER.PP_PAYMENT_DETAIL ppd 
+            ON pp.ID = ppd.PAYMENT_ID 
+        LEFT JOIN AGID_USER.PP_PSP pp2 
+            ON pt.FK_PSP = pp2.ID 
+        WHERE pt.ID BETWEEN ? AND ?
     """
         .trimIndent()
