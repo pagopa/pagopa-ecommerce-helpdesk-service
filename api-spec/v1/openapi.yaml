@@ -1445,6 +1445,21 @@ components:
                 $ref: '#/components/schemas/DeadLetterSearchEventSource'
               timeRange:
                 $ref: '#/components/schemas/DeadLetterSearchDateTimeRange'
+              exludeStatuses:
+                type: object
+                properties:
+                  npsStatus:
+                    type: array
+                    items:
+                      type: string
+                    description: "List of NPG statuses to exclude"
+                    example: ["DECLINED","CANCELLED"]
+                  ecommerceStatus:
+                    type: array
+                    items:
+                      type: string
+                    description: "List of eCommerce statuses to exclude"
+                    example: ["NOTIFIED_OK"]
             required:
               - source
           examples:
@@ -1457,6 +1472,9 @@ components:
                 timeRange:
                   startDate: "2023-01-01T00:00:00.000Z"
                   endDate: "2023-01-01T02:00:00.000Z"
+                excludeStatuses:
+                  npgStatus: [ "DECLINED", "CANCELLED" ]
+                  ecommerceStatus: [ "NOTIFIED_OK" ]
     SearchPaymentMethodRequest:
       required: true
       content:
