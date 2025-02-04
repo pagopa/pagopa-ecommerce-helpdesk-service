@@ -36,7 +36,7 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
 
     override fun ecommerceSearchDeadLetterEvents(
         @Min(0) pageNumber: Int,
-        @Min(1) @Max(20) pageSize: Int,
+        @Min(1) @Max(1000) pageSize: Int,
         ecommerceSearchDeadLetterEventsRequestDto: Mono<EcommerceSearchDeadLetterEventsRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchDeadLetterEventResponseDto>> {
