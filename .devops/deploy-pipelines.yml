@@ -35,6 +35,13 @@ parameters:
       - patch
       - none
     default: patch
+  - name: 'HELM_RELEASE_TARGET_FILE'
+    displayName: 'When upgrading helm chart, define the version bump to apply'
+    type: string
+    values:
+      - major
+      - minor
+      - patch
   - name: 'RELEASE_CHART_SEMVER'
     displayName: 'When upgrading helm chart, define the version bump to apply'
     type: string
