@@ -38,7 +38,7 @@ parameters:
   - name: 'HELM_RELEASE_TARGET_FILE'
     displayName: 'When upgrading helm chart, define the name of the target chart-version.yml'
     type: string
-    default: "./chart-older-version.yml"
+    default: "chart-version-2"
   - name: 'RELEASE_CHART_SEMVER'
     displayName: 'When upgrading helm chart, define the version bump to apply'
     type: string
@@ -195,7 +195,7 @@ stages:
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
               DOCKER_IMAGE_TAG: $(Build.SourceVersion)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
-          - template: azure-templates/chart-current-version.yml
+          - template: azure-templates/chart-version-7.yml
 
   - stage: "Deploy_UAT_Blue"
     displayName: 'UAT blue deployment'
@@ -313,7 +313,7 @@ stages:
                   release_branch: main
                   semver_chart: '${{ parameters.RELEASE_CHART_SEMVER }}'
                   semver: '${{ parameters.RELEASE_SEMVER }}'
-          - template: azure-templates/chart-current-version.yml
+          - template: azure-templates/chart-version-7.yml
 
   - stage: "tag_docker_release"
     displayName: 'Tag Docker image to be release'
