@@ -38,7 +38,7 @@ parameters:
   - name: 'HELM_RELEASE_TARGET_FILE'
     displayName: 'When upgrading helm chart, define the name of the target chart-version.yml'
     type: string
-    default: "chart-version-2"
+    default: "chart-version-7"
   - name: 'RELEASE_CHART_SEMVER'
     displayName: 'When upgrading helm chart, define the version bump to apply'
     type: string
