@@ -313,7 +313,7 @@ stages:
                   release_branch: main
                   semver_chart: '${{ parameters.RELEASE_CHART_SEMVER }}'
                   semver: '${{ parameters.RELEASE_SEMVER }}'
-          - template: azure-templates/chart-version-7.yml
+          - template: azure-templates/${{ HELM_RELEASE_TARGET_FILE }}.yml
 
   - stage: "tag_docker_release"
     displayName: 'Tag Docker image to be release'
