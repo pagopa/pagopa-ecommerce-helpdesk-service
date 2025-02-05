@@ -195,7 +195,7 @@ stages:
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
               DOCKER_IMAGE_TAG: $(Build.SourceVersion)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
-          - template: azure-templates/chart-version-7.yml
+          - template: azure-templates/${{ HELM_RELEASE_TARGET_FILE }}.yml
 
   - stage: "Deploy_UAT_Blue"
     displayName: 'UAT blue deployment'
