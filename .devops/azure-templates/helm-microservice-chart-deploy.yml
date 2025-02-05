@@ -14,7 +14,6 @@ parameters:
     type: string
   - name: "CHART_VERSION_TEMPLATE"
     type: string
-    default: "./chart-current-version.yml"
   - name: "GREEN_VERSION"
     type: string
   # Optional
