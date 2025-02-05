@@ -36,12 +36,9 @@ parameters:
       - none
     default: patch
   - name: 'HELM_RELEASE_TARGET_FILE'
-    displayName: 'When upgrading helm chart, define the version bump to apply'
+    displayName: 'When upgrading helm chart, define the name of the target chart-version.yml'
     type: string
-    values:
-      - major
-      - minor
-      - patch
+    default: "./chart-older-version.yml"
   - name: 'RELEASE_CHART_SEMVER'
     displayName: 'When upgrading helm chart, define the version bump to apply'
     type: string
@@ -138,6 +135,7 @@ stages:
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-dev.yaml"
                     GREEN_VERSION: $(Build.SourceVersion)
+                    CHART_VERSION_TEMPLATE: ${HELM_RELEASE_TARGET_FILE}
   # --- END Deploy DEV --- #
 
   # --- START API TEST for DEV DEPLOY --- #
@@ -241,6 +239,8 @@ stages:
                     VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(green_app_version)
                     BLUE_VERSION: $(Build.SourceVersion)
+                    CHART_VERSION_TEMPLATE: ${HELM_RELEASE_TARGET_FILE}
+
 
   # --- START API TEST for BLUE UAT DEPLOY --- #
   - stage: "Blue_API_UAT_test_V1"
@@ -390,6 +390,8 @@ stages:
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(app_version)
+                    CHART_VERSION_TEMPLATE: ${HELM_RELEASE_TARGET_FILE}
+
   # --- END Deploy UAT --- #
 
   # --- START API TEST for GREEN UAT DEPLOY --- #
@@ -531,6 +533,7 @@ stages:
                     VALUE_FILE: "helm/values-prod.yaml"
                     GREEN_VERSION: $(app_version)
                     BLUE_VERSION: $(Build.SourceVersion)
+                    CHART_VERSION_TEMPLATE: ${HELM_RELEASE_TARGET_FILE}
 
   - stage: "PROD_Green_WaitForApproval"
     displayName: 'PROD green approval deployment'
@@ -637,6 +640,8 @@ stages:
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-prod.yaml"
                     GREEN_VERSION: $(prod_version)
+                    CHART_VERSION_TEMPLATE: ${HELM_RELEASE_TARGET_FILE}
+
   # --- END Deploy PROD --- #
 
   # --- START ROLLBACK PROD --- #
