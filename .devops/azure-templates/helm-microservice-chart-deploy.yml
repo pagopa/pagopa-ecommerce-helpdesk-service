@@ -12,7 +12,7 @@ parameters:
     type: string
   - name: "VALUE_FILE"
     type: string
-  - name: "CHART_VERSION_TEMPLATE"
+  - name: "HELM_CHART_VERSION_NAME"
     type: string
   - name: "GREEN_VERSION"
     type: string
@@ -59,7 +59,7 @@ steps:
       waitForExecution: ${{ parameters.WAIT_FOR_EXECUTION }}
       arguments: ${{ parameters.ARGUMENTS }}
       overrideValues: microservice-chart.image.tag=${{ parameters.GREEN_VERSION }},microservice-chart.canaryDelivery.create=${{ parameters.DO_BLUE_GREEN_DEPLOY }},microservice-chart.canaryDelivery.deployment.image.tag=${{ parameters.BLUE_VERSION }}
-  - template: ./${{ parameters.CHART_VERSION_TEMPLATE }}.yml
+  - template: ./chart-version-current.yml
   - ${{ if ne(parameters['APPINSIGHTS_SERVICE_CONN'], 'none') }}:
       - task: AzureCLI@2
         displayName: Release annotations
@@ -75,7 +75,7 @@ steps:
             
             APPINSIGHTS_ID=${{ parameters.APPINSIGHTS_RESOURCE_ID }}
             UUID=$(uuidgen)
-            releaseName="${{ parameters.APP_NAME }}-${{ parameters.CHART_VERSION_TEMPLATE }}-${{ parameters.ENV }}"
+            releaseName="${{ parameters.APP_NAME }}-${{ parameters.HELM_CHART_VERSION_NAME }}-${{ parameters.ENV }}"
             releaseDescription="$(chart_current_version.appVersion)"
             triggerBy="Azure DevOps"
             eventTime=$(date -u '+%Y-%m-%dT%H:%M:%S')
