@@ -9,7 +9,7 @@ steps:
     inputs:
       targetType: "inline"
       script: |
-        CHART_FILE="helm/Chart.yaml"
+        CHART_FILE="helm/helm-v7/Chart.yaml"
         version=$(yq -r '.version' $CHART_FILE)
         appVersion=$(yq -r '.appVersion' $CHART_FILE)
         echo "##vso[task.setvariable variable=version;isOutput=true]$version"

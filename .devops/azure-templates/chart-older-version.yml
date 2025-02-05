@@ -1,0 +1,18 @@
+# Read the current chart versionOld and output it two variables
+# -> 'chart_current_versionOld.versionOld' : the Chart versionOld
+# -> 'chart_current_versionOld.appversionOld': the application versionOld
+
+steps:
+  - task: Bash@3
+    name: chart_current_versionOld
+    displayName: 'Read chart current versionOld'
+    inputs:
+      targetType: "inline"
+      script: |
+        CHART_FILE="helm/helm-v2/Chart.yaml"
+        versionOld=$(yq -r '.versionOld' $CHART_FILE)
+        appversionOld=$(yq -r '.appversionOld' $CHART_FILE)
+        echo "##vso[task.setvariable variable=versionOld;isOutput=true]$versionOld"
+        echo "##vso[task.setvariable variable=appversionOld;isOutput=true]$appversionOld"
+      failOnStderr: true
+  
