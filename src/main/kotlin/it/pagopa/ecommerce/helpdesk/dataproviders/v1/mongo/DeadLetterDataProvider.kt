@@ -113,13 +113,14 @@ class DeadLetterDataProvider(
                             eCommerceStatuses.toString(),
                             npgStatuses.toString()
                         )
-                        deadLetterRepository.countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
-                            queueName = queueName,
-                            startTime = startDate,
-                            endTime = endDate,
-                            ecommerceStatusesToExclude = eCommerceStatuses,
-                            npgStatusesToExclude = npgStatuses
-                        )
+                        deadLetterRepository
+                            .countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+                                queueName = queueName,
+                                startTime = startDate,
+                                endTime = endDate,
+                                ecommerceStatusesToExclude = eCommerceStatuses,
+                                npgStatusesToExclude = npgStatuses
+                            )
                     }
                     excludeStatuses == null && timeRange != null -> {
                         logger.info(
@@ -187,7 +188,10 @@ class DeadLetterDataProvider(
                         excludeStatuses != null && timeRange != null -> {
                             logger.info(
                                 "Finding all dead letter events in time range {} - {} with eCommerceStatus not in {} and npgStatus not in {}",
-                                startDate, endDate, eCommerceStatuses.toString(), npgStatuses.toString()
+                                startDate,
+                                endDate,
+                                eCommerceStatuses.toString(),
+                                npgStatuses.toString()
                             )
                             deadLetterRepository
                                 .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
@@ -216,7 +220,8 @@ class DeadLetterDataProvider(
                         excludeStatuses != null -> {
                             logger.info(
                                 "Finding all dead letter events with eCommerceStatus not in {} and npgStatus not in {}",
-                                eCommerceStatuses.toString(), npgStatuses.toString()
+                                eCommerceStatuses.toString(),
+                                npgStatuses.toString()
                             )
                             deadLetterRepository
                                 .findDeadLetterEventPaginatedOrderByInsertionDateDescWithExludeStatuses(
@@ -228,10 +233,11 @@ class DeadLetterDataProvider(
                         }
                         else -> {
                             logger.info("Finding all dead letter events")
-                            deadLetterRepository.findDeadLetterEventPaginatedOrderByInsertionDateDesc(
-                                skip = skip,
-                                limit = limit
-                            )
+                            deadLetterRepository
+                                .findDeadLetterEventPaginatedOrderByInsertionDateDesc(
+                                    skip = skip,
+                                    limit = limit
+                                )
                         }
                     }
                 }
@@ -293,13 +299,17 @@ class DeadLetterDataProvider(
                                 )
                         }
                         else -> {
-                            logger.info("Finding all dead letter events for queue name {}", queueName)
+                            logger.info(
+                                "Finding all dead letter events for queue name {}",
+                                queueName
+                            )
                             deadLetterRepository
                                 .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDesc(
                                     queueName = queueName,
                                     skip = skip,
                                     limit = limit
-                                )}
+                                )
+                        }
                     }
                 }
             }

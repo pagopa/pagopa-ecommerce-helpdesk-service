@@ -15,11 +15,25 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
     @Query("{'insertionDate': {'\$gte': '?0','\$lte': '?1'}}", count = true)
     fun countAllDeadLetterEventInTimeRange(startTime: String, endTime: String): Mono<Long>
 
-    @Query("{'insertionDate': {'\$gte': '?0','\$lte': '?1'}, 'transactionInfo.eCommerceStatus': {'\$nin': ?2}, 'transactionInfo.details.operationResult': {'\$nin': ?3} }", count = true)
-    fun countAllDeadLetterEventInTimeRangeWithExludeStatuses(startTime: String, endTime: String, ecommerceStatusesToExclude: List<String>, npgStatusesToExclude: List<String>): Mono<Long>
+    @Query(
+        "{'insertionDate': {'\$gte': '?0','\$lte': '?1'}, 'transactionInfo.eCommerceStatus': {'\$nin': ?2}, 'transactionInfo.details.operationResult': {'\$nin': ?3} }",
+        count = true
+    )
+    fun countAllDeadLetterEventInTimeRangeWithExludeStatuses(
+        startTime: String,
+        endTime: String,
+        ecommerceStatusesToExclude: List<String>,
+        npgStatusesToExclude: List<String>
+    ): Mono<Long>
 
-    @Query("{'transactionInfo.eCommerceStatus': {'\$nin': ?2}, 'transactionInfo.details.operationResult': {'\$nin': ?3} }", count = true)
-    fun countAllDeadLetterEventWithExludeStatuses(ecommerceStatusesToExclude: List<String>, npgStatusesToExclude: List<String>): Mono<Long>
+    @Query(
+        "{'transactionInfo.eCommerceStatus': {'\$nin': ?0}, 'transactionInfo.details.operationResult': {'\$nin': ?1} }",
+        count = true
+    )
+    fun countAllDeadLetterEventWithExludeStatuses(
+        ecommerceStatusesToExclude: List<String>,
+        npgStatusesToExclude: List<String>
+    ): Mono<Long>
 
     @Query("{'queueName': '?0'}", count = true)
     fun countDeadLetterEventForQueue(queueName: String): Mono<Long>
@@ -31,7 +45,10 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         endTime: String
     ): Mono<Long>
 
-    @Query("{'insertionDate': {'\$gte': '?1','\$lte': '?2'},'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?3}, 'transactionInfo.details.operationResult': {'\$nin': ?4}}", count = true)
+    @Query(
+        "{'insertionDate': {'\$gte': '?1','\$lte': '?2'},'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?3}, 'transactionInfo.details.operationResult': {'\$nin': ?4}}",
+        count = true
+    )
     fun countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
         queueName: String,
         startTime: String,
@@ -40,7 +57,10 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         npgStatusesToExclude: List<String>
     ): Mono<Long>
 
-    @Query("{'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?3}, 'transactionInfo.details.operationResult': {'\$nin': ?4}}", count = true)
+    @Query(
+        "{'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?1}, 'transactionInfo.details.operationResult': {'\$nin': ?2}}",
+        count = true
+    )
     fun countDeadLetterEventForQueueWithExludeStatuses(
         queueName: String,
         ecommerceStatusesToExclude: List<String>,
@@ -142,7 +162,7 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
     ): Flux<DeadLetterEvent>
 
     @Aggregation(
-        "{\$match: {'transactionInfo.eCommerceStatus': {'\$nin': ?4}, 'transactionInfo.details.operationResult': {'\$nin': ?5}}}",
+        "{\$match: {'transactionInfo.eCommerceStatus': {'\$nin': ?2}, 'transactionInfo.details.operationResult': {'\$nin': ?3}}}",
         "{\$sort: {'insertionDate': -1}}",
         "{\$skip: ?0}",
         "{\$limit: ?1}",
@@ -154,18 +174,4 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         npgStatusesToExclude: List<String>
     ): Flux<DeadLetterEvent>
 
-    @Aggregation(
-        "{\$match: { 'insertionDate': {'\$gte': '?2','\$lte': '?3'}, 'transactionInfo.details.operationResult': {'\$nin': ?4},'transactionInfo.eCommerceStatus': {'\$nin': ?5} }}",
-        "{\$sort: {'insertionDate': -1}}",
-        "{\$skip: ?0}",
-        "{\$limit: ?1}"
-    )
-    fun findDeadLetterEventWithExclusions(
-        skip: Int,
-        limit: Int,
-        startTime: String,
-        endTime: String,
-        npgStatusToExclude: List<String>,
-        ecommerceStatusToExclude: List<String>
-    ): Flux<DeadLetterEvent>
 }
