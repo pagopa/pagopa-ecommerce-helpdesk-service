@@ -53,7 +53,7 @@ steps:
       chartType: ${{ parameters.CHART_TYPE }}
       chartPath: ${{ parameters.CHART_PATH }}
       chartName: ${{ parameters.APP_NAME }}
-      releaseName: ${{ parameters.APP_NAME }}
+      releaseName: ${{ parameters.APP_NAME }}-${{ parameters.HELM_CHART_VERSION_NAME }}
       valueFile: ${{ parameters.VALUE_FILE }}
       install: true
       waitForExecution: ${{ parameters.WAIT_FOR_EXECUTION }}
