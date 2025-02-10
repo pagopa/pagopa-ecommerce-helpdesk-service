@@ -135,7 +135,7 @@ stages:
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-dev.yaml"
                     GREEN_VERSION: $(Build.SourceVersion)
-                    HELM_CHART_VERSION_NAME: ${HELM_CHART_VERSION_NAME}
+                    HELM_CHART_VERSION_NAME: $(HELM_CHART_VERSION_NAME)
   # --- END Deploy DEV --- #
 
   # --- START API TEST for DEV DEPLOY --- #
@@ -239,7 +239,7 @@ stages:
                     VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(green_app_version)
                     BLUE_VERSION: $(Build.SourceVersion)
-                    HELM_CHART_VERSION_NAME: ${HELM_CHART_VERSION_NAME}
+                    HELM_CHART_VERSION_NAME: $(HELM_CHART_VERSION_NAME)
 
 
   # --- START API TEST for BLUE UAT DEPLOY --- #
@@ -390,7 +390,7 @@ stages:
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(app_version)
-                    HELM_CHART_VERSION_NAME: ${HELM_CHART_VERSION_NAME}
+                    HELM_CHART_VERSION_NAME: $(HELM_CHART_VERSION_NAME)
 
   # --- END Deploy UAT --- #
 
@@ -533,7 +533,7 @@ stages:
                     VALUE_FILE: "helm/values-prod.yaml"
                     GREEN_VERSION: $(app_version)
                     BLUE_VERSION: $(Build.SourceVersion)
-                    HELM_CHART_VERSION_NAME: ${HELM_CHART_VERSION_NAME}
+                    HELM_CHART_VERSION_NAME: $(HELM_CHART_VERSION_NAME)
 
   - stage: "PROD_Green_WaitForApproval"
     displayName: 'PROD green approval deployment'
@@ -640,7 +640,7 @@ stages:
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-prod.yaml"
                     GREEN_VERSION: $(prod_version)
-                    HELM_CHART_VERSION_NAME: ${HELM_CHART_VERSION_NAME}
+                    HELM_CHART_VERSION_NAME: $(HELM_CHART_VERSION_NAME)
 
   # --- END Deploy PROD --- #
 
