@@ -1117,7 +1117,7 @@ components:
           example: [ "DECLINED","CANCELLED" ]
       required:
         - ecommerceStatuses
-        - npsStatuses
+        - npgStatuses
     DeadLetterTransactionInfo:
       type: object
       description: Dead letter transaction info
