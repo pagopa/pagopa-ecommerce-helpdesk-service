@@ -1042,7 +1042,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"eCommerce search ALL dead letter events without time range - Status code is 400 for request with page size over 20\", function () {",
+							"pm.test(\"eCommerce search ALL dead letter events without time range - Status code is 400 for request with page size over 1001\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});"
 						],
@@ -1075,7 +1075,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=21",
+					"raw": "{{HOSTNAME}}/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=1001",
 					"host": [
 						"{{HOSTNAME}}"
 					],
@@ -1090,7 +1090,7 @@
 						},
 						{
 							"key": "pageSize",
-							"value": "21"
+							"value": "1001"
 						}
 					]
 				}
