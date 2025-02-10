@@ -32,6 +32,9 @@ microservice-chart:
     host: "weudev.ecommerce.internal.dev.platform.pagopa.it"
     path: /pagopa-ecommerce-helpdesk-service/(.*)
     servicePort: 8080
+    headerName: X-Canary
+    headerValue: canary
+    weightPercent: 0
   serviceAccount:
     create: false
     annotations: {}
