@@ -4,11 +4,9 @@ import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestD
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.DeadLetterRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.DeadLetterDataProvider
-import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchDateTimeRangeDto
-import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchEventSourceDto
-import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchDeadLetterEventsRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.EnumMap
 import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -22,11 +20,27 @@ class DeadLetterDataProviderTest {
     private val deadLetterRepository: DeadLetterRepository = mock()
     private val deadLetterQueueMapping: EnumMap<DeadLetterSearchEventSourceDto, String> =
         EnumMap(DeadLetterSearchEventSourceDto.values().associateWith { it.toString() })
+
     private val deadLetterDataProvider =
         DeadLetterDataProvider(
             deadLetterRepository = deadLetterRepository,
             deadLetterQueueMapping = deadLetterQueueMapping
         )
+
+    /* ================================================
+     *  TEST PER totalRecordCount()
+     * ================================================ */
+
+    @Test
+    fun `Should return 0 if source is null`() {
+        // given
+        val searchRequest = EcommerceSearchDeadLetterEventsRequestDto().source(null)
+        // when / then
+        StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
+            .expectNext(0)
+            .verifyComplete()
+        verifyNoInteractions(deadLetterRepository)
+    }
 
     @Test
     fun `Should calculate total records for all dead letter events without time range`() {
@@ -36,18 +50,28 @@ class DeadLetterDataProviderTest {
                 .source(DeadLetterSearchEventSourceDto.ALL)
                 .timeRange(null)
         given(deadLetterRepository.count()).willReturn(mono { count })
+
         StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
             .expectNext(count.toInt())
             .verifyComplete()
+
         verify(deadLetterRepository, times(1)).count()
-        verify(deadLetterRepository, times(0)).countAllDeadLetterEventInTimeRange(any(), any())
+        // nessuna chiamata ai metodi con time range
+        verify(deadLetterRepository, times(0))
+            .countAllDeadLetterEventInTimeRangeWithExludeStatuses(any(), any(), any(), any())
         verify(deadLetterRepository, times(0)).countDeadLetterEventForQueue(any())
         verify(deadLetterRepository, times(0))
-            .countDeadLetterEventForQueueInTimeRange(any(), any(), any())
+            .countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
     }
 
     @Test
-    fun `Should calculate total records for all dead letter events with time range`() {
+    fun `Should calculate total records for all dead letter events with time range but no exclude statuses`() {
         val count = 2L
         val searchRequest =
             EcommerceSearchDeadLetterEventsRequestDto()
@@ -57,21 +81,80 @@ class DeadLetterDataProviderTest {
                         .startDate(OffsetDateTime.MIN)
                         .endDate(OffsetDateTime.MAX)
                 )
+        // excludeStatuses è null => nessuna esclusione
         given(
-                deadLetterRepository.countAllDeadLetterEventInTimeRange(
+                deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExludeStatuses(
                     startTime = OffsetDateTime.MIN.toString(),
                     endTime = OffsetDateTime.MAX.toString(),
+                    ecommerceStatusesToExclude = emptyList(),
+                    npgStatusesToExclude = emptyList()
                 )
             )
             .willReturn(mono { count })
+
         StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
             .expectNext(count.toInt())
             .verifyComplete()
+
         verify(deadLetterRepository, times(0)).count()
-        verify(deadLetterRepository, times(1)).countAllDeadLetterEventInTimeRange(any(), any())
+        verify(deadLetterRepository, times(1))
+            .countAllDeadLetterEventInTimeRangeWithExludeStatuses(
+                OffsetDateTime.MIN.toString(),
+                OffsetDateTime.MAX.toString(),
+                emptyList(),
+                emptyList()
+            )
         verify(deadLetterRepository, times(0)).countDeadLetterEventForQueue(any())
         verify(deadLetterRepository, times(0))
-            .countDeadLetterEventForQueueInTimeRange(any(), any(), any())
+            .countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+    }
+
+    @Test
+    fun `Should calculate total records for all dead letter events with time range and exclude statuses`() {
+        val count = 3L
+        val excludeStatuses =
+            DeadLetterExcludeStatusesDto()
+                .ecommerceStatuses(listOf("AUTHORIZED", "EXPIRED"))
+                .npgStatuses(listOf("NOTIFIED_KO"))
+
+        val searchRequest =
+            EcommerceSearchDeadLetterEventsRequestDto()
+                .source(DeadLetterSearchEventSourceDto.ALL)
+                .timeRange(
+                    DeadLetterSearchDateTimeRangeDto()
+                        .startDate(OffsetDateTime.MIN)
+                        .endDate(OffsetDateTime.MAX)
+                )
+                .excludeStatuses(excludeStatuses)
+
+        given(
+                deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExludeStatuses(
+                    startTime = OffsetDateTime.MIN.toString(),
+                    endTime = OffsetDateTime.MAX.toString(),
+                    ecommerceStatusesToExclude = listOf("AUTHORIZED", "EXPIRED"),
+                    npgStatusesToExclude = listOf("NOTIFIED_KO")
+                )
+            )
+            .willReturn(mono { count })
+
+        StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
+            .expectNext(count.toInt())
+            .verifyComplete()
+
+        verify(deadLetterRepository, times(1))
+            .countAllDeadLetterEventInTimeRangeWithExludeStatuses(
+                OffsetDateTime.MIN.toString(),
+                OffsetDateTime.MAX.toString(),
+                listOf("AUTHORIZED", "EXPIRED"),
+                listOf("NOTIFIED_KO")
+            )
+        verifyNoMoreInteractions(deadLetterRepository)
     }
 
     @ParameterizedTest
@@ -86,19 +169,26 @@ class DeadLetterDataProviderTest {
                 .timeRange(null)
         given(deadLetterRepository.countDeadLetterEventForQueue(queueName = source))
             .willReturn(mono { count })
+
         StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
             .expectNext(count.toInt())
             .verifyComplete()
+
+        verify(deadLetterRepository, times(1)).countDeadLetterEventForQueue(source)
         verify(deadLetterRepository, times(0)).count()
-        verify(deadLetterRepository, times(0)).countAllDeadLetterEventInTimeRange(any(), any())
-        verify(deadLetterRepository, times(1)).countDeadLetterEventForQueue(any())
         verify(deadLetterRepository, times(0))
-            .countDeadLetterEventForQueueInTimeRange(any(), any(), any())
+            .countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
     }
 
     @ParameterizedTest
     @ValueSource(strings = ["ECOMMERCE", "NOTIFICATIONS_SERVICE"])
-    fun `Should calculate total records for specific source dead letter events with time range`(
+    fun `Should calculate total records for specific source dead letter events with time range but no exclude statuses`(
         source: String
     ) {
         val count = 2L
@@ -111,22 +201,81 @@ class DeadLetterDataProviderTest {
                         .endDate(OffsetDateTime.MAX)
                 )
         given(
-                deadLetterRepository.countDeadLetterEventForQueueInTimeRange(
+                deadLetterRepository.countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
                     queueName = source,
                     startTime = OffsetDateTime.MIN.toString(),
-                    endTime = OffsetDateTime.MAX.toString()
+                    endTime = OffsetDateTime.MAX.toString(),
+                    ecommerceStatusesToExclude = emptyList(),
+                    npgStatusesToExclude = emptyList()
                 )
             )
             .willReturn(mono { count })
+
         StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
             .expectNext(count.toInt())
             .verifyComplete()
-        verify(deadLetterRepository, times(0)).count()
-        verify(deadLetterRepository, times(0)).countAllDeadLetterEventInTimeRange(any(), any())
-        verify(deadLetterRepository, times(0)).countDeadLetterEventForQueue(any())
+
         verify(deadLetterRepository, times(1))
-            .countDeadLetterEventForQueueInTimeRange(any(), any(), any())
+            .countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+                source,
+                OffsetDateTime.MIN.toString(),
+                OffsetDateTime.MAX.toString(),
+                emptyList(),
+                emptyList()
+            )
+        verifyNoMoreInteractions(deadLetterRepository)
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["ECOMMERCE", "NOTIFICATIONS_SERVICE"])
+    fun `Should calculate total records for specific source dead letter events with time range and exclude statuses`(
+        source: String
+    ) {
+        val count = 2L
+        val excludeStatuses =
+            DeadLetterExcludeStatusesDto()
+                .ecommerceStatuses(listOf("UNAUTHORIZED"))
+                .npgStatuses(listOf("TIMEOUT"))
+
+        val searchRequest =
+            EcommerceSearchDeadLetterEventsRequestDto()
+                .source(DeadLetterSearchEventSourceDto.valueOf(source))
+                .timeRange(
+                    DeadLetterSearchDateTimeRangeDto()
+                        .startDate(OffsetDateTime.MIN)
+                        .endDate(OffsetDateTime.MAX)
+                )
+                .excludeStatuses(excludeStatuses)
+
+        given(
+                deadLetterRepository.countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+                    queueName = source,
+                    startTime = OffsetDateTime.MIN.toString(),
+                    endTime = OffsetDateTime.MAX.toString(),
+                    ecommerceStatusesToExclude = listOf("UNAUTHORIZED"),
+                    npgStatusesToExclude = listOf("TIMEOUT")
+                )
+            )
+            .willReturn(mono { count })
+
+        StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
+            .expectNext(count.toInt())
+            .verifyComplete()
+
+        verify(deadLetterRepository, times(1))
+            .countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+                source,
+                OffsetDateTime.MIN.toString(),
+                OffsetDateTime.MAX.toString(),
+                listOf("UNAUTHORIZED"),
+                listOf("TIMEOUT")
+            )
+        verifyNoMoreInteractions(deadLetterRepository)
+    }
+
+    /* ================================================
+     *  TEST PER findResult()
+     * ================================================ */
 
     @Test
     fun `Should find result for all dead letter events without time range`() {
@@ -148,16 +297,12 @@ class DeadLetterDataProviderTest {
                     true
                 ),
                 HelpdeskTestUtils.buildDeadLetterEventWithoutTransactionInfo("queue3", "test3"),
-                HelpdeskTestUtils.buildDeadLetterEvent(
-                    "queue4",
-                    "test4",
-                    TransactionAuthorizationRequestData.PaymentGateway.VPOS
-                )
             )
         val expectedDeadLetterDtoList =
             deadLetterEvents.map { deadLetterDataProvider.mapToDeadLetterEventDto(it) }
         val skip = 0
         val limit = 10
+
         given(
                 deadLetterRepository.findDeadLetterEventPaginatedOrderByInsertionDateDesc(
                     skip = skip,
@@ -165,32 +310,27 @@ class DeadLetterDataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
+
         StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit))
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
+
         verify(deadLetterRepository, times(1))
-            .findDeadLetterEventPaginatedOrderByInsertionDateDesc(any(), any())
+            .findDeadLetterEventPaginatedOrderByInsertionDateDesc(skip, limit)
         verify(deadLetterRepository, times(0))
-            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRange(
+            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
                 any(),
-                any(),
-                any(),
-                any()
-            )
-        verify(deadLetterRepository, times(0))
-            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDesc(any(), any(), any())
-        verify(deadLetterRepository, times(0))
-            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRange(
                 any(),
                 any(),
                 any(),
                 any(),
                 any()
             )
+        verifyNoMoreInteractions(deadLetterRepository)
     }
 
     @Test
-    fun `Should find result for all dead letter events with time range`() {
+    fun `Should find result for all dead letter events with time range but no exclude statuses`() {
         val searchRequest =
             EcommerceSearchDeadLetterEventsRequestDto()
                 .source(DeadLetterSearchEventSourceDto.ALL)
@@ -211,45 +351,98 @@ class DeadLetterDataProviderTest {
                     "queue2",
                     "test2",
                     TransactionAuthorizationRequestData.PaymentGateway.REDIRECT
-                ),
-                HelpdeskTestUtils.buildDeadLetterEventWithoutTransactionInfo("queue3", "test3")
+                )
             )
         val expectedDeadLetterDtoList =
             deadLetterEvents.map { deadLetterDataProvider.mapToDeadLetterEventDto(it) }
         val skip = 0
         val limit = 10
+
         given(
                 deadLetterRepository
-                    .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRange(
+                    .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
                         skip = skip,
                         limit = limit,
                         startTime = OffsetDateTime.MIN.toString(),
-                        endTime = OffsetDateTime.MAX.toString()
+                        endTime = OffsetDateTime.MAX.toString(),
+                        ecommerceStatusesToExclude = emptyList(),
+                        npgStatusesToExclude = emptyList()
                     )
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
+
         StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit))
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
-        verify(deadLetterRepository, times(0))
-            .findDeadLetterEventPaginatedOrderByInsertionDateDesc(any(), any())
+
         verify(deadLetterRepository, times(1))
-            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRange(
-                any(),
-                any(),
-                any(),
-                any()
+            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+                skip,
+                limit,
+                OffsetDateTime.MIN.toString(),
+                OffsetDateTime.MAX.toString(),
+                emptyList(),
+                emptyList()
             )
-        verify(deadLetterRepository, times(0))
-            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDesc(any(), any(), any())
-        verify(deadLetterRepository, times(0))
-            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRange(
-                any(),
-                any(),
-                any(),
-                any(),
-                any()
+        verifyNoMoreInteractions(deadLetterRepository)
+    }
+
+    @Test
+    fun `Should find result for all dead letter events with time range and exclude statuses`() {
+        val excludeStatuses =
+            DeadLetterExcludeStatusesDto()
+                .ecommerceStatuses(listOf("AUTHORIZED", "EXPIRED"))
+                .npgStatuses(listOf("KO"))
+        val searchRequest =
+            EcommerceSearchDeadLetterEventsRequestDto()
+                .source(DeadLetterSearchEventSourceDto.ALL)
+                .timeRange(
+                    DeadLetterSearchDateTimeRangeDto()
+                        .startDate(OffsetDateTime.MIN)
+                        .endDate(OffsetDateTime.MAX)
+                )
+                .excludeStatuses(excludeStatuses)
+
+        val deadLetterEvents =
+            listOf(
+                HelpdeskTestUtils.buildDeadLetterEvent(
+                    "queue1",
+                    "test1",
+                    TransactionAuthorizationRequestData.PaymentGateway.NPG
+                )
             )
+        val expectedDeadLetterDtoList =
+            deadLetterEvents.map { deadLetterDataProvider.mapToDeadLetterEventDto(it) }
+        val skip = 0
+        val limit = 10
+
+        given(
+                deadLetterRepository
+                    .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+                        skip = skip,
+                        limit = limit,
+                        startTime = OffsetDateTime.MIN.toString(),
+                        endTime = OffsetDateTime.MAX.toString(),
+                        ecommerceStatusesToExclude = listOf("AUTHORIZED", "EXPIRED"),
+                        npgStatusesToExclude = listOf("KO")
+                    )
+            )
+            .willReturn(Flux.fromIterable(deadLetterEvents))
+
+        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit))
+            .expectNext(expectedDeadLetterDtoList)
+            .verifyComplete()
+
+        verify(deadLetterRepository, times(1))
+            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+                skip,
+                limit,
+                OffsetDateTime.MIN.toString(),
+                OffsetDateTime.MAX.toString(),
+                listOf("AUTHORIZED", "EXPIRED"),
+                listOf("KO")
+            )
+        verifyNoMoreInteractions(deadLetterRepository)
     }
 
     @ParameterizedTest
@@ -261,25 +454,20 @@ class DeadLetterDataProviderTest {
             EcommerceSearchDeadLetterEventsRequestDto()
                 .source(DeadLetterSearchEventSourceDto.valueOf(source))
                 .timeRange(null)
+
         val deadLetterEvents =
             listOf(
                 HelpdeskTestUtils.buildDeadLetterEvent(
-                    "queue1",
+                    source,
                     "test1",
                     TransactionAuthorizationRequestData.PaymentGateway.NPG
-                ),
-                HelpdeskTestUtils.buildDeadLetterEvent(
-                    "queue2",
-                    "test2",
-                    TransactionAuthorizationRequestData.PaymentGateway.REDIRECT,
-                    true
-                ),
-                HelpdeskTestUtils.buildDeadLetterEventWithoutTransactionInfo("queue3", "test3")
+                )
             )
         val expectedDeadLetterDtoList =
             deadLetterEvents.map { deadLetterDataProvider.mapToDeadLetterEventDto(it) }
         val skip = 0
         val limit = 10
+
         given(
                 deadLetterRepository.findDeadLetterEventForQueuePaginatedOrderByInsertionDateDesc(
                     queueName = source,
@@ -288,33 +476,19 @@ class DeadLetterDataProviderTest {
                 )
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
+
         StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit))
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
-        verify(deadLetterRepository, times(0))
-            .findDeadLetterEventPaginatedOrderByInsertionDateDesc(any(), any())
-        verify(deadLetterRepository, times(0))
-            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRange(
-                any(),
-                any(),
-                any(),
-                any()
-            )
+
         verify(deadLetterRepository, times(1))
-            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDesc(any(), any(), any())
-        verify(deadLetterRepository, times(0))
-            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRange(
-                any(),
-                any(),
-                any(),
-                any(),
-                any()
-            )
+            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDesc(source, skip, limit)
+        verifyNoMoreInteractions(deadLetterRepository)
     }
 
     @ParameterizedTest
     @ValueSource(strings = ["ECOMMERCE", "NOTIFICATIONS_SERVICE"])
-    fun `Should find result for specific source dead letter events with time range`(
+    fun `Should find result for specific source dead letter events with time range but no exclude statuses`(
         source: String
     ) {
         val searchRequest =
@@ -325,57 +499,113 @@ class DeadLetterDataProviderTest {
                         .startDate(OffsetDateTime.MIN)
                         .endDate(OffsetDateTime.MAX)
                 )
+
         val deadLetterEvents =
             listOf(
                 HelpdeskTestUtils.buildDeadLetterEvent(
-                    "queue1",
+                    source,
                     "test1",
-                    TransactionAuthorizationRequestData.PaymentGateway.NPG,
-                    true
-                ),
-                HelpdeskTestUtils.buildDeadLetterEvent(
-                    "queue2",
-                    "test2",
                     TransactionAuthorizationRequestData.PaymentGateway.REDIRECT
-                ),
-                HelpdeskTestUtils.buildDeadLetterEventWithoutTransactionInfo("queue3", "test3")
+                )
             )
         val expectedDeadLetterDtoList =
             deadLetterEvents.map { deadLetterDataProvider.mapToDeadLetterEventDto(it) }
         val skip = 0
         val limit = 10
+
         given(
                 deadLetterRepository
-                    .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRange(
+                    .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
                         queueName = source,
                         skip = skip,
                         limit = limit,
                         startTime = OffsetDateTime.MIN.toString(),
-                        endTime = OffsetDateTime.MAX.toString()
+                        endTime = OffsetDateTime.MAX.toString(),
+                        ecommerceStatusesToExclude = emptyList(),
+                        npgStatusesToExclude = emptyList()
                     )
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
+
         StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit))
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
-        verify(deadLetterRepository, times(0))
-            .findDeadLetterEventPaginatedOrderByInsertionDateDesc(any(), any())
-        verify(deadLetterRepository, times(0))
-            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRange(
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        verify(deadLetterRepository, times(0))
-            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDesc(any(), any(), any())
+
         verify(deadLetterRepository, times(1))
-            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRange(
-                any(),
-                any(),
-                any(),
-                any(),
-                any()
+            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+                source,
+                skip,
+                limit,
+                OffsetDateTime.MIN.toString(),
+                OffsetDateTime.MAX.toString(),
+                emptyList(),
+                emptyList()
             )
+        verifyNoMoreInteractions(deadLetterRepository)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["ECOMMERCE", "NOTIFICATIONS_SERVICE"])
+    fun `Should find result for specific source dead letter events with time range and exclude statuses`(
+        source: String
+    ) {
+        val excludeStatuses =
+            DeadLetterExcludeStatusesDto()
+                .ecommerceStatuses(listOf("EXPIRED"))
+                .npgStatuses(listOf("TIMEOUT"))
+
+        val searchRequest =
+            EcommerceSearchDeadLetterEventsRequestDto()
+                .source(DeadLetterSearchEventSourceDto.valueOf(source))
+                .timeRange(
+                    DeadLetterSearchDateTimeRangeDto()
+                        .startDate(OffsetDateTime.MIN)
+                        .endDate(OffsetDateTime.MAX)
+                )
+                .excludeStatuses(excludeStatuses)
+
+        val deadLetterEvents =
+            listOf(
+                HelpdeskTestUtils.buildDeadLetterEvent(
+                    source,
+                    "test1",
+                    TransactionAuthorizationRequestData.PaymentGateway.VPOS,
+                    true
+                )
+            )
+        val expectedDeadLetterDtoList =
+            deadLetterEvents.map { deadLetterDataProvider.mapToDeadLetterEventDto(it) }
+        val skip = 0
+        val limit = 10
+
+        given(
+                deadLetterRepository
+                    .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+                        queueName = source,
+                        skip = skip,
+                        limit = limit,
+                        startTime = OffsetDateTime.MIN.toString(),
+                        endTime = OffsetDateTime.MAX.toString(),
+                        ecommerceStatusesToExclude = listOf("EXPIRED"),
+                        npgStatusesToExclude = listOf("TIMEOUT")
+                    )
+            )
+            .willReturn(Flux.fromIterable(deadLetterEvents))
+
+        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit))
+            .expectNext(expectedDeadLetterDtoList)
+            .verifyComplete()
+
+        verify(deadLetterRepository, times(1))
+            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+                source,
+                skip,
+                limit,
+                OffsetDateTime.MIN.toString(),
+                OffsetDateTime.MAX.toString(),
+                listOf("EXPIRED"),
+                listOf("TIMEOUT")
+            )
+        verifyNoMoreInteractions(deadLetterRepository)
     }
 }

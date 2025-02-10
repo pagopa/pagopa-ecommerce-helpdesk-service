@@ -1100,6 +1100,24 @@ components:
       required:
         - startDate
         - endDate
+    DeadLetterExcludeStatuses:
+      type: object
+      properties:
+        ecommerceStatuses:
+          type: array
+          items:
+            type: string
+          description: "List of eCommerce statuses to exclude"
+          example: [ "NOTIFIED_OK" ]
+        npgStatuses:
+          type: array
+          items:
+            type: string
+          description: "List of NPG statuses to exclude"
+          example: [ "DECLINED","CANCELLED" ]
+      required:
+        - ecommerceStatuses
+        - npsStatuses
     DeadLetterTransactionInfo:
       type: object
       description: Dead letter transaction info
@@ -1445,21 +1463,8 @@ components:
                 $ref: '#/components/schemas/DeadLetterSearchEventSource'
               timeRange:
                 $ref: '#/components/schemas/DeadLetterSearchDateTimeRange'
-              exludeStatuses:
-                type: object
-                properties:
-                  npsStatus:
-                    type: array
-                    items:
-                      type: string
-                    description: "List of NPG statuses to exclude"
-                    example: ["DECLINED","CANCELLED"]
-                  ecommerceStatus:
-                    type: array
-                    items:
-                      type: string
-                    description: "List of eCommerce statuses to exclude"
-                    example: ["NOTIFIED_OK"]
+              excludeStatuses:
+                $ref: '#/components/schemas/DeadLetterExcludeStatuses'
             required:
               - source
           examples:

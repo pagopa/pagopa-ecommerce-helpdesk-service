@@ -12,9 +12,6 @@ import reactor.core.publisher.Mono
 @Repository
 interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String> {
 
-    @Query("{'insertionDate': {'\$gte': '?0','\$lte': '?1'}}", count = true)
-    fun countAllDeadLetterEventInTimeRange(startTime: String, endTime: String): Mono<Long>
-
     @Query(
         "{'insertionDate': {'\$gte': '?0','\$lte': '?1'}, 'transactionInfo.eCommerceStatus': {'\$nin': ?2}, 'transactionInfo.details.operationResult': {'\$nin': ?3} }",
         count = true
@@ -26,24 +23,8 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         npgStatusesToExclude: List<String>
     ): Mono<Long>
 
-    @Query(
-        "{'transactionInfo.eCommerceStatus': {'\$nin': ?0}, 'transactionInfo.details.operationResult': {'\$nin': ?1} }",
-        count = true
-    )
-    fun countAllDeadLetterEventWithExludeStatuses(
-        ecommerceStatusesToExclude: List<String>,
-        npgStatusesToExclude: List<String>
-    ): Mono<Long>
-
     @Query("{'queueName': '?0'}", count = true)
     fun countDeadLetterEventForQueue(queueName: String): Mono<Long>
-
-    @Query("{'insertionDate': {'\$gte': '?1','\$lte': '?2'},'queueName': '?0'}", count = true)
-    fun countDeadLetterEventForQueueInTimeRange(
-        queueName: String,
-        startTime: String,
-        endTime: String
-    ): Mono<Long>
 
     @Query(
         "{'insertionDate': {'\$gte': '?1','\$lte': '?2'},'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?3}, 'transactionInfo.details.operationResult': {'\$nin': ?4}}",
@@ -53,16 +34,6 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         queueName: String,
         startTime: String,
         endTime: String,
-        ecommerceStatusesToExclude: List<String>,
-        npgStatusesToExclude: List<String>
-    ): Mono<Long>
-
-    @Query(
-        "{'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?1}, 'transactionInfo.details.operationResult': {'\$nin': ?2}}",
-        count = true
-    )
-    fun countDeadLetterEventForQueueWithExludeStatuses(
-        queueName: String,
         ecommerceStatusesToExclude: List<String>,
         npgStatusesToExclude: List<String>
     ): Mono<Long>
@@ -77,20 +48,6 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         queueName: String,
         skip: Int,
         limit: Int,
-    ): Flux<DeadLetterEvent>
-
-    @Aggregation(
-        "{\$match: {'insertionDate': {'\$gte': '?3','\$lte': '?4'},'queueName': '?0'}}",
-        "{\$sort: {'insertionDate': -1}}",
-        "{\$skip: ?1}",
-        "{\$limit: ?2}",
-    )
-    fun findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRange(
-        queueName: String,
-        skip: Int,
-        limit: Int,
-        startTime: String,
-        endTime: String
     ): Flux<DeadLetterEvent>
 
     @Aggregation(
@@ -110,20 +67,6 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
     ): Flux<DeadLetterEvent>
 
     @Aggregation(
-        "{\$match: {'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?3}, 'transactionInfo.details.operationResult': {'\$nin': ?4}}}",
-        "{\$sort: {'insertionDate': -1}}",
-        "{\$skip: ?1}",
-        "{\$limit: ?2}",
-    )
-    fun findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescWithExludeStatuses(
-        queueName: String,
-        skip: Int,
-        limit: Int,
-        ecommerceStatusesToExclude: List<String>,
-        npgStatusesToExclude: List<String>
-    ): Flux<DeadLetterEvent>
-
-    @Aggregation(
         "{\$sort: {'insertionDate': -1}}",
         "{\$skip: ?0}",
         "{\$limit: ?1}",
@@ -131,19 +74,6 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
     fun findDeadLetterEventPaginatedOrderByInsertionDateDesc(
         skip: Int,
         limit: Int,
-    ): Flux<DeadLetterEvent>
-
-    @Aggregation(
-        "{\$match: {'insertionDate': {'\$gte': '?2','\$lte': '?3'}}}",
-        "{\$sort: {'insertionDate': -1}}",
-        "{\$skip: ?0}",
-        "{\$limit: ?1}",
-    )
-    fun findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRange(
-        skip: Int,
-        limit: Int,
-        startTime: String,
-        endTime: String
     ): Flux<DeadLetterEvent>
 
     @Aggregation(
@@ -160,18 +90,4 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         ecommerceStatusesToExclude: List<String>,
         npgStatusesToExclude: List<String>
     ): Flux<DeadLetterEvent>
-
-    @Aggregation(
-        "{\$match: {'transactionInfo.eCommerceStatus': {'\$nin': ?2}, 'transactionInfo.details.operationResult': {'\$nin': ?3}}}",
-        "{\$sort: {'insertionDate': -1}}",
-        "{\$skip: ?0}",
-        "{\$limit: ?1}",
-    )
-    fun findDeadLetterEventPaginatedOrderByInsertionDateDescWithExludeStatuses(
-        skip: Int,
-        limit: Int,
-        ecommerceStatusesToExclude: List<String>,
-        npgStatusesToExclude: List<String>
-    ): Flux<DeadLetterEvent>
-
 }

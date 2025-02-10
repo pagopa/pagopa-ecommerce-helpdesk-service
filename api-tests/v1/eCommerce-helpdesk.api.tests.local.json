@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "42fc5b60-7adb-44b9-8d47-372be5aa9e08",
+		"_postman_id": "0235f502-5b9a-477d-b7df-f7ba0c241929",
 		"name": "Ecommerce helpDesk-service LOCAL",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "9864793"
+		"_exporter_id": "38770380"
 	},
 	"item": [
 		{
@@ -610,6 +610,105 @@
 			"response": []
 		},
 		{
+			"name": "eCommerce retrieve ALL dead letter events [with time range and exclude statuses]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"eCommerce search ALL dead letter events with time range - Status code is 200 with valid json response\", function () {",
+							"    // Ensure the response status code is 200 (OK)",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"",
+							"    // Check that there are events in the response",
+							"    pm.expect(response.deadLetterEvents.length).to.be.greaterThan(0);",
+							"",
+							"    // Validate pagination information",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
+							"",
+							"    // Define the time range limits",
+							"    const startDate = new Date(\"2024-11-30T14:50:27.001Z\");",
+							"    const endDate = new Date(\"2024-12-30T14:50:27.999Z\");",
+							"",
+							"    // Define excluded statuses",
+							"    const excludedEcommerceStatuses = [\"EXPIRED\"];",
+							"    const excludedNpgStatuses = [\"CANCELED\"];",
+							"",
+							"    // Iterate through each event in the response",
+							"    response.deadLetterEvents.forEach(event => {",
+							"        const eventDate = new Date(event.timestamp);",
+							"        ",
+							"        // Ensure the event timestamp is within the specified time range",
+							"        pm.expect(eventDate).to.be.within(startDate, endDate);",
+							"        ",
+							"        // Ensure the eCommerce status is not in the excluded list",
+							"        if (event.transactionInfo && event.transactionInfo.eCommerceStatus) {",
+							"            pm.expect(excludedEcommerceStatuses).to.not.include(event.transactionInfo.eCommerceStatus);",
+							"        }",
+							"",
+							"        // Ensure the NPG status (operationResult) is not in the excluded list",
+							"        if (event.transactionInfo && event.transactionInfo.details && event.transactionInfo.details.operationResult) {",
+							"            pm.expect(excludedNpgStatuses).to.not.include(event.transactionInfo.details.operationResult);",
+							"        }",
+							"    });",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2024-11-30T14:50:27.001Z\",\n      \"endDate\": \"2024-12-30T14:50:27.999Z\"\n  },\n  \"excludeStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"CANCELED\"]\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"searchDeadLetterEvents"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "eCommerce retrieve ECOMMERCE dead letter events [no time range]",
 			"event": [
 				{
@@ -1123,170 +1222,141 @@
 			"response": []
 		},
 		{
-		  "name": "eCommerce SearchNpgOperations TRANSACTION_ID - Success",
-		  "event": [
-			{
-			  "listen": "test",
-			  "script": {
-				"exec": [
-				  "pm.test(\"eCommerce SearchNpgOperations SearchNpgOperations by TRANSACTION_ID - Status code is 200 with valid json response\", function () {",
-				  "    pm.response.to.have.status(200);",
-				  "    const response = pm.response.json();",
-				  "    pm.expect(response).to.have.property('operations');",
-				  "    pm.expect(response.operations).to.be.an('array');",
-				  "    pm.expect(response.operations).to.not.be.empty; ",
-				  "});"
-				],
-				"type": "text/javascript"
-			  }
-			}
-		  ],
-		  "request": {
-			"method": "POST",
-			"header": [
-			  {
-				"key": "Ocp-Apim-Subscription-Key",
-				"value": "{{API_SUBSCRIPTION_KEY}}",
-				"type": "text"
-			  },
-			  {
-				"key": "deployment",
-				"value": "{{DEPLOYMENT}}",
-				"type": "text"
-			  }
-			],
-			"body": {
-			  "mode": "raw",
-			  "raw": "{\n  \"idTransaction\": \"{{TRANSACTION_ID_V2}}\"\n}",
-			  "options": {
-				"raw": {
-				  "language": "json"
+			"name": "eCommerce SearchNpgOperations TRANSACTION_ID - Success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"eCommerce SearchNpgOperations SearchNpgOperations by TRANSACTION_ID - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response).to.have.property('operations');",
+							"    pm.expect(response.operations).to.be.an('array');",
+							"    pm.expect(response.operations).to.not.be.empty; ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
-			  }
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"idTransaction\": \"{{TRANSACTION_ID_V2}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOSTNAME}}/ecommerce/searchNpgOperations"
 			},
-			"url": {
-			  "raw": "{{HOSTNAME}}/ecommerce/searchNpgOperations",
-			  "host": [
-				"{{HOSTNAME}}"
-			  ],
-			  "path": [
-				"ecommerce",
-				"searchNpgOperations"
-			  ]
-			}
-		  },
-		  "response": []
+			"response": []
 		},
 		{
-		  "name": "eCommerce SearchNpgOperations TRANSACTION_ID - Not Found",
-		  "event": [
-			{
-			  "listen": "test",
-			  "script": {
-				"exec": [
-				  "pm.test(\"eCommerce SearchNpgOperations - Status code is 404 for no operations found\", function () {",
-				  "    pm.response.to.have.status(404);",
-				  "    const response = pm.response.json();",
-				  "    const requestBody = JSON.parse(pm.request.body.raw);",
-				  "    pm.expect(response.title).to.be.eq(\"No result found\");",
-				  "    pm.expect(response.detail).to.include(requestBody.idTransaction);",
-				  "});"
-				],
-				"type": "text/javascript"
-			  }
-			}
-		  ],
-		  "request": {
-			"method": "POST",
-			"header": [
-			  {
-				"key": "Ocp-Apim-Subscription-Key",
-				"value": "{{API_SUBSCRIPTION_KEY}}",
-				"type": "text"
-			  },
-			  {
-				"key": "deployment",
-				"value": "{{DEPLOYMENT}}",
-				"type": "text"
-			  }
-			],
-			"body": {
-			  "mode": "raw",
-			  "raw": "{\n  \"idTransaction\": \"{{NOT_FOUND_TRANSACTION_ID}}\"\n}",
-			  "options": {
-				"raw": {
-				  "language": "json"
+			"name": "eCommerce SearchNpgOperations TRANSACTION_ID - Not Found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"eCommerce SearchNpgOperations - Status code is 404 for no operations found\", function () {",
+							"    pm.response.to.have.status(404);",
+							"    const response = pm.response.json();",
+							"    const requestBody = JSON.parse(pm.request.body.raw);",
+							"    pm.expect(response.title).to.be.eq(\"No result found\");",
+							"    pm.expect(response.detail).to.include(requestBody.idTransaction);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
-			  }
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"idTransaction\": \"{{NOT_FOUND_TRANSACTION_ID}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOSTNAME}}/ecommerce/searchNpgOperations"
 			},
-			"url": {
-			  "raw": "{{HOSTNAME}}/ecommerce/searchNpgOperations",
-			  "host": [
-				"{{HOSTNAME}}"
-			  ],
-			  "path": [
-				"ecommerce",
-				"searchNpgOperations"
-			  ]
-			}
-		  },
-		  "response": []
+			"response": []
 		},
 		{
-		  "name": "eCommerce SearchNpgOperations TRANSACTION_ID - Bad Request",
-		  "event": [
-			{
-			  "listen": "test",
-			  "script": {
-				"exec": [
-				  "pm.test(\"eCommerce SearchNpgOperations - Status code is 400 for invalid request body\", function () {",
-				  "    pm.response.to.have.status(400);",
-				  "    const response = pm.response.json();",
-				  "    pm.expect(response.title).to.be.eq(\"Bad request\");",
-				  "    pm.expect(response.detail).to.include(\"Input request is invalid\");",
-				  "});"
-				],
-				"type": "text/javascript"
-			  }
-			}
-		  ],
-		  "request": {
-			"method": "POST",
-			"header": [
-			  {
-				"key": "Ocp-Apim-Subscription-Key",
-				"value": "{{API_SUBSCRIPTION_KEY}}",
-				"type": "text"
-			  },
-			  {
-				"key": "deployment",
-				"value": "{{DEPLOYMENT}}",
-				"type": "text"
-			  }
-			],
-			"body": {
-			  "mode": "raw",
-			  "raw": "{\n  \"idTransaction\": \"\"\n}",
-			  "options": {
-				"raw": {
-				  "language": "json"
+			"name": "eCommerce SearchNpgOperations TRANSACTION_ID - Bad Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"eCommerce SearchNpgOperations - Status code is 400 for invalid request body\", function () {",
+							"    pm.response.to.have.status(400);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.title).to.be.eq(\"Bad request\");",
+							"    pm.expect(response.detail).to.include(\"Input request is invalid\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
-			  }
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"idTransaction\": \"\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOSTNAME}}/ecommerce/searchNpgOperations"
 			},
-			"url": {
-			  "raw": "{{HOSTNAME}}/ecommerce/searchNpgOperations",
-			  "host": [
-				"{{HOSTNAME}}"
-			  ],
-			  "path": [
-				"ecommerce",
-				"searchNpgOperations"
-			  ]
-			}
-		  },
-		  "response": []
+			"response": []
 		}
 	]
 }
-
-
