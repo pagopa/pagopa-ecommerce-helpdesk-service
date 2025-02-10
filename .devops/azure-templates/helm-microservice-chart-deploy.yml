@@ -43,48 +43,23 @@ parameters:
     default: "none"
 
 steps:
-  - ${{ if eq(parameters['DO_BLUE_GREEN_DEPLOY'], false) }}:
-      - task: HelmDeploy@0
-        displayName: Deploy on ${{ parameters.ENV }} Canary for HELM
-        condition: and(succeeded(), eq(${{ parameters.DO_DEPLOY }}, True))
-        inputs:
-          kubernetesServiceEndpoint: ${{ parameters.KUBERNETES_SERVICE_CONN }}
-          namespace: ${{ parameters.NAMESPACE }}
-          command: upgrade
-          chartType: ${{ parameters.CHART_TYPE }}
-          chartPath: ${{ parameters.CHART_PATH }}
-          chartName: ${{ parameters.APP_NAME }}
-          releaseName: ${{ parameters.APP_NAME }}-${{ parameters.HELM_CHART_VERSION_NAME }}
-          valueFile: ${{ parameters.VALUE_FILE }}
-          install: true
-          waitForExecution: ${{ parameters.WAIT_FOR_EXECUTION }}
-          arguments: ${{ parameters.ARGUMENTS }}
-          overrideValues: |
-            microservice-chart.canaryDelivery.create=true,
-            microservice-chart.canaryDelivery.trafficWeight=0,
-            microservice-chart.canaryDelivery.deployment.image.tag=${{ parameters.GREEN_VERSION }}
-      - template: ./chart-current-version.yml
-  - ${{ if eq(parameters['DO_BLUE_GREEN_DEPLOY'], true) }}:
-      - task: HelmDeploy@0
-        displayName: Deploy on ${{ parameters.ENV }} BLUEGREEN
-        condition: and(succeeded(), eq(${{ parameters.DO_DEPLOY }}, True))
-        inputs:
-          kubernetesServiceEndpoint: ${{ parameters.KUBERNETES_SERVICE_CONN }}
-          namespace: ${{ parameters.NAMESPACE }}
-          command: upgrade
-          chartType: ${{ parameters.CHART_TYPE }}
-          chartPath: ${{ parameters.CHART_PATH }}
-          chartName: ${{ parameters.APP_NAME }}
-          releaseName: ${{ parameters.APP_NAME }}-${{ parameters.HELM_CHART_VERSION_NAME }}
-          valueFile: ${{ parameters.VALUE_FILE }}
-          install: true
-          waitForExecution: ${{ parameters.WAIT_FOR_EXECUTION }}
-          arguments: ${{ parameters.ARGUMENTS }}
-          overrideValues: |
-            microservice-chart.image.tag=${{ parameters.GREEN_VERSION }},
-            microservice-chart.canaryDelivery.create=true,
-            microservice-chart.canaryDelivery.deployment.image.tag=${{ parameters.BLUE_VERSION }}
-      - template: ./chart-current-version.yml
+  - task: HelmDeploy@0
+    displayName: Deploy on ${{ parameters.ENV }} BLUEGREEN
+    condition: and(succeeded(), eq(${{ parameters.DO_DEPLOY }}, True))
+    inputs:
+      kubernetesServiceEndpoint: ${{ parameters.KUBERNETES_SERVICE_CONN }}
+      namespace: ${{ parameters.NAMESPACE }}
+      command: upgrade
+      chartType: ${{ parameters.CHART_TYPE }}
+      chartPath: ${{ parameters.CHART_PATH }}
+      chartName: ${{ parameters.APP_NAME }}
+      releaseName: ${{ parameters.APP_NAME }}-${{ parameters.HELM_CHART_VERSION_NAME }}
+      valueFile: ${{ parameters.VALUE_FILE }}
+      install: true
+      waitForExecution: ${{ parameters.WAIT_FOR_EXECUTION }}
+      arguments: ${{ parameters.ARGUMENTS }}
+      overrideValues: microservice-chart.image.tag=${{ parameters.GREEN_VERSION }},microservice-chart.canaryDelivery.create=${{ parameters.DO_BLUE_GREEN_DEPLOY }},microservice-chart.canaryDelivery.deployment.image.tag=${{ parameters.BLUE_VERSION }}
+  - template: ./chart-current-version.yml
   - ${{ if ne(parameters['APPINSIGHTS_SERVICE_CONN'], 'none') }}:
       - task: AzureCLI@2
         displayName: Release annotations

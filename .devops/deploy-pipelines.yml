@@ -26,13 +26,6 @@ parameters:
     values:
       - False
       - True
-  - name: 'DO_BLUE_GREEN_DEPLOYMENT'
-    displayName: 'Check this flag use BLUE GREEN deployment. If false, a Canary deployment will be used instead.'
-    type: boolean
-    default: False
-    values:
-      - False
-      - True
   - name: 'RELEASE_SEMVER'
     displayName: 'When packing a release, define the version bump to apply (release is done automatically when deploying on UAT and skipped on DEV) '
     type: string
@@ -238,7 +231,7 @@ stages:
                 - template: azure-templates/helm-microservice-chart-deploy.yml
                   parameters:
                     DO_DEPLOY: true
-                    DO_BLUE_GREEN_DEPLOY: ${{ parameters.DO_BLUE_GREEN_DEPLOYMENT }}
+                    DO_BLUE_GREEN_DEPLOY: true
                     ENV: 'UAT'
                     KUBERNETES_SERVICE_CONN: $(UAT_KUBERNETES_SERVICE_CONN)
                     NAMESPACE: ecommerce
@@ -532,7 +525,7 @@ stages:
                 - template: azure-templates/helm-microservice-chart-deploy.yml
                   parameters:
                     DO_DEPLOY: true
-                    DO_BLUE_GREEN_DEPLOY: ${{ parameters.DO_BLUE_GREEN_DEPLOYMENT }}
+                    DO_BLUE_GREEN_DEPLOY: true
                     ENV: 'PROD'
                     KUBERNETES_SERVICE_CONN: $(PROD_KUBERNETES_SERVICE_CONN)
                     NAMESPACE: ecommerce
