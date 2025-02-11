@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "10e6853e-0bde-4b82-be9b-5268defb4840",
+		"_postman_id": "ce2f94fa-6899-44c3-a2ba-c08db4f4fa47",
 		"name": "Ecommerce helpDesk-service UAT",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "23963988"
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "38770380"
 	},
 	"item": [
 		{
@@ -526,19 +526,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/pm/searchPaymentMethod",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
-						"pm",
-						"searchPaymentMethod"
-					]
-				}
+				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/pm/searchPaymentMethod"
 			},
 			"response": []
 		},
@@ -580,19 +568,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/pm/searchPaymentMethod",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
-						"pm",
-						"searchPaymentMethod"
-					]
-				}
+				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/pm/searchPaymentMethod"
 			},
 			"response": []
 		},
@@ -979,19 +955,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchPaymentMethod",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
-						"helpdesk",
-						"searchPaymentMethod"
-					]
-				}
+				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchPaymentMethod"
 			},
 			"response": []
 		},
@@ -1033,19 +997,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchPaymentMethod",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
-						"helpdesk",
-						"searchPaymentMethod"
-					]
-				}
+				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchPaymentMethod"
 			},
 			"response": []
 		},
@@ -1155,6 +1107,108 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2023-12-03T00:00:00.001Z\",\n      \"endDate\": \"2023-12-05T00:00:00.999Z\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v1",
+						"ecommerce",
+						"searchDeadLetterEvents"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eCommerce retrieve ALL dead letter events [with time range and exclude statuses]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"eCommerce search ALL dead letter events with time range - Status code is 200 with valid json response\", function () {",
+							"    // Ensure the response status code is 200 (OK)",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"",
+							"    // Check that there are events in the response",
+							"    pm.expect(response.deadLetterEvents.length).to.be.greaterThan(0);",
+							"",
+							"    // Validate pagination information",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
+							"",
+							"    // Define the time range limits",
+							"    const startDate = new Date(\"2024-11-30T14:50:27.001Z\");",
+							"    const endDate = new Date(\"2024-12-30T14:50:27.999Z\");",
+							"",
+							"    // Define excluded statuses",
+							"    const excludedEcommerceStatuses = [\"EXPIRED\"];",
+							"    const excludedNpgStatuses = [\"EXECUTED\"];",
+							"",
+							"    // Iterate through each event in the response",
+							"    response.deadLetterEvents.forEach(event => {",
+							"        const eventDate = new Date(event.timestamp);",
+							"        ",
+							"        // Ensure the event timestamp is within the specified time range",
+							"        pm.expect(eventDate).to.be.within(startDate, endDate);",
+							"        ",
+							"        // Ensure the eCommerce status is not in the excluded list",
+							"        if (event.transactionInfo && event.transactionInfo.eCommerceStatus) {",
+							"            pm.expect(excludedEcommerceStatuses).to.not.include(event.transactionInfo.eCommerceStatus);",
+							"        }",
+							"",
+							"        // Ensure the NPG status (operationResult) is not in the excluded list",
+							"        if (event.transactionInfo && event.transactionInfo.details && event.transactionInfo.details.operationResult) {",
+							"            pm.expect(excludedNpgStatuses).to.not.include(event.transactionInfo.details.operationResult);",
+							"        }",
+							"    });",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2024-11-30T14:50:27.001Z\",\n      \"endDate\": \"2025-01-30T14:50:27.999Z\"\n  },\n  \"excludeStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"EXECUTED\"]\n  }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1365,21 +1419,7 @@
 						"type": "text"
 					}
 				],
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/pgs/xpay/authorizations/{{XPAY_AUTHORIZATION_REQUEST_ID}}",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
-						"pgs",
-						"xpay",
-						"authorizations",
-						"{{XPAY_AUTHORIZATION_REQUEST_ID}}"
-					]
-				}
+				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/pgs/xpay/authorizations/{{XPAY_AUTHORIZATION_REQUEST_ID}}"
 			},
 			"response": []
 		},
@@ -1414,21 +1454,7 @@
 						"type": "text"
 					}
 				],
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/pgs/vpos/authorizations/{{VPOS_AUTHORIZATION_REQUEST_ID}}",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
-						"pgs",
-						"vpos",
-						"authorizations",
-						"{{VPOS_AUTHORIZATION_REQUEST_ID}}"
-					]
-				}
+				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/pgs/vpos/authorizations/{{VPOS_AUTHORIZATION_REQUEST_ID}}"
 			},
 			"response": []
 		},
@@ -1730,19 +1756,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperations",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
-						"ecommerce",
-						"searchNpgOperations"
-					]
-				}
+				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperations"
 			},
 			"response": []
 		},
@@ -1788,19 +1802,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperations",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
-						"ecommerce",
-						"searchNpgOperations"
-					]
-				}
+				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperations"
 			},
 			"response": []
 		},
@@ -1845,19 +1847,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperations",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
-						"ecommerce",
-						"searchNpgOperations"
-					]
-				}
+				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperations"
 			},
 			"response": []
 		}
