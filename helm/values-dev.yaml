@@ -1,4 +1,6 @@
 microservice-chart:
+  azure:
+    workloadIdentityClientId: qwerty123-a1aa-1234-xyza-qwerty123
   namespace: "ecommerce"
   nameOverride: ""
   fullnameOverride: ""
@@ -33,15 +35,17 @@ microservice-chart:
     path: /pagopa-ecommerce-helpdesk-service/(.*)
     servicePort: 8080
   serviceAccount:
-    create: false
-    annotations: {}
-    name: ""
+    name: testit-workload-identity
   podAnnotations: {}
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
   securityContext:
+    readOnlyRootFilesystem: true
     allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - all
   resources:
     requests:
       memory: "512Mi"
