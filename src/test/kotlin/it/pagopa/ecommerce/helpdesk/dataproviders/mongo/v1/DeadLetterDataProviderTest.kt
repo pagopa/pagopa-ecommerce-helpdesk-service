@@ -71,8 +71,8 @@ class DeadLetterDataProviderTest {
                 deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExludeStatuses(
                     startTime = OffsetDateTime.MIN.toString(),
                     endTime = OffsetDateTime.MAX.toString(),
-                    ecommerceStatusesToExclude = emptyList(),
-                    npgStatusesToExclude = emptyList()
+                    ecommerceStatusesToExclude = emptySet(),
+                    npgStatusesToExclude = emptySet()
                 )
             )
             .willReturn(mono { count })
@@ -86,8 +86,8 @@ class DeadLetterDataProviderTest {
             .countAllDeadLetterEventInTimeRangeWithExludeStatuses(
                 OffsetDateTime.MIN.toString(),
                 OffsetDateTime.MAX.toString(),
-                emptyList(),
-                emptyList()
+                emptySet(),
+                emptySet()
             )
         verify(deadLetterRepository, times(0)).countDeadLetterEventForQueue(any())
         verify(deadLetterRepository, times(0))
@@ -122,8 +122,8 @@ class DeadLetterDataProviderTest {
                 deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExludeStatuses(
                     startTime = OffsetDateTime.MIN.toString(),
                     endTime = OffsetDateTime.MAX.toString(),
-                    ecommerceStatusesToExclude = listOf("AUTHORIZED", "EXPIRED"),
-                    npgStatusesToExclude = listOf("NOTIFIED_KO")
+                    ecommerceStatusesToExclude = setOf("AUTHORIZED", "EXPIRED"),
+                    npgStatusesToExclude = setOf("NOTIFIED_KO")
                 )
             )
             .willReturn(mono { count })
@@ -136,8 +136,8 @@ class DeadLetterDataProviderTest {
             .countAllDeadLetterEventInTimeRangeWithExludeStatuses(
                 OffsetDateTime.MIN.toString(),
                 OffsetDateTime.MAX.toString(),
-                listOf("AUTHORIZED", "EXPIRED"),
-                listOf("NOTIFIED_KO")
+                setOf("AUTHORIZED", "EXPIRED"),
+                setOf("NOTIFIED_KO")
             )
         verifyNoMoreInteractions(deadLetterRepository)
     }
