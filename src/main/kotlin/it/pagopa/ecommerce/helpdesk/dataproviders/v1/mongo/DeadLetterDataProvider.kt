@@ -67,8 +67,8 @@ class DeadLetterDataProvider(
                     deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExludeStatuses(
                         startTime = startDate,
                         endTime = endDate,
-                        ecommerceStatusesToExclude = eCommerceStatuses,
-                        npgStatusesToExclude = npgStatuses
+                        ecommerceStatusesToExclude = eCommerceStatuses.toSet(),
+                        npgStatusesToExclude = npgStatuses.toSet()
                     )
                 } else {
                     logger.info("Counting all dead letter events")
