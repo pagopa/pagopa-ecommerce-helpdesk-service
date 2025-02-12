@@ -19,8 +19,8 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
     fun countAllDeadLetterEventInTimeRangeWithExludeStatuses(
         startTime: String,
         endTime: String,
-        ecommerceStatusesToExclude: List<String>,
-        npgStatusesToExclude: List<String>
+        ecommerceStatusesToExclude: Set<String>,
+        npgStatusesToExclude: Set<String>
     ): Mono<Long>
 
     @Query("{'queueName': '?0'}", count = true)
