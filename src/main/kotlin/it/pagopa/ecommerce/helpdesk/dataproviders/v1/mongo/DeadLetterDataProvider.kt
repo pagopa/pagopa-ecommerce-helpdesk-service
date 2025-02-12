@@ -61,8 +61,8 @@ class DeadLetterDataProvider(
                         "Counting all dead letter events in time range {} - {}, with eCommerceStatus not in {} and npgStatus not in {}",
                         startDate,
                         endDate,
-                        npgStatuses.toString(),
-                        eCommerceStatuses.toString(),
+                        npgStatuses,
+                        eCommerceStatuses,
                     )
                     deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExludeStatuses(
                         startTime = startDate,
@@ -84,8 +84,8 @@ class DeadLetterDataProvider(
                         queueName,
                         startDate,
                         endDate,
-                        npgStatuses.toString(),
-                        eCommerceStatuses.toString()
+                        npgStatuses,
+                        eCommerceStatuses
                     )
                     deadLetterRepository.countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
                         queueName = queueName,
@@ -125,8 +125,8 @@ class DeadLetterDataProvider(
 
         val startDate = timeRange?.startDate?.toString() ?: ""
         val endDate = timeRange?.endDate?.toString() ?: ""
-        val npgStatuses = excludeStatuses?.npgStatuses ?: emptyList()
-        val eCommerceStatuses = excludeStatuses?.ecommerceStatuses ?: emptyList()
+        val npgStatuses = excludeStatuses?.npgStatuses ?: emptySet<String>()
+        val eCommerceStatuses = excludeStatuses?.ecommerceStatuses ?: emptySet<String>()
 
         return when (source) {
                 DeadLetterSearchEventSourceDto.ALL -> {
@@ -135,8 +135,8 @@ class DeadLetterDataProvider(
                             "Finding all dead letter events in time range {} - {} with eCommerceStatus not in {} and npgStatus not in {}",
                             startDate,
                             endDate,
-                            npgStatuses.toString(),
-                            eCommerceStatuses.toString()
+                            npgStatuses,
+                            eCommerceStatuses
                         )
                         deadLetterRepository
                             .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
@@ -144,8 +144,8 @@ class DeadLetterDataProvider(
                                 limit = limit,
                                 startTime = startDate,
                                 endTime = endDate,
-                                ecommerceStatusesToExclude = eCommerceStatuses,
-                                npgStatusesToExclude = npgStatuses
+                                ecommerceStatusesToExclude = eCommerceStatuses.toSet(),
+                                npgStatusesToExclude = npgStatuses.toSet()
                             )
                     } else {
                         logger.info("Finding all dead letter events")
@@ -164,8 +164,8 @@ class DeadLetterDataProvider(
                             queueName,
                             startDate,
                             endDate,
-                            eCommerceStatuses.toString(),
-                            npgStatuses.toString()
+                            eCommerceStatuses,
+                            npgStatuses
                         )
                         deadLetterRepository
                             .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
@@ -174,8 +174,8 @@ class DeadLetterDataProvider(
                                 limit = limit,
                                 startTime = startDate,
                                 endTime = endDate,
-                                ecommerceStatusesToExclude = eCommerceStatuses,
-                                npgStatusesToExclude = npgStatuses
+                                ecommerceStatusesToExclude = eCommerceStatuses.toSet(),
+                                npgStatusesToExclude = npgStatuses.toSet()
                             )
                     } else {
                         logger.info("Finding all dead letter events for queue name {}", queueName)

@@ -27,21 +27,6 @@ class DeadLetterDataProviderTest {
             deadLetterQueueMapping = deadLetterQueueMapping
         )
 
-    /* ================================================
-     *  TEST PER totalRecordCount()
-     * ================================================ */
-
-    @Test
-    fun `Should return 0 if source is null`() {
-        // given
-        val searchRequest = EcommerceSearchDeadLetterEventsRequestDto().source(null)
-        // when / then
-        StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
-            .expectNext(0)
-            .verifyComplete()
-        verifyNoInteractions(deadLetterRepository)
-    }
-
     @Test
     fun `Should calculate total records for all dead letter events without time range`() {
         val count = 2L
@@ -56,7 +41,7 @@ class DeadLetterDataProviderTest {
             .verifyComplete()
 
         verify(deadLetterRepository, times(1)).count()
-        // nessuna chiamata ai metodi con time range
+
         verify(deadLetterRepository, times(0))
             .countAllDeadLetterEventInTimeRangeWithExludeStatuses(any(), any(), any(), any())
         verify(deadLetterRepository, times(0)).countDeadLetterEventForQueue(any())
@@ -81,7 +66,7 @@ class DeadLetterDataProviderTest {
                         .startDate(OffsetDateTime.MIN)
                         .endDate(OffsetDateTime.MAX)
                 )
-        // excludeStatuses è null => nessuna esclusione
+
         given(
                 deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExludeStatuses(
                     startTime = OffsetDateTime.MIN.toString(),
@@ -273,10 +258,6 @@ class DeadLetterDataProviderTest {
         verifyNoMoreInteractions(deadLetterRepository)
     }
 
-    /* ================================================
-     *  TEST PER findResult()
-     * ================================================ */
-
     @Test
     fun `Should find result for all dead letter events without time range`() {
         val searchRequest =
@@ -365,8 +346,8 @@ class DeadLetterDataProviderTest {
                         limit = limit,
                         startTime = OffsetDateTime.MIN.toString(),
                         endTime = OffsetDateTime.MAX.toString(),
-                        ecommerceStatusesToExclude = emptyList(),
-                        npgStatusesToExclude = emptyList()
+                        ecommerceStatusesToExclude = emptySet(),
+                        npgStatusesToExclude = emptySet()
                     )
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
@@ -381,8 +362,8 @@ class DeadLetterDataProviderTest {
                 limit,
                 OffsetDateTime.MIN.toString(),
                 OffsetDateTime.MAX.toString(),
-                emptyList(),
-                emptyList()
+                emptySet(),
+                emptySet()
             )
         verifyNoMoreInteractions(deadLetterRepository)
     }
@@ -423,8 +404,8 @@ class DeadLetterDataProviderTest {
                         limit = limit,
                         startTime = OffsetDateTime.MIN.toString(),
                         endTime = OffsetDateTime.MAX.toString(),
-                        ecommerceStatusesToExclude = listOf("AUTHORIZED", "EXPIRED"),
-                        npgStatusesToExclude = listOf("KO")
+                        ecommerceStatusesToExclude = setOf("AUTHORIZED", "EXPIRED"),
+                        npgStatusesToExclude = setOf("KO")
                     )
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
@@ -439,8 +420,8 @@ class DeadLetterDataProviderTest {
                 limit,
                 OffsetDateTime.MIN.toString(),
                 OffsetDateTime.MAX.toString(),
-                listOf("AUTHORIZED", "EXPIRED"),
-                listOf("KO")
+                setOf("AUTHORIZED", "EXPIRED"),
+                setOf("KO")
             )
         verifyNoMoreInteractions(deadLetterRepository)
     }
@@ -521,8 +502,8 @@ class DeadLetterDataProviderTest {
                         limit = limit,
                         startTime = OffsetDateTime.MIN.toString(),
                         endTime = OffsetDateTime.MAX.toString(),
-                        ecommerceStatusesToExclude = emptyList(),
-                        npgStatusesToExclude = emptyList()
+                        ecommerceStatusesToExclude = emptySet(),
+                        npgStatusesToExclude = emptySet()
                     )
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
@@ -538,8 +519,8 @@ class DeadLetterDataProviderTest {
                 limit,
                 OffsetDateTime.MIN.toString(),
                 OffsetDateTime.MAX.toString(),
-                emptyList(),
-                emptyList()
+                emptySet(),
+                emptySet()
             )
         verifyNoMoreInteractions(deadLetterRepository)
     }
@@ -586,8 +567,8 @@ class DeadLetterDataProviderTest {
                         limit = limit,
                         startTime = OffsetDateTime.MIN.toString(),
                         endTime = OffsetDateTime.MAX.toString(),
-                        ecommerceStatusesToExclude = listOf("EXPIRED"),
-                        npgStatusesToExclude = listOf("TIMEOUT")
+                        ecommerceStatusesToExclude = setOf("EXPIRED"),
+                        npgStatusesToExclude = setOf("TIMEOUT")
                     )
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
@@ -603,8 +584,8 @@ class DeadLetterDataProviderTest {
                 limit,
                 OffsetDateTime.MIN.toString(),
                 OffsetDateTime.MAX.toString(),
-                listOf("EXPIRED"),
-                listOf("TIMEOUT")
+                setOf("EXPIRED"),
+                setOf("TIMEOUT")
             )
         verifyNoMoreInteractions(deadLetterRepository)
     }

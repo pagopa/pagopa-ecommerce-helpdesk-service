@@ -62,8 +62,8 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         limit: Int,
         startTime: String,
         endTime: String,
-        ecommerceStatusesToExclude: List<String>,
-        npgStatusesToExclude: List<String>
+        ecommerceStatusesToExclude: Set<String>,
+        npgStatusesToExclude: Set<String>
     ): Flux<DeadLetterEvent>
 
     @Aggregation(
@@ -87,7 +87,7 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         limit: Int,
         startTime: String,
         endTime: String,
-        ecommerceStatusesToExclude: List<String>,
-        npgStatusesToExclude: List<String>
+        ecommerceStatusesToExclude: Set<String>,
+        npgStatusesToExclude: Set<String>
     ): Flux<DeadLetterEvent>
 }
