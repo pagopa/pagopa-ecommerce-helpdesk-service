@@ -34,8 +34,8 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         queueName: String,
         startTime: String,
         endTime: String,
-        ecommerceStatusesToExclude: List<String>,
-        npgStatusesToExclude: List<String>
+        ecommerceStatusesToExclude: Set<String>,
+        npgStatusesToExclude: Set<String>
     ): Mono<Long>
 
     @Aggregation(

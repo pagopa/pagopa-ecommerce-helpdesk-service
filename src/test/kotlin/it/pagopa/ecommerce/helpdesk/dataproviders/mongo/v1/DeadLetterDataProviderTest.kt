@@ -190,8 +190,8 @@ class DeadLetterDataProviderTest {
                     queueName = source,
                     startTime = OffsetDateTime.MIN.toString(),
                     endTime = OffsetDateTime.MAX.toString(),
-                    ecommerceStatusesToExclude = emptyList(),
-                    npgStatusesToExclude = emptyList()
+                    ecommerceStatusesToExclude = emptySet(),
+                    npgStatusesToExclude = emptySet()
                 )
             )
             .willReturn(mono { count })
@@ -205,8 +205,8 @@ class DeadLetterDataProviderTest {
                 source,
                 OffsetDateTime.MIN.toString(),
                 OffsetDateTime.MAX.toString(),
-                emptyList(),
-                emptyList()
+                emptySet(),
+                emptySet()
             )
         verifyNoMoreInteractions(deadLetterRepository)
     }
@@ -237,8 +237,8 @@ class DeadLetterDataProviderTest {
                     queueName = source,
                     startTime = OffsetDateTime.MIN.toString(),
                     endTime = OffsetDateTime.MAX.toString(),
-                    ecommerceStatusesToExclude = listOf("UNAUTHORIZED"),
-                    npgStatusesToExclude = listOf("TIMEOUT")
+                    ecommerceStatusesToExclude = setOf("UNAUTHORIZED"),
+                    npgStatusesToExclude = setOf("TIMEOUT")
                 )
             )
             .willReturn(mono { count })
@@ -252,8 +252,8 @@ class DeadLetterDataProviderTest {
                 source,
                 OffsetDateTime.MIN.toString(),
                 OffsetDateTime.MAX.toString(),
-                listOf("UNAUTHORIZED"),
-                listOf("TIMEOUT")
+                setOf("UNAUTHORIZED"),
+                setOf("TIMEOUT")
             )
         verifyNoMoreInteractions(deadLetterRepository)
     }

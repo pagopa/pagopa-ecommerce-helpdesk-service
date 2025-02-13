@@ -45,14 +45,14 @@ class DeadLetterDataProvider(
     override fun totalRecordCount(
         searchParams: EcommerceSearchDeadLetterEventsRequestDto
     ): Mono<Int> {
-        val source = searchParams.source ?: return Mono.just(0)
+        val source = searchParams.source!!
         val timeRange = searchParams.timeRange
         val excludeStatuses = searchParams.excludeStatuses
 
-        val startDate = timeRange?.startDate?.toString() ?: ""
-        val endDate = timeRange?.endDate?.toString() ?: ""
-        val npgStatuses = excludeStatuses?.npgStatuses ?: emptyList()
-        val eCommerceStatuses = excludeStatuses?.ecommerceStatuses ?: emptyList()
+        val startDate = timeRange.startDate.toString()
+        val endDate = timeRange.endDate.toString()
+        val npgStatuses = excludeStatuses?.npgStatuses ?: emptySet<String>()
+        val eCommerceStatuses = excludeStatuses?.ecommerceStatuses ?: emptySet<String>()
 
         return when (source) {
             DeadLetterSearchEventSourceDto.ALL -> {
@@ -91,8 +91,8 @@ class DeadLetterDataProvider(
                         queueName = queueName,
                         startTime = startDate,
                         endTime = endDate,
-                        ecommerceStatusesToExclude = eCommerceStatuses,
-                        npgStatusesToExclude = npgStatuses
+                        ecommerceStatusesToExclude = eCommerceStatuses.toSet(),
+                        npgStatusesToExclude = npgStatuses.toSet()
                     )
                 } else {
                     val queueName = deadLetterQueueMapping[source]!!
@@ -119,12 +119,12 @@ class DeadLetterDataProvider(
         skip: Int,
         limit: Int
     ): Mono<List<DeadLetterEventDto>> {
-        val source = searchParams.source ?: return Mono.just(emptyList())
+        val source = searchParams.source!!
         val timeRange = searchParams.timeRange
         val excludeStatuses = searchParams.excludeStatuses
 
-        val startDate = timeRange?.startDate?.toString() ?: ""
-        val endDate = timeRange?.endDate?.toString() ?: ""
+        val startDate = timeRange.startDate.toString()
+        val endDate = timeRange.endDate.toString()
         val npgStatuses = excludeStatuses?.npgStatuses ?: emptySet<String>()
         val eCommerceStatuses = excludeStatuses?.ecommerceStatuses ?: emptySet<String>()
 
