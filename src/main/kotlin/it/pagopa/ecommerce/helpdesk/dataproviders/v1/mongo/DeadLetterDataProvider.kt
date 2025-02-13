@@ -49,14 +49,14 @@ class DeadLetterDataProvider(
         val timeRange = searchParams.timeRange
         val excludeStatuses = searchParams.excludeStatuses
 
-        val startDate = timeRange.startDate.toString()
-        val endDate = timeRange.endDate.toString()
         val npgStatuses = excludeStatuses?.npgStatuses ?: emptySet<String>()
         val eCommerceStatuses = excludeStatuses?.ecommerceStatuses ?: emptySet<String>()
 
         return when (source) {
             DeadLetterSearchEventSourceDto.ALL -> {
                 if (timeRange != null) {
+                    val startDate = timeRange.startDate.toString()
+                    val endDate = timeRange.endDate.toString()
                     logger.info(
                         "Counting all dead letter events in time range {} - {}, with eCommerceStatus not in {} and npgStatus not in {}",
                         startDate,
@@ -64,7 +64,7 @@ class DeadLetterDataProvider(
                         npgStatuses,
                         eCommerceStatuses,
                     )
-                    deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExludeStatuses(
+                    deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExcludeStatuses(
                         startTime = startDate,
                         endTime = endDate,
                         ecommerceStatusesToExclude = eCommerceStatuses.toSet(),
@@ -78,6 +78,8 @@ class DeadLetterDataProvider(
             DeadLetterSearchEventSourceDto.ECOMMERCE,
             DeadLetterSearchEventSourceDto.NOTIFICATIONS_SERVICE -> {
                 if (timeRange != null) {
+                    val startDate = timeRange.startDate.toString()
+                    val endDate = timeRange.endDate.toString()
                     val queueName = deadLetterQueueMapping[source]!!
                     logger.info(
                         "Counting all dead letter events for queue {} in time range {} - {}, with eCommerceStatus not in {} and npgStatus not in {}",
@@ -87,7 +89,7 @@ class DeadLetterDataProvider(
                         npgStatuses,
                         eCommerceStatuses
                     )
-                    deadLetterRepository.countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+                    deadLetterRepository.countDeadLetterEventForQueueInTimeRangeWithExcludeStatuses(
                         queueName = queueName,
                         startTime = startDate,
                         endTime = endDate,
@@ -123,14 +125,14 @@ class DeadLetterDataProvider(
         val timeRange = searchParams.timeRange
         val excludeStatuses = searchParams.excludeStatuses
 
-        val startDate = timeRange.startDate.toString()
-        val endDate = timeRange.endDate.toString()
         val npgStatuses = excludeStatuses?.npgStatuses ?: emptySet<String>()
         val eCommerceStatuses = excludeStatuses?.ecommerceStatuses ?: emptySet<String>()
 
         return when (source) {
                 DeadLetterSearchEventSourceDto.ALL -> {
                     if (timeRange != null) {
+                        val startDate = timeRange.startDate.toString()
+                        val endDate = timeRange.endDate.toString()
                         logger.info(
                             "Finding all dead letter events in time range {} - {} with eCommerceStatus not in {} and npgStatus not in {}",
                             startDate,
@@ -139,7 +141,7 @@ class DeadLetterDataProvider(
                             eCommerceStatuses
                         )
                         deadLetterRepository
-                            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+                            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
                                 skip = skip,
                                 limit = limit,
                                 startTime = startDate,
@@ -159,6 +161,8 @@ class DeadLetterDataProvider(
                 DeadLetterSearchEventSourceDto.NOTIFICATIONS_SERVICE -> {
                     val queueName = deadLetterQueueMapping[source]!!
                     if (timeRange != null) {
+                        val startDate = timeRange.startDate.toString()
+                        val endDate = timeRange.endDate.toString()
                         logger.info(
                             "Finding all dead letter events for queue {} in time range {} - {} with eCommerceStatus not in {} and npgStatus not in {}",
                             queueName,
@@ -168,7 +172,7 @@ class DeadLetterDataProvider(
                             npgStatuses
                         )
                         deadLetterRepository
-                            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+                            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
                                 queueName = queueName,
                                 skip = skip,
                                 limit = limit,

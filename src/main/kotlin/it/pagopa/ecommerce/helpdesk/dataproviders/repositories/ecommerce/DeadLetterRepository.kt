@@ -16,7 +16,7 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         "{'insertionDate': {'\$gte': '?0','\$lte': '?1'}, 'transactionInfo.eCommerceStatus': {'\$nin': ?2}, 'transactionInfo.details.operationResult': {'\$nin': ?3} }",
         count = true
     )
-    fun countAllDeadLetterEventInTimeRangeWithExludeStatuses(
+    fun countAllDeadLetterEventInTimeRangeWithExcludeStatuses(
         startTime: String,
         endTime: String,
         ecommerceStatusesToExclude: Set<String>,
@@ -30,7 +30,7 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         "{'insertionDate': {'\$gte': '?1','\$lte': '?2'},'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?3}, 'transactionInfo.details.operationResult': {'\$nin': ?4}}",
         count = true
     )
-    fun countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+    fun countDeadLetterEventForQueueInTimeRangeWithExcludeStatuses(
         queueName: String,
         startTime: String,
         endTime: String,
@@ -56,7 +56,7 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         "{\$skip: ?1}",
         "{\$limit: ?2}",
     )
-    fun findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+    fun findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
         queueName: String,
         skip: Int,
         limit: Int,
@@ -82,7 +82,7 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         "{\$skip: ?0}",
         "{\$limit: ?1}",
     )
-    fun findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+    fun findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
         skip: Int,
         limit: Int,
         startTime: String,

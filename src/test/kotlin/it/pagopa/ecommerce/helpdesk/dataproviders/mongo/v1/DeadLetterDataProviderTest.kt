@@ -43,10 +43,10 @@ class DeadLetterDataProviderTest {
         verify(deadLetterRepository, times(1)).count()
 
         verify(deadLetterRepository, times(0))
-            .countAllDeadLetterEventInTimeRangeWithExludeStatuses(any(), any(), any(), any())
+            .countAllDeadLetterEventInTimeRangeWithExcludeStatuses(any(), any(), any(), any())
         verify(deadLetterRepository, times(0)).countDeadLetterEventForQueue(any())
         verify(deadLetterRepository, times(0))
-            .countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+            .countDeadLetterEventForQueueInTimeRangeWithExcludeStatuses(
                 any(),
                 any(),
                 any(),
@@ -68,7 +68,7 @@ class DeadLetterDataProviderTest {
                 )
 
         given(
-                deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExludeStatuses(
+                deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExcludeStatuses(
                     startTime = OffsetDateTime.MIN.toString(),
                     endTime = OffsetDateTime.MAX.toString(),
                     ecommerceStatusesToExclude = emptySet(),
@@ -83,7 +83,7 @@ class DeadLetterDataProviderTest {
 
         verify(deadLetterRepository, times(0)).count()
         verify(deadLetterRepository, times(1))
-            .countAllDeadLetterEventInTimeRangeWithExludeStatuses(
+            .countAllDeadLetterEventInTimeRangeWithExcludeStatuses(
                 OffsetDateTime.MIN.toString(),
                 OffsetDateTime.MAX.toString(),
                 emptySet(),
@@ -91,7 +91,7 @@ class DeadLetterDataProviderTest {
             )
         verify(deadLetterRepository, times(0)).countDeadLetterEventForQueue(any())
         verify(deadLetterRepository, times(0))
-            .countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+            .countDeadLetterEventForQueueInTimeRangeWithExcludeStatuses(
                 any(),
                 any(),
                 any(),
@@ -119,7 +119,7 @@ class DeadLetterDataProviderTest {
                 .excludeStatuses(excludeStatuses)
 
         given(
-                deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExludeStatuses(
+                deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExcludeStatuses(
                     startTime = OffsetDateTime.MIN.toString(),
                     endTime = OffsetDateTime.MAX.toString(),
                     ecommerceStatusesToExclude = setOf("AUTHORIZED", "EXPIRED"),
@@ -133,7 +133,7 @@ class DeadLetterDataProviderTest {
             .verifyComplete()
 
         verify(deadLetterRepository, times(1))
-            .countAllDeadLetterEventInTimeRangeWithExludeStatuses(
+            .countAllDeadLetterEventInTimeRangeWithExcludeStatuses(
                 OffsetDateTime.MIN.toString(),
                 OffsetDateTime.MAX.toString(),
                 setOf("AUTHORIZED", "EXPIRED"),
@@ -162,7 +162,7 @@ class DeadLetterDataProviderTest {
         verify(deadLetterRepository, times(1)).countDeadLetterEventForQueue(source)
         verify(deadLetterRepository, times(0)).count()
         verify(deadLetterRepository, times(0))
-            .countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+            .countDeadLetterEventForQueueInTimeRangeWithExcludeStatuses(
                 any(),
                 any(),
                 any(),
@@ -186,7 +186,7 @@ class DeadLetterDataProviderTest {
                         .endDate(OffsetDateTime.MAX)
                 )
         given(
-                deadLetterRepository.countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+                deadLetterRepository.countDeadLetterEventForQueueInTimeRangeWithExcludeStatuses(
                     queueName = source,
                     startTime = OffsetDateTime.MIN.toString(),
                     endTime = OffsetDateTime.MAX.toString(),
@@ -201,7 +201,7 @@ class DeadLetterDataProviderTest {
             .verifyComplete()
 
         verify(deadLetterRepository, times(1))
-            .countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+            .countDeadLetterEventForQueueInTimeRangeWithExcludeStatuses(
                 source,
                 OffsetDateTime.MIN.toString(),
                 OffsetDateTime.MAX.toString(),
@@ -233,7 +233,7 @@ class DeadLetterDataProviderTest {
                 .excludeStatuses(excludeStatuses)
 
         given(
-                deadLetterRepository.countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+                deadLetterRepository.countDeadLetterEventForQueueInTimeRangeWithExcludeStatuses(
                     queueName = source,
                     startTime = OffsetDateTime.MIN.toString(),
                     endTime = OffsetDateTime.MAX.toString(),
@@ -248,7 +248,7 @@ class DeadLetterDataProviderTest {
             .verifyComplete()
 
         verify(deadLetterRepository, times(1))
-            .countDeadLetterEventForQueueInTimeRangeWithExludeStatuses(
+            .countDeadLetterEventForQueueInTimeRangeWithExcludeStatuses(
                 source,
                 OffsetDateTime.MIN.toString(),
                 OffsetDateTime.MAX.toString(),
@@ -278,6 +278,11 @@ class DeadLetterDataProviderTest {
                     true
                 ),
                 HelpdeskTestUtils.buildDeadLetterEventWithoutTransactionInfo("queue3", "test3"),
+                HelpdeskTestUtils.buildDeadLetterEvent(
+                    "queue4",
+                    "test4",
+                    TransactionAuthorizationRequestData.PaymentGateway.VPOS
+                )
             )
         val expectedDeadLetterDtoList =
             deadLetterEvents.map { deadLetterDataProvider.mapToDeadLetterEventDto(it) }
@@ -299,7 +304,7 @@ class DeadLetterDataProviderTest {
         verify(deadLetterRepository, times(1))
             .findDeadLetterEventPaginatedOrderByInsertionDateDesc(skip, limit)
         verify(deadLetterRepository, times(0))
-            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
                 any(),
                 any(),
                 any(),
@@ -332,7 +337,8 @@ class DeadLetterDataProviderTest {
                     "queue2",
                     "test2",
                     TransactionAuthorizationRequestData.PaymentGateway.REDIRECT
-                )
+                ),
+                HelpdeskTestUtils.buildDeadLetterEventWithoutTransactionInfo("queue3", "test3")
             )
         val expectedDeadLetterDtoList =
             deadLetterEvents.map { deadLetterDataProvider.mapToDeadLetterEventDto(it) }
@@ -341,7 +347,7 @@ class DeadLetterDataProviderTest {
 
         given(
                 deadLetterRepository
-                    .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+                    .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
                         skip = skip,
                         limit = limit,
                         startTime = OffsetDateTime.MIN.toString(),
@@ -357,7 +363,7 @@ class DeadLetterDataProviderTest {
             .verifyComplete()
 
         verify(deadLetterRepository, times(1))
-            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
                 skip,
                 limit,
                 OffsetDateTime.MIN.toString(),
@@ -399,7 +405,7 @@ class DeadLetterDataProviderTest {
 
         given(
                 deadLetterRepository
-                    .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+                    .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
                         skip = skip,
                         limit = limit,
                         startTime = OffsetDateTime.MIN.toString(),
@@ -415,7 +421,7 @@ class DeadLetterDataProviderTest {
             .verifyComplete()
 
         verify(deadLetterRepository, times(1))
-            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+            .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
                 skip,
                 limit,
                 OffsetDateTime.MIN.toString(),
@@ -496,7 +502,7 @@ class DeadLetterDataProviderTest {
 
         given(
                 deadLetterRepository
-                    .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+                    .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
                         queueName = source,
                         skip = skip,
                         limit = limit,
@@ -513,7 +519,7 @@ class DeadLetterDataProviderTest {
             .verifyComplete()
 
         verify(deadLetterRepository, times(1))
-            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
                 source,
                 skip,
                 limit,
@@ -561,7 +567,7 @@ class DeadLetterDataProviderTest {
 
         given(
                 deadLetterRepository
-                    .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+                    .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
                         queueName = source,
                         skip = skip,
                         limit = limit,
@@ -578,7 +584,7 @@ class DeadLetterDataProviderTest {
             .verifyComplete()
 
         verify(deadLetterRepository, times(1))
-            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExludeStatuses(
+            .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
                 source,
                 skip,
                 limit,
