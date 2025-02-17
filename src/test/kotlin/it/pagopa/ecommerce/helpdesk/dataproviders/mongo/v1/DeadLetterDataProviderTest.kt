@@ -104,7 +104,7 @@ class DeadLetterDataProviderTest {
     fun `Should calculate total records for all dead letter events with time range and exclude statuses`() {
         val count = 3L
         val excludeStatuses =
-            DeadLetterExcludeStatusesDto()
+            DeadLetterExcludedStatusesDto()
                 .ecommerceStatuses(listOf("AUTHORIZED", "EXPIRED"))
                 .npgStatuses(listOf("NOTIFIED_KO"))
 
@@ -116,7 +116,7 @@ class DeadLetterDataProviderTest {
                         .startDate(OffsetDateTime.MIN)
                         .endDate(OffsetDateTime.MAX)
                 )
-                .excludeStatuses(excludeStatuses)
+                .excludedStatuses(excludeStatuses)
 
         given(
                 deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExcludeStatuses(
@@ -218,7 +218,7 @@ class DeadLetterDataProviderTest {
     ) {
         val count = 2L
         val excludeStatuses =
-            DeadLetterExcludeStatusesDto()
+            DeadLetterExcludedStatusesDto()
                 .ecommerceStatuses(listOf("UNAUTHORIZED"))
                 .npgStatuses(listOf("TIMEOUT"))
 
@@ -230,7 +230,7 @@ class DeadLetterDataProviderTest {
                         .startDate(OffsetDateTime.MIN)
                         .endDate(OffsetDateTime.MAX)
                 )
-                .excludeStatuses(excludeStatuses)
+                .excludedStatuses(excludeStatuses)
 
         given(
                 deadLetterRepository.countDeadLetterEventForQueueInTimeRangeWithExcludeStatuses(
@@ -377,7 +377,7 @@ class DeadLetterDataProviderTest {
     @Test
     fun `Should find result for all dead letter events with time range and exclude statuses`() {
         val excludeStatuses =
-            DeadLetterExcludeStatusesDto()
+            DeadLetterExcludedStatusesDto()
                 .ecommerceStatuses(listOf("AUTHORIZED", "EXPIRED"))
                 .npgStatuses(listOf("KO"))
         val searchRequest =
@@ -388,7 +388,7 @@ class DeadLetterDataProviderTest {
                         .startDate(OffsetDateTime.MIN)
                         .endDate(OffsetDateTime.MAX)
                 )
-                .excludeStatuses(excludeStatuses)
+                .excludedStatuses(excludeStatuses)
 
         val deadLetterEvents =
             listOf(
@@ -537,7 +537,7 @@ class DeadLetterDataProviderTest {
         source: String
     ) {
         val excludeStatuses =
-            DeadLetterExcludeStatusesDto()
+            DeadLetterExcludedStatusesDto()
                 .ecommerceStatuses(listOf("EXPIRED"))
                 .npgStatuses(listOf("TIMEOUT"))
 
@@ -549,7 +549,7 @@ class DeadLetterDataProviderTest {
                         .startDate(OffsetDateTime.MIN)
                         .endDate(OffsetDateTime.MAX)
                 )
-                .excludeStatuses(excludeStatuses)
+                .excludedStatuses(excludeStatuses)
 
         val deadLetterEvents =
             listOf(

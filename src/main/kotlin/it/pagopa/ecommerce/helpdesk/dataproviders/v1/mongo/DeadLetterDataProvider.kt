@@ -47,10 +47,10 @@ class DeadLetterDataProvider(
     ): Mono<Int> {
         val source = searchParams.source!!
         val timeRange = searchParams.timeRange
-        val excludeStatuses = searchParams.excludeStatuses
+        val excludedStatuses = searchParams.excludedStatuses
 
-        val npgStatuses = excludeStatuses?.npgStatuses ?: emptySet<String>()
-        val eCommerceStatuses = excludeStatuses?.ecommerceStatuses ?: emptySet<String>()
+        val npgStatuses = excludedStatuses?.npgStatuses ?: emptySet<String>()
+        val eCommerceStatuses = excludedStatuses?.ecommerceStatuses ?: emptySet<String>()
 
         return when (source) {
             DeadLetterSearchEventSourceDto.ALL -> {
@@ -123,10 +123,10 @@ class DeadLetterDataProvider(
     ): Mono<List<DeadLetterEventDto>> {
         val source = searchParams.source!!
         val timeRange = searchParams.timeRange
-        val excludeStatuses = searchParams.excludeStatuses
+        val excludedStatuses = searchParams.excludedStatuses
 
-        val npgStatuses = excludeStatuses?.npgStatuses ?: emptySet<String>()
-        val eCommerceStatuses = excludeStatuses?.ecommerceStatuses ?: emptySet<String>()
+        val npgStatuses = excludedStatuses?.npgStatuses ?: emptySet<String>()
+        val eCommerceStatuses = excludedStatuses?.ecommerceStatuses ?: emptySet<String>()
 
         return when (source) {
                 DeadLetterSearchEventSourceDto.ALL -> {
