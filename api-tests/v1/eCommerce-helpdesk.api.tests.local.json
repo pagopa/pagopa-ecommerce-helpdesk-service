@@ -610,13 +610,13 @@
 			"response": []
 		},
 		{
-			"name": "eCommerce retrieve ALL dead letter events [with time range and exclude statuses]",
+			"name": "eCommerce retrieve ALL dead letter events [with time range and excluded statuses]",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"eCommerce search ALL dead letter events with time range - Status code is 200 with valid json response\", function () {",
+							"pm.test(\"eCommerce search ALL dead letter events with time range and excluded statuses - Status code is 200 with valid json response\", function () {",
 							"    // Ensure the response status code is 200 (OK)",
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
@@ -678,7 +678,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2024-11-30T14:50:27.001Z\",\n      \"endDate\": \"2024-12-30T14:50:27.999Z\"\n  },\n  \"excludeStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"CANCELED\"]\n  }\n}",
+					"raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2024-11-30T14:50:27.001Z\",\n      \"endDate\": \"2024-12-30T14:50:27.999Z\"\n  },\n  \"excludedStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"CANCELED\"]\n  }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
