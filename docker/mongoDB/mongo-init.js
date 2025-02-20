@@ -325,7 +325,111 @@ db.getCollection('dead-letter-events').insertMany([{
   "queueName": "pagopa-ecommerce-notifications-service-errors-queue",
   "insertionDate": "2023-11-30T14:50:27.001Z",
   "data": "NOTIFICATIONS_SERVICE"
-}]);
+},
+{
+  "_id": "1b3df101-37ba-4d08-9af6-b25ceabe9dde",
+  "queueName": "pagopa-d-weu-ecommerce-transactions-dead-letter-queue",
+  "insertionDate": "2024-12-18T09:26:21.410401138Z",
+  "data": "ECOMMERCE",
+  "transactionInfo": {
+    "transactionId": "2302952be7524c4982004314a2da14cb",
+    "authorizationRequestId": "E1734510064508EAsK",
+    "eCommerceStatus": "EXPIRED",
+    "gateway": "NPG",
+    "paymentTokens": [
+      "afba051c980847af98c86478295a5037"
+    ],
+    "pspId": "SIGPITM1XXX",
+    "paymentMethodName": "PAYPAL",
+    "grandTotal": 12150,
+    "details": {
+      "operationResult": "EXECUTED",
+      "operationId": "275172666512443539",
+      "correlationId": "31d0d049-6a00-4f14-a0e8-97c4f8e31129",
+      "paymentEndToEndId": "2EK26524JB7602150",
+      "_class": "it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterNpgTransactionInfoDetailsData"
+    }
+  },
+  "_class": "it.pagopa.ecommerce.commons.documents.DeadLetterEvent"
+},
+  {
+    "_id":"4b3df101-37ba-4d08-9af6-b25ceabe9dde",
+    "queueName":"pagopa-d-weu-ecommerce-transactions-dead-letter-queue",
+    "insertionDate":"2024-12-18T09:26:21.410401138Z",
+    "data":"ECOMMERCE",
+    "transactionInfo":{
+      "transactionId":"2302952be7524c4982004314a2da14cb",
+      "authorizationRequestId":"E1734510064508EAsK",
+      "eCommerceStatus":"CANCELED",
+      "gateway":"NPG",
+      "paymentTokens":[
+        "afba051c980847af98c86478295a5037"
+      ],
+      "pspId":"SIGPITM1XXX",
+      "paymentMethodName":"PAYPAL",
+      "grandTotal":12150,
+      "details":{
+        "operationResult":"CANCELED",
+        "operationId":"275172666512443539",
+        "correlationId":"31d0d049-6a00-4f14-a0e8-97c4f8e31129",
+        "paymentEndToEndId":"2EK26524JB7602150",
+        "_class":"it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterNpgTransactionInfoDetailsData"
+      }
+    },
+    "_class":"it.pagopa.ecommerce.commons.documents.DeadLetterEvent"
+  },
+  {
+    "_id":"2b3df101-37ba-4d08-9af6-b25ceabe9dde",
+    "queueName":"pagopa-d-weu-ecommerce-transactions-dead-letter-queue",
+    "insertionDate":"2024-12-18T09:26:21.410401138Z",
+    "data":"ECOMMERCE",
+    "transactionInfo":{
+      "transactionId":"2302952be7524c4982004314a2da14cb",
+      "authorizationRequestId":"E1734510064508EAsK",
+      "eCommerceStatus":"EXPIRED",
+      "gateway":"NPG",
+      "paymentTokens":[
+        "afba051c980847af98c86478295a5037"
+      ],
+      "pspId":"SIGPITM1XXX",
+      "paymentMethodName":"PAYPAL",
+      "grandTotal":12150,
+      "details":{
+        "operationResult":"EXECUTED",
+        "operationId":"275172666512443539",
+        "correlationId":"31d0d049-6a00-4f14-a0e8-97c4f8e31129",
+        "paymentEndToEndId":"2EK26524JB7602150",
+        "_class":"it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterNpgTransactionInfoDetailsData"
+      }
+    },
+    "_class":"it.pagopa.ecommerce.commons.documents.DeadLetterEvent"
+  },
+  {
+    "_id":"3b3df101-37ba-4d08-9af6-b25ceabe9dde",
+    "queueName":"pagopa-d-weu-ecommerce-transactions-dead-letter-queue",
+    "insertionDate":"2024-12-18T09:26:21.410401138Z",
+    "data":"ECOMMERCE",
+    "transactionInfo":{
+      "transactionId":"2302952be7524c4982004314a2da14cb",
+      "authorizationRequestId":"E1734510064508EAsK",
+      "eCommerceStatus":"NOTIFIED_OK",
+      "gateway":"NPG",
+      "paymentTokens":[
+        "afba051c980847af98c86478295a5037"
+      ],
+      "pspId":"SIGPITM1XXX",
+      "paymentMethodName":"PAYPAL",
+      "grandTotal":12150,
+      "details":{
+        "operationResult":"EXECUTED",
+        "operationId":"275172666512443539",
+        "correlationId":"31d0d049-6a00-4f14-a0e8-97c4f8e31129",
+        "paymentEndToEndId":"2EK26524JB7602150",
+        "_class":"it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterNpgTransactionInfoDetailsData"
+      }
+    },
+    "_class":"it.pagopa.ecommerce.commons.documents.DeadLetterEvent"
+  }]);
 
 db2 = conn.getDB("ecommerce-history");
 
