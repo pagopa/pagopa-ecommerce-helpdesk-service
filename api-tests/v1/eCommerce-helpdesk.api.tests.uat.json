@@ -1208,7 +1208,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2024-11-30T14:50:27.001Z\",\n      \"endDate\": \"2025-01-30T14:50:27.999Z\"\n  },\n  \"excludedStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"EXECUTED\"]\n  }\n}",
+					"raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2024-11-30T14:50:27.001Z\",\n      \"endDate\": \"2024-12-30T14:50:27.999Z\"\n  },\n  \"excludedStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"EXECUTED\"]\n  }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
