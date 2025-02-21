@@ -1,4 +1,6 @@
 microservice-chart:
+  azure:
+    workloadIdentityClientId: qwerty123-a1aa-1234-xyza-qwerty123
   namespace: "ecommerce"
   nameOverride: ""
   fullnameOverride: ""
@@ -23,19 +25,17 @@ microservice-chart:
   deployment:
     create: true
   service:
-    create: true
+    create: false
     type: ClusterIP
     ports:
       - 8080
   ingress:
-    create: true
+    create: false
     host: "weudev.ecommerce.internal.dev.platform.pagopa.it"
     path: /pagopa-ecommerce-helpdesk-service/(.*)
     servicePort: 8080
   serviceAccount:
-    create: false
-    annotations: {}
-    name: ""
+    name: testit-workload-identity
   podAnnotations: {}
   podSecurityContext:
     seccompProfile:
