@@ -143,7 +143,9 @@ class PmTransactionHistoryDataProviderTestV2 {
                         TransactionInfoDto()
                             .creationDate(OffsetDateTime.parse(transactioninfo.creationDate))
                             .status(PaymentStatus.fromCode(transactioninfo.status))
-                            .statusDetails(AccountingStatus.fromCode(transactioninfo.statusDetails))
+                            .statusDetails(
+                                transactioninfo.statusDetails?.let { AccountingStatus.fromCode(it) }
+                            )
                             .amount(transactioninfo.amount)
                             .fee(transactioninfo.fee)
                             .grandTotal(transactioninfo.grandTotal)
@@ -225,7 +227,9 @@ class PmTransactionHistoryDataProviderTestV2 {
                         TransactionInfoDto()
                             .creationDate(OffsetDateTime.parse(transactioninfo.creationDate))
                             .status(PaymentStatus.fromCode(transactioninfo.status))
-                            .statusDetails(AccountingStatus.fromCode(transactioninfo.statusDetails))
+                            .statusDetails(
+                                transactioninfo.statusDetails?.let { AccountingStatus.fromCode(it) }
+                            )
                             .amount(transactioninfo.amount)
                             .fee(transactioninfo.fee)
                             .grandTotal(transactioninfo.grandTotal)
