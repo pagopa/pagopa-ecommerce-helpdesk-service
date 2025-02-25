@@ -42,4 +42,8 @@ data class PaymentDetailInfo(
     val amount: Int? = null
 )
 
-data class PspInfo(val pspId: String? = null, val businessName: String? = null, val idChannel: String? = null)
+data class PspInfo(
+    val pspId: String? = null,
+    val businessName: String? = null,
+    val idChannel: String? = null
+)
