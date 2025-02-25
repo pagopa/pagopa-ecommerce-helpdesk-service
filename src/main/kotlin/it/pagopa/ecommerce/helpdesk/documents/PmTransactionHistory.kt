@@ -14,7 +14,7 @@ data class PmTransactionHistory(
 )
 
 data class UserInfo(
-    val userFiscalCode: String,
+    val userFiscalCode: String? = null,
     val notificationEmail: String,
     val authenticationType: Int
 )
@@ -22,24 +22,24 @@ data class UserInfo(
 data class TransactionInfo(
     val creationDate: String,
     val status: Int,
-    val statusDetails: Int,
-    val amount: Int,
+    val statusDetails: Int? = null,
+    val amount: Int? = null,
     val fee: Int,
     val grandTotal: Int,
-    val rrn: String,
-    val authorizationCode: String,
-    val paymentMethodName: String
+    val rrn: String? = null,
+    val authorizationCode: String? = null,
+    val paymentMethodName: String? = null
 )
 
-data class PaymentInfo(val origin: String, val details: List<PaymentDetailInfo>)
+data class PaymentInfo(val origin: String? = null, val details: List<PaymentDetailInfo>)
 
 data class PaymentDetailInfo(
-    val subject: String,
-    val iuv: String,
-    val idTransaction: String,
-    val creditorInstitution: String,
-    val paFiscalCode: String,
-    val amount: Int
+    val subject: String? = null,
+    val iuv: String? = null,
+    val idTransaction: String? = null,
+    val creditorInstitution: String? = null,
+    val paFiscalCode: String? = null,
+    val amount: Int? = null
 )
 
-data class PspInfo(val pspId: String, val businessName: String, val idChannel: String)
+data class PspInfo(val pspId: String? = null, val businessName: String? = null, val idChannel: String? = null)

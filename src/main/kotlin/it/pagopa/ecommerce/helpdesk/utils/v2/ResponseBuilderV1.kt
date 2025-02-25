@@ -126,7 +126,7 @@ fun pmTransactionToTransactionInfoDtoV2(
             .creationDate(OffsetDateTime.parse(pmTransactionHistory.transactionInfo.creationDate))
             .status(PaymentStatus.fromCode(pmTransactionHistory.transactionInfo.status))
             .statusDetails(
-                AccountingStatus.fromCode(pmTransactionHistory.transactionInfo.statusDetails)
+                pmTransactionHistory.transactionInfo.statusDetails?.let { AccountingStatus.fromCode(it) }
             )
             .eventStatus(null)
             .amount(amount)
