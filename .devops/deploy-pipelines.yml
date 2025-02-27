@@ -35,6 +35,10 @@ parameters:
       - patch
       - none
     default: patch
+  - name: 'HELM_CHART_VERSION_NAME'
+    displayName: 'When upgrading helm chart, define the name of the target chart-version.yml'
+    type: string
+    default: "chart-v7"
   - name: 'RELEASE_CHART_SEMVER'
     displayName: 'When upgrading helm chart, define the version bump to apply'
     type: string
@@ -131,6 +135,7 @@ stages:
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-dev.yaml"
                     GREEN_VERSION: $(Build.SourceVersion)
+                    HELM_CHART_VERSION_NAME: ${{ parameters.HELM_CHART_VERSION_NAME }}
   # --- END Deploy DEV --- #
 
   # --- START API TEST for DEV DEPLOY --- #
@@ -234,6 +239,8 @@ stages:
                     VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(green_app_version)
                     BLUE_VERSION: $(Build.SourceVersion)
+                    HELM_CHART_VERSION_NAME: ${{ parameters.HELM_CHART_VERSION_NAME }}
+
 
   # --- START API TEST for BLUE UAT DEPLOY --- #
   - stage: "Blue_API_UAT_test_V1"
@@ -383,6 +390,8 @@ stages:
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(app_version)
+                    HELM_CHART_VERSION_NAME: ${{ parameters.HELM_CHART_VERSION_NAME }}
+
   # --- END Deploy UAT --- #
 
   # --- START API TEST for GREEN UAT DEPLOY --- #
@@ -524,6 +533,7 @@ stages:
                     VALUE_FILE: "helm/values-prod.yaml"
                     GREEN_VERSION: $(app_version)
                     BLUE_VERSION: $(Build.SourceVersion)
+                    HELM_CHART_VERSION_NAME: ${{ parameters.HELM_CHART_VERSION_NAME }}
 
   - stage: "PROD_Green_WaitForApproval"
     displayName: 'PROD green approval deployment'
@@ -630,6 +640,8 @@ stages:
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-prod.yaml"
                     GREEN_VERSION: $(prod_version)
+                    HELM_CHART_VERSION_NAME: ${{ parameters.HELM_CHART_VERSION_NAME }}
+
   # --- END Deploy PROD --- #
 
   # --- START ROLLBACK PROD --- #
