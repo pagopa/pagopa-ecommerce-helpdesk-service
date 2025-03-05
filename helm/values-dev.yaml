@@ -11,11 +11,11 @@ microservice-chart:
       headerName: deployment
       headerValue: blue
       weightPercent: 10
-      image:
-        repository: pagopadcommonacr.azurecr.io/pagopaecommercehelpdeskservice
-        tag: "latest"
-      envConfig: {}
-      envSecret: {}
+    image:
+      repository: pagopadcommonacr.azurecr.io/pagopaecommercehelpdeskservice
+      tag: "latest"
+    envConfig: {}
+    envSecret: {}
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaecommercehelpdeskservice
     tag: "1.37.3"

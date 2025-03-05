@@ -11,13 +11,13 @@ microservice-chart:
       headerName: deployment
       headerValue: blue
       weightPercent: 10
-      image:
-        repository: pagopapcommonacr.azurecr.io/pagopaecommercehelpdeskservice
-        tag: "latest"
-      envConfig:
-        ECS_SERVICE_NAME: "pagopa-ecommerce-helpdesk-service-blue"
-        OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-helpdesk-service-blue,deployment.environment=prod"
-      envSecret: {}
+    image:
+      repository: pagopapcommonacr.azurecr.io/pagopaecommercehelpdeskservice
+      tag: "latest"
+    envConfig:
+      ECS_SERVICE_NAME: "pagopa-ecommerce-helpdesk-service-blue"
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-helpdesk-service-blue,deployment.environment=prod"
+    envSecret: {}
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaecommercehelpdeskservice
     tag: "1.37.3"
@@ -162,4 +162,4 @@ microservice-chart:
             namespaces: ["ecommerce"]
             topologyKey: topology.kubernetes.io/zone
   azure:
-    workloadIdentityClientId: "TBD"
+    workloadIdentityClientId: "d5614882-90dd-47a1-aad1-cdf295201469"

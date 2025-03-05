@@ -11,13 +11,13 @@ microservice-chart:
       headerName: deployment
       headerValue: blue
       weightPercent: 10
-      image:
-        repository: pagopaucommonacr.azurecr.io/pagopaecommercehelpdeskservice
-        tag: "latest"
-      envConfig:
-        ECS_SERVICE_NAME: "pagopa-ecommerce-helpdesk-service-blue"
-        OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-helpdesk-service-blue,deployment.environment=uat"
-      envSecret: {}
+    image:
+      repository: pagopaucommonacr.azurecr.io/pagopaecommercehelpdeskservice
+      tag: "latest"
+    envConfig:
+      ECS_SERVICE_NAME: "pagopa-ecommerce-helpdesk-service-blue"
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-helpdesk-service-blue,deployment.environment=uat"
+    envSecret: {}
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercehelpdeskservice
     tag: "1.37.3"
