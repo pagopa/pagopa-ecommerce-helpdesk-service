@@ -35,13 +35,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionD
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.getGatewayAuthorizationData
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.PaymentDetailInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.PaymentInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.ProductDto
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.PspInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionResultDto
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.UserInfoDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import java.time.ZonedDateTime
 import java.util.*
 import java.util.stream.Stream
@@ -228,7 +222,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -331,7 +325,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -469,7 +463,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -622,7 +616,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -772,7 +766,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -920,7 +914,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -1070,7 +1064,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -1200,7 +1194,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -1310,7 +1304,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -1416,7 +1410,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -1435,6 +1429,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .authorizationCode(null)
                             .paymentMethodName(null)
                             .brand(null)
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -1539,7 +1534,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -1699,7 +1694,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -1858,7 +1853,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -2020,7 +2015,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -2183,7 +2178,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -2345,7 +2340,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -2524,7 +2519,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -2720,7 +2715,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -2936,7 +2931,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -3167,7 +3162,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -3343,7 +3338,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -3475,7 +3470,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -3496,6 +3491,7 @@ class EcommerceForTransactionV2DataProviderTest {
                             .authorizationRequestId(null)
                             .refundOperationId(null)
                             .brand(null)
+                            .correlationId(UUID.fromString(correlationId))
                     )
                     .paymentInfo(
                         PaymentInfoDto()
@@ -3647,7 +3643,7 @@ class EcommerceForTransactionV2DataProviderTest {
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto()
-                            .authenticationType("GUEST")
+                            .authenticationType("REGISTERED")
                             .notificationEmail(EcommerceForTransactionV2DataProviderTest.TEST_EMAIL)
                     )
                     .transactionInfo(
@@ -3812,7 +3808,7 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -3986,7 +3982,9 @@ class EcommerceForTransactionV2DataProviderTest {
         val expected =
             listOf(
                 TransactionResultDto()
-                    .userInfo(UserInfoDto().authenticationType("GUEST").notificationEmail("N/A"))
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail("N/A")
+                    )
                     .transactionInfo(
                         TransactionInfoDto()
                             .creationDate(baseTransaction.creationDate.toOffsetDateTime())
