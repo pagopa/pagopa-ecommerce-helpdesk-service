@@ -21,7 +21,7 @@ plugins {
 }
 // eCommerce commons library version
 
-val ecommerceCommonsVersion = "1.32.0"
+val ecommerceCommonsVersion = "1.33.0"
 
 // eCommerce commons library git ref (by default tag)
 val ecommerceCommonsGitRef = ecommerceCommonsVersion
@@ -212,7 +212,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("nodo") {
   generatorName.set("java")
   remoteInputSpec.set(
-    "https://raw.githubusercontent.com/pagopa/pagopa-infra/eff0d7e961328c9888d73dc17d96695301df1861/src/core/api/nodopagamenti_api/nodoPerPM/v2/_swagger.json.tpl"
+    "https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.465.0/src/core/api/nodopagamenti_api/nodoPerPM/v2/_openapi.json.tpl"
   )
   outputDir.set("$buildDir/generated")
   apiPackage.set("it.pagopa.generated.ecommerce.nodo.v2.api")
