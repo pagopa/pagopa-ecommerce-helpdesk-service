@@ -41,10 +41,15 @@ fun baseTransactionToTransactionInfoDtoV2(
     val userInfo =
         UserInfoDto()
             .notificationEmail(email.map { it.value }.orElse("N/A"))
-            // TODO this field is statically valued with GUEST eCommerce side into Nodo ClosePayment
-            // requests. Must be populated dynamically when logic will be updated eCommerce side
-            // (event-dispatcher/transactions-service)
-            .authenticationType(UserDto.TypeEnum.GUEST.toString())
+            .authenticationType(
+                transactionActivatedData.let {
+                    if (it?.userId != null) {
+                        UserDto.TypeEnum.REGISTERED.toString()
+                    } else {
+                        UserDto.TypeEnum.GUEST.toString()
+                    }
+                }
+            )
 
     // build transaction info
     val transactionInfo =
