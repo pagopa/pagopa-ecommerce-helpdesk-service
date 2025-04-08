@@ -11,8 +11,8 @@ import reactor.core.publisher.Mono
  * Class used for handling fiscal code encryption and decryption.
  *
  * @param fiscalCodeConfidentialDataManager class for executing pdv call
- * @param encryptedToClearMap Map containing the opaque fiscal code token as the key and the clear fiscal code as
- *   the value.
+ * @param encryptedToClearMap Map containing the opaque fiscal code token as the key and the clear
+ *   fiscal code as the value.
  */
 class ConfidentialFiscalCodeUtils(
     private val fiscalCodeConfidentialDataManager: ConfidentialDataManager,
@@ -22,8 +22,8 @@ class ConfidentialFiscalCodeUtils(
     private val logger = LoggerFactory.getLogger(javaClass)
 
     /**
-     * The method searches for clear fiscal code in the cache. If not found, it makes a call to pdv to decrypt the fiscal code
-     * and then caches it.
+     * The method searches for clear fiscal code in the cache. If not found, it makes a call to pdv
+     * to decrypt the fiscal code and then caches it.
      *
      * @param encrypted fiscal code encrypted
      * @return Mono<FiscalCode> returns mono with clear fiscal code value object
@@ -50,13 +50,13 @@ class ConfidentialFiscalCodeUtils(
      */
     private fun toConfidential(clearText: FiscalCode): Mono<Confidential<FiscalCode>> {
         return mono {
-            encryptedToClearMap.entries
-                .stream()
-                .filter { it.value == clearText }
-                .map { it.key }
-                .findFirst()
-                .map { it }
-        }
+                encryptedToClearMap.entries
+                    .stream()
+                    .filter { it.value == clearText }
+                    .map { it.key }
+                    .findFirst()
+                    .map { it }
+            }
             .flatMap {
                 if (it.isEmpty) {
                     fiscalCodeConfidentialDataManager

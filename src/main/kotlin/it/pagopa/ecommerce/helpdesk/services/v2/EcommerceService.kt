@@ -37,7 +37,8 @@ class EcommerceService(
                     SearchParamDecoderV2(
                         searchParameter = ecommerceSearchTransactionRequestDto,
                         confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
-                        confidentialFiscalCodeUtils = ConfidentialFiscalCodeUtils(confidentialDataManager)
+                        confidentialFiscalCodeUtils =
+                            ConfidentialFiscalCodeUtils(confidentialDataManager)
                     ),
                 searchCriteriaType = ecommerceSearchTransactionRequestDto.type,
                 dataProvider = ecommerceTransactionDataProvider

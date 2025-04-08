@@ -35,13 +35,15 @@ class SearchParamDecoderV2<out T>(
                     Mono.just(searchParameter)
                 }
             /*
-            * Search parameter decoding is performed iff input search parameter is a fiscal code and the searching is performed for eCommerce transactions.
-            * In fact confidentialMailUtils parameter is optional and valued only when searching for eCommerce transactions
-            */
+             * Search parameter decoding is performed iff input search parameter is a fiscal code and the searching is performed for eCommerce transactions.
+             * In fact confidentialFiscalCodeUtils parameter is optional and valued only when searching for eCommerce transactions
+             */
             is SearchTransactionRequestFiscalCodeDto ->
                 if (confidentialFiscalCodeUtils != null) {
                     confidentialFiscalCodeUtils.toConfidential(searchParameter.userFiscalCode).map {
-                        SearchTransactionRequestFiscalCodeDto().userFiscalCode(it.opaqueData).type("FISCAL_CODE")
+                        SearchTransactionRequestFiscalCodeDto()
+                            .userFiscalCode(it.opaqueData)
+                            .type("FISCAL_CODE")
                     }
                 } else {
                     Mono.just(searchParameter)

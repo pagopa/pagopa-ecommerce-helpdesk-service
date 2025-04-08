@@ -104,7 +104,9 @@ class EcommerceForTransactionV1DataProviderTest {
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                        confidentialFiscalCodeUtils =
+                            ConfidentialFiscalCodeUtils(confidentialDataManager)
                     )
                 )
             )
@@ -125,7 +127,9 @@ class EcommerceForTransactionV1DataProviderTest {
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                        confidentialFiscalCodeUtils =
+                            ConfidentialFiscalCodeUtils(confidentialDataManager)
                     )
                 )
             )
@@ -143,7 +147,8 @@ class EcommerceForTransactionV1DataProviderTest {
                     SearchParamDecoderV2(
                         searchParameter = searchCriteria,
                         confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
-                        confidentialFiscalCodeUtils = ConfidentialFiscalCodeUtils(confidentialDataManager)
+                        confidentialFiscalCodeUtils =
+                            ConfidentialFiscalCodeUtils(confidentialDataManager)
                     )
                 )
             )
@@ -160,7 +165,9 @@ class EcommerceForTransactionV1DataProviderTest {
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                        confidentialFiscalCodeUtils =
+                            ConfidentialFiscalCodeUtils(confidentialDataManager)
                     )
                 )
             )
@@ -181,7 +188,9 @@ class EcommerceForTransactionV1DataProviderTest {
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                        confidentialFiscalCodeUtils =
+                            ConfidentialFiscalCodeUtils(confidentialDataManager)
                     )
                 )
             )
@@ -198,7 +207,9 @@ class EcommerceForTransactionV1DataProviderTest {
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                        confidentialFiscalCodeUtils =
+                            ConfidentialFiscalCodeUtils(confidentialDataManager)
                     )
                 )
             )
@@ -219,7 +230,9 @@ class EcommerceForTransactionV1DataProviderTest {
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                        confidentialFiscalCodeUtils =
+                            ConfidentialFiscalCodeUtils(confidentialDataManager)
                     )
                 )
             )
@@ -235,7 +248,9 @@ class EcommerceForTransactionV1DataProviderTest {
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                        confidentialFiscalCodeUtils =
+                            ConfidentialFiscalCodeUtils(confidentialDataManager)
                     )
                 )
             )
@@ -378,7 +393,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize * pageNumber,
                     limit = pageSize
@@ -523,7 +540,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize * pageNumber,
                     limit = pageSize
@@ -661,7 +680,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -815,7 +836,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize * pageNumber,
                     limit = pageSize
@@ -836,7 +859,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -920,7 +945,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -1040,7 +1067,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -1169,7 +1198,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -1298,7 +1329,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -1430,7 +1463,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -1562,7 +1597,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -1694,7 +1731,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -1787,7 +1826,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -1893,7 +1934,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -1993,7 +2036,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -2127,7 +2172,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -2269,7 +2316,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -2411,7 +2460,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -2556,7 +2607,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -2701,7 +2754,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -2846,7 +2901,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -3004,7 +3061,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -3180,7 +3239,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -3374,7 +3435,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -3583,7 +3646,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -3741,7 +3806,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -3836,7 +3903,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
                     limit = pageNumber
@@ -3996,7 +4065,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize * pageNumber,
                     limit = pageSize
