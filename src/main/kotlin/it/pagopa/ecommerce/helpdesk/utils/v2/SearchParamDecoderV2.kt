@@ -6,7 +6,7 @@ import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestE
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestFiscalCodeDto
 import reactor.core.publisher.Mono
 
-/** Data class that wraps search parameter with optional confidentialDataUtils class */
+/** Data class that wraps search parameter with optional ConfidentialDataUtils class */
 class SearchParamDecoderV2<out T>(
     val searchParameter: T,
     val confidentialDataUtils: ConfidentialDataUtils?
@@ -36,8 +36,8 @@ class SearchParamDecoderV2<out T>(
                 if (confidentialDataUtils != null) {
                     confidentialDataUtils.toConfidential(searchParameter.userFiscalCode).map {
                         SearchTransactionRequestFiscalCodeDto()
-                            .userFiscalCode(it.opaqueData)
-                            .type("USER_FISCAL_CODE")
+                            .userFiscalCode(it)
+                            .type("FISCAL_CODE")
                     }
                 } else {
                     Mono.just(searchParameter)
