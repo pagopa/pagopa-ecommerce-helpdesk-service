@@ -4,6 +4,7 @@ import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.ConfidentialFiscalCodeUtils
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.buildTransactionSearchResponse
@@ -35,7 +36,8 @@ class EcommerceService(
                 searchCriteria =
                     SearchParamDecoderV2(
                         searchParameter = ecommerceSearchTransactionRequestDto,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                        confidentialFiscalCodeUtils = ConfidentialFiscalCodeUtils(confidentialDataManager)
                     ),
                 searchCriteriaType = ecommerceSearchTransactionRequestDto.type,
                 dataProvider = ecommerceTransactionDataProvider
