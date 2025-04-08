@@ -466,6 +466,7 @@ components:
         - $ref: '#/components/schemas/SearchTransactionRequestPaymentToken'
         - $ref: '#/components/schemas/SearchTransactionRequestTransactionId'
         - $ref: '#/components/schemas/SearchTransactionRequestEmail'
+        - $ref: '#/components/schemas/SearchTransactionRequestFiscalCode'
       discriminator:
         propertyName: type
         mapping:
@@ -473,6 +474,7 @@ components:
           PAYMENT_TOKEN: "#/components/schemas/SearchTransactionRequestPaymentToken"
           TRANSACTION_ID: "#/components/schemas/SearchTransactionRequestTransactionId"
           USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
+          USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
     EventInfo:
       type: object
       description: Event info
@@ -509,6 +511,10 @@ components:
               value:
                 type: USER_EMAIL
                 userEmail: "test@test.it"
+            search by user fiscal code:
+              value:
+                type: USER_FISCAL_CODE
+                userFiscalCode: "user_fiscal_code"
     SearchTransactionRequest:
       required: true
       content:
