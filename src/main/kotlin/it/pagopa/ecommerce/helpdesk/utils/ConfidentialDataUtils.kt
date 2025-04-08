@@ -10,7 +10,8 @@ import reactor.core.publisher.Mono
  * Class used for handling encryption and decryption of confidential data.
  *
  * @param confidentialDataManager class for executing pdv calls
- * @param encryptedToClearMap Map containing the opaque token as the key and the clear data as the value.
+ * @param encryptedToClearMap Map containing the opaque token as the key and the clear data as the
+ *   value.
  */
 class ConfidentialDataUtils<T>(
     private val confidentialDataManager: ConfidentialDataManager,
@@ -20,7 +21,8 @@ class ConfidentialDataUtils<T>(
     private val logger = LoggerFactory.getLogger(javaClass)
 
     /**
-     * The method searches clear data in the cache. If not found, it makes a call to pdv to decrypt the data and then caches it.
+     * The method searches clear data in the cache. If not found, it makes a call to pdv to decrypt
+     * the data and then caches it.
      *
      * @param encrypted data encrypted
      * @return Mono<T> return mono with clear data value object
@@ -47,13 +49,13 @@ class ConfidentialDataUtils<T>(
      */
     private fun toConfidential(clearText: T): Mono<Confidential<T>> {
         return mono {
-            encryptedToClearMap.entries
-                .stream()
-                .filter { it.value == clearText }
-                .map { it.key }
-                .findFirst()
-                .map { it }
-        }
+                encryptedToClearMap.entries
+                    .stream()
+                    .filter { it.value == clearText }
+                    .map { it.key }
+                    .findFirst()
+                    .map { it }
+            }
             .flatMap {
                 if (it.isEmpty) {
                     confidentialDataManager

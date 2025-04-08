@@ -35,7 +35,9 @@ class SearchParamDecoderV2<out T>(
             is SearchTransactionRequestFiscalCodeDto ->
                 if (confidentialDataUtils != null) {
                     confidentialDataUtils.toConfidential(searchParameter.userFiscalCode).map {
-                        SearchTransactionRequestFiscalCodeDto().userFiscalCode(it.opaqueData).type("USER_FISCAL_CODE")
+                        SearchTransactionRequestFiscalCodeDto()
+                            .userFiscalCode(it.opaqueData)
+                            .type("USER_FISCAL_CODE")
                     }
                 } else {
                     Mono.just(searchParameter)
