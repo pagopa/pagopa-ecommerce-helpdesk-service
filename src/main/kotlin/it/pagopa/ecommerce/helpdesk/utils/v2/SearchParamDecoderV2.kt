@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.utils.v2
 
-import it.pagopa.ecommerce.helpdesk.utils.confidentialDataUtils
+import it.pagopa.ecommerce.helpdesk.utils.ConfidentialDataUtils
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestEmailDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestFiscalCodeDto
