@@ -13,6 +13,7 @@ import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGateway
 import it.pagopa.ecommerce.commons.documents.v2.refund.NpgGatewayRefundData
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.domain.Email
+import it.pagopa.ecommerce.commons.domain.FiscalCode
 import it.pagopa.ecommerce.commons.domain.v2.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionExpired as BaseTransactionExpiredV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithClosureError as BaseTransactionWithClosureErrorV2
@@ -62,6 +63,7 @@ class EcommerceForTransactionV2DataProviderTest {
     companion object {
         val testedStatuses: MutableSet<TransactionStatusDto> = HashSet()
         const val TEST_EMAIL = "test.email@test.it"
+        const val TEST_FISCAL_CODE = "fiscalcode"
 
         @JvmStatic
         @BeforeAll
@@ -624,6 +626,8 @@ class EcommerceForTransactionV2DataProviderTest {
             .willReturn(Flux.fromIterable(events))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
+        given(confidentialDataManager.decrypt(any<Confidential<FiscalCode>>(), any()))
+            .willReturn(Mono.just(FiscalCode(TEST_FISCAL_CODE)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -631,7 +635,10 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                        UserInfoDto()
+                            .authenticationType("REGISTERED")
+                            .notificationEmail(TEST_EMAIL)
+                            .userFiscalCode(TEST_FISCAL_CODE)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
