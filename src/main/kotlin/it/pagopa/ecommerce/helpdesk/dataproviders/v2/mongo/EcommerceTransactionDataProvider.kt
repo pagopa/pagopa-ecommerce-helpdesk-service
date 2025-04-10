@@ -52,6 +52,10 @@ class EcommerceTransactionDataProvider(
                         }
                     is SearchTransactionRequestEmailDto ->
                         transactionsViewRepository.countTransactionsWithEmail(it.userEmail)
+                    is SearchTransactionRequestFiscalCodeDto ->
+                        transactionsViewRepository.countTransactionsWithFiscalCode(
+                            it.userFiscalCode
+                        )
                     else -> invalidSearchCriteriaError
                 }
             }
@@ -94,6 +98,13 @@ class EcommerceTransactionDataProvider(
                         transactionsViewRepository
                             .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
                                 encryptedEmail = it.userEmail,
+                                skip = skip,
+                                limit = limit
+                            )
+                    is SearchTransactionRequestFiscalCodeDto ->
+                        transactionsViewRepository
+                            .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
+                                encryptedFiscalCode = it.userFiscalCode,
                                 skip = skip,
                                 limit = limit
                             )
