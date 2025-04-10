@@ -14,6 +14,8 @@ import reactor.test.StepVerifier
 
 class ConfidentialFiscalCodeUtilsTests {
 
+    private val EXAMPLE_FISCAL_CODE = "example";
+    
     private val fiscalCodeCachedMap: MutableMap<String, FiscalCode> = mutableMapOf()
 
     private val confidentialDataManager: ConfidentialDataManager = mock()
@@ -23,7 +25,7 @@ class ConfidentialFiscalCodeUtilsTests {
 
     @Test
     fun shouldDecryptFiscalCodeSuccessfully() {
-        val fiscalCode = FiscalCode(TransactionTestUtils.EMAIL_STRING)
+        val fiscalCode = FiscalCode(EXAMPLE_FISCAL_CODE)
         val fiscalCodeToken = UUID.randomUUID()
         val computedConfidential = Confidential<FiscalCode>(fiscalCodeToken.toString())
 
@@ -42,7 +44,7 @@ class ConfidentialFiscalCodeUtilsTests {
 
     @Test
     fun shouldDecryptFiscalCodeSuccessfullyWithCachedValue() {
-        val fiscalCode = FiscalCode(TransactionTestUtils.EMAIL_STRING)
+        val fiscalCode = FiscalCode(EXAMPLE_FISCAL_CODE)
         val fiscalCodeToken = UUID.randomUUID()
         val computedConfidential = Confidential<FiscalCode>(fiscalCodeToken.toString())
         fiscalCodeCachedMap[computedConfidential.opaqueData] = fiscalCode
@@ -58,7 +60,7 @@ class ConfidentialFiscalCodeUtilsTests {
 
     @Test
     fun shouldEncryptFiscalCodeSuccessfully() {
-        val fiscalCode = FiscalCode(TransactionTestUtils.EMAIL_STRING)
+        val fiscalCode = FiscalCode(EXAMPLE_FISCAL_CODE)
         val fiscalCodeToken = UUID.randomUUID()
         val computedConfidential = Confidential<FiscalCode>(fiscalCodeToken.toString())
 
