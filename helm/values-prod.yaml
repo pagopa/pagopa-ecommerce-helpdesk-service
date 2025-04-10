@@ -135,7 +135,7 @@ microservice-chart:
     NPG_APPLEPAY_PSP_KEYS: npg-apple-pay-psp-keys
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY_EMAIL: personal-data-vault-api-key
-    PERSONAL_DATA_VAULT_API_KEY_FISCAL_CODE: personal-data-vault-api-key
+    PERSONAL_DATA_VAULT_API_KEY_FISCAL_CODE: personal-data-vault-api-key-wallet-session
     PM_ORACLE_PASSWORD: pm-oracle-db-password
     PM_ORACLE_HOST: pm-oracle-db-host
     MONGO_PASSWORD: mongo-ecommerce-password
