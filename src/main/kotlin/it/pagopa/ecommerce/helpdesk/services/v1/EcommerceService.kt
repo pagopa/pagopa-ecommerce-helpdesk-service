@@ -37,6 +37,7 @@ import java.util.*
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -45,7 +46,9 @@ class EcommerceService(
     @Autowired private val ecommerceTransactionDataProvider: EcommerceTransactionDataProviderV1,
     @Autowired private val ecommerceTransactionDataProviderV2: EcommerceTransactionDataProviderV2,
     @Autowired private val deadLetterDataProvider: DeadLetterDataProvider,
-    @Autowired private val confidentialDataManager: ConfidentialDataManager,
+    @Autowired
+    @Qualifier("confidential-data-manager-client-email")
+    private val confidentialDataManager: ConfidentialDataManager,
     @Autowired val npgClient: NpgClient,
     @Autowired val npgApiKeyConfiguration: NpgApiKeyConfiguration
 ) {
