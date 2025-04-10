@@ -10,7 +10,7 @@ class WebClientsConfigTest {
     @Test
     fun `should build pdv configuration`() {
         Assertions.assertDoesNotThrow {
-            webClientsConfig.personalDataVaultApiClient(
+            webClientsConfig.personalDataVaultApiClientEmail(
                 apiBasePath = "localhost",
                 personalDataVaultApiKey = "personal-data-vault-key"
             )

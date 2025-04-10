@@ -11,8 +11,20 @@ import org.springframework.context.annotation.Configuration
 class WebClientsConfig {
 
     @Bean
-    fun personalDataVaultApiClient(
-        @Value("\${confidentialDataManager.personalDataVault.apiKey}")
+    fun personalDataVaultApiClientEmail(
+        @Value("\${confidentialDataManager.personalDataVaultEmail.apiKey}")
+        personalDataVaultApiKey: String,
+        @Value("\${confidentialDataManager.personalDataVault.apiBasePath}") apiBasePath: String
+    ): TokenApi {
+        val pdvApiClient = ApiClient()
+        pdvApiClient.setApiKey(personalDataVaultApiKey)
+        pdvApiClient.basePath = apiBasePath
+        return TokenApi(pdvApiClient)
+    }
+
+    @Bean
+    fun personalDataVaultApiClientFiscalCode(
+        @Value("\${confidentialDataManager.personalDataVaultFiscalCode.apiKey}")
         personalDataVaultApiKey: String,
         @Value("\${confidentialDataManager.personalDataVault.apiBasePath}") apiBasePath: String
     ): TokenApi {
