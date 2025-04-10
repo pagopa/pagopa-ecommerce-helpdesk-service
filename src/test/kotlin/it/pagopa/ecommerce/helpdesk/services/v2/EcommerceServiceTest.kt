@@ -26,8 +26,7 @@ class EcommerceServiceTest {
 
     private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider = mock()
 
-    private val confidentialDataManagerEmail: ConfidentialDataManager = mock()
-    private val confidentialDataManagerFiscalCode: ConfidentialDataManager = mock()
+    private val confidentialDataManager: ConfidentialDataManager = mock()
 
     private val testEmail = "test@test.it"
 
@@ -38,8 +37,8 @@ class EcommerceServiceTest {
     private val ecommerceService =
         EcommerceService(
             ecommerceTransactionDataProvider,
-            confidentialDataManagerEmail,
-            confidentialDataManagerFiscalCode
+            confidentialDataManager,
+            confidentialDataManager
         )
 
     @Test
@@ -152,8 +151,8 @@ class EcommerceServiceTest {
             )
         val ecommerceServiceLocalMock =
             EcommerceService(
-                confidentialDataManagerEmail = confidentialDataManagerEmail,
-                confidentialDataManagerFiscalCode = confidentialDataManagerFiscalCode,
+                confidentialDataManagerEmail = confidentialDataManager,
+                confidentialDataManagerFiscalCode = confidentialDataManager,
                 ecommerceTransactionDataProvider =
                     EcommerceTransactionDataProvider(
                         transactionsViewRepository = transactionsViewRepository,
