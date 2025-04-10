@@ -46,7 +46,7 @@ interface TransactionsViewRepository : ReactiveCrudRepository<BaseTransactionVie
     fun countTransactionsWithEmail(encryptedEmail: String): Mono<Long>
 
     @Query("{'userId.data': '?0'}", count = true)
-    fun countTransactionsWithFiscalCode(encryptedEmail: String): Mono<Long>
+    fun countTransactionsWithFiscalCode(encryptedFiscalCode: String): Mono<Long>
 
     @Aggregation(
         "{\$match: {'email.data': '?0'}}",
