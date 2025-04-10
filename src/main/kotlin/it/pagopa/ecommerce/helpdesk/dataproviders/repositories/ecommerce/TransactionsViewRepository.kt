@@ -45,7 +45,7 @@ interface TransactionsViewRepository : ReactiveCrudRepository<BaseTransactionVie
     @Query("{'email.data': '?0'}", count = true)
     fun countTransactionsWithEmail(encryptedEmail: String): Mono<Long>
 
-    @Query("{'userId.data': '?0'}", count = true)
+    @Query("{'userId': '?0'}", count = true)
     fun countTransactionsWithFiscalCode(encryptedFiscalCode: String): Mono<Long>
 
     @Aggregation(
@@ -61,7 +61,7 @@ interface TransactionsViewRepository : ReactiveCrudRepository<BaseTransactionVie
     ): Flux<BaseTransactionView>
 
     @Aggregation(
-        "{\$match: {'userId.data': '?0'}}",
+        "{\$match: {'userId': '?0'}}",
         "{\$sort: {'creationDate': -1}}",
         "{\$skip: ?1}",
         "{\$limit: ?2}",
