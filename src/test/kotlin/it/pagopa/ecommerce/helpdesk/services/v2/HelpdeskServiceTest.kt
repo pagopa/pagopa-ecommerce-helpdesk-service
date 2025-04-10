@@ -43,7 +43,8 @@ class HelpdeskServiceTest {
         HelpdeskService(
             pmTransactionDataProvider = pmTransactionDataProvider,
             ecommerceTransactionDataProvider = ecommerceTransactionDataProvider,
-            confidentialDataManager = confidentialDataManager,
+            confidentialDataManagerEmail = confidentialDataManager,
+            confidentialDataManagerFiscalCode = confidentialDataManager,
             pmEcommerceHistoryDataProvider = pmEcommerceHistoryDataProvider
         )
 
@@ -593,7 +594,8 @@ class HelpdeskServiceTest {
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
                     ),
-                confidentialDataManager = confidentialDataManager,
+                confidentialDataManagerEmail = confidentialDataManager,
+                confidentialDataManagerFiscalCode = confidentialDataManager,
                 pmEcommerceHistoryDataProvider = pmEcommerceHistoryDataProvider
             )
         given(confidentialDataManager.encrypt(Email(testEmail)))
@@ -658,7 +660,8 @@ class HelpdeskServiceTest {
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
                     ),
-                confidentialDataManager = confidentialDataManager,
+                confidentialDataManagerEmail = confidentialDataManager,
+                confidentialDataManagerFiscalCode = confidentialDataManager,
                 pmEcommerceHistoryDataProvider = pmEcommerceHistoryDataProvider
             )
         val pmResults =
@@ -748,7 +751,8 @@ class HelpdeskServiceTest {
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
                     ),
-                confidentialDataManager = confidentialDataManager,
+                confidentialDataManagerEmail = confidentialDataManager,
+                confidentialDataManagerFiscalCode = confidentialDataManager,
                 pmEcommerceHistoryDataProvider = pmEcommerceHistoryDataProvider
             )
         val pmResults =

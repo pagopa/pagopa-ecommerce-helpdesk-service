@@ -8,9 +8,19 @@ class WebClientsConfigTest {
     private val webClientsConfig = WebClientsConfig()
 
     @Test
-    fun `should build pdv configuration`() {
+    fun `should build pdv configuration - email`() {
         Assertions.assertDoesNotThrow {
-            webClientsConfig.personalDataVaultApiClient(
+            webClientsConfig.personalDataVaultApiClientEmail(
+                apiBasePath = "localhost",
+                personalDataVaultApiKey = "personal-data-vault-key"
+            )
+        }
+    }
+
+    @Test
+    fun `should build pdv configuration - fiscal code`() {
+        Assertions.assertDoesNotThrow {
+            webClientsConfig.personalDataVaultApiClientFiscalCode(
                 apiBasePath = "localhost",
                 personalDataVaultApiKey = "personal-data-vault-key"
             )

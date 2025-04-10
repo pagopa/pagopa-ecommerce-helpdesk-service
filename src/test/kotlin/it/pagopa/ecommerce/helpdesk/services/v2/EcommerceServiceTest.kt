@@ -35,7 +35,11 @@ class EcommerceServiceTest {
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
 
     private val ecommerceService =
-        EcommerceService(ecommerceTransactionDataProvider, confidentialDataManager)
+        EcommerceService(
+            ecommerceTransactionDataProvider,
+            confidentialDataManager,
+            confidentialDataManager
+        )
 
     @Test
     fun `should return found transaction successfully`() {
@@ -147,7 +151,8 @@ class EcommerceServiceTest {
             )
         val ecommerceServiceLocalMock =
             EcommerceService(
-                confidentialDataManager = confidentialDataManager,
+                confidentialDataManagerEmail = confidentialDataManager,
+                confidentialDataManagerFiscalCode = confidentialDataManager,
                 ecommerceTransactionDataProvider =
                     EcommerceTransactionDataProvider(
                         transactionsViewRepository = transactionsViewRepository,

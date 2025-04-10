@@ -12,6 +12,7 @@ import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionReq
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -20,7 +21,9 @@ import reactor.core.publisher.Mono
 class HelpdeskService(
     @Autowired val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
     @Autowired val pmTransactionDataProvider: PMTransactionDataProvider,
-    @Autowired val confidentialDataManager: ConfidentialDataManager
+    @Autowired
+    @Qualifier("confidential-data-manager-client-email")
+    val confidentialDataManager: ConfidentialDataManager
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)

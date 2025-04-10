@@ -13,13 +13,19 @@ import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponse
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service("EcommerceServiceV2")
 class EcommerceService(
     @Autowired private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
-    @Autowired private val confidentialDataManager: ConfidentialDataManager
+    @Autowired
+    @Qualifier("confidential-data-manager-client-email")
+    private val confidentialDataManagerEmail: ConfidentialDataManager,
+    @Autowired
+    @Qualifier("confidential-data-manager-client-fiscal-code")
+    private val confidentialDataManagerFiscalCode: ConfidentialDataManager,
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -36,9 +42,9 @@ class EcommerceService(
                 searchCriteria =
                     SearchParamDecoderV2(
                         searchParameter = ecommerceSearchTransactionRequestDto,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManagerEmail),
                         confidentialFiscalCodeUtils =
-                            ConfidentialFiscalCodeUtils(confidentialDataManager)
+                            ConfidentialFiscalCodeUtils(confidentialDataManagerFiscalCode)
                     ),
                 searchCriteriaType = ecommerceSearchTransactionRequestDto.type,
                 dataProvider = ecommerceTransactionDataProvider
