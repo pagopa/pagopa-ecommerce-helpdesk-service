@@ -34,7 +34,8 @@ class PMTransactionDataProviderTest {
                     SearchParamDecoderV2(
                         searchParameter =
                             HelpdeskTestUtilsV2.buildSearchRequestByUserMail("test@test.it"),
-                        confidentialMailUtils = null
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
                     )
                 )
             )
@@ -50,7 +51,8 @@ class PMTransactionDataProviderTest {
                     SearchParamDecoderV2(
                         searchParameter =
                             HelpdeskTestUtilsV2.buildSearchRequestByUserMail("unknown@test.it"),
-                        confidentialMailUtils = null
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
                     ),
                 )
             )
@@ -65,7 +67,8 @@ class PMTransactionDataProviderTest {
                 pmTransactionDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = HelpdeskTestUtilsV2.buildSearchRequestByTransactionId(),
-                        confidentialMailUtils = null
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
                     ),
                 )
             )
@@ -80,7 +83,8 @@ class PMTransactionDataProviderTest {
         given(searchCriteria.type).willReturn("UNKNOWN")
         StepVerifier.create(
                 pmTransactionDataProvider.findResult(
-                    searchParams = SearchParamDecoderV2(searchParameter = searchCriteria, null),
+                    searchParams =
+                        SearchParamDecoderV2(searchParameter = searchCriteria, null, null),
                     skip = 0,
                     limit = 0
                 )
@@ -146,7 +150,8 @@ class PMTransactionDataProviderTest {
                         SearchParamDecoderV2(
                             searchParameter =
                                 HelpdeskTestUtilsV2.buildSearchRequestByUserMail("test@test.it"),
-                            confidentialMailUtils = null
+                            confidentialMailUtils = null,
+                            confidentialFiscalCodeUtils = null
                         ),
                     limit = 10,
                     skip = 0
@@ -164,7 +169,8 @@ class PMTransactionDataProviderTest {
                     SearchParamDecoderV2(
                         searchParameter =
                             HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode("fiscal_code"),
-                        confidentialMailUtils = null
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
                     ),
                 )
             )
@@ -182,7 +188,8 @@ class PMTransactionDataProviderTest {
                             HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode(
                                 "unknown-fiscal_code"
                             ),
-                        confidentialMailUtils = null
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
                     ),
                 )
             )
@@ -249,7 +256,8 @@ class PMTransactionDataProviderTest {
                                 HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode(
                                     "fiscal_code"
                                 ),
-                            confidentialMailUtils = null
+                            confidentialMailUtils = null,
+                            confidentialFiscalCodeUtils = null
                         ),
                     limit = 10,
                     skip = 0
@@ -267,7 +275,8 @@ class PMTransactionDataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = HelpdeskTestUtilsV2.buildSearchRequestByRptId(),
-                            confidentialMailUtils = null
+                            confidentialMailUtils = null,
+                            confidentialFiscalCodeUtils = null
                         ),
                 )
             )
@@ -281,7 +290,8 @@ class PMTransactionDataProviderTest {
         given(searchCriteria.type).willReturn("UNKNOWN")
         StepVerifier.create(
                 pmTransactionDataProvider.totalRecordCount(
-                    searchParams = SearchParamDecoderV2(searchParameter = searchCriteria, null),
+                    searchParams =
+                        SearchParamDecoderV2(searchParameter = searchCriteria, null, null),
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -296,7 +306,8 @@ class PMTransactionDataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = HelpdeskTestUtilsV2.buildSearchRequestByRptId(),
-                            confidentialMailUtils = null
+                            confidentialMailUtils = null,
+                            confidentialFiscalCodeUtils = null
                         ),
                     limit = 0,
                     skip = 10

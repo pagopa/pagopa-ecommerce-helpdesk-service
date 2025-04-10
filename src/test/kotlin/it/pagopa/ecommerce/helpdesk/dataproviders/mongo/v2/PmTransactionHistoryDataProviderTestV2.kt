@@ -52,7 +52,8 @@ class PmTransactionHistoryDataProviderTestV2 {
                 pmTransactionHistoryDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = searchCriteria,
-                        confidentialMailUtils = null
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
                     )
                 )
             )
@@ -74,7 +75,8 @@ class PmTransactionHistoryDataProviderTestV2 {
                 pmTransactionHistoryDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = searchCriteria,
-                        confidentialMailUtils = null
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
                     )
                 )
             )
@@ -91,7 +93,8 @@ class PmTransactionHistoryDataProviderTestV2 {
                 pmTransactionHistoryDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = searchTransaction,
-                        confidentialMailUtils = null
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
                     )
                 )
             )
@@ -107,7 +110,8 @@ class PmTransactionHistoryDataProviderTestV2 {
                 pmTransactionHistoryDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = searchCriteria,
-                        confidentialMailUtils = null
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
                     )
                 )
             )
@@ -189,7 +193,8 @@ class PmTransactionHistoryDataProviderTestV2 {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = null
+                            confidentialMailUtils = null,
+                            confidentialFiscalCodeUtils = null
                         ),
                     skip = pageSize * pageNumber,
                     limit = pageSize
@@ -276,7 +281,8 @@ class PmTransactionHistoryDataProviderTestV2 {
                     searchParams =
                         SearchParamDecoderV2(
                             searchParameter = searchCriteria,
-                            confidentialMailUtils = null
+                            confidentialMailUtils = null,
+                            confidentialFiscalCodeUtils = null
                         ),
                     skip = pageSize * pageNumber,
                     limit = pageSize

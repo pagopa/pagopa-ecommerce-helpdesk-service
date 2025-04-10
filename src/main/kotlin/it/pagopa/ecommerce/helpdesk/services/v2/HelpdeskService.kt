@@ -6,6 +6,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.PmTransactionHistoryD
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.ConfidentialFiscalCodeUtils
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.PmProviderType
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
@@ -35,12 +36,14 @@ class HelpdeskService(
         pmProviderType: PmProviderType = PmProviderType.PM_LEGACY
     ): Mono<SearchTransactionResponseDto> {
         val confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+        val confidentialFiscalCodeUtils = ConfidentialFiscalCodeUtils(confidentialDataManager)
         val totalEcommerceCount =
             ecommerceTransactionDataProvider
                 .totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = searchTransactionRequestDto,
-                        confidentialMailUtils = confidentialMailUtils
+                        confidentialMailUtils = confidentialMailUtils,
+                        confidentialFiscalCodeUtils = confidentialFiscalCodeUtils
                     )
                 )
                 .onErrorResume(InvalidSearchCriteriaException::class.java) { Mono.just(0) }
@@ -53,7 +56,8 @@ class HelpdeskService(
                 .totalRecordCount(
                     SearchParamDecoderV2(
                         searchParameter = searchTransactionRequestDto,
-                        confidentialMailUtils = null
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
                     )
                 )
                 .onErrorResume(InvalidSearchCriteriaException::class.java) { Mono.just(0) }
@@ -81,7 +85,8 @@ class HelpdeskService(
                             searchParams =
                                 SearchParamDecoderV2(
                                     searchParameter = searchTransactionRequestDto,
-                                    confidentialMailUtils = confidentialMailUtils
+                                    confidentialMailUtils = confidentialMailUtils,
+                                    confidentialFiscalCodeUtils = confidentialFiscalCodeUtils
                                 ),
                             skip = skip,
                             limit = pageSize
@@ -100,7 +105,8 @@ class HelpdeskService(
                                 searchParams =
                                     SearchParamDecoderV2(
                                         searchParameter = searchTransactionRequestDto,
-                                        confidentialMailUtils = confidentialMailUtils
+                                        confidentialMailUtils = confidentialMailUtils,
+                                        confidentialFiscalCodeUtils = confidentialFiscalCodeUtils
                                     ),
                                 skip = skip,
                                 limit = pageSize
@@ -119,7 +125,8 @@ class HelpdeskService(
                                 searchParams =
                                     SearchParamDecoderV2(
                                         searchParameter = searchTransactionRequestDto,
-                                        confidentialMailUtils = confidentialMailUtils
+                                        confidentialMailUtils = confidentialMailUtils,
+                                        confidentialFiscalCodeUtils = confidentialFiscalCodeUtils
                                     ),
                                 skip = skip,
                                 limit = ecommerceRemainder
@@ -137,7 +144,8 @@ class HelpdeskService(
                                         searchParams =
                                             SearchParamDecoderV2(
                                                 searchParameter = searchTransactionRequestDto,
-                                                confidentialMailUtils = null
+                                                confidentialMailUtils = null,
+                                                confidentialFiscalCodeUtils = null
                                             ),
                                         skip = 0,
                                         limit = pageSize - ecommerceRemainder
@@ -159,7 +167,8 @@ class HelpdeskService(
                             searchParams =
                                 SearchParamDecoderV2(
                                     searchParameter = searchTransactionRequestDto,
-                                    confidentialMailUtils = null
+                                    confidentialMailUtils = null,
+                                    confidentialFiscalCodeUtils = null
                                 ),
                             skip = skipFromPmDB,
                             limit = pageSize

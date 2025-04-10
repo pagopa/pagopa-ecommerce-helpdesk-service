@@ -52,6 +52,10 @@ class EcommerceTransactionDataProvider(
                         }
                     is SearchTransactionRequestEmailDto ->
                         transactionsViewRepository.countTransactionsWithEmail(it.userEmail)
+                    is SearchTransactionRequestFiscalCodeDto ->
+                        transactionsViewRepository.countTransactionsWithFiscalCode(
+                            it.userFiscalCode
+                        )
                     else -> invalidSearchCriteriaError
                 }
             }
@@ -97,6 +101,13 @@ class EcommerceTransactionDataProvider(
                                 skip = skip,
                                 limit = limit
                             )
+                    is SearchTransactionRequestFiscalCodeDto ->
+                        transactionsViewRepository
+                            .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
+                                encryptedFiscalCode = it.userFiscalCode,
+                                skip = skip,
+                                limit = limit
+                            )
                     else -> invalidSearchCriteriaError
                 }
             }
@@ -128,7 +139,7 @@ class EcommerceTransactionDataProvider(
                     .zipWhen(
                         { baseTransaction ->
                             confidentialMailUtils
-                                .toEmail(baseTransaction.email)
+                                .toClearData(baseTransaction.email)
                                 .map { Optional.of(it) }
                                 .onErrorResume(ConfidentialDataException::class.java) {
                                     val errorCause = it.cause
@@ -160,7 +171,7 @@ class EcommerceTransactionDataProvider(
                     .zipWhen(
                         { baseTransaction ->
                             confidentialMailUtils
-                                .toEmail(baseTransaction.email)
+                                .toClearData(baseTransaction.email)
                                 .map { Optional.of(it) }
                                 .onErrorResume(ConfidentialDataException::class.java) {
                                     val errorCause = it.cause
