@@ -33,7 +33,7 @@ class ConfidentialFiscalCodeUtilsTests {
             .willReturn(Mono.just(fiscalCode))
 
         /* test */
-        StepVerifier.create(confidentialFiscalCodeUtils.toFiscalCode(computedConfidential))
+        StepVerifier.create(confidentialFiscalCodeUtils.toClearData(computedConfidential))
             .expectNext(fiscalCode)
             .verifyComplete()
 
@@ -49,7 +49,7 @@ class ConfidentialFiscalCodeUtilsTests {
         fiscalCodeCachedMap[computedConfidential.opaqueData] = fiscalCode
 
         /* test */
-        StepVerifier.create(confidentialFiscalCodeUtils.toFiscalCode(computedConfidential))
+        StepVerifier.create(confidentialFiscalCodeUtils.toClearData(computedConfidential))
             .expectNext(fiscalCode)
             .verifyComplete()
 
