@@ -3,7 +3,6 @@ package it.pagopa.ecommerce.helpdesk.utils
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.domain.FiscalCode
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
-import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -14,8 +13,8 @@ import reactor.test.StepVerifier
 
 class ConfidentialFiscalCodeUtilsTests {
 
-    private val EXAMPLE_FISCAL_CODE = "example";
-    
+    private val EXAMPLE_FISCAL_CODE = "example"
+
     private val fiscalCodeCachedMap: MutableMap<String, FiscalCode> = mutableMapOf()
 
     private val confidentialDataManager: ConfidentialDataManager = mock()
