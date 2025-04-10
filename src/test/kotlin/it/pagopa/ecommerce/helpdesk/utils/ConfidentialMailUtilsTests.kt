@@ -32,7 +32,7 @@ class ConfidentialMailUtilsTests {
             .willReturn(Mono.just(email))
 
         /* test */
-        StepVerifier.create(confidentialMailUtils.toEmail(computedConfidential))
+        StepVerifier.create(confidentialMailUtils.toClearData(computedConfidential))
             .expectNext(email)
             .verifyComplete()
 
@@ -48,7 +48,7 @@ class ConfidentialMailUtilsTests {
         emailCachedMap[computedConfidential.opaqueData] = email
 
         /* test */
-        StepVerifier.create(confidentialMailUtils.toEmail(computedConfidential))
+        StepVerifier.create(confidentialMailUtils.toClearData(computedConfidential))
             .expectNext(email)
             .verifyComplete()
 

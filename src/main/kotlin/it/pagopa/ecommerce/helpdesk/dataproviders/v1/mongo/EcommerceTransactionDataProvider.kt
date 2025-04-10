@@ -137,7 +137,7 @@ class EcommerceTransactionDataProvider(
                     .zipWhen(
                         { baseTransaction ->
                             confidentialMailUtils
-                                .toEmail(baseTransaction.email)
+                                .toClearData(baseTransaction.email)
                                 .map { Optional.of(it) }
                                 .onErrorResume(ConfidentialDataException::class.java) {
                                     val errorCause = it.cause
@@ -166,7 +166,7 @@ class EcommerceTransactionDataProvider(
                     .zipWhen(
                         { baseTransaction ->
                             confidentialMailUtils
-                                .toEmail(baseTransaction.email)
+                                .toClearData(baseTransaction.email)
                                 .map { Optional.of(it) }
                                 .onErrorResume(ConfidentialDataException::class.java) {
                                     val errorCause = it.cause

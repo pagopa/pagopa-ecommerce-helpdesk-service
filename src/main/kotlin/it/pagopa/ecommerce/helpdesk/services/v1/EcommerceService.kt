@@ -15,6 +15,7 @@ import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadGatewayException
 import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadRequestException
+import it.pagopa.ecommerce.helpdesk.utils.ConfidentialFiscalCodeUtils
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildDeadLetterEventsSearchResponse
@@ -138,7 +139,8 @@ class EcommerceService(
                         this.transactionId = transactionId
                         this.type = "TRANSACTION_ID"
                     },
-                confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                confidentialFiscalCodeUtils = ConfidentialFiscalCodeUtils(confidentialDataManager)
             )
 
         return ecommerceTransactionDataProviderV2.findResult(searchCriteria, 0, 1).flatMap { list ->
