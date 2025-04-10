@@ -564,6 +564,7 @@
 					"script": {
 						"exec": [
 							"pm.test(\"Technical helpDesk SearchTransaction by FISCAL_CODE - Status code is 200 with valid json response\", function () {",
+							"    // validate Fiscal Code",
 							"    pm.response.to.have.status(200);",
 							"    const response = pm.response.json();",
 							"    pm.expect(response.transactions.length).greaterThan(0);",
