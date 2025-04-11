@@ -15,6 +15,7 @@ import it.pagopa.generated.ecommerce.helpdesk.v2.model.HelpDeskSearchTransaction
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -23,7 +24,12 @@ import reactor.core.publisher.Mono
 class HelpdeskService(
     @Autowired val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
     @Autowired val pmTransactionDataProvider: PMTransactionDataProvider,
-    @Autowired val confidentialDataManager: ConfidentialDataManager,
+    @Autowired
+    @Qualifier("confidential-data-manager-client-email")
+    private val confidentialDataManagerEmail: ConfidentialDataManager,
+    @Autowired
+    @Qualifier("confidential-data-manager-client-fiscal-code")
+    private val confidentialDataManagerFiscalCode: ConfidentialDataManager,
     @Autowired val pmEcommerceHistoryDataProvider: PmTransactionHistoryDataProvider
 ) {
 
@@ -35,8 +41,9 @@ class HelpdeskService(
         searchTransactionRequestDto: HelpDeskSearchTransactionRequestDto,
         pmProviderType: PmProviderType = PmProviderType.PM_LEGACY
     ): Mono<SearchTransactionResponseDto> {
-        val confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-        val confidentialFiscalCodeUtils = ConfidentialFiscalCodeUtils(confidentialDataManager)
+        val confidentialMailUtils = ConfidentialMailUtils(confidentialDataManagerEmail)
+        val confidentialFiscalCodeUtils =
+            ConfidentialFiscalCodeUtils(confidentialDataManagerFiscalCode)
         val totalEcommerceCount =
             ecommerceTransactionDataProvider
                 .totalRecordCount(

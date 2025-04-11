@@ -29,8 +29,8 @@ abstract class ConfidentialDataCacheUtils<T>(
             confidentialDataManager
                 .decrypt(encrypted, confidentialFromClearData)
                 .doOnError { e -> logger.error("Exception decrypting confidential data", e) }
-                .doOnNext { decryptedEmail ->
-                    encryptedToClearMap[encrypted.opaqueData] = decryptedEmail
+                .doOnNext { decryptedData ->
+                    encryptedToClearMap[encrypted.opaqueData] = decryptedData
                 }
         }
     }
@@ -38,7 +38,7 @@ abstract class ConfidentialDataCacheUtils<T>(
     /**
      * The method used for encrypt data using pdv
      *
-     * @param clearText clear email
+     * @param clearText clear data
      * @return Mono<Confidential<T>> return mono with encrypted data
      */
     private fun toConfidential(clearText: T): Mono<Confidential<T>> {
