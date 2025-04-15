@@ -313,7 +313,8 @@ class EcommerceControllerTest {
             HelpdeskTestUtilsV2.buildProblemJson(
                 httpStatus = HttpStatus.BAD_REQUEST,
                 title = "Bad request",
-                description = "Input request is invalid. Invalid fields: timeRange"
+                description =
+                    "Input request is invalid. Invalid fields: paymentTypeCode,timeRange,clientId,pspId"
             )
 
         webClient

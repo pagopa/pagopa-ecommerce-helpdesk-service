@@ -551,6 +551,9 @@ components:
               description: End datetime (must be within one hour of startDate)
       required:
         - timeRange
+        - clientId
+        - pspId
+        - paymentTypeCode
       example:
         clientId: "client-app-123"
         pspId: "psp-001"

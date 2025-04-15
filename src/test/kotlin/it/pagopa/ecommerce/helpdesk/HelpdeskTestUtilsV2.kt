@@ -146,6 +146,7 @@ object HelpdeskTestUtilsV2 {
     fun buildSearchMetrics(): SearchMetricsRequestDto =
         SearchMetricsRequestDto()
             .pspId(TransactionTestUtils.PSP_ID)
+            .paymentTypeCode("CP")
             .clientId("CHECKOUT")
             .timeRange(
                 SearchMetricsRequestTimeRangeDto()
