@@ -9,7 +9,9 @@ import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.EcommerceSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchMetricsRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionMetricsResponseDto
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -82,5 +84,33 @@ class EcommerceService(
                 Mono.error(NoResultFoundException(searchCriteriaType))
             }
         }
+    }
+
+    fun searchMetrics(
+        searchMetricsRequestDto: SearchMetricsRequestDto
+    ): Mono<TransactionMetricsResponseDto> {
+        logger.info("[helpDesk ecommerce service] searchMetrics method")
+        return Mono.just(
+            TransactionMetricsResponseDto()
+                .ACTIVATED(1)
+                .AUTHORIZATION_REQUESTED(2)
+                .AUTHORIZATION_COMPLETED(3)
+                .CLOSURE_REQUESTED(4)
+                .CLOSED(5)
+                .CLOSURE_ERROR(6)
+                .NOTIFIED_OK(7)
+                .NOTIFIED_KO(8)
+                .NOTIFICATION_ERROR(9)
+                .NOTIFICATION_REQUESTED(10)
+                .EXPIRED(11)
+                .REFUNDED(12)
+                .CANCELED(13)
+                .EXPIRED_NOT_AUTHORIZED(14)
+                .UNAUTHORIZED(15)
+                .REFUND_ERROR(16)
+                .REFUND_REQUESTED(17)
+                .CANCELLATION_REQUESTED(18)
+                .CANCELLATION_EXPIRED(19)
+        )
     }
 }

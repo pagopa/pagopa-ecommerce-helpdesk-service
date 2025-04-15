@@ -178,4 +178,35 @@ class EcommerceServiceTest {
         verify(confidentialDataManager, times(1)).encrypt(any())
         verify(confidentialDataManager, times(0)).decrypt(any<Confidential<Email>>(), any())
     }
+
+    @Test
+    fun `should return metrics successfully`() {
+        val searchMetrics = HelpdeskTestUtilsV2.buildSearchMetrics()
+
+        val expectedResponse =
+            TransactionMetricsResponseDto()
+                .ACTIVATED(1)
+                .AUTHORIZATION_REQUESTED(2)
+                .AUTHORIZATION_COMPLETED(3)
+                .CLOSURE_REQUESTED(4)
+                .CLOSED(5)
+                .CLOSURE_ERROR(6)
+                .NOTIFIED_OK(7)
+                .NOTIFIED_KO(8)
+                .NOTIFICATION_ERROR(9)
+                .NOTIFICATION_REQUESTED(10)
+                .EXPIRED(11)
+                .REFUNDED(12)
+                .CANCELED(13)
+                .EXPIRED_NOT_AUTHORIZED(14)
+                .UNAUTHORIZED(15)
+                .REFUND_ERROR(16)
+                .REFUND_REQUESTED(17)
+                .CANCELLATION_REQUESTED(18)
+                .CANCELLATION_EXPIRED(19)
+        StepVerifier.create(ecommerceService.searchMetrics(searchMetrics))
+            .expectNext(expectedResponse)
+            .verifyComplete()
+    }
 }
+:

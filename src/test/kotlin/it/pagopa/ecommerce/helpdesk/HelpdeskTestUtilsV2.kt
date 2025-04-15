@@ -142,4 +142,14 @@ object HelpdeskTestUtilsV2 {
                 ),
             product = product.name
         )
+
+    fun buildSearchMetrics(): SearchMetricsRequestDto =
+        SearchMetricsRequestDto()
+            .pspId(TransactionTestUtils.PSP_ID)
+            .clientId("CHECKOUT")
+            .timeRange(
+                SearchMetricsRequestTimeRangeDto()
+                    .startDate(OffsetDateTime.parse("2023-01-01T00:00:00Z"))
+                    .endDate(OffsetDateTime.parse("2023-01-01T01:00:00Z"))
+            )
 }
