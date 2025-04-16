@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.helpdesk.services.v2
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.StateMetricsDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialFiscalCodeUtils
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
@@ -28,6 +29,7 @@ class EcommerceService(
     @Autowired
     @Qualifier("confidential-data-manager-client-fiscal-code")
     private val confidentialDataManagerFiscalCode: ConfidentialDataManager,
+    @Autowired private val stateMetricsDataProvider: StateMetricsDataProvider,
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -90,14 +92,6 @@ class EcommerceService(
         searchMetricsRequestDto: SearchMetricsRequestDto
     ): Mono<TransactionMetricsResponseDto> {
         logger.info("[helpDesk ecommerce service] searchMetrics method")
-        return ecommerceTransactionDataProvider.s
-            .map { (results, totalCount) ->
-                buildTransactionSearchResponse(
-                    currentPage = pageNumber,
-                    totalCount = totalCount,
-                    pageSize = pageSize,
-                    results = results
-                )
-            }
+        return stateMetricsDataProvider.computeMetrics(searchMetricsRequestDto)
     }
 }
