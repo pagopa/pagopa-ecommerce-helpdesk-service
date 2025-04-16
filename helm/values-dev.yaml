@@ -18,7 +18,7 @@ microservice-chart:
     envSecret: {}
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaecommercehelpdeskservice
-    tag: "1.40.0"
+    tag: "1.41.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -110,7 +110,8 @@ microservice-chart:
     NPG_MYBANK_PSP_LIST: "BCITITMM,UNCRITMM"
     NPG_BANCOMATPAY_PSP_LIST: "BCITITMM"
     NPG_SATISPAY_PSP_LIST: "SATYLUL1"
-    NPG_APPLEPAY_PSP_LIST: "SIGPITM1XXX"
+    NPG_APPLEPAY_PSP_LIST: "SIGPITM1XXX,CIPBITMM"
+    NPG_GOOGLE_PAY_PSP_LIST: "CIPBITMM"
     SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
       {ALL: '*', ECOMMERCE: 'pagopa-d-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-d-weu-ecommerce-notifications-service-errors-queue'}
 
@@ -124,6 +125,7 @@ microservice-chart:
     NPG_MYBANK_PSP_KEYS: npg-mybank-psp-keys
     NPG_SATISPAY_PSP_KEYS: npg-satispay-psp-keys
     NPG_APPLEPAY_PSP_KEYS: npg-apple-pay-psp-keys
+    NPG_GOOGLE_PAY_PSP_KEYS: npg-google-pay-psp-keys
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY_EMAIL: personal-data-vault-api-key
     PERSONAL_DATA_VAULT_API_KEY_FISCAL_CODE: personal-data-vault-api-key-wallet-session
