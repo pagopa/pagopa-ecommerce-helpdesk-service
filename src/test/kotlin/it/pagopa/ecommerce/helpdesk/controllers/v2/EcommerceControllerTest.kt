@@ -309,7 +309,6 @@ class EcommerceControllerTest {
 
     @Test
     fun `post ecommerceSearchMetrics return 400 for invalid  parameters`() = runTest {
-
         webClient
             .post()
             .uri { uriBuilder -> uriBuilder.path("/v2/ecommerce/searchMetrics").build() }
