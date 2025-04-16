@@ -90,27 +90,14 @@ class EcommerceService(
         searchMetricsRequestDto: SearchMetricsRequestDto
     ): Mono<TransactionMetricsResponseDto> {
         logger.info("[helpDesk ecommerce service] searchMetrics method")
-        return Mono.just(
-            TransactionMetricsResponseDto()
-                .ACTIVATED(1)
-                .AUTHORIZATION_REQUESTED(2)
-                .AUTHORIZATION_COMPLETED(3)
-                .CLOSURE_REQUESTED(4)
-                .CLOSED(5)
-                .CLOSURE_ERROR(6)
-                .NOTIFIED_OK(7)
-                .NOTIFIED_KO(8)
-                .NOTIFICATION_ERROR(9)
-                .NOTIFICATION_REQUESTED(10)
-                .EXPIRED(11)
-                .REFUNDED(12)
-                .CANCELED(13)
-                .EXPIRED_NOT_AUTHORIZED(14)
-                .UNAUTHORIZED(15)
-                .REFUND_ERROR(16)
-                .REFUND_REQUESTED(17)
-                .CANCELLATION_REQUESTED(18)
-                .CANCELLATION_EXPIRED(19)
-        )
+        return ecommerceTransactionDataProvider.s
+            .map { (results, totalCount) ->
+                buildTransactionSearchResponse(
+                    currentPage = pageNumber,
+                    totalCount = totalCount,
+                    pageSize = pageSize,
+                    results = results
+                )
+            }
     }
 }

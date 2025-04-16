@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce
 
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
+import it.pagopa.ecommerce.helpdesk.documents.EcommerceStatusCount
 import org.springframework.data.mongodb.repository.Aggregation
 import org.springframework.data.mongodb.repository.Query
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
@@ -71,4 +72,12 @@ interface TransactionsViewRepository : ReactiveCrudRepository<BaseTransactionVie
         skip: Int,
         limit: Int
     ): Flux<BaseTransactionView>
+
+    @Aggregation(
+        "{\$match: {'creationDate': {'\$gte': '?1','\$lte': '?2'}, clientId: '?3'}",
+        "{\$group: { '_id': '\$status', count: { '\$sum': 1 } }}",
+    )
+    fun findMetricsGivenClientId(
+        clientId: String,
+    ): Flux<EcommerceStatusCount>
 }
