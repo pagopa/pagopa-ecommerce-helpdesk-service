@@ -1,3 +1,5 @@
 package it.pagopa.ecommerce.helpdesk.documents
 
-data class EcommerceStatusCount(val status: String, val count: Int)
+import org.springframework.data.mongodb.core.mapping.Field
+
+data class EcommerceStatusCount(@Field("_id") val status: String, val count: Int)

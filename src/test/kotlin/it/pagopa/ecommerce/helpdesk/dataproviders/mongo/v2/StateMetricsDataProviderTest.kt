@@ -3,10 +3,16 @@ package it.pagopa.ecommerce.helpdesk.dataproviders.mongo.v2
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.StateMetricsDataProvider
 import it.pagopa.ecommerce.helpdesk.documents.EcommerceStatusCount
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
-import java.util.*
-import org.junit.jupiter.api.*
-import org.mockito.kotlin.*
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchMetricsRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchMetricsRequestTimeRangeDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionMetricsResponseDto
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import reactor.core.publisher.Flux
 import reactor.test.StepVerifier
 
@@ -23,8 +29,14 @@ class StateMetricsDataProviderTest {
     @Test
     fun `should compute metrics correctly given valid clientId`() {
 
-        val clientId = "test-client"
-        val criteria = SearchMetricsRequestDto().clientId(clientId)
+        val clientId = "CHECKOUT"
+        val startDate = OffsetDateTime.now(ZoneOffset.UTC)
+        val endDate = OffsetDateTime.now(ZoneOffset.UTC)
+        val criteria =
+            SearchMetricsRequestDto()
+                .clientId(clientId)
+                .timeRange(SearchMetricsRequestTimeRangeDto().startDate(startDate).endDate(endDate))
+
         val metrics =
             listOf(
                 EcommerceStatusCount("ACTIVATED", 1),
@@ -70,7 +82,13 @@ class StateMetricsDataProviderTest {
                 .CANCELLATION_REQUESTED(18)
                 .CANCELLATION_EXPIRED(19)
 
-        whenever(transactionsViewRepository.findMetricsGivenClientId(clientId))
+        whenever(
+                transactionsViewRepository.findMetricsGivenStartDateAndEndDateAndClientId(
+                    startDate.toString(),
+                    endDate.toString(),
+                    clientId
+                )
+            )
             .thenReturn(Flux.fromIterable(metrics))
 
         val resultMono = stateMetricsDataProvider.computeMetrics(criteria)
@@ -79,6 +97,11 @@ class StateMetricsDataProviderTest {
             .expectNextMatches { actual -> actual == expected }
             .verifyComplete()
 
-        verify(transactionsViewRepository).findMetricsGivenClientId(clientId)
+        verify(transactionsViewRepository)
+            .findMetricsGivenStartDateAndEndDateAndClientId(
+                startDate.toString(),
+                endDate.toString(),
+                clientId
+            )
     }
 }
