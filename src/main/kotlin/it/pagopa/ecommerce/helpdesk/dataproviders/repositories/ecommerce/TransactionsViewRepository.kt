@@ -81,5 +81,5 @@ interface TransactionsViewRepository : ReactiveCrudRepository<BaseTransactionVie
         startDate: String,
         endDate: String,
         clientId: String,
-        ): Flux<EcommerceStatusCount>
+    ): Flux<EcommerceStatusCount>
 }
