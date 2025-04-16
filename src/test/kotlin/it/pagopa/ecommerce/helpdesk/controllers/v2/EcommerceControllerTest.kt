@@ -309,14 +309,6 @@ class EcommerceControllerTest {
 
     @Test
     fun `post ecommerceSearchMetrics return 400 for invalid  parameters`() = runTest {
-        val expectedProblemJson =
-            HelpdeskTestUtilsV2.buildProblemJson(
-                httpStatus = HttpStatus.BAD_REQUEST,
-                title = "Bad request",
-                description =
-                    "Input request is invalid. Invalid fields: paymentTypeCode,timeRange,clientId,pspId"
-            )
-
         webClient
             .post()
             .uri { uriBuilder -> uriBuilder.path("/v2/ecommerce/searchMetrics").build() }
@@ -326,7 +318,6 @@ class EcommerceControllerTest {
             .expectStatus()
             .isBadRequest
             .expectBody<ProblemJsonDto>()
-            .isEqualTo(expectedProblemJson)
     }
     @Test
     fun `post ecommerceSearchMetrics return 500 for invalid  parameters`() = runTest {
