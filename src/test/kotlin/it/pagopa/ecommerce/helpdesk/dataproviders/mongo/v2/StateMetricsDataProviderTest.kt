@@ -32,10 +32,15 @@ class StateMetricsDataProviderTest {
         val clientId = "CHECKOUT"
         val startDate = OffsetDateTime.now(ZoneOffset.UTC)
         val endDate = OffsetDateTime.now(ZoneOffset.UTC)
+        val pspId = "pspId"
+        val paymentTypeCode = "CP"
+
         val criteria =
             SearchMetricsRequestDto()
                 .clientId(clientId)
                 .timeRange(SearchMetricsRequestTimeRangeDto().startDate(startDate).endDate(endDate))
+                .pspId(pspId)
+                .paymentTypeCode(paymentTypeCode)
 
         val metrics =
             listOf(
@@ -83,11 +88,14 @@ class StateMetricsDataProviderTest {
                 .CANCELLATION_EXPIRED(19)
 
         whenever(
-                transactionsViewRepository.findMetricsGivenStartDateAndEndDateAndClientId(
-                    startDate.toString(),
-                    endDate.toString(),
-                    clientId
-                )
+                transactionsViewRepository
+                    .findMetricsGivenStartDateAndEndDateAndClientIdAndPspIdAndPaymentTypeCode(
+                        startDate.toString(),
+                        endDate.toString(),
+                        clientId,
+                        pspId,
+                        paymentTypeCode
+                    )
             )
             .thenReturn(Flux.fromIterable(metrics))
 
@@ -98,10 +106,12 @@ class StateMetricsDataProviderTest {
             .verifyComplete()
 
         verify(transactionsViewRepository)
-            .findMetricsGivenStartDateAndEndDateAndClientId(
+            .findMetricsGivenStartDateAndEndDateAndClientIdAndPspIdAndPaymentTypeCode(
                 startDate.toString(),
                 endDate.toString(),
-                clientId
+                clientId,
+                pspId,
+                paymentTypeCode
             )
     }
 }

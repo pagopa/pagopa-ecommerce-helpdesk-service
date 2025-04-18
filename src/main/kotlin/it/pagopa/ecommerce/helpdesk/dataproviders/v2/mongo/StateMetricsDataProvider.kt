@@ -18,10 +18,12 @@ class StateMetricsDataProvider(
     ): Mono<TransactionMetricsResponseDto> {
 
         return transactionsViewRepository
-            .findMetricsGivenStartDateAndEndDateAndClientId(
+            .findMetricsGivenStartDateAndEndDateAndClientIdAndPspIdAndPaymentTypeCode(
                 criteria.timeRange.startDate.toString(),
                 criteria.timeRange.endDate.toString(),
-                criteria.clientId
+                criteria.clientId,
+                criteria.pspId,
+                criteria.paymentTypeCode
             )
             .collectList()
             .map { buildSearchMetricsResponse(it) }

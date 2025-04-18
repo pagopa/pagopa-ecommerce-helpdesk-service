@@ -74,12 +74,14 @@ interface TransactionsViewRepository : ReactiveCrudRepository<BaseTransactionVie
     ): Flux<BaseTransactionView>
 
     @Aggregation(
-        "{ \$match: { 'creationDate': { \$gte: ?0, \$lte: ?1 }, clientId: ?2 } }",
+        "{ \$match: { 'creationDate': { \$gte: ?0, \$lte: ?1 }, clientId: ?2, pspId: ?3, paymentTypeCode: ?4 } }",
         "{ \$group: { _id: '\$status', count: { \$sum: 1 } } }"
     )
-    fun findMetricsGivenStartDateAndEndDateAndClientId(
+    fun findMetricsGivenStartDateAndEndDateAndClientIdAndPspIdAndPaymentTypeCode(
         startDate: String,
         endDate: String,
         clientId: String,
+        pspId: String,
+        paymentTypeCode: String
     ): Flux<EcommerceStatusCount>
 }
