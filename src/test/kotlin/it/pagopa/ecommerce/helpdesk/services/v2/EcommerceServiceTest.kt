@@ -11,6 +11,7 @@ import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.StateMetricsDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import java.time.OffsetDateTime
@@ -26,6 +27,8 @@ class EcommerceServiceTest {
 
     private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider = mock()
 
+    private val stateMetricsDataProvider: StateMetricsDataProvider = mock()
+
     private val confidentialDataManager: ConfidentialDataManager = mock()
 
     private val testEmail = "test@test.it"
@@ -38,7 +41,8 @@ class EcommerceServiceTest {
         EcommerceService(
             ecommerceTransactionDataProvider,
             confidentialDataManager,
-            confidentialDataManager
+            confidentialDataManager,
+            stateMetricsDataProvider
         )
 
     @Test
@@ -157,7 +161,8 @@ class EcommerceServiceTest {
                     EcommerceTransactionDataProvider(
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
-                    )
+                    ),
+                stateMetricsDataProvider = stateMetricsDataProvider
             )
 
         StepVerifier.create(
@@ -204,8 +209,14 @@ class EcommerceServiceTest {
                 .REFUND_REQUESTED(17)
                 .CANCELLATION_REQUESTED(18)
                 .CANCELLATION_EXPIRED(19)
+
+        given(stateMetricsDataProvider.computeMetrics(searchMetrics))
+            .willReturn(Mono.just(expectedResponse))
+
         StepVerifier.create(ecommerceService.searchMetrics(searchMetrics))
             .expectNext(expectedResponse)
             .verifyComplete()
+
+        verify(stateMetricsDataProvider, times(1)).computeMetrics(searchMetrics)
     }
 }

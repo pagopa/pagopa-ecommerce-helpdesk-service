@@ -14,6 +14,7 @@ import it.pagopa.ecommerce.commons.domain.v2.pojos.*
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto
 import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.utils.v2.TransactionUtils.getTransactionFee
+import it.pagopa.ecommerce.helpdesk.documents.EcommerceStatusCount
 import it.pagopa.ecommerce.helpdesk.utils.GatewayAuthorizationData
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import it.pagopa.generated.ecommerce.nodo.v2.model.UserDto
@@ -312,3 +313,29 @@ private fun getRefundOperationId(baseTransaction: BaseTransaction): String? =
         }
         else -> null
     }
+
+fun buildSearchMetricsResponse(metrics: List<EcommerceStatusCount>): TransactionMetricsResponseDto {
+    val responseDto = TransactionMetricsResponseDto()
+    val map: Map<String, Int> = metrics.associateBy({ it.status }, { it.count })
+
+    return responseDto
+        .ACTIVATED(map.getOrDefault("ACTIVATED", 0))
+        .AUTHORIZATION_REQUESTED(map.getOrDefault("AUTHORIZATION_REQUESTED", 0))
+        .AUTHORIZATION_COMPLETED(map.getOrDefault("AUTHORIZATION_COMPLETED", 0))
+        .CLOSURE_REQUESTED(map.getOrDefault("CLOSURE_REQUESTED", 0))
+        .CLOSED(map.getOrDefault("CLOSED", 0))
+        .CLOSURE_ERROR(map.getOrDefault("CLOSURE_ERROR", 0))
+        .NOTIFIED_OK(map.getOrDefault("NOTIFIED_OK", 0))
+        .NOTIFIED_KO(map.getOrDefault("NOTIFIED_KO", 0))
+        .NOTIFICATION_ERROR(map.getOrDefault("NOTIFICATION_ERROR", 0))
+        .NOTIFICATION_REQUESTED(map.getOrDefault("NOTIFICATION_REQUESTED", 0))
+        .EXPIRED(map.getOrDefault("EXPIRED", 0))
+        .REFUNDED(map.getOrDefault("REFUNDED", 0))
+        .CANCELED(map.getOrDefault("CANCELED", 0))
+        .EXPIRED_NOT_AUTHORIZED(map.getOrDefault("EXPIRED_NOT_AUTHORIZED", 0))
+        .UNAUTHORIZED(map.getOrDefault("UNAUTHORIZED", 0))
+        .REFUND_ERROR(map.getOrDefault("REFUND_ERROR", 0))
+        .REFUND_REQUESTED(map.getOrDefault("REFUND_REQUESTED", 0))
+        .CANCELLATION_REQUESTED(map.getOrDefault("CANCELLATION_REQUESTED", 0))
+        .CANCELLATION_EXPIRED(map.getOrDefault("CANCELLATION_EXPIRED", 0))
+}
