@@ -3,13 +3,16 @@ package it.pagopa.ecommerce.helpdesk.services.v2
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.StateMetricsDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialFiscalCodeUtils
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.EcommerceSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchMetricsRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionMetricsResponseDto
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,6 +29,7 @@ class EcommerceService(
     @Autowired
     @Qualifier("confidential-data-manager-client-fiscal-code")
     private val confidentialDataManagerFiscalCode: ConfidentialDataManager,
+    @Autowired private val stateMetricsDataProvider: StateMetricsDataProvider,
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -82,5 +86,12 @@ class EcommerceService(
                 Mono.error(NoResultFoundException(searchCriteriaType))
             }
         }
+    }
+
+    fun searchMetrics(
+        searchMetricsRequestDto: SearchMetricsRequestDto
+    ): Mono<TransactionMetricsResponseDto> {
+        logger.info("[helpDesk ecommerce service] searchMetrics method")
+        return stateMetricsDataProvider.computeMetrics(searchMetricsRequestDto)
     }
 }

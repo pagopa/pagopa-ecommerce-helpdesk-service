@@ -3,7 +3,9 @@ package it.pagopa.ecommerce.helpdesk.controllers.v2
 import it.pagopa.ecommerce.helpdesk.services.v2.EcommerceService
 import it.pagopa.generated.ecommerce.helpdesk.v2.api.EcommerceApi
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.EcommerceSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchMetricsRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionMetricsResponseDto
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import org.slf4j.LoggerFactory
@@ -32,6 +34,16 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
                     ecommerceSearchTransactionRequestDto = it
                 )
             }
+            .map { ResponseEntity.ok(it) }
+    }
+
+    override fun ecommerceSearchMetrics(
+        searchMetricsRequestDto: Mono<SearchMetricsRequestDto>,
+        exchange: ServerWebExchange
+    ): Mono<ResponseEntity<TransactionMetricsResponseDto>> {
+        logger.info("[HelpDesk controller] ecommerceSearchMetrics")
+        return searchMetricsRequestDto
+            .flatMap { ecommerceService.searchMetrics(searchMetricsRequestDto = it) }
             .map { ResponseEntity.ok(it) }
     }
 }

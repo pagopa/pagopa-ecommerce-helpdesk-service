@@ -11,6 +11,7 @@ import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
+import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.StateMetricsDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import java.time.OffsetDateTime
@@ -26,6 +27,8 @@ class EcommerceServiceTest {
 
     private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider = mock()
 
+    private val stateMetricsDataProvider: StateMetricsDataProvider = mock()
+
     private val confidentialDataManager: ConfidentialDataManager = mock()
 
     private val testEmail = "test@test.it"
@@ -38,7 +41,8 @@ class EcommerceServiceTest {
         EcommerceService(
             ecommerceTransactionDataProvider,
             confidentialDataManager,
-            confidentialDataManager
+            confidentialDataManager,
+            stateMetricsDataProvider
         )
 
     @Test
@@ -157,7 +161,8 @@ class EcommerceServiceTest {
                     EcommerceTransactionDataProvider(
                         transactionsViewRepository = transactionsViewRepository,
                         transactionsEventStoreRepository = transactionsEventStoreRepository
-                    )
+                    ),
+                stateMetricsDataProvider = stateMetricsDataProvider
             )
 
         StepVerifier.create(
@@ -177,5 +182,41 @@ class EcommerceServiceTest {
 
         verify(confidentialDataManager, times(1)).encrypt(any())
         verify(confidentialDataManager, times(0)).decrypt(any<Confidential<Email>>(), any())
+    }
+
+    @Test
+    fun `should return metrics successfully`() {
+        val searchMetrics = HelpdeskTestUtilsV2.buildSearchMetrics()
+
+        val expectedResponse =
+            TransactionMetricsResponseDto()
+                .ACTIVATED(1)
+                .AUTHORIZATION_REQUESTED(2)
+                .AUTHORIZATION_COMPLETED(3)
+                .CLOSURE_REQUESTED(4)
+                .CLOSED(5)
+                .CLOSURE_ERROR(6)
+                .NOTIFIED_OK(7)
+                .NOTIFIED_KO(8)
+                .NOTIFICATION_ERROR(9)
+                .NOTIFICATION_REQUESTED(10)
+                .EXPIRED(11)
+                .REFUNDED(12)
+                .CANCELED(13)
+                .EXPIRED_NOT_AUTHORIZED(14)
+                .UNAUTHORIZED(15)
+                .REFUND_ERROR(16)
+                .REFUND_REQUESTED(17)
+                .CANCELLATION_REQUESTED(18)
+                .CANCELLATION_EXPIRED(19)
+
+        given(stateMetricsDataProvider.computeMetrics(searchMetrics))
+            .willReturn(Mono.just(expectedResponse))
+
+        StepVerifier.create(ecommerceService.searchMetrics(searchMetrics))
+            .expectNext(expectedResponse)
+            .verifyComplete()
+
+        verify(stateMetricsDataProvider, times(1)).computeMetrics(searchMetrics)
     }
 }
