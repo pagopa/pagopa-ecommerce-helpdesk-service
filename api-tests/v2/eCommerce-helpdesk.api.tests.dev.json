@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "988bbd1e-0da5-459f-8d4d-8cf003ced9c7",
+		"_postman_id": "dc5f4383-87aa-4f54-9beb-8e0a11cd22b6",
 		"name": "Ecommerce helpDesk-service DEV (v2)",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "36861410"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23963988"
 	},
 	"item": [
 		{
@@ -572,8 +572,8 @@
 							"    pm.expect(response.page.results).to.be.lte(10);",
 							"",
 							"    // Extract the fiscal code from the payload",
-							"    let sentFiscalCode = pm.request.body.raw;",
-							"    sentFiscalCode = JSON.parse(sentFiscalCode).userFiscalCode;",
+							"    const requestBody = JSON.parse(pm.request.body.raw);",
+							"    const sentFiscalCode = requestBody.userFiscalCode;",
 							"",
 							"    // Extract the fiscal code from the response",
 							"    let responseFiscalCode = response.transactions[0].userInfo.userFiscalCode;",
@@ -655,8 +655,8 @@
 							"    pm.expect(response.page.results).to.be.lte(10);",
 							"",
 							"    // Extract the email from the payload",
-							"    let sentEmail = pm.request.body.raw;",
-							"    sentEmail = JSON.parse(sentEmail).userEmail;",
+							"    const requestBody = JSON.parse(pm.request.body.raw);",
+							"    const sentEmail = requestBody.userEmail;",
 							"",
 							"    // Extract the email from the response",
 							"    let responseEmail = response.transactions[0].userInfo.notificationEmail;",
