@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.utils
 
-import it.pagopa.ecommerce.commons.domain.FiscalCode
+import it.pagopa.ecommerce.commons.domain.v2.FiscalCode
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 
 /**

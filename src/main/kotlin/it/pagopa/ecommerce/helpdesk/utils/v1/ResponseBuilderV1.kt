@@ -4,10 +4,10 @@ import io.r2dbc.spi.Result
 import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationCompletedData
 import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.commons.documents.v1.TransactionUserReceiptData
-import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.domain.v1.TransactionWithClosureError
 import it.pagopa.ecommerce.commons.domain.v1.pojos.*
 import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
+import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager.ConfidentialData
 import it.pagopa.ecommerce.commons.utils.v1.TransactionUtils.getTransactionFee
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.model.*
@@ -243,7 +243,7 @@ fun resultToPaymentMethodDtoList(
 
 fun baseTransactionToTransactionInfoDtoV1(
     baseTransaction: BaseTransaction,
-    email: Optional<Email>
+    email: Optional<ConfidentialData>
 ): TransactionResultDto {
     val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
     val fee = getTransactionFees(baseTransaction).orElse(0)
@@ -256,7 +256,7 @@ fun baseTransactionToTransactionInfoDtoV1(
 
     val userInfo =
         UserInfoDto()
-            .notificationEmail(email.map { it.value }.orElse("N/A"))
+            .notificationEmail(email.map { it.toStringRepresentation() }.orElse("N/A"))
             // v1 event transactions can only be GUEST. IO and checkout-auth transactions are made
             // with v2 events
             .authenticationType(UserDto.TypeEnum.GUEST.toString())

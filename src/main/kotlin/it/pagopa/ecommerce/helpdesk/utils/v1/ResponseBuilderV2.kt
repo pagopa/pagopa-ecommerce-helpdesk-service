@@ -7,11 +7,11 @@ import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData
 import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.*
 import it.pagopa.ecommerce.commons.documents.v2.refund.NpgGatewayRefundData
-import it.pagopa.ecommerce.commons.domain.Email
 import it.pagopa.ecommerce.commons.domain.v2.TransactionWithClosureError
 import it.pagopa.ecommerce.commons.domain.v2.pojos.*
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OperationResultDto
 import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
+import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager.ConfidentialData
 import it.pagopa.ecommerce.commons.utils.v2.TransactionUtils.getTransactionFee
 import it.pagopa.ecommerce.helpdesk.utils.GatewayAuthorizationData
 import it.pagopa.generated.ecommerce.helpdesk.model.*
@@ -21,7 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 fun baseTransactionToTransactionInfoDtoV2(
     baseTransaction: BaseTransaction,
-    email: Optional<Email>
+    email: Optional<ConfidentialData>
 ): TransactionResultDto {
     val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
     val fee = getTransactionFees(baseTransaction).orElse(0)
@@ -40,7 +40,7 @@ fun baseTransactionToTransactionInfoDtoV2(
 
     val userInfo =
         UserInfoDto()
-            .notificationEmail(email.map { it.value }.orElse("N/A"))
+            .notificationEmail(email.map { it.toStringRepresentation() }.orElse("N/A"))
             .authenticationType(
                 transactionActivatedData.let {
                     if (it?.userId != null) {
