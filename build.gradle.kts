@@ -21,10 +21,10 @@ plugins {
 }
 // eCommerce commons library version
 
-val ecommerceCommonsVersion = "1.35.0"
+val ecommerceCommonsVersion = "1.36.0"
 
 // eCommerce commons library git ref (by default tag)
-val ecommerceCommonsGitRef = "CHK-4088-versioning-domain-object"
+val ecommerceCommonsGitRef = ecommerceCommonsVersion
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
