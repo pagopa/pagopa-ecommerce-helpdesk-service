@@ -17,6 +17,7 @@ import it.pagopa.ecommerce.commons.domain.v2.Email
 import it.pagopa.ecommerce.commons.domain.v2.FiscalCode
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
+import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils.convertEventsToEventInfoList
