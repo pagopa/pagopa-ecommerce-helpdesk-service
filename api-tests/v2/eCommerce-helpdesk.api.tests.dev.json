@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "dc5d3796-f7a2-4d8e-8a24-66fa6a621359",
+		"_postman_id": "dc5f4383-87aa-4f54-9beb-8e0a11cd22b6",
 		"name": "Ecommerce helpDesk-service DEV (v2)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "23963988"
@@ -570,9 +570,22 @@
 							"    pm.expect(response.page.current).to.be.eq(0);",
 							"    pm.expect(response.page.total).to.be.gt(0);",
 							"    pm.expect(response.page.results).to.be.lte(10);",
+							"",
+							"    // Extract the fiscal code from the payload",
+							"    const requestBody = JSON.parse(pm.request.body.raw);",
+							"    const sentFiscalCode = requestBody.userFiscalCode;",
+							"",
+							"    // Extract the fiscal code from the response",
+							"    const responseFiscalCode = response.transactions[0].userInfo.userFiscalCode;",
+							"",
+							"    // Validate that the sent fiscal code matches the response fiscal code",
+							"    pm.test(\"Fiscal code in payload matches fiscal code in response\", function () {",
+							"        pm.expect(sentFiscalCode).to.eql(responseFiscalCode);",
+							"    });",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -632,16 +645,31 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"",
 							"pm.test(\"Technical helpDesk SearchTransaction by USER_EMAIL - Status code is 200 with valid json response\", function () {",
-							"    pm.response.to.have.status(200);",
-							"    const response = pm.response.json();",
-							"    pm.expect(response.transactions.length).greaterThan(0);",
-							"    pm.expect(response.page.current).to.be.eq(0);",
-							"    pm.expect(response.page.total).to.be.gt(0);",
-							"    pm.expect(response.page.results).to.be.lte(10);",
-							"});"
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.transactions.length).greaterThan(0);",
+							"    pm.expect(response.page.current).to.be.eq(0);",
+							"    pm.expect(response.page.total).to.be.gt(0);",
+							"    pm.expect(response.page.results).to.be.lte(10);",
+							"",
+							"    // Extract the email from the payload",
+							"    const requestBody = JSON.parse(pm.request.body.raw);",
+							"    const sentEmail = requestBody.userEmail;",
+							"",
+							"    // Extract the email from the response",
+							"    const responseEmail = response.transactions[0].userInfo.notificationEmail;",
+							"",
+							"    // Validate that the sent email matches the response email",
+							"    pm.test(\"Email in payload matches email in response\", function () {",
+							"        pm.expect(sentEmail).to.eql(responseEmail);",
+							"    });",
+							"});",
+							""
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
