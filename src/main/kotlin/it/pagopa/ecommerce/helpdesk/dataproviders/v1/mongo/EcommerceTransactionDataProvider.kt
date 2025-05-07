@@ -1,12 +1,14 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo
 
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
+import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
+import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager.ConfidentialData
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
-import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
+import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.baseTransactionToTransactionInfoDtoV1
 import it.pagopa.ecommerce.helpdesk.utils.v1.baseTransactionToTransactionInfoDtoV2
@@ -137,7 +139,9 @@ class EcommerceTransactionDataProvider(
                     .zipWhen(
                         { baseTransaction ->
                             confidentialMailUtils
-                                .toClearData(baseTransaction.email)
+                                .toClearData(
+                                    baseTransaction.email as Confidential<ConfidentialData>
+                                )
                                 .map { Optional.of(it) }
                                 .onErrorResume(ConfidentialDataException::class.java) {
                                     val errorCause = it.cause
@@ -154,7 +158,10 @@ class EcommerceTransactionDataProvider(
                         ::Pair
                     )
                     .map { (baseTransaction, email) ->
-                        baseTransactionToTransactionInfoDtoV1(baseTransaction, email)
+                        baseTransactionToTransactionInfoDtoV1(
+                            baseTransaction,
+                            email.map { it as ConfidentialData }
+                        )
                     }
             is it.pagopa.ecommerce.commons.documents.v2.Transaction ->
                 events
@@ -166,7 +173,9 @@ class EcommerceTransactionDataProvider(
                     .zipWhen(
                         { baseTransaction ->
                             confidentialMailUtils
-                                .toClearData(baseTransaction.email)
+                                .toClearData(
+                                    baseTransaction.email as Confidential<ConfidentialData>
+                                )
                                 .map { Optional.of(it) }
                                 .onErrorResume(ConfidentialDataException::class.java) {
                                     val errorCause = it.cause
@@ -183,7 +192,10 @@ class EcommerceTransactionDataProvider(
                         ::Pair
                     )
                     .map { (baseTransaction, email) ->
-                        baseTransactionToTransactionInfoDtoV2(baseTransaction, email)
+                        baseTransactionToTransactionInfoDtoV2(
+                            baseTransaction,
+                            email.map { it as ConfidentialData }
+                        )
                     }
             else ->
                 Mono.error(

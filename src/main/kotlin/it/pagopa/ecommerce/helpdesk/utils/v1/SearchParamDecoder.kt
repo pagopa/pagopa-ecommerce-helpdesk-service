@@ -1,6 +1,5 @@
 package it.pagopa.ecommerce.helpdesk.utils.v1
 
-import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestEmailDto
 import reactor.core.publisher.Mono

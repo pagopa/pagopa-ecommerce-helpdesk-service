@@ -1,9 +1,11 @@
 package it.pagopa.ecommerce.helpdesk.utils
 
 import it.pagopa.ecommerce.commons.domain.Confidential
-import it.pagopa.ecommerce.commons.domain.Email
+import it.pagopa.ecommerce.commons.domain.v2.Email
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
-import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
+import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager.ConfidentialData
+import it.pagopa.ecommerce.commons.v2.TransactionTestUtils
+import it.pagopa.ecommerce.helpdesk.utils.v2.ConfidentialMailUtils
 import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -12,9 +14,9 @@ import org.mockito.kotlin.*
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
-class ConfidentialMailUtilsTests {
+class ConfidentialMailUtilsTestsV2 {
 
-    private val emailCachedMap: MutableMap<String, Email> = mutableMapOf()
+    private val emailCachedMap: MutableMap<String, ConfidentialData> = mutableMapOf()
 
     private val confidentialDataManager: ConfidentialDataManager = mock()
 
@@ -25,7 +27,7 @@ class ConfidentialMailUtilsTests {
     fun shouldDecryptMailSuccessfully() {
         val email = Email(TransactionTestUtils.EMAIL_STRING)
         val emailToken = UUID.randomUUID()
-        val computedConfidential = Confidential<Email>(emailToken.toString())
+        val computedConfidential = Confidential<ConfidentialData>(emailToken.toString())
 
         /* preconditions */
         given(confidentialDataManager.decrypt(eq(computedConfidential), any()))
@@ -44,7 +46,7 @@ class ConfidentialMailUtilsTests {
     fun shouldDecryptMailSuccessfullyWithCachedValue() {
         val email = Email(TransactionTestUtils.EMAIL_STRING)
         val emailToken = UUID.randomUUID()
-        val computedConfidential = Confidential<Email>(emailToken.toString())
+        val computedConfidential = Confidential<ConfidentialData>(emailToken.toString())
         emailCachedMap[computedConfidential.opaqueData] = email
 
         /* test */
@@ -60,10 +62,10 @@ class ConfidentialMailUtilsTests {
     fun shouldEncryptMailSuccessfully() {
         val email = Email(TransactionTestUtils.EMAIL_STRING)
         val emailToken = UUID.randomUUID()
-        val computedConfidential = Confidential<Email>(emailToken.toString())
+        val computedConfidential = Confidential<ConfidentialData>(emailToken.toString())
 
         /* preconditions */
-        given(confidentialDataManager.encrypt(eq(email)))
+        given(confidentialDataManager.encrypt(eq(email as ConfidentialData)))
             .willReturn(Mono.just(computedConfidential))
 
         /* test */
