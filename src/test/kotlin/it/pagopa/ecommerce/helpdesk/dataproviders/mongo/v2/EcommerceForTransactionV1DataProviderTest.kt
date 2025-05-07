@@ -5,8 +5,6 @@ import it.pagopa.ecommerce.commons.documents.v1.TransactionClosureData as Transa
 import it.pagopa.ecommerce.commons.documents.v1.TransactionEvent as TransactionEventV1
 import it.pagopa.ecommerce.commons.documents.v1.TransactionUserReceiptData as TransactionUserReceiptDataV1
 import it.pagopa.ecommerce.commons.domain.Confidential
-import it.pagopa.ecommerce.commons.domain.v1.FiscalCode
-import it.pagopa.ecommerce.commons.domain.v1.Email
 import it.pagopa.ecommerce.commons.domain.v1.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV1
 import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionExpired as BaseTransactionExpiredV1
 import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithClosureError as BaseTransactionWithClosureErrorV1
@@ -15,9 +13,10 @@ import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRefundRequ
 import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRequestedAuthorization as BaseTransactionWithRequestedAuthorizationV1
 import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRequestedUserReceipt as BaseTransactionWithRequestedUserReceiptV1
 import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithUserReceipt as BaseTransactionWithUserReceiptV1
+import it.pagopa.ecommerce.commons.domain.v2.Email
+import it.pagopa.ecommerce.commons.domain.v2.FiscalCode
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
-import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils.convertEventsToEventInfoList
