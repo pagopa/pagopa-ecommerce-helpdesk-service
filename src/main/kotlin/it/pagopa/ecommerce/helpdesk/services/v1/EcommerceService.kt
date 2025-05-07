@@ -2,7 +2,7 @@ package it.pagopa.ecommerce.helpdesk.services.v1
 
 import it.pagopa.ecommerce.commons.client.NpgClient
 import it.pagopa.ecommerce.commons.client.NpgClient.PaymentMethod
-import it.pagopa.ecommerce.commons.domain.TransactionId
+import it.pagopa.ecommerce.commons.domain.v2.TransactionId
 import it.pagopa.ecommerce.commons.exceptions.NpgResponseException
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OrderResponseDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
@@ -16,7 +16,7 @@ import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadGatewayException
 import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadRequestException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialFiscalCodeUtils
-import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
+import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildDeadLetterEventsSearchResponse
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
@@ -142,7 +142,10 @@ class EcommerceService(
                         this.transactionId = transactionId
                         this.type = "TRANSACTION_ID"
                     },
-                confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                confidentialMailUtils =
+                    it.pagopa.ecommerce.helpdesk.utils.v2.ConfidentialMailUtils(
+                        confidentialDataManager
+                    ),
                 confidentialFiscalCodeUtils = ConfidentialFiscalCodeUtils(confidentialDataManager)
             )
 
