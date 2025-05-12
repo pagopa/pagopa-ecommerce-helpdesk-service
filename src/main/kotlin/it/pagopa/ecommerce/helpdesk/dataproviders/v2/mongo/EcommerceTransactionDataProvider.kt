@@ -1,12 +1,14 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo
 
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
+import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
+import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager.ConfidentialData
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
-import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
+import it.pagopa.ecommerce.helpdesk.utils.v2.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.baseTransactionToTransactionInfoDtoV1
 import it.pagopa.ecommerce.helpdesk.utils.v2.baseTransactionToTransactionInfoDtoV2
@@ -52,10 +54,10 @@ class EcommerceTransactionDataProvider(
                         }
                     is SearchTransactionRequestEmailDto ->
                         transactionsViewRepository.countTransactionsWithEmail(it.userEmail)
-                    // is SearchTransactionRequestFiscalCodeDto ->
-                    //    transactionsViewRepository.countTransactionsWithFiscalCode(
-                    //        it.userFiscalCode
-                    //    )
+                    is SearchTransactionRequestFiscalCodeDto ->
+                        transactionsViewRepository.countTransactionsWithFiscalCode(
+                            it.userFiscalCode
+                        )
                     else -> invalidSearchCriteriaError
                 }
             }
@@ -101,13 +103,13 @@ class EcommerceTransactionDataProvider(
                                 skip = skip,
                                 limit = limit
                             )
-                    // is SearchTransactionRequestFiscalCodeDto ->
-                    //    transactionsViewRepository
-                    //        .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
-                    //            encryptedFiscalCode = it.userFiscalCode,
-                    //            skip = skip,
-                    //            limit = limit
-                    //        )
+                    is SearchTransactionRequestFiscalCodeDto ->
+                        transactionsViewRepository
+                            .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
+                                encryptedFiscalCode = it.userFiscalCode,
+                                skip = skip,
+                                limit = limit
+                            )
                     else -> invalidSearchCriteriaError
                 }
             }
@@ -139,7 +141,9 @@ class EcommerceTransactionDataProvider(
                     .zipWhen(
                         { baseTransaction ->
                             confidentialMailUtils
-                                .toClearData(baseTransaction.email)
+                                .toClearData(
+                                    baseTransaction.email as Confidential<ConfidentialData>
+                                )
                                 .map { Optional.of(it) }
                                 .onErrorResume(ConfidentialDataException::class.java) {
                                     val errorCause = it.cause
@@ -159,7 +163,11 @@ class EcommerceTransactionDataProvider(
                         events.collectList().map { Triple(baseTransaction, email, it) }
                     }
                     .map { (baseTransaction, email, events) ->
-                        baseTransactionToTransactionInfoDtoV1(baseTransaction, email, events)
+                        baseTransactionToTransactionInfoDtoV1(
+                            baseTransaction,
+                            email.map { it as ConfidentialData },
+                            events
+                        )
                     }
             is it.pagopa.ecommerce.commons.documents.v2.Transaction ->
                 events
@@ -171,7 +179,9 @@ class EcommerceTransactionDataProvider(
                     .zipWhen(
                         { baseTransaction ->
                             confidentialMailUtils
-                                .toClearData(baseTransaction.email)
+                                .toClearData(
+                                    baseTransaction.email as Confidential<ConfidentialData>
+                                )
                                 .map { Optional.of(it) }
                                 .onErrorResume(ConfidentialDataException::class.java) {
                                     val errorCause = it.cause
@@ -191,7 +201,11 @@ class EcommerceTransactionDataProvider(
                         events.collectList().map { Triple(baseTransaction, email, it) }
                     }
                     .map { (baseTransaction, email, events) ->
-                        baseTransactionToTransactionInfoDtoV2(baseTransaction, email, events)
+                        baseTransactionToTransactionInfoDtoV2(
+                            baseTransaction,
+                            email.map { it as ConfidentialData },
+                            events
+                        )
                     }
             else ->
                 Mono.error(

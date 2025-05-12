@@ -3,7 +3,7 @@ package it.pagopa.ecommerce.helpdesk.services.v1
 import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
 import it.pagopa.ecommerce.commons.documents.BaseTransactionView
 import it.pagopa.ecommerce.commons.domain.Confidential
-import it.pagopa.ecommerce.commons.domain.Email
+import it.pagopa.ecommerce.commons.domain.v1.Email
 import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils

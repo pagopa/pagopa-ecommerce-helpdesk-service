@@ -12,7 +12,7 @@ import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGateway
 import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGatewayAuthorizationRequestedData
 import it.pagopa.ecommerce.commons.documents.v2.refund.NpgGatewayRefundData
 import it.pagopa.ecommerce.commons.domain.Confidential
-import it.pagopa.ecommerce.commons.domain.Email
+import it.pagopa.ecommerce.commons.domain.v2.Email
 import it.pagopa.ecommerce.commons.domain.v2.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionExpired as BaseTransactionExpiredV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithClosureError as BaseTransactionWithClosureErrorV2
@@ -33,7 +33,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.Transac
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialFiscalCodeUtils
-import it.pagopa.ecommerce.helpdesk.utils.ConfidentialMailUtils
+import it.pagopa.ecommerce.helpdesk.utils.v2.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.getGatewayAuthorizationData
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
