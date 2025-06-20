@@ -478,23 +478,22 @@ class HelpdeskControllerTest {
                 .isEqualTo(expected)
         }
 
-
     @Test
     fun `should return unauthorized if request has not api key header`() = runTest {
         val pageNumber = 1
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
         given(
-            helpdeskService.searchTransaction(
-                pageNumber = eq(pageNumber),
-                pageSize = eq(pageSize),
-                searchTransactionRequestDto =
-                    argThat {
-                        this is SearchTransactionRequestPaymentTokenDto &&
+                helpdeskService.searchTransaction(
+                    pageNumber = eq(pageNumber),
+                    pageSize = eq(pageSize),
+                    searchTransactionRequestDto =
+                        argThat {
+                            this is SearchTransactionRequestPaymentTokenDto &&
                                 this.paymentToken == request.paymentToken
-                    }
+                        }
+                )
             )
-        )
             .willReturn(Mono.just(SearchTransactionResponseDto()))
         webClient
             .post()
@@ -518,16 +517,16 @@ class HelpdeskControllerTest {
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
         given(
-            helpdeskService.searchTransaction(
-                pageNumber = eq(pageNumber),
-                pageSize = eq(pageSize),
-                searchTransactionRequestDto =
-                    argThat {
-                        this is SearchTransactionRequestPaymentTokenDto &&
+                helpdeskService.searchTransaction(
+                    pageNumber = eq(pageNumber),
+                    pageSize = eq(pageSize),
+                    searchTransactionRequestDto =
+                        argThat {
+                            this is SearchTransactionRequestPaymentTokenDto &&
                                 this.paymentToken == request.paymentToken
-                    }
+                        }
+                )
             )
-        )
             .willReturn(Mono.just(SearchTransactionResponseDto()))
         webClient
             .post()
@@ -539,6 +538,7 @@ class HelpdeskControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "super-wrong-api-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()

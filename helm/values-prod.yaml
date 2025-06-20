@@ -126,7 +126,7 @@ microservice-chart:
 
     SEARCH_PM_IN_ECOMMERCE_HISTORY_ENABLED: "true"
     SEARCH_PM_TRANSACTION_ID_RANGE_MAX: "10000"
-    SECURITY_API_KEY_SECURED_PATHS: "/ecommerce,/helpdesk,/pm"
+    SECURITY_API_KEY_SECURED_PATHS: "/v2/helpdesk,/v2/ecommerce,/ecommerce,/helpdesk,/pm"
   envSecret:
     NPG_API_KEY: npg-api-key
     NPG_CARDS_PSP_KEYS: npg-cards-psp-keys

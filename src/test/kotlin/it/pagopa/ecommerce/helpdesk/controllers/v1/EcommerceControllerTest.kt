@@ -62,38 +62,39 @@ class EcommerceControllerTest {
     }
 
     @Test
-    fun `post search transaction succeeded searching by payment token with secondary key`() = runTest {
-        val pageNumber = 1
-        val pageSize = 15
-        val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
-        given(
-            ecommerceService.searchTransaction(
-                pageNumber = eq(pageNumber),
-                pageSize = eq(pageSize),
-                ecommerceSearchTransactionRequestDto =
-                    argThat {
-                        this is SearchTransactionRequestPaymentTokenDto &&
-                                this.paymentToken == request.paymentToken
-                    }
-            )
-        )
-            .willReturn(Mono.just(SearchTransactionResponseDto()))
-        webClient
-            .post()
-            .uri { uriBuilder ->
-                uriBuilder
-                    .path("/ecommerce/searchTransaction")
-                    .queryParam("pageNumber", "{pageNumber}")
-                    .queryParam("pageSize", "{pageSize}")
-                    .build(pageNumber, pageSize)
-            }
-            .contentType(MediaType.APPLICATION_JSON)
-            .header("x-api-key", "secondary-key")
-            .bodyValue(request)
-            .exchange()
-            .expectStatus()
-            .isOk
-    }
+    fun `post search transaction succeeded searching by payment token with secondary key`() =
+        runTest {
+            val pageNumber = 1
+            val pageSize = 15
+            val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
+            given(
+                    ecommerceService.searchTransaction(
+                        pageNumber = eq(pageNumber),
+                        pageSize = eq(pageSize),
+                        ecommerceSearchTransactionRequestDto =
+                            argThat {
+                                this is SearchTransactionRequestPaymentTokenDto &&
+                                    this.paymentToken == request.paymentToken
+                            }
+                    )
+                )
+                .willReturn(Mono.just(SearchTransactionResponseDto()))
+            webClient
+                .post()
+                .uri { uriBuilder ->
+                    uriBuilder
+                        .path("/ecommerce/searchTransaction")
+                        .queryParam("pageNumber", "{pageNumber}")
+                        .queryParam("pageSize", "{pageSize}")
+                        .build(pageNumber, pageSize)
+                }
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("x-api-key", "secondary-key")
+                .bodyValue(request)
+                .exchange()
+                .expectStatus()
+                .isOk
+        }
 
     @Test
     fun `post search transaction succeeded searching by rpt id`() = runTest {
@@ -457,16 +458,16 @@ class EcommerceControllerTest {
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
         given(
-            ecommerceService.searchTransaction(
-                pageNumber = eq(pageNumber),
-                pageSize = eq(pageSize),
-                ecommerceSearchTransactionRequestDto =
-                    argThat {
-                        this is SearchTransactionRequestPaymentTokenDto &&
+                ecommerceService.searchTransaction(
+                    pageNumber = eq(pageNumber),
+                    pageSize = eq(pageSize),
+                    ecommerceSearchTransactionRequestDto =
+                        argThat {
+                            this is SearchTransactionRequestPaymentTokenDto &&
                                 this.paymentToken == request.paymentToken
-                    }
+                        }
+                )
             )
-        )
             .willReturn(Mono.just(SearchTransactionResponseDto()))
         webClient
             .post()
@@ -478,6 +479,7 @@ class EcommerceControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "super-wrong-api-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()

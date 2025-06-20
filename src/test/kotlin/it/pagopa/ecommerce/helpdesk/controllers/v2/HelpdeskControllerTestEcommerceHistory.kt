@@ -60,6 +60,7 @@ class HelpdeskControllerTestEcommerceHistory {
                         .build()
                 }
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("x-api-key", "primary-key")
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -97,9 +98,83 @@ class HelpdeskControllerTestEcommerceHistory {
                     .build()
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
             .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @Test
+    fun `should return unauthorized if request has not api key header`() = runTest {
+        val pageNumber = 1
+        val pageSize = 15
+        val request = HelpdeskTestUtilsV2.buildSearchRequestByPaymentToken()
+        val response = SearchTransactionResponseDto()
+
+        given(
+                helpdeskService.searchTransaction(
+                    pageNumber = eq(pageNumber),
+                    pageSize = eq(pageSize),
+                    searchTransactionRequestDto =
+                        argThat {
+                            this is SearchTransactionRequestPaymentTokenDto &&
+                                this.paymentToken == request.paymentToken
+                        },
+                    pmProviderType = eq(PmProviderType.ECOMMERCE_HISTORY)
+                )
+            )
+            .willReturn(Mono.just(response))
+
+        webClient
+            .post()
+            .uri {
+                it.path("/v2/helpdesk/searchTransaction")
+                    .queryParam("pageNumber", pageNumber)
+                    .queryParam("pageSize", pageSize)
+                    .build()
+            }
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isEqualTo(HttpStatus.UNAUTHORIZED)
+    }
+
+    @Test
+    fun `should return unauthorized if request has wrong api key header`() = runTest {
+        val pageNumber = 1
+        val pageSize = 15
+        val request = HelpdeskTestUtilsV2.buildSearchRequestByPaymentToken()
+        val response = SearchTransactionResponseDto()
+
+        given(
+                helpdeskService.searchTransaction(
+                    pageNumber = eq(pageNumber),
+                    pageSize = eq(pageSize),
+                    searchTransactionRequestDto =
+                        argThat {
+                            this is SearchTransactionRequestPaymentTokenDto &&
+                                this.paymentToken == request.paymentToken
+                        },
+                    pmProviderType = eq(PmProviderType.ECOMMERCE_HISTORY)
+                )
+            )
+            .willReturn(Mono.just(response))
+
+        webClient
+            .post()
+            .uri {
+                it.path("/v2/helpdesk/searchTransaction")
+                    .queryParam("pageNumber", pageNumber)
+                    .queryParam("pageSize", pageSize)
+                    .build()
+            }
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "super-wrong-api-key")
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 }

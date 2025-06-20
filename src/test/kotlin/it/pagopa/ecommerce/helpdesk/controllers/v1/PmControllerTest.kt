@@ -479,16 +479,16 @@ class PmControllerTest {
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it")
         given(
-            pmService.searchTransaction(
-                pageNumber = eq(pageNumber),
-                pageSize = eq(pageSize),
-                pmSearchTransactionRequestDto =
-                    argThat {
-                        this is SearchTransactionRequestEmailDto &&
+                pmService.searchTransaction(
+                    pageNumber = eq(pageNumber),
+                    pageSize = eq(pageSize),
+                    pmSearchTransactionRequestDto =
+                        argThat {
+                            this is SearchTransactionRequestEmailDto &&
                                 this.userEmail == request.userEmail
-                    }
+                        }
+                )
             )
-        )
             .willReturn(Mono.just(SearchTransactionResponseDto()))
         webClient
             .post()
@@ -512,16 +512,16 @@ class PmControllerTest {
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it")
         given(
-            pmService.searchTransaction(
-                pageNumber = eq(pageNumber),
-                pageSize = eq(pageSize),
-                pmSearchTransactionRequestDto =
-                    argThat {
-                        this is SearchTransactionRequestEmailDto &&
+                pmService.searchTransaction(
+                    pageNumber = eq(pageNumber),
+                    pageSize = eq(pageSize),
+                    pmSearchTransactionRequestDto =
+                        argThat {
+                            this is SearchTransactionRequestEmailDto &&
                                 this.userEmail == request.userEmail
-                    }
+                        }
+                )
             )
-        )
             .willReturn(Mono.just(SearchTransactionResponseDto()))
         webClient
             .post()
@@ -533,6 +533,7 @@ class PmControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "super-wrong-api-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
