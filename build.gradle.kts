@@ -8,10 +8,10 @@ description = "pagopa-ecommerce-helpdesk-service"
 
 plugins {
   id("java")
-  id("org.springframework.boot") version "3.0.5"
+  id("org.springframework.boot") version "3.4.5"
   id("io.spring.dependency-management") version "1.1.0"
   id("com.diffplug.spotless") version "6.18.0"
-  id("org.openapi.generator") version "6.3.0"
+  id("org.openapi.generator") version "7.13.0"
   id("org.sonarqube") version "4.2.0.3129"
   id("com.dipien.semantic-version") version "2.0.0" apply false
   kotlin("plugin.spring") version "1.8.10"
@@ -21,7 +21,7 @@ plugins {
 }
 // eCommerce commons library version
 
-val ecommerceCommonsVersion = "1.36.0"
+val ecommerceCommonsVersion = "2.0.1"
 
 // eCommerce commons library git ref (by default tag)
 val ecommerceCommonsGitRef = ecommerceCommonsVersion
@@ -174,7 +174,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
       "useSpringBoot3" to "true",
       "oas3" to "true",
       "generateSupportingFiles" to "true",
-      "enumPropertyNaming" to "UPPERCASE"
+      "enumPropertyNaming" to "MACRO_CASE"
     )
   )
 }
@@ -203,7 +203,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
       "useSpringBoot3" to "true",
       "oas3" to "true",
       "generateSupportingFiles" to "true",
-      "enumPropertyNaming" to "UPPERCASE",
+      "enumPropertyNaming" to "MACRO_CASE",
       "useTags" to "true"
     )
   )
@@ -235,7 +235,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("nod
       "useSpringBoot3" to "true",
       "oas3" to "true",
       "generateSupportingFiles" to "true",
-      "enumPropertyNaming" to "UPPERCASE"
+      "enumPropertyNaming" to "MACRO_CASE"
     )
   )
 }
