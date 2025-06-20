@@ -125,6 +125,9 @@ If you want to customize the application environment, reference this table:
 | SEARCH_PM_IN_ECOMMERCE_HISTORY_ENABLED  | Whether the search by fiscal code is made through the history (false) or ecommerce (true) database                                                         | string             | false   |
 | NPG_GOOGLE_PAY_PSP_KEYS                 | Secret structure that holds psp - api keys association for authorization request used for APM Google pay payment method                                    | string             |         |
 | NPG_GOOGLE_PAY_PSP_LIST                 | List of all psp ids that are expected to be found into the NPG_GOOGLE_PAY_PSP_KEYS configuration (used for configuration cross validation)                 | string             |         |
+| SECURITY_API_KEY_SECURED_PATHS          | Secured paths for API Key                                                                                                                                  | string             |         |
+| SECURITY_API_KEY_PRIMARY                | Primary API Key used to secure helpdesk-service service's APIs                                                                                             | string             |         |
+| SECURITY_API_KEY_SECONDARY              | Secondary API Key used to secure helpdesk-service service's APIs                                                                                           | string             |         |
 
 (*): for Mongo connection string options
 see [docs](https://www.mongodb.com/docs/drivers/java/sync/v4.3/fundamentals/connection/connection-options/#connection-options)
