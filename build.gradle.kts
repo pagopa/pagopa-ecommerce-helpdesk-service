@@ -8,14 +8,14 @@ description = "pagopa-ecommerce-helpdesk-service"
 
 plugins {
   id("java")
-  id("org.springframework.boot") version "3.0.5"
+  id("org.springframework.boot") version "3.3.4"
   id("io.spring.dependency-management") version "1.1.0"
   id("com.diffplug.spotless") version "6.18.0"
   id("org.openapi.generator") version "6.3.0"
   id("org.sonarqube") version "4.2.0.3129"
   id("com.dipien.semantic-version") version "2.0.0" apply false
-  kotlin("plugin.spring") version "1.8.10"
-  kotlin("jvm") version "1.8.10"
+  kotlin("plugin.spring") version "1.9.20"
+  kotlin("jvm") version "1.9.20"
   jacoco
   application
 }
@@ -26,7 +26,11 @@ val ecommerceCommonsVersion = "1.36.0"
 // eCommerce commons library git ref (by default tag)
 val ecommerceCommonsGitRef = ecommerceCommonsVersion
 
-java.sourceCompatibility = JavaVersion.VERSION_17
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(21))
+  }
+}
 
 repositories {
   mavenCentral()
@@ -34,10 +38,10 @@ repositories {
 }
 
 dependencyManagement {
-  imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.0.5") }
+  imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.3.4") }
   // Kotlin BOM
-  imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:1.7.22") }
-  imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4") }
+  imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:1.9.20") }
+  imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.3") }
 }
 
 val mockWebServerVersion = "4.11.0"
@@ -250,8 +254,10 @@ tasks.register<Exec>("install-commons") {
 
 tasks.withType<KotlinCompile> {
   dependsOn("helpdesk-v1", "helpdesk-v2", "nodo", "install-commons")
-  kotlinOptions.jvmTarget = "17"
+  kotlinOptions.jvmTarget = "21"
 }
+
+kotlin { jvmToolchain(21) }
 
 tasks.named<Jar>("jar") { enabled = false }
 
