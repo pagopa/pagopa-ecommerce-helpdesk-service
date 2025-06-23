@@ -109,9 +109,9 @@ dependencyLocking { lockAllConfigurations() }
 
 sourceSets {
   main {
-    java { srcDirs("${layout.buildDirectory.get()}/generated/src/main/java") }
+    java { srcDirs("${layout.buildDirectory.get().asFile.path}/generated/src/main/java") }
     kotlin {
-      srcDirs("src/main/kotlin", "${layout.buildDirectory.get()}/generated/src/main/kotlin")
+      srcDirs("src/main/kotlin", "${layout.buildDirectory.get().asFile.path}/generated/src/main/kotlin")
     }
     resources { srcDirs("src/resources") }
   }
@@ -159,7 +159,7 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("helpdesk-v1") {
   generatorName.set("spring")
   inputSpec.set("$rootDir/api-spec/v1/openapi.yaml")
-  outputDir.set("${layout.buildDirectory.get()}/generated")
+  outputDir.set(layout.buildDirectory.get().dir("generated").asFile.toString())
   apiPackage.set("it.pagopa.generated.ecommerce.helpdesk.api")
   modelPackage.set("it.pagopa.generated.ecommerce.helpdesk.model")
   generateApiTests.set(false)
@@ -188,7 +188,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("helpdesk-v2") {
   generatorName.set("spring")
   inputSpec.set("$rootDir/api-spec/v2/openapi.yaml")
-  outputDir.set("${layout.buildDirectory.get()}/generated")
+  outputDir.set(layout.buildDirectory.get().dir("generated").asFile.toString())
   apiPackage.set("it.pagopa.generated.ecommerce.helpdesk.v2.api")
   modelPackage.set("it.pagopa.generated.ecommerce.helpdesk.v2.model")
   generateApiTests.set(false)
@@ -220,7 +220,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("nod
   remoteInputSpec.set(
     "https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.465.0/src/core/api/nodopagamenti_api/nodoPerPM/v2/_openapi.json.tpl"
   )
-  outputDir.set("${layout.buildDirectory.get()}/generated")
+  outputDir.set(layout.buildDirectory.get().dir("generated").asFile.toString())
   apiPackage.set("it.pagopa.generated.ecommerce.nodo.v2.api")
   modelPackage.set("it.pagopa.generated.ecommerce.nodo.v2.model")
   generateApiTests.set(false)
