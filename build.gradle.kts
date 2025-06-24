@@ -21,21 +21,12 @@ plugins {
 }
 // eCommerce commons library version
 
-val ecommerceCommonsVersion = "2.0.1"
+val ecommerceCommonsVersion = "2.1.0-SNAPSHOT"
 
 // eCommerce commons library git ref (by default tag)
 val ecommerceCommonsGitRef = ecommerceCommonsVersion
 
-// use java 21 if available, otherwise use current JVM
-java {
-  if (providers.systemProperty("java.version").get().startsWith("21")) {
-    toolchain { languageVersion.set(JavaLanguageVersion.of(21)) }
-  } else {
-    // when building commons with java 17, use source/target compatibility
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-  }
-}
+java { toolchain { languageVersion.set(JavaLanguageVersion.of(21)) } }
 
 repositories {
   mavenCentral()
@@ -259,22 +250,10 @@ tasks.register<Exec>("install-commons") {
 
 tasks.withType<KotlinCompile> {
   dependsOn("helpdesk-v1", "helpdesk-v2", "nodo", "install-commons")
-  // set jvmTarget based on current Java version
-  if (providers.systemProperty("java.version").get().startsWith("21")) {
-    kotlinOptions.jvmTarget = "21"
-  } else {
-    kotlinOptions.jvmTarget = "17"
-  }
+  kotlinOptions.jvmTarget = "21"
 }
 
-// configure kotlin jvm toolchain based on available java version
-kotlin {
-  if (providers.systemProperty("java.version").get().startsWith("21")) {
-    jvmToolchain(21)
-  } else {
-    jvmToolchain(17)
-  }
-}
+kotlin { jvmToolchain(21) }
 
 tasks.named<Jar>("jar") { enabled = false }
 
