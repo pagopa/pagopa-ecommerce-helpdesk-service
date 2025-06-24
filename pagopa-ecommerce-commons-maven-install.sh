@@ -12,9 +12,8 @@ git clone $gitRepo
 cd pagopa-ecommerce-commons
 echo "Checking out ecommerce common ref $version"
 git checkout $version
-# compile with java 17 compatibility even when running on java 21
-echo "Building with Java 17 compatibility..."
-./mvnw install -DskipTests -Dmaven.compiler.source=17 -Dmaven.compiler.target=17 -Dmaven.compiler.release=17
+echo "Building with Java 21..."
+./mvnw install -DskipTests
 
 cd ../../
 rm -rf $checkoutFolder
