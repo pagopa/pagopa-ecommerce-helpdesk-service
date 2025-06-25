@@ -19,8 +19,8 @@ plugins {
   jacoco
   application
 }
-// eCommerce commons library version
 
+// eCommerce commons library version
 val ecommerceCommonsVersion = "2.1.0-SNAPSHOT"
 
 // eCommerce commons library git ref (by default tag)
@@ -40,9 +40,11 @@ dependencyManagement {
   imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.3") }
 }
 
+// dependencies versions
 val mockWebServerVersion = "4.11.0"
-
 val ecsLoggingVersion = "1.5.0"
+val httpclientVersion = "4.5.13"
+val mockitoInlineVersion = "5.2.0"
 
 dependencies {
   implementation("io.projectreactor:reactor-core")
@@ -54,7 +56,7 @@ dependencies {
   implementation("org.glassfish.jaxb:jaxb-runtime")
   implementation("jakarta.xml.bind:jakarta.xml.bind-api")
   implementation("io.swagger.core.v3:swagger-annotations:2.2.8")
-  implementation("org.apache.httpcomponents:httpclient:4.5.13")
+  implementation("org.apache.httpcomponents:httpclient:$httpclientVersion")
   implementation("com.google.code.findbugs:jsr305:3.0.2")
   implementation("org.projectlombok:lombok")
   implementation("org.openapitools:openapi-generator-gradle-plugin:6.5.0")
@@ -81,7 +83,7 @@ dependencies {
 
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("org.mockito:mockito-inline:5.2.0")
+  testImplementation("org.mockito:mockito-inline:$mockitoInlineVersion")
   testImplementation("io.projectreactor:reactor-test")
   // Kotlin dependencies
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
