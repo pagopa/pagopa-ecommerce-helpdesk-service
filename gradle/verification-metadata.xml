@@ -3,6 +3,11 @@
    <configuration>
       <verify-metadata>true</verify-metadata>
       <verify-signatures>false</verify-signatures>
+      <trusted-artifacts>
+         <trust group="org.sonarsource.parent"/>
+         <trust group="org.sonarsource.scanner.api"/>
+         <trust group="org.sonarsource.scanner.gradle"/>
+      </trusted-artifacts>
    </configuration>
    <components>
       <component group="ch.qos.logback" name="logback-classic" version="1.5.18">
