@@ -110,22 +110,6 @@ class HelpdeskControllerTestEcommerceHistory {
         val pageNumber = 1
         val pageSize = 15
         val request = HelpdeskTestUtilsV2.buildSearchRequestByPaymentToken()
-        val response = SearchTransactionResponseDto()
-
-        given(
-                helpdeskService.searchTransaction(
-                    pageNumber = eq(pageNumber),
-                    pageSize = eq(pageSize),
-                    searchTransactionRequestDto =
-                        argThat {
-                            this is SearchTransactionRequestPaymentTokenDto &&
-                                this.paymentToken == request.paymentToken
-                        },
-                    pmProviderType = eq(PmProviderType.ECOMMERCE_HISTORY)
-                )
-            )
-            .willReturn(Mono.just(response))
-
         webClient
             .post()
             .uri {
@@ -146,22 +130,6 @@ class HelpdeskControllerTestEcommerceHistory {
         val pageNumber = 1
         val pageSize = 15
         val request = HelpdeskTestUtilsV2.buildSearchRequestByPaymentToken()
-        val response = SearchTransactionResponseDto()
-
-        given(
-                helpdeskService.searchTransaction(
-                    pageNumber = eq(pageNumber),
-                    pageSize = eq(pageSize),
-                    searchTransactionRequestDto =
-                        argThat {
-                            this is SearchTransactionRequestPaymentTokenDto &&
-                                this.paymentToken == request.paymentToken
-                        },
-                    pmProviderType = eq(PmProviderType.ECOMMERCE_HISTORY)
-                )
-            )
-            .willReturn(Mono.just(response))
-
         webClient
             .post()
             .uri {

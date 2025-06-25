@@ -424,18 +424,6 @@ class EcommerceControllerTest {
         val pageNumber = 1
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
-        given(
-                ecommerceService.searchTransaction(
-                    pageNumber = eq(pageNumber),
-                    pageSize = eq(pageSize),
-                    ecommerceSearchTransactionRequestDto =
-                        argThat {
-                            this is SearchTransactionRequestPaymentTokenDto &&
-                                this.paymentToken == request.paymentToken
-                        }
-                )
-            )
-            .willReturn(Mono.just(SearchTransactionResponseDto()))
         webClient
             .post()
             .uri { uriBuilder ->
@@ -457,18 +445,6 @@ class EcommerceControllerTest {
         val pageNumber = 1
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
-        given(
-                ecommerceService.searchTransaction(
-                    pageNumber = eq(pageNumber),
-                    pageSize = eq(pageSize),
-                    ecommerceSearchTransactionRequestDto =
-                        argThat {
-                            this is SearchTransactionRequestPaymentTokenDto &&
-                                this.paymentToken == request.paymentToken
-                        }
-                )
-            )
-            .willReturn(Mono.just(SearchTransactionResponseDto()))
         webClient
             .post()
             .uri { uriBuilder ->

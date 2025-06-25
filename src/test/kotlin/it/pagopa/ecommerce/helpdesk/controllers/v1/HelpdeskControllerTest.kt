@@ -483,18 +483,6 @@ class HelpdeskControllerTest {
         val pageNumber = 1
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
-        given(
-                helpdeskService.searchTransaction(
-                    pageNumber = eq(pageNumber),
-                    pageSize = eq(pageSize),
-                    searchTransactionRequestDto =
-                        argThat {
-                            this is SearchTransactionRequestPaymentTokenDto &&
-                                this.paymentToken == request.paymentToken
-                        }
-                )
-            )
-            .willReturn(Mono.just(SearchTransactionResponseDto()))
         webClient
             .post()
             .uri { uriBuilder ->
@@ -516,18 +504,6 @@ class HelpdeskControllerTest {
         val pageNumber = 1
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
-        given(
-                helpdeskService.searchTransaction(
-                    pageNumber = eq(pageNumber),
-                    pageSize = eq(pageSize),
-                    searchTransactionRequestDto =
-                        argThat {
-                            this is SearchTransactionRequestPaymentTokenDto &&
-                                this.paymentToken == request.paymentToken
-                        }
-                )
-            )
-            .willReturn(Mono.just(SearchTransactionResponseDto()))
         webClient
             .post()
             .uri { uriBuilder ->

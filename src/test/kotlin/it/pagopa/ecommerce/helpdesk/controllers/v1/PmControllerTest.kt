@@ -478,18 +478,6 @@ class PmControllerTest {
         val pageNumber = 1
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it")
-        given(
-                pmService.searchTransaction(
-                    pageNumber = eq(pageNumber),
-                    pageSize = eq(pageSize),
-                    pmSearchTransactionRequestDto =
-                        argThat {
-                            this is SearchTransactionRequestEmailDto &&
-                                this.userEmail == request.userEmail
-                        }
-                )
-            )
-            .willReturn(Mono.just(SearchTransactionResponseDto()))
         webClient
             .post()
             .uri { uriBuilder ->
@@ -511,18 +499,6 @@ class PmControllerTest {
         val pageNumber = 1
         val pageSize = 15
         val request = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it")
-        given(
-                pmService.searchTransaction(
-                    pageNumber = eq(pageNumber),
-                    pageSize = eq(pageSize),
-                    pmSearchTransactionRequestDto =
-                        argThat {
-                            this is SearchTransactionRequestEmailDto &&
-                                this.userEmail == request.userEmail
-                        }
-                )
-            )
-            .willReturn(Mono.just(SearchTransactionResponseDto()))
         webClient
             .post()
             .uri { uriBuilder ->
