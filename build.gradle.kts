@@ -249,7 +249,7 @@ tasks.register<Exec>("install-commons") {
 }
 
 tasks.withType<KotlinCompile> {
-  dependsOn("helpdesk-v1", "helpdesk-v2", "nodo", "install-commons")
+  dependsOn("helpdesk-v1", "helpdesk-v2", "nodo")
   kotlinOptions.jvmTarget = "21"
 }
 
