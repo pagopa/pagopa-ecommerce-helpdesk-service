@@ -12,7 +12,6 @@ git clone $gitRepo
 cd pagopa-ecommerce-commons
 echo "Checking out ecommerce common ref $version"
 git checkout $version
-echo "Building with Java 21..."
 ./mvnw install -DskipTests
 
 cd ../../
