@@ -123,7 +123,7 @@ springBoot {
   buildInfo { properties { additional.set(mapOf("description" to project.description)) } }
 }
 
-tasks.create("applySemanticVersionPlugin") {
+tasks.register("applySemanticVersionPlugin") {
   dependsOn("prepareKotlinBuildScriptModel")
   apply(plugin = "com.dipien.semantic-version")
 }
@@ -252,7 +252,7 @@ tasks.register<Exec>("install-commons") {
 
 tasks.withType<KotlinCompile> {
   dependsOn("helpdesk-v1", "helpdesk-v2", "nodo")
-  kotlinOptions.jvmTarget = "21"
+  compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21) }
 }
 
 kotlin { jvmToolchain(21) }
@@ -284,4 +284,14 @@ tasks.jacocoTestReport {
  * Task used to expand application properties with build specific properties such as artifact name
  * and version
  */
-tasks.processResources { filesMatching("application.properties") { expand(project.properties) } }
+tasks.processResources {
+  val projectName = project.name
+  val projectVersion = project.version
+  val projectDescription = project.description
+
+  filesMatching("application.properties") {
+    expand(
+      mapOf("name" to projectName, "version" to projectVersion, "description" to projectDescription)
+    )
+  }
+}
