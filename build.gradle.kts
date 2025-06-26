@@ -10,12 +10,12 @@ plugins {
   id("java")
   id("org.springframework.boot") version "3.4.5"
   id("io.spring.dependency-management") version "1.1.0"
-  id("com.diffplug.spotless") version "6.18.0"
+  id("com.diffplug.spotless") version "6.25.0"
   id("org.openapi.generator") version "7.13.0"
   id("org.sonarqube") version "6.0.1.5171"
   id("com.dipien.semantic-version") version "2.0.0" apply false
-  kotlin("plugin.spring") version "1.9.20"
-  kotlin("jvm") version "1.9.20"
+  kotlin("plugin.spring") version "2.1.20"
+  kotlin("jvm") version "2.1.20"
   jacoco
   application
 }
@@ -36,7 +36,7 @@ repositories {
 dependencyManagement {
   imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.5") }
   // Kotlin BOM
-  imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:1.9.20") }
+  imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:2.1.20") }
   imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.3") }
 }
 
@@ -64,7 +64,7 @@ dependencies {
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
   implementation("org.springframework.boot:spring-boot-starter-aop")
   implementation("io.netty:netty-resolver-dns-native-macos:4.1.90.Final")
-  implementation("com.diffplug.spotless:spotless-plugin-gradle:6.18.0")
+  implementation("com.diffplug.spotless:spotless-plugin-gradle:6.25.0")
   implementation("javax.annotation:javax.annotation-api:1.3.2")
   // Kotlin dependencies
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -87,7 +87,7 @@ dependencies {
   testImplementation("io.projectreactor:reactor-test")
   // Kotlin dependencies
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
-  testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+  testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
   testImplementation("com.squareup.okhttp3:mockwebserver:$mockWebServerVersion")
   testImplementation("com.squareup.okhttp3:okhttp:$mockWebServerVersion")
   testImplementation("it.pagopa:pagopa-ecommerce-commons:$ecommerceCommonsVersion:tests")
