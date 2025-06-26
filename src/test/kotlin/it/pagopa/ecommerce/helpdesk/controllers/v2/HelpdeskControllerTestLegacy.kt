@@ -61,6 +61,7 @@ class HelpdeskControllerTestLegacy {
                         .build()
                 }
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("x-api-key", "primary-key")
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -98,6 +99,7 @@ class HelpdeskControllerTestLegacy {
                     .build()
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()

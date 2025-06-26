@@ -54,11 +54,47 @@ class EcommerceControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
             .isOk
     }
+
+    @Test
+    fun `post search transaction succeeded searching by payment token with secondary key`() =
+        runTest {
+            val pageNumber = 1
+            val pageSize = 15
+            val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
+            given(
+                    ecommerceService.searchTransaction(
+                        pageNumber = eq(pageNumber),
+                        pageSize = eq(pageSize),
+                        ecommerceSearchTransactionRequestDto =
+                            argThat {
+                                this is SearchTransactionRequestPaymentTokenDto &&
+                                    this.paymentToken == request.paymentToken
+                            }
+                    )
+                )
+                .willReturn(Mono.just(SearchTransactionResponseDto()))
+            webClient
+                .post()
+                .uri { uriBuilder ->
+                    uriBuilder
+                        .path("/ecommerce/searchTransaction")
+                        .queryParam("pageNumber", "{pageNumber}")
+                        .queryParam("pageSize", "{pageSize}")
+                        .build(pageNumber, pageSize)
+                }
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("x-api-key", "secondary-key")
+                .bodyValue(request)
+                .exchange()
+                .expectStatus()
+                .isOk
+        }
 
     @Test
     fun `post search transaction succeeded searching by rpt id`() = runTest {
@@ -86,6 +122,7 @@ class EcommerceControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
@@ -119,6 +156,7 @@ class EcommerceControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
@@ -158,6 +196,7 @@ class EcommerceControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
@@ -187,6 +226,7 @@ class EcommerceControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
@@ -218,6 +258,7 @@ class EcommerceControllerTest {
                         .build(pageNumber, pageSize)
                 }
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("x-api-key", "primary-key")
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -260,6 +301,7 @@ class EcommerceControllerTest {
                         .build(pageNumber, pageSize)
                 }
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("x-api-key", "primary-key")
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -296,6 +338,7 @@ class EcommerceControllerTest {
                         .build(pageNumber, pageSize)
                 }
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("x-api-key", "primary-key")
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -317,6 +360,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder -> uriBuilder.path("/ecommerce/searchNpgOperations").build() }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
@@ -343,6 +387,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder -> uriBuilder.path("/ecommerce/searchNpgOperations").build() }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
@@ -365,11 +410,55 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder -> uriBuilder.path("/ecommerce/searchNpgOperations").build() }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
             .isBadRequest
             .expectBody(ProblemJsonDto::class.java)
             .isEqualTo(expectedProblemJson)
+    }
+
+    @Test
+    fun `should return unauthorized if request has not api key header`() = runTest {
+        val pageNumber = 1
+        val pageSize = 15
+        val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
+        webClient
+            .post()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/ecommerce/searchTransaction")
+                    .queryParam("pageNumber", "{pageNumber}")
+                    .queryParam("pageSize", "{pageSize}")
+                    .build(pageNumber, pageSize)
+            }
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isEqualTo(HttpStatus.UNAUTHORIZED)
+    }
+
+    @Test
+    fun `should return unauthorized if request has wrong api key header`() = runTest {
+        val pageNumber = 1
+        val pageSize = 15
+        val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
+        webClient
+            .post()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/ecommerce/searchTransaction")
+                    .queryParam("pageNumber", "{pageNumber}")
+                    .queryParam("pageSize", "{pageSize}")
+                    .build(pageNumber, pageSize)
+            }
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "super-wrong-api-key")
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 }
