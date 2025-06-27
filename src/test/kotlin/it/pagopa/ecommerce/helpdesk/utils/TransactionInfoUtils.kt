@@ -16,6 +16,7 @@ class TransactionInfoUtils {
             val orderResponseDto = OrderResponseDto()
             return Mono.just(orderResponseDto)
         }
+
         fun buildSimpleEventsList(
             correlationId: String?,
             gateway: TransactionAuthorizationRequestData.PaymentGateway

@@ -8,25 +8,25 @@ description = "pagopa-ecommerce-helpdesk-service"
 
 plugins {
   id("java")
-  id("org.springframework.boot") version "3.0.5"
+  id("org.springframework.boot") version "3.4.5"
   id("io.spring.dependency-management") version "1.1.0"
-  id("com.diffplug.spotless") version "6.18.0"
-  id("org.openapi.generator") version "6.3.0"
-  id("org.sonarqube") version "4.2.0.3129"
+  id("com.diffplug.spotless") version "6.25.0"
+  id("org.openapi.generator") version "7.13.0"
+  id("org.sonarqube") version "6.0.1.5171"
   id("com.dipien.semantic-version") version "2.0.0" apply false
-  kotlin("plugin.spring") version "1.8.10"
-  kotlin("jvm") version "1.8.10"
+  kotlin("plugin.spring") version "2.1.20"
+  kotlin("jvm") version "2.1.20"
   jacoco
   application
 }
-// eCommerce commons library version
 
-val ecommerceCommonsVersion = "1.36.0"
+// eCommerce commons library version
+val ecommerceCommonsVersion = "3.0.0"
 
 // eCommerce commons library git ref (by default tag)
 val ecommerceCommonsGitRef = ecommerceCommonsVersion
 
-java.sourceCompatibility = JavaVersion.VERSION_17
+java { toolchain { languageVersion.set(JavaLanguageVersion.of(21)) } }
 
 repositories {
   mavenCentral()
@@ -34,15 +34,17 @@ repositories {
 }
 
 dependencyManagement {
-  imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.0.5") }
+  imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.5") }
   // Kotlin BOM
-  imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:1.7.22") }
-  imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4") }
+  imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:2.1.20") }
+  imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.3") }
 }
 
+// dependencies versions
 val mockWebServerVersion = "4.11.0"
-
 val ecsLoggingVersion = "1.5.0"
+val httpclientVersion = "4.5.13"
+val mockitoInlineVersion = "5.2.0"
 
 dependencies {
   implementation("io.projectreactor:reactor-core")
@@ -54,7 +56,7 @@ dependencies {
   implementation("org.glassfish.jaxb:jaxb-runtime")
   implementation("jakarta.xml.bind:jakarta.xml.bind-api")
   implementation("io.swagger.core.v3:swagger-annotations:2.2.8")
-  implementation("org.apache.httpcomponents:httpclient")
+  implementation("org.apache.httpcomponents:httpclient:$httpclientVersion")
   implementation("com.google.code.findbugs:jsr305:3.0.2")
   implementation("org.projectlombok:lombok")
   implementation("org.openapitools:openapi-generator-gradle-plugin:6.5.0")
@@ -62,7 +64,7 @@ dependencies {
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
   implementation("org.springframework.boot:spring-boot-starter-aop")
   implementation("io.netty:netty-resolver-dns-native-macos:4.1.90.Final")
-  implementation("com.diffplug.spotless:spotless-plugin-gradle:6.18.0")
+  implementation("com.diffplug.spotless:spotless-plugin-gradle:6.25.0")
   implementation("javax.annotation:javax.annotation-api:1.3.2")
   // Kotlin dependencies
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -81,11 +83,11 @@ dependencies {
 
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("org.mockito:mockito-inline")
+  testImplementation("org.mockito:mockito-inline:$mockitoInlineVersion")
   testImplementation("io.projectreactor:reactor-test")
   // Kotlin dependencies
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
-  testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+  testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
   testImplementation("com.squareup.okhttp3:mockwebserver:$mockWebServerVersion")
   testImplementation("com.squareup.okhttp3:okhttp:$mockWebServerVersion")
   testImplementation("it.pagopa:pagopa-ecommerce-commons:$ecommerceCommonsVersion:tests")
@@ -105,8 +107,13 @@ dependencyLocking { lockAllConfigurations() }
 
 sourceSets {
   main {
-    java { srcDirs("$buildDir/generated/src/main/java") }
-    kotlin { srcDirs("src/main/kotlin", "$buildDir/generated/src/main/kotlin") }
+    java { srcDirs("${layout.buildDirectory.get().asFile.path}/generated/src/main/java") }
+    kotlin {
+      srcDirs(
+        "src/main/kotlin",
+        "${layout.buildDirectory.get().asFile.path}/generated/src/main/kotlin"
+      )
+    }
     resources { srcDirs("src/resources") }
   }
 }
@@ -116,15 +123,12 @@ springBoot {
   buildInfo { properties { additional.set(mapOf("description" to project.description)) } }
 }
 
-tasks.create("applySemanticVersionPlugin") {
+tasks.register("applySemanticVersionPlugin") {
   dependsOn("prepareKotlinBuildScriptModel")
   apply(plugin = "com.dipien.semantic-version")
 }
 
-tasks.withType(JavaCompile::class.java).configureEach {
-  options.encoding = "UTF-8"
-  options.compilerArgs.add("--enable-preview")
-}
+tasks.withType(JavaCompile::class.java).configureEach { options.encoding = "UTF-8" }
 
 tasks.withType(Javadoc::class.java).configureEach { options.encoding = "UTF-8" }
 
@@ -153,7 +157,7 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("helpdesk-v1") {
   generatorName.set("spring")
   inputSpec.set("$rootDir/api-spec/v1/openapi.yaml")
-  outputDir.set("$buildDir/generated")
+  outputDir.set(layout.buildDirectory.get().dir("generated").asFile.toString())
   apiPackage.set("it.pagopa.generated.ecommerce.helpdesk.api")
   modelPackage.set("it.pagopa.generated.ecommerce.helpdesk.model")
   generateApiTests.set(false)
@@ -174,7 +178,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
       "useSpringBoot3" to "true",
       "oas3" to "true",
       "generateSupportingFiles" to "true",
-      "enumPropertyNaming" to "UPPERCASE"
+      "enumPropertyNaming" to "MACRO_CASE"
     )
   )
 }
@@ -182,7 +186,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("helpdesk-v2") {
   generatorName.set("spring")
   inputSpec.set("$rootDir/api-spec/v2/openapi.yaml")
-  outputDir.set("$buildDir/generated")
+  outputDir.set(layout.buildDirectory.get().dir("generated").asFile.toString())
   apiPackage.set("it.pagopa.generated.ecommerce.helpdesk.v2.api")
   modelPackage.set("it.pagopa.generated.ecommerce.helpdesk.v2.model")
   generateApiTests.set(false)
@@ -203,7 +207,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
       "useSpringBoot3" to "true",
       "oas3" to "true",
       "generateSupportingFiles" to "true",
-      "enumPropertyNaming" to "UPPERCASE",
+      "enumPropertyNaming" to "MACRO_CASE",
       "useTags" to "true"
     )
   )
@@ -214,7 +218,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("nod
   remoteInputSpec.set(
     "https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.465.0/src/core/api/nodopagamenti_api/nodoPerPM/v2/_openapi.json.tpl"
   )
-  outputDir.set("$buildDir/generated")
+  outputDir.set(layout.buildDirectory.get().dir("generated").asFile.toString())
   apiPackage.set("it.pagopa.generated.ecommerce.nodo.v2.api")
   modelPackage.set("it.pagopa.generated.ecommerce.nodo.v2.model")
   generateApiTests.set(false)
@@ -235,7 +239,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("nod
       "useSpringBoot3" to "true",
       "oas3" to "true",
       "generateSupportingFiles" to "true",
-      "enumPropertyNaming" to "UPPERCASE"
+      "enumPropertyNaming" to "MACRO_CASE"
     )
   )
 }
@@ -247,16 +251,17 @@ tasks.register<Exec>("install-commons") {
 }
 
 tasks.withType<KotlinCompile> {
-  dependsOn("helpdesk-v1", "helpdesk-v2", "nodo", "install-commons")
-  kotlinOptions.jvmTarget = "17"
+  dependsOn("helpdesk-v1", "helpdesk-v2", "nodo")
+  compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21) }
 }
+
+kotlin { jvmToolchain(21) }
 
 tasks.named<Jar>("jar") { enabled = false }
 
 tasks.test {
   useJUnitPlatform()
   finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
-  jvmArgs(listOf("--enable-preview"))
 }
 
 tasks.jacocoTestReport {
@@ -279,4 +284,14 @@ tasks.jacocoTestReport {
  * Task used to expand application properties with build specific properties such as artifact name
  * and version
  */
-tasks.processResources { filesMatching("application.properties") { expand(project.properties) } }
+tasks.processResources {
+  val projectName = project.name
+  val projectVersion = project.version
+  val projectDescription = project.description
+
+  filesMatching("application.properties") {
+    expand(
+      mapOf("name" to projectName, "version" to projectVersion, "description" to projectDescription)
+    )
+  }
+}
