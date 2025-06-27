@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "d9363f35-53c4-4d20-97a2-a3bb5d282e1f",
+		"_postman_id": "5fefaa9e-d47c-4189-9447-89212f682cf2",
 		"name": "Ecommerce helpDesk-service LOCAL (v2)",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "9864793"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46258243"
 	},
 	"item": [
 		{
@@ -39,6 +39,11 @@
 					{
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
 						"type": "text"
 					}
 				],
@@ -109,6 +114,11 @@
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
 						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -178,6 +188,11 @@
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
 						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -241,6 +256,11 @@
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
 						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -276,7 +296,6 @@
 			},
 			"response": []
 		},
-
 		{
 			"name": "Technical helpDesk SearchTransaction (v2)  TRANSACTION_ID",
 			"event": [
@@ -309,6 +328,11 @@
 					{
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
 						"type": "text"
 					}
 				],
@@ -377,6 +401,11 @@
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
 						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -443,6 +472,11 @@
 					{
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
 						"type": "text"
 					}
 				],
@@ -511,6 +545,11 @@
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
 						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -561,7 +600,8 @@
 							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -576,6 +616,11 @@
 					{
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
 						"type": "text"
 					}
 				],
@@ -627,7 +672,8 @@
 							"    pm.expect(response.page.results).to.be.lte(10);",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -642,6 +688,11 @@
 					{
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
 						"type": "text"
 					}
 				],
@@ -705,6 +756,11 @@
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
 						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -766,6 +822,11 @@
 					{
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
 						"type": "text"
 					}
 				],
@@ -829,6 +890,11 @@
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
 						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -890,6 +956,11 @@
 					{
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
 						"type": "text"
 					}
 				],
@@ -953,6 +1024,11 @@
 						"key": "deployment",
 						"value": "{{DEPLOYMENT}}",
 						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_PRIMARY}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -981,6 +1057,137 @@
 						{
 							"key": "pageSize",
 							"value": "21"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eCommerce SearchTransaction (v2) UNAUTHORIZED 401 - Invalid api key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"eCommerce SearchTransaction by TRANSACTION_ID - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{SECURITY_API_KEY_INVALID}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"TRANSACTION_ID\",\n  \"transactionId\": \"{{TRANSACTION_ID}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/v2/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"v2",
+						"ecommerce",
+						"searchTransaction"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eCommerce SearchTransaction (v2) UNAUTHORIZED 401 - Missing api key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"eCommerce SearchTransaction by TRANSACTION_ID - Status code is 200 with valid json response\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "deployment",
+						"value": "{{DEPLOYMENT}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"TRANSACTION_ID\",\n  \"transactionId\": \"{{TRANSACTION_ID}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}/v2/ecommerce/searchTransaction?pageNumber=0&pageSize=10",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"v2",
+						"ecommerce",
+						"searchTransaction"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
 						}
 					]
 				}
