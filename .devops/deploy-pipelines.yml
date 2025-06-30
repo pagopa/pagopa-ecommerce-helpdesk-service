@@ -79,14 +79,14 @@ stages:
 
   - stage: "Deploy_DEV_Blue"
     displayName: 'DEV blue deployment'
-    dependsOn: Build_release_candidate
+    dependsOn: Build_for_DEV
     condition:
       and(
       succeeded(),
       eq(${{parameters.UAT_SKIP_BLUE_DEPLOYMENT}}, False)
       )
     variables:
-      green_app_version: $[ stageDependencies.Build_release_candidate.build.outputs['chart_current_version.appVersion'] ]
+      green_app_version: $[ stageDependencies.Build_for_DEV.build.outputs['chart_current_version.appVersion'] ]
     jobs:
       - deployment: "Blue_deployment"
         displayName: "Blue deployment"
