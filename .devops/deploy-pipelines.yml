@@ -59,40 +59,49 @@ resources:
 pool:
   vmImage: ubuntu-latest
 
-# --- START Deploy DEV --- #
+# --- START Deploy UAT --- #
 stages:
-
-  - stage: 'Build_for_DEV'
-    displayName: 'Build for DEV'
-    condition: and(succeeded(), not(${{ parameters.SKIP_BUILD }}), eq(${{parameters.DEV_DEPLOY}}, true))
+  - stage: "Build_release_candidate"
+    displayName: 'Build release candidate'
+    dependsOn: [ ]
+    condition:
+      and(
+      succeeded(),
+      eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+      or(
+      eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+      startsWith(variables['Build.SourceBranch'], 'refs/tags')
+      )
+      )
     jobs:
-      - job: Build_docker
-        displayName: Build docker with Build.SourceVersion as TAG
+      - job: "build"
+        displayName: 'Build release candidate docker image'
         steps:
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
-              CONTAINER_REGISTRY_SERVICE_CONN: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
-              CONTAINER_REGISTRY_FQDN: $(DEV_CONTAINER_NAMESPACE)
+              CONTAINER_REGISTRY_SERVICE_CONN: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
+              CONTAINER_REGISTRY_FQDN: $(UAT_CONTAINER_NAMESPACE)
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
               DOCKER_IMAGE_TAG: $(Build.SourceVersion)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+          - template: azure-templates/chart-current-version.yml
 
-  - stage: "Deploy_DEV_Blue"
-    displayName: 'DEV blue deployment'
-    dependsOn: Build_for_DEV
+  - stage: "Deploy_UAT_Blue"
+    displayName: 'UAT blue deployment'
+    dependsOn: Build_release_candidate
     condition:
       and(
       succeeded(),
       eq(${{parameters.UAT_SKIP_BLUE_DEPLOYMENT}}, False)
       )
     variables:
-      green_app_version: $[ stageDependencies.Build_for_DEV.build.outputs['chart_current_version.appVersion'] ]
+      green_app_version: $[ stageDependencies.Build_release_candidate.build.outputs['chart_current_version.appVersion'] ]
     jobs:
       - deployment: "Blue_deployment"
         displayName: "Blue deployment"
         pool:
-          name: pagopa-dev-linux
-        environment: 'DEV'
+          name: pagopa-uat-linux
+        environment: 'UAT'
         strategy:
           runOnce:
             deploy:
@@ -112,10 +121,10 @@ stages:
                   parameters:
                     DO_DEPLOY: true
                     DO_BLUE_GREEN_DEPLOY: true
-                    ENV: 'DEV'
-                    KUBERNETES_SERVICE_CONN: $(DEV_KUBERNETES_SERVICE_CONN)
+                    ENV: 'UAT'
+                    KUBERNETES_SERVICE_CONN: $(UAT_KUBERNETES_SERVICE_CONN)
                     NAMESPACE: ecommerce
                     APP_NAME: blue-$(K8S_IMAGE_REPOSITORY_NAME)
-                    VALUE_FILE: "helm/values-dev.yaml"
+                    VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(green_app_version)
                     BLUE_VERSION: $(Build.SourceVersion)
