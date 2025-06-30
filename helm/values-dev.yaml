@@ -5,12 +5,12 @@ microservice-chart:
   canaryDelivery:
     create: false
     ingress:
-      bluegreen: true
+      bluegreen: false
       #set canary deployment with traffic balancing see https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#canary for more info
       header: true
       headerName: deployment
       headerValue: blue
-      weightPercent: 10
+      weightPercent: 0
     image:
       repository: pagopadcommonacr.azurecr.io/pagopaecommercehelpdeskservice
       tag: "latest"
