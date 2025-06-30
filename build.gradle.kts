@@ -14,8 +14,8 @@ plugins {
   id("org.openapi.generator") version "7.13.0"
   id("org.sonarqube") version "6.0.1.5171"
   id("com.dipien.semantic-version") version "2.0.0" apply false
-  kotlin("plugin.spring") version "2.1.20"
-  kotlin("jvm") version "2.1.20"
+  kotlin("plugin.spring") version "2.2.0"
+  kotlin("jvm") version "2.2.0"
   jacoco
   application
 }
@@ -36,7 +36,7 @@ repositories {
 dependencyManagement {
   imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.5") }
   // Kotlin BOM
-  imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:2.1.20") }
+  imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:2.2.0") }
   imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.3") }
 }
 
