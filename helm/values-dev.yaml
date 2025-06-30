@@ -1,11 +1,11 @@
 microservice-chart:
   namespace: "ecommerce"
   nameOverride: ""
-  fullnameOverride: ""
+  fullnameOverride: "soak-pagopa-ecommerce-helpdesk-service"
   canaryDelivery:
     create: false
     ingress:
-      bluegreen: false
+      bluegreen: true
       #set canary deployment with traffic balancing see https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#canary for more info
       header: true
       headerName: deployment
