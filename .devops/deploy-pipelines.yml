@@ -77,12 +77,21 @@ stages:
               DOCKER_IMAGE_TAG: $(Build.SourceVersion)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
 
-  - stage: 'Deploy_for_DEV'
-    displayName: 'Deploy DEV'
-    dependsOn: Build_for_DEV
-    condition: or(succeeded(), ${{ parameters.SKIP_BUILD }}, eq(${{parameters.DEV_DEPLOY}}, true) )
+  - stage: "Deploy_DEV_Blue"
+    displayName: 'DEV blue deployment'
+    dependsOn: Build_release_candidate
+    condition:
+      and(
+      succeeded(),
+      eq(${{parameters.UAT_SKIP_BLUE_DEPLOYMENT}}, False)
+      )
+    variables:
+      green_app_version: $[ stageDependencies.Build_release_candidate.build.outputs['chart_current_version.appVersion'] ]
     jobs:
-      - deployment: "deploy"
+      - deployment: "Blue_deployment"
+        displayName: "Blue deployment"
+        pool:
+          name: pagopa-dev-linux
         environment: 'DEV'
         strategy:
           runOnce:
@@ -90,6 +99,7 @@ stages:
               steps:
                 - checkout: self
                   displayName: "Checkout"
+                - task: KubectlInstaller@0
                 - task: Bash@3
                   name: update_chart_version
                   displayName: 'Setup helm microservice chart'
@@ -105,7 +115,7 @@ stages:
                     ENV: 'DEV'
                     KUBERNETES_SERVICE_CONN: $(DEV_KUBERNETES_SERVICE_CONN)
                     NAMESPACE: ecommerce
-                    APP_NAME: blue-$(K8S_IMAGE_REPOSITORY_NAME)
+                    APP_NAME: soak-$(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-dev.yaml"
-                    GREEN_VERSION: $(Build.SourceVersion)
+                    GREEN_VERSION: $(green_app_version)
                     BLUE_VERSION: $(Build.SourceVersion)
