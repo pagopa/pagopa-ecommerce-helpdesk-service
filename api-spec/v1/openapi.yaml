@@ -21,6 +21,8 @@ tags:
     externalDocs:
       url: https://pagopa.atlassian.net/wiki/spaces/I/pages/492339720/pagoPA+eCommerce+Design+Review
       description: Technical specifications
+security:
+  - ApiKeyAuth: [ ]
 
 paths:
   /pm/searchTransaction:
@@ -369,6 +371,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
 components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
   schemas:
     ProblemJson:
       type: object
