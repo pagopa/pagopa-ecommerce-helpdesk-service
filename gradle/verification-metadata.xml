@@ -10,6 +10,7 @@
          <trust group="org.sonarsource.scanner.gradle"/>
          <trust file=".*-javadoc[.]jar" regex="true"/>
          <trust file=".*-sources[.]jar" regex="true"/>
+         <trust file="gradle.*-src[.]zip" regex="true"/>
       </trusted-artifacts>
    </configuration>
    <components>
