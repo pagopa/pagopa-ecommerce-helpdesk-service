@@ -55,6 +55,7 @@ class EcommerceControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
@@ -87,6 +88,7 @@ class EcommerceControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
@@ -120,6 +122,7 @@ class EcommerceControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
@@ -159,6 +162,7 @@ class EcommerceControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
@@ -188,6 +192,7 @@ class EcommerceControllerTest {
                     .build(pageNumber, pageSize)
             }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
@@ -219,6 +224,7 @@ class EcommerceControllerTest {
                         .build(pageNumber, pageSize)
                 }
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("x-api-key", "primary-key")
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -261,6 +267,7 @@ class EcommerceControllerTest {
                         .build(pageNumber, pageSize)
                 }
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("x-api-key", "primary-key")
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -301,6 +308,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder -> uriBuilder.path("/v2/ecommerce/searchMetrics").build() }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
@@ -313,6 +321,7 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder -> uriBuilder.path("/v2/ecommerce/searchMetrics").build() }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(SearchMetricsRequestDto())
             .exchange()
             .expectStatus()
@@ -336,11 +345,55 @@ class EcommerceControllerTest {
             .post()
             .uri { uriBuilder -> uriBuilder.path("/v2/ecommerce/searchMetrics").build() }
             .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
             .bodyValue(request)
             .exchange()
             .expectStatus()
             .is5xxServerError
             .expectBody<ProblemJsonDto>()
             .isEqualTo(expectedProblemJson)
+    }
+
+    @Test
+    fun `should return unauthorized if request has not api key header`() = runTest {
+        val pageNumber = 1
+        val pageSize = 15
+        val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
+        webClient
+            .post()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/v2/ecommerce/searchTransaction")
+                    .queryParam("pageNumber", "{pageNumber}")
+                    .queryParam("pageSize", "{pageSize}")
+                    .build(pageNumber, pageSize)
+            }
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isEqualTo(HttpStatus.UNAUTHORIZED)
+    }
+
+    @Test
+    fun `should return unauthorized if request has wrong api key header`() = runTest {
+        val pageNumber = 1
+        val pageSize = 15
+        val request = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
+        webClient
+            .post()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/v2/ecommerce/searchTransaction")
+                    .queryParam("pageNumber", "{pageNumber}")
+                    .queryParam("pageSize", "{pageSize}")
+                    .build(pageNumber, pageSize)
+            }
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "super-wrong-api-key")
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 }
