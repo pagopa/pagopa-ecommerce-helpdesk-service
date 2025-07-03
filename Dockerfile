@@ -1,5 +1,5 @@
 # build commons with java 21
-FROM amazoncorretto:21-alpine@sha256:6a98c4402708fe8d16e946b4b5bac396379ec5104c1661e2a27b2b45cf9e2d16 AS commons-builder
+FROM amazoncorretto:21-alpine@sha256:6a98c4402708fe8d16e946b4b5bac396379ec5104c1661e2a27b2b45cf9e2d16 AS build
 
 WORKDIR /workspace/app
 RUN apk add --no-cache git findutils
@@ -9,16 +9,6 @@ RUN chmod +x ./gradlew
 RUN chmod +x ./pagopa-ecommerce-commons-maven-install.sh
 RUN ./gradlew install-commons -PbuildCommons
 
-# build application with java 21
-FROM amazoncorretto:21-alpine@sha256:6a98c4402708fe8d16e946b4b5bac396379ec5104c1661e2a27b2b45cf9e2d16 AS build
-
-WORKDIR /workspace/app
-RUN apk add --no-cache git findutils
-
-COPY . .
-COPY --from=commons-builder /root/.m2 /root/.m2
-
-RUN chmod +x ./gradlew
 RUN ./gradlew build -x test
 
 RUN mkdir build/extracted && java -Djarmode=layertools -jar build/libs/*.jar extract --destination build/extracted
