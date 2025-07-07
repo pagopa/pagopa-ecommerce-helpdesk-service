@@ -123,10 +123,11 @@ springBoot {
   buildInfo { properties { additional.set(mapOf("description" to project.description)) } }
 }
 
-tasks.register("applySemanticVersionPlugin") {
-  dependsOn("prepareKotlinBuildScriptModel")
-  apply(plugin = "com.dipien.semantic-version")
-}
+tasks
+  .register("applySemanticVersionPlugin") {
+    dependsOn("prepareKotlinBuildScriptModel") }
+  .apply { apply(plugin = "com.dipien.semantic-version") }
+
 
 tasks.withType(JavaCompile::class.java).configureEach { options.encoding = "UTF-8" }
 
