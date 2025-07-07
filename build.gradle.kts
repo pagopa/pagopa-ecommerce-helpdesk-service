@@ -34,7 +34,7 @@ repositories {
 }
 
 dependencyManagement {
-  imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.2.5") }
+  imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.5") }
   // Kotlin BOM
   imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:1.7.22") }
   imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4") }
