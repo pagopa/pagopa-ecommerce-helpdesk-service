@@ -54,7 +54,7 @@ dependencies {
   implementation("org.glassfish.jaxb:jaxb-runtime")
   implementation("jakarta.xml.bind:jakarta.xml.bind-api")
   implementation("io.swagger.core.v3:swagger-annotations:2.2.8")
-  implementation("org.apache.httpcomponents:httpclient")
+  implementation("org.apache.httpcomponents:httpclient:4.5.14")
   implementation("com.google.code.findbugs:jsr305:3.0.2")
   implementation("org.projectlombok:lombok")
   implementation("org.openapitools:openapi-generator-gradle-plugin:6.5.0")
@@ -81,7 +81,7 @@ dependencies {
 
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("org.mockito:mockito-inline")
+  testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("io.projectreactor:reactor-test")
   // Kotlin dependencies
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
