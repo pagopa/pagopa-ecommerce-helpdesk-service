@@ -1,23 +1,20 @@
-FROM openjdk:17-jdk@sha256:528707081fdb9562eb819128a9f85ae7fe000e2fbaeaf9f87662e7b3f38cb7d8 as build
+# build commons with java 21
+FROM amazoncorretto:21-alpine@sha256:6a98c4402708fe8d16e946b4b5bac396379ec5104c1661e2a27b2b45cf9e2d16 AS build
+
 WORKDIR /workspace/app
+RUN apk add --no-cache git findutils
 
-RUN microdnf install git
+COPY . .
+RUN chmod +x ./gradlew
+RUN chmod +x ./pagopa-ecommerce-commons-maven-install.sh
+RUN ./gradlew install-commons -PbuildCommons
 
-COPY gradlew .
-COPY gradle gradle
-COPY build.gradle.kts .
-COPY settings.gradle.kts .
-COPY gradle.lockfile .
-COPY gradle.properties .
-COPY pagopa-ecommerce-commons-maven-install.sh .
+RUN ./gradlew build -x test
 
-COPY eclipse-style.xml eclipse-style.xml
-COPY src src
-COPY api-spec api-spec
-RUN ./gradlew build -x test -PbuildCommons
 RUN mkdir build/extracted && java -Djarmode=layertools -jar build/libs/*.jar extract --destination build/extracted
 
-FROM amazoncorretto:17-alpine@sha256:d7ac7ae33ee93cd88703611c59596e3e30c87c78eae2b1f8f2f81ed5c89b2cf3
+# runtime with java 21
+FROM amazoncorretto:21-alpine@sha256:6a98c4402708fe8d16e946b4b5bac396379ec5104c1661e2a27b2b45cf9e2d16
 
 RUN addgroup --system user && adduser --ingroup user --system user
 USER user:user
@@ -37,5 +34,4 @@ RUN true
 COPY --from=build --chown=user ${EXTRACTED}/application/ ./
 RUN true
 
-ENTRYPOINT ["java","--enable-preview","-javaagent:opentelemetry-javaagent.jar","org.springframework.boot.loader.JarLauncher"]
-
+ENTRYPOINT ["java","-javaagent:opentelemetry-javaagent.jar","org.springframework.boot.loader.launch.JarLauncher"]

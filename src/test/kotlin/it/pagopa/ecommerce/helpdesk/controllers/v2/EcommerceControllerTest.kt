@@ -328,6 +328,7 @@ class EcommerceControllerTest {
             .isBadRequest
             .expectBody<ProblemJsonDto>()
     }
+
     @Test
     fun `post ecommerceSearchMetrics return 500 for invalid  parameters`() = runTest {
         val request = HelpdeskTestUtilsV2.buildSearchMetrics()

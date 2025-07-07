@@ -13,5 +13,6 @@ cd pagopa-ecommerce-commons
 echo "Checking out ecommerce common ref $version"
 git checkout $version
 ./mvnw install -DskipTests
+
 cd ../../
 rm -rf $checkoutFolder

@@ -19,6 +19,7 @@ class HelpdeskController(
     @Autowired val pmService: PmService
 ) : HelpdeskApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
+
     override fun helpDeskSearchTransaction(
         @Min(0) pageNumber: Int,
         @Min(1) @Max(20) pageSize: Int,
