@@ -146,7 +146,7 @@ $ docker compose up --build
 
 - git
 - gradle
-- jdk-17
+- jdk-21
 - ecommerce-commons library installed into maven local folder
 
 ### Run the project
