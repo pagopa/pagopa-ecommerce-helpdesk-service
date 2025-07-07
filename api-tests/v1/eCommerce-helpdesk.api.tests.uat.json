@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "ce2f94fa-6899-44c3-a2ba-c08db4f4fa47",
+		"_postman_id": "5b74c7ae-6dd4-46ba-af81-c5b39720b9f7",
 		"name": "Ecommerce helpDesk-service UAT",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "38770380"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23963988"
 	},
 	"item": [
 		{
@@ -417,228 +417,6 @@
 						}
 					]
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "Technical helpDesk SearchTransaction FISCAL_CODE",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Technical helpDesk SearchTransaction by FISCAL_CODE - Status code is 200 with valid json response\", function () {",
-							"    pm.response.to.have.status(200);",
-							"    const response = pm.response.json();",
-							"    pm.expect(response.transactions.length).greaterThan(0);",
-							"    pm.expect(response.page.current).to.be.eq(0);",
-							"    pm.expect(response.page.total).to.be.gt(0);",
-							"    pm.expect(response.page.results).to.be.lte(10);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Ocp-Apim-Subscription-Key",
-						"value": "{{API_SUBSCRIPTION_KEY}}",
-						"type": "text"
-					},
-					{
-						"key": "deployment",
-						"value": "{{DEPLOYMENT}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"type\": \"USER_FISCAL_CODE\",\n  \"userFiscalCode\": \"{{USER_FISCAL_CODE}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
-						"helpdesk",
-						"searchTransaction"
-					],
-					"query": [
-						{
-							"key": "pageNumber",
-							"value": "0"
-						},
-						{
-							"key": "pageSize",
-							"value": "10"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Technical helpDesk SearchTransaction USER_EMAIL",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Technical helpDesk SearchTransaction by USER_EMAIL - Status code is 200 with valid json response\", function () {",
-							"    pm.response.to.have.status(200);",
-							"    const response = pm.response.json();",
-							"    pm.expect(response.transactions.length).greaterThan(0);",
-							"    pm.expect(response.page.current).to.be.eq(0);",
-							"    pm.expect(response.page.total).to.be.gt(0);",
-							"    pm.expect(response.page.results).to.be.lte(10);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Ocp-Apim-Subscription-Key",
-						"value": "{{API_SUBSCRIPTION_KEY}}",
-						"type": "text"
-					},
-					{
-						"key": "deployment",
-						"value": "{{DEPLOYMENT}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"type\": \"USER_EMAIL\",\n  \"userEmail\": \"{{USER_EMAIL}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchTransaction?pageNumber=0&pageSize=10",
-					"host": [
-						"{{HOSTNAME}}"
-					],
-					"path": [
-						"ecommerce",
-						"helpdesk-service",
-						"v1",
-						"helpdesk",
-						"searchTransaction"
-					],
-					"query": [
-						{
-							"key": "pageNumber",
-							"value": "0"
-						},
-						{
-							"key": "pageSize",
-							"value": "10"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Technical helpDesk SearchPaymentMethod USER_EMAIL",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Technical helpDesk SearchPaymentMethod by USER_EMAIL - Status code is 200 with valid json response\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Ocp-Apim-Subscription-Key",
-						"value": "{{API_SUBSCRIPTION_KEY}}",
-						"type": "text"
-					},
-					{
-						"key": "deployment",
-						"value": "{{DEPLOYMENT}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"type\": \"USER_EMAIL\",\n  \"userEmail\": \"{{USER_EMAIL}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchPaymentMethod"
-			},
-			"response": []
-		},
-		{
-			"name": "Technical helpDesk SearchPaymentMethod FISCAL_CODE",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Technical helpDesk SearchPaymentMethod by FISCAL_CODE - Status code is 200 with valid json response\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Ocp-Apim-Subscription-Key",
-						"value": "{{API_SUBSCRIPTION_KEY}}",
-						"type": "text"
-					},
-					{
-						"key": "deployment",
-						"value": "{{DEPLOYMENT}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"type\": \"USER_FISCAL_CODE\",\n  \"userFiscalCode\": \"{{USER_FISCAL_CODE}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/helpdesk/searchPaymentMethod"
 			},
 			"response": []
 		},
@@ -1254,7 +1032,19 @@
 						}
 					}
 				},
-				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperations"
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperations",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v1",
+						"ecommerce",
+						"searchNpgOperations"
+					]
+				}
 			},
 			"response": []
 		},
@@ -1300,7 +1090,19 @@
 						}
 					}
 				},
-				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperations"
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperations",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v1",
+						"ecommerce",
+						"searchNpgOperations"
+					]
+				}
 			},
 			"response": []
 		},
@@ -1345,7 +1147,19 @@
 						}
 					}
 				},
-				"url": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperations"
+				"url": {
+					"raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperations",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"path": [
+						"ecommerce",
+						"helpdesk-service",
+						"v1",
+						"ecommerce",
+						"searchNpgOperations"
+					]
+				}
 			},
 			"response": []
 		}
