@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "it.pagopa.ecommerce.helpdesk"
 
-version = "1.44.0"
+version = "2.0.0"
 
 description = "pagopa-ecommerce-helpdesk-service"
 
@@ -123,10 +123,9 @@ springBoot {
   buildInfo { properties { additional.set(mapOf("description" to project.description)) } }
 }
 
-tasks.register("applySemanticVersionPlugin") {
-  dependsOn("prepareKotlinBuildScriptModel")
-  apply(plugin = "com.dipien.semantic-version")
-}
+tasks
+  .register("applySemanticVersionPlugin") { dependsOn("prepareKotlinBuildScriptModel") }
+  .apply { apply(plugin = "com.dipien.semantic-version") }
 
 tasks.withType(JavaCompile::class.java).configureEach { options.encoding = "UTF-8" }
 
