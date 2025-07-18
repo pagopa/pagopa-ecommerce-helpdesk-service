@@ -20,7 +20,7 @@ microservice-chart:
     envSecret: {}
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercehelpdeskservice
-    tag: "2.1.0"
+    tag: "2.1.1"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -107,11 +107,11 @@ microservice-chart:
     NPG_READ_TIMEOUT: "10000"
     NPG_CONNECTION_TIMEOUT: "10000"
     NPG_CARDS_PSP_LIST: "BCITITMM,CIPBITMM,BIC36019,UNCRITMM,BPPIITRRXXX,PPAYITR1XXX,BNLIITRR,PASCITMM,WOLLNLB1,IFSPIT21,BPMOIT22,SARDIT31"
-    NPG_PAYPAL_PSP_LIST: "BCITITMM,SIGPITM1XXX"
+    NPG_PAYPAL_PSP_LIST: "BCITITMM,SIGPITM1XXX,MOONITMMXXX"
     NPG_MYBANK_PSP_LIST: "BCITITMM,UNCRITMM"
     NPG_BANCOMATPAY_PSP_LIST: "BCITITMM"
     NPG_SATISPAY_PSP_LIST: "SATYLUL1"
-    NPG_APPLEPAY_PSP_LIST: "SIGPITM1XXX,CIPBITMM"
+    NPG_APPLEPAY_PSP_LIST: "SIGPITM1XXX,CIPBITMM,MOONITMMXXX"
     NPG_GOOGLE_PAY_PSP_LIST: "CIPBITMM"
     SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
       {ALL: '*', ECOMMERCE: 'pagopa-u-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-u-weu-ecommerce-notifications-service-errors-queue'}
