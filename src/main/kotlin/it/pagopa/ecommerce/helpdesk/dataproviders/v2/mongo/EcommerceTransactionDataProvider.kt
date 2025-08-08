@@ -14,17 +14,19 @@ import it.pagopa.ecommerce.helpdesk.utils.v2.baseTransactionToTransactionInfoDto
 import it.pagopa.ecommerce.helpdesk.utils.v2.baseTransactionToTransactionInfoDtoV2
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import java.util.*
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Named
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
 
-@Component("EcommerceTransactionDataProviderV2")
+@ApplicationScoped
+@Named("EcommerceTransactionDataProviderV2")
 class EcommerceTransactionDataProvider(
-    @Autowired private val transactionsViewRepository: TransactionsViewRepository,
-    @Autowired private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any>
+    @Inject private val transactionsViewRepository: TransactionsViewRepository,
+    @Inject private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any>
 ) : TransactionDataProvider {
 
     override fun totalRecordCount(

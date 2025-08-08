@@ -17,8 +17,8 @@ import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestTran
 import it.pagopa.generated.ecommerce.helpdesk.model.TransactionResultDto
 import java.time.OffsetDateTime
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
@@ -29,8 +29,8 @@ import reactor.kotlin.core.publisher.toMono
  *
  * @see TransactionDataProvider
  */
-@Component
-class PMTransactionDataProvider(@Autowired private val connectionFactory: ConnectionFactory) :
+@ApplicationScoped
+class PMTransactionDataProvider(@Inject private val connectionFactory: ConnectionFactory) :
     TransactionDataProvider {
 
     private val logger = LoggerFactory.getLogger(javaClass)

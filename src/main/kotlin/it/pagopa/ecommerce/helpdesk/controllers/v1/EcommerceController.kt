@@ -3,61 +3,63 @@ package it.pagopa.ecommerce.helpdesk.controllers.v1
 import it.pagopa.ecommerce.helpdesk.services.v1.EcommerceService
 import it.pagopa.generated.ecommerce.helpdesk.api.EcommerceApi
 import it.pagopa.generated.ecommerce.helpdesk.model.*
+import jakarta.inject.Inject
+import jakarta.inject.Named
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotNull
+import jakarta.ws.rs.DefaultValue
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.QueryParam
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
+import jakarta.ws.rs.core.Response
 
-@RestController("EcommerceV1Controller")
-class EcommerceController(@Autowired val ecommerceService: EcommerceService) : EcommerceApi {
+@Path("/ecommerce")
+@Named("EcommerceV1Controller")
+class EcommerceController(@Inject val ecommerceService: EcommerceService) : EcommerceApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun ecommerceSearchTransaction(
-        @Min(0) pageNumber: Int,
-        @Min(1) @Max(20) pageSize: Int,
-        ecommerceSearchTransactionRequestDto: Mono<EcommerceSearchTransactionRequestDto>,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
-        logger.info("[HelpDesk controller] ecommerceSearchTransaction")
-        return ecommerceSearchTransactionRequestDto
-            .flatMap {
-                ecommerceService.searchTransaction(
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
-                    ecommerceSearchTransactionRequestDto = it
-                )
-            }
-            .map { ResponseEntity.ok(it) }
+        @QueryParam("pageNumber") @DefaultValue("0") @Min(0) pageNumber: Int,
+        @QueryParam("pageSize") @DefaultValue("10") @Min(1) @Max(20) pageSize: Int,
+        @Valid @NotNull ecommerceSearchTransactionRequestDto: EcommerceSearchTransactionRequestDto
+    ): SearchTransactionResponseDto? {
+        logger.info("Handling ecommerceSearchTransaction")
+
+        val result = ecommerceService.searchTransaction(
+            pageNumber = pageNumber,
+            pageSize = pageSize,
+            ecommerceSearchTransactionRequestDto = ecommerceSearchTransactionRequestDto
+        )
+
+        return result;
     }
 
     override fun ecommerceSearchDeadLetterEvents(
-        @Min(0) pageNumber: Int,
-        @Min(1) @Max(1000) pageSize: Int,
-        ecommerceSearchDeadLetterEventsRequestDto: Mono<EcommerceSearchDeadLetterEventsRequestDto>,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<SearchDeadLetterEventResponseDto>> {
+        @QueryParam("pageNumber") @DefaultValue("0") @Min(0) pageNumber: Int,
+        @QueryParam("pageSize") @DefaultValue("10") @Min(1) @Max(1000) pageSize: Int,
+        @Valid @NotNull ecommerceSearchDeadLetterEventsRequestDto: EcommerceSearchDeadLetterEventsRequestDto,
+
+    ): SearchDeadLetterEventResponseDto {
         logger.info("[HelpDesk controller] ecommerceSearchDeadLetterEvents")
-        return ecommerceSearchDeadLetterEventsRequestDto
-            .flatMap {
-                ecommerceService.searchDeadLetterEvents(
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
-                    searchRequest = it
-                )
-            }
-            .map { ResponseEntity.ok(it) }
+
+        val response = ecommerceService.searchDeadLetterEvents(
+            pageNumber = pageNumber,
+            pageSize = pageSize,
+            searchRequest = ecommerceSearchDeadLetterEventsRequestDto
+        )
+
+        return response
     }
 
     override fun ecommerceSearchNpgOperationsPost(
-        searchNpgOperationsRequestDto: Mono<SearchNpgOperationsRequestDto>,
-        exchange: ServerWebExchange?
-    ): Mono<ResponseEntity<SearchNpgOperationsResponseDto>> {
-        return searchNpgOperationsRequestDto
-            .flatMap { ecommerceService.searchNpgOperations(transactionId = it.idTransaction) }
-            .map { ResponseEntity.ok(it) }
+        searchNpgOperationsRequestDto: SearchNpgOperationsRequestDto,
+
+    ): SearchNpgOperationsResponseDto {
+       return ecommerceService.searchNpgOperations(transactionId = searchNpgOperationsRequestDto.idTransaction)
     }
 }

@@ -1,4 +1,4 @@
-package it.pagopa.ecommerce.helpdesk
+/*package it.pagopa.ecommerce.helpdesk
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration
@@ -13,3 +13,4 @@ class PagopaEcommerceHelpdeskServiceApplication
 fun main(args: Array<String>) {
     runApplication<PagopaEcommerceHelpdeskServiceApplication>(*args)
 }
+*/

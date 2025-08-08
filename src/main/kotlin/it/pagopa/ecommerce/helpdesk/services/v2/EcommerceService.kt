@@ -13,23 +13,27 @@ import it.pagopa.generated.ecommerce.helpdesk.v2.model.EcommerceSearchTransactio
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchMetricsRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionMetricsResponseDto
+import jakarta.enterprise.context.ApplicationScoped
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
+import jakarta.inject.Inject
+import jakarta.inject.Named
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
-@Service("EcommerceServiceV2")
+
+@ApplicationScoped
+@Named("EcommerceServiceV2")
 class EcommerceService(
-    @Autowired private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
-    @Autowired
+    @Inject private val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
+    @Inject
     @Qualifier("confidential-data-manager-client-email")
     private val confidentialDataManagerEmail: ConfidentialDataManager,
-    @Autowired
+    @Inject
     @Qualifier("confidential-data-manager-client-fiscal-code")
     private val confidentialDataManagerFiscalCode: ConfidentialDataManager,
-    @Autowired private val stateMetricsDataProvider: StateMetricsDataProvider,
+    @Inject private val stateMetricsDataProvider: StateMetricsDataProvider,
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -69,21 +73,15 @@ class EcommerceService(
         searchCriteria: K,
         dataProvider: DataProvider<K, V>,
         searchCriteriaType: String
-    ): Mono<Pair<List<V>, Int>> {
-        return dataProvider.totalRecordCount(searchCriteria).flatMap { totalCount ->
+    ):  Pair<List<V>, Int> {
+            val totalCount = dataProvider.totalRecordCount(searchCriteria)
             if (totalCount > 0) {
                 val skip = pageSize * pageNumber
-                logger.info(
-                    "Total record found: {}, skip: {}, limit: {}",
-                    totalCount,
-                    skip,
-                    pageSize
-                )
-                dataProvider
-                    .findResult(searchParams = searchCriteria, skip = skip, limit = pageSize)
-                    .zipWith(mono { totalCount }, ::Pair)
+                logger.info("Total record found: {}, skip: {}, limit: {}", totalCount, skip, pageSize)
+                val results = dataProvider.findResult(searchCriteria, skip, pageSize)
+                return Pair(results, totalCount)
             } else {
-                Mono.error(NoResultFoundException(searchCriteriaType))
+                throw NoResultFoundException(searchCriteriaType)
             }
         }
     }

@@ -11,8 +11,8 @@ import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import java.util.*
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
 import reactor.core.publisher.Mono
 
 /**
@@ -23,10 +23,10 @@ import reactor.core.publisher.Mono
  * @see DeadLetterEventDto
  * @see DeadLetterEventDto
  */
-@Component
+@ApplicationScoped
 class DeadLetterDataProvider(
-    @Autowired private val deadLetterRepository: DeadLetterRepository,
-    @Autowired private val deadLetterQueueMapping: EnumMap<DeadLetterSearchEventSourceDto, String>
+    @Inject private val deadLetterRepository: DeadLetterRepository,
+    @Inject private val deadLetterQueueMapping: EnumMap<DeadLetterSearchEventSourceDto, String>
 ) : DataProvider<EcommerceSearchDeadLetterEventsRequestDto, DeadLetterEventDto> {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -230,11 +230,11 @@ class DeadLetterDataProvider(
                     .operationId(details.operationId)
                     .operationResult(details.operationResult?.value)
                     .correlationId(details.correlationId?.let { UUID.fromString(it) })
-                    .paymentEndToEndId(details.paymentEndToEndId)
+                    .paymentEndToEndId(details.paymentEndToEndId) as DeadLetterTransactionInfoDetailsDto
             is DeadLetterRedirectTransactionInfoDetailsData ->
                 RedirectTransactionInfoDetailsDataDto()
                     .type(details.type.toString())
-                    .outcome(details.outcome)
+                    .outcome(details.outcome) as DeadLetterTransactionInfoDetailsDto
             else -> null
         }
 }

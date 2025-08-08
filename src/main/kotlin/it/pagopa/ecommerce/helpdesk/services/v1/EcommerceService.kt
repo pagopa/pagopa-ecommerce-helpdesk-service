@@ -32,25 +32,27 @@ import it.pagopa.generated.ecommerce.helpdesk.model.PaymentMethodDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchDeadLetterEventResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import jakarta.enterprise.context.ApplicationScoped
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestTransactionIdDto as SearchTransactionRequestTransactionIdDtoV2
 import java.util.*
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
+import jakarta.inject.Inject
+import jakarta.inject.Named
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
-@Service("EcommerceServiceV1")
+@ApplicationScoped
+@Named("EcommerceServiceV1")
 class EcommerceService(
-    @Autowired private val ecommerceTransactionDataProvider: EcommerceTransactionDataProviderV1,
-    @Autowired private val ecommerceTransactionDataProviderV2: EcommerceTransactionDataProviderV2,
-    @Autowired private val deadLetterDataProvider: DeadLetterDataProvider,
-    @Autowired
-    @Qualifier("confidential-data-manager-client-email")
+    @Inject private val ecommerceTransactionDataProvider: EcommerceTransactionDataProviderV1,
+    @Inject private val ecommerceTransactionDataProviderV2: EcommerceTransactionDataProviderV2,
+    @Inject private val deadLetterDataProvider: DeadLetterDataProvider,
+    @Inject
+    @Named("confidential-data-manager-client-email")
     private val confidentialDataManager: ConfidentialDataManager,
-    @Autowired val npgClient: NpgClient,
-    @Autowired val npgApiKeyConfiguration: NpgApiKeyConfiguration
+    @Inject val npgClient: NpgClient,
+    @Inject val npgApiKeyConfiguration: NpgApiKeyConfiguration
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -59,19 +61,18 @@ class EcommerceService(
         pageNumber: Int,
         pageSize: Int,
         ecommerceSearchTransactionRequestDto: EcommerceSearchTransactionRequestDto
-    ): Mono<SearchTransactionResponseDto> {
+    ): SearchTransactionResponseDto {
         logger.info("[helpDesk ecommerce service] searchTransaction method")
         return searchPaginatedResult(
-                pageNumber = pageNumber,
-                pageSize = pageSize,
-                searchCriteria =
-                    SearchParamDecoder(
-                        searchParameter = ecommerceSearchTransactionRequestDto,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                searchCriteriaType = ecommerceSearchTransactionRequestDto.type,
-                dataProvider = ecommerceTransactionDataProvider
-            )
+            pageNumber = pageNumber,
+            pageSize = pageSize,
+            searchCriteria = SearchParamDecoder(
+                searchParameter = ecommerceSearchTransactionRequestDto,
+                confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+            ),
+            searchCriteriaType = ecommerceSearchTransactionRequestDto.type,
+            dataProvider = ecommerceTransactionDataProvider
+        )
             .map { (results, totalCount) ->
                 buildTransactionSearchResponse(
                     currentPage = pageNumber,
@@ -86,38 +87,34 @@ class EcommerceService(
         pageNumber: Int,
         pageSize: Int,
         searchRequest: EcommerceSearchDeadLetterEventsRequestDto
-    ): Mono<SearchDeadLetterEventResponseDto> {
+    ): SearchDeadLetterEventResponseDto {
         logger.info(
             "[helpDesk ecommerce service] search dead letter events, type: {}",
             searchRequest.source
         )
+
         val timeRange: DeadLetterSearchDateTimeRangeDto? = searchRequest.timeRange
-        return mono { searchRequest }
-            .filter { timeRange == null || timeRange.startDate < timeRange.endDate }
-            .switchIfEmpty(
-                Mono.error(
-                    InvalidSearchCriteriaException(
-                        "Invalid time range: startDate [${timeRange?.startDate}] is not greater than endDate: [${timeRange?.endDate}]"
-                    )
-                )
+
+        if (timeRange != null && timeRange.startDate >= timeRange.endDate) {
+            throw InvalidSearchCriteriaException(
+                "Invalid time range: startDate [${timeRange.startDate}] is not greater than endDate: [${timeRange.endDate}]"
             )
-            .flatMap {
-                searchPaginatedResult(
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
-                    searchCriteria = searchRequest,
-                    searchCriteriaType = it.toString(),
-                    dataProvider = deadLetterDataProvider
-                )
-            }
-            .map { (results, totalCount) ->
-                buildDeadLetterEventsSearchResponse(
-                    currentPage = pageNumber,
-                    totalCount = totalCount,
-                    pageSize = pageSize,
-                    results = results
-                )
-            }
+        }
+
+        val (results, totalCount) = searchPaginatedResult(
+            pageNumber = pageNumber,
+            pageSize = pageSize,
+            searchCriteria = searchRequest,
+            searchCriteriaType = searchRequest.toString(),
+            dataProvider = deadLetterDataProvider
+        )
+
+        return buildDeadLetterEventsSearchResponse(
+            currentPage = pageNumber,
+            totalCount = totalCount,
+            pageSize = pageSize,
+            results = results
+        )
     }
 
     /**
@@ -134,7 +131,7 @@ class EcommerceService(
      * @return Mono<SearchNpgOperationsResponseDto> containing the NPG operations data, or
      *   NoResultFoundException if the transaction is not found or lacks required data
      */
-    fun searchNpgOperations(transactionId: String): Mono<SearchNpgOperationsResponseDto> {
+    fun searchNpgOperations(transactionId: String): SearchNpgOperationsResponseDto {
         val searchCriteria =
             SearchParamDecoderV2(
                 searchParameter =
@@ -263,22 +260,28 @@ class EcommerceService(
         searchCriteria: K,
         dataProvider: DataProvider<K, V>,
         searchCriteriaType: String
-    ): Mono<Pair<List<V>, Int>> {
-        return dataProvider.totalRecordCount(searchCriteria).flatMap { totalCount ->
-            if (totalCount > 0) {
-                val skip = pageSize * pageNumber
-                logger.info(
-                    "Total record found: {}, skip: {}, limit: {}",
-                    totalCount,
-                    skip,
-                    pageSize
-                )
-                dataProvider
-                    .findResult(searchParams = searchCriteria, skip = skip, limit = pageSize)
-                    .zipWith(mono { totalCount }, ::Pair)
-            } else {
-                Mono.error(NoResultFoundException(searchCriteriaType))
-            }
+    ): Pair<List<V>, Int> {
+        val totalCount = dataProvider.totalRecordCount(searchCriteria)
+
+        if (totalCount > 0) {
+            val skip = pageSize * pageNumber
+
+            logger.info(
+                "Total record found: {}, skip: {}, limit: {}",
+                totalCount,
+                skip,
+                pageSize
+            )
+
+            val results = dataProvider.findResult(
+                searchParams = searchCriteria,
+                skip = skip,
+                limit = pageSize
+            )
+
+            return Pair(results, totalCount)
+        } else {
+            throw NoResultFoundException(searchCriteriaType)
         }
     }
 }

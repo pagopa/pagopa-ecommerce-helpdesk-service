@@ -21,22 +21,21 @@ import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestRptI
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestTransactionIdDto
 import it.pagopa.generated.ecommerce.helpdesk.model.TransactionResultDto
 import java.util.*
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.toFlux
 
-@Component
+@ApplicationScoped
 class EcommerceTransactionDataProvider(
-    @Autowired private val transactionsViewRepository: TransactionsViewRepository,
-    @Autowired private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any>
+    @Inject private val transactionsViewRepository: TransactionsViewRepository,
+    @Inject private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any>
 ) : TransactionDataProvider {
 
     override fun totalRecordCount(
         searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>
-    ): Mono<Int> {
+    ): Int {
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
             decodedSearchParam.flatMap {
@@ -72,7 +71,7 @@ class EcommerceTransactionDataProvider(
         searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>,
         skip: Int,
         limit: Int
-    ): Mono<List<TransactionResultDto>> {
+    ): List<TransactionResultDto> {
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
             decodedSearchParam.flatMapMany {
@@ -99,7 +98,7 @@ class EcommerceTransactionDataProvider(
                                 limit = limit
                             )
                     is SearchTransactionRequestTransactionIdDto ->
-                        transactionsViewRepository.findById(it.transactionId).toFlux()
+                        transactionsViewRepository.findById(it.transactionId)
                     is SearchTransactionRequestEmailDto ->
                         transactionsViewRepository
                             .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
@@ -120,7 +119,7 @@ class EcommerceTransactionDataProvider(
     private fun mapToTransactionResultDto(
         transaction: BaseTransactionView,
         confidentialMailUtils: ConfidentialMailUtils
-    ): Mono<TransactionResultDto> {
+    ): TransactionResultDto {
         val events =
             Mono.just(transaction).flatMapMany {
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
