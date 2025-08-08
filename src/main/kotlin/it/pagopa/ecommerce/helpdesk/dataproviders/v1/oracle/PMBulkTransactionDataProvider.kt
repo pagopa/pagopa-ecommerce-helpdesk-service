@@ -7,8 +7,8 @@ import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToBulkTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
@@ -17,8 +17,8 @@ import reactor.core.publisher.Mono
  *
  * @see BulkTransactionDataProvider
  */
-@Component
-class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: ConnectionFactory) :
+@ApplicationScoped
+class PMBulkTransactionDataProvider(@Inject private val connectionFactory: ConnectionFactory) :
     BulkTransactionDataProvider {
 
     private val logger = LoggerFactory.getLogger(javaClass)

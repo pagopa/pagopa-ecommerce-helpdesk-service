@@ -6,17 +6,20 @@ import it.pagopa.generated.ecommerce.helpdesk.v2.model.EcommerceSearchTransactio
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchMetricsRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionMetricsResponseDto
+import jakarta.inject.Inject
+import jakarta.inject.Named
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
+import jakarta.ws.rs.Path
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
-@RestController("EcommerceV2Controller")
-class EcommerceController(@Autowired val ecommerceService: EcommerceService) : EcommerceApi {
+@Path("/v2/ecommerce")
+@Named("EcommerceV2Controller")
+class EcommerceController(@Inject val ecommerceService: EcommerceService) : EcommerceApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun ecommerceSearchTransaction(

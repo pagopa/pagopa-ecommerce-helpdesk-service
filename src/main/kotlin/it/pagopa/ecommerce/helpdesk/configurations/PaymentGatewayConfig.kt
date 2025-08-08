@@ -7,6 +7,9 @@ import io.opentelemetry.api.trace.Tracer
 import it.pagopa.ecommerce.commons.client.NpgClient
 import it.pagopa.ecommerce.commons.generated.npg.v1.ApiClient
 import it.pagopa.ecommerce.commons.generated.npg.v1.api.PaymentServicesApi
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.ws.rs.Produces
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import java.util.concurrent.TimeUnit
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -16,13 +19,14 @@ import org.springframework.web.util.DefaultUriBuilderFactory
 import reactor.netty.Connection
 import reactor.netty.http.client.HttpClient
 
-@Configuration
+@ApplicationScoped
 class PaymentGatewayConfig {
-    @Bean(name = ["NpgApiWebClient"])
+    @Produces
+    @ApplicationScoped
     fun npgApiWebClient(
-        @Value("\${npg.uri}") npgClientUrl: String,
-        @Value("\${npg.readTimeout}") npgWebClientReadTimeout: Int,
-        @Value("\${npg.connectionTimeout}") npgWebClientConnectionTimeout: Int
+        @ConfigProperty(name = "npg.uri") npgClientUrl: String,
+        @ConfigProperty(name = "npg.readTimeout") npgWebClientReadTimeout: Int,
+        @ConfigProperty(name = "npg.connectionTimeout") npgWebClientConnectionTimeout: Int
     ): PaymentServicesApi {
         val httpClient =
             HttpClient.create()
@@ -46,7 +50,8 @@ class PaymentGatewayConfig {
         return PaymentServicesApi(ApiClient(webClient).setBasePath(npgClientUrl))
     }
 
-    @Bean
+    @Produces
+    @ApplicationScoped
     fun npgClient(
         paymentServicesApi: PaymentServicesApi,
         tracer: Tracer,

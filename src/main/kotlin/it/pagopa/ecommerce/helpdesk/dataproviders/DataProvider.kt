@@ -9,10 +9,10 @@ import reactor.core.publisher.Mono
 interface DataProvider<K, T> {
 
     /** Retrieve total record count for the given search parameters */
-    fun totalRecordCount(searchParams: K): Mono<Int>
+    fun totalRecordCount(searchParams: K): Int
 
     /**
      * Perform paginated query for retrieve transaction information for the given search criteria
      */
-    fun findResult(searchParams: K, skip: Int, limit: Int): Mono<List<T>>
+    fun findResult(searchParams: K, skip: Int, limit: Int): List<T>
 }

@@ -4,13 +4,15 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.MetricsProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.utils.v2.buildSearchMetricsResponse
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Named
 import reactor.core.publisher.Mono
 
-@Component("StateMetricsDataProvider")
+@ApplicationScoped
+@Named("StateMetricsDataProvider")
 class StateMetricsDataProvider(
-    @Autowired private val transactionsViewRepository: TransactionsViewRepository,
+    @Inject private val transactionsViewRepository: TransactionsViewRepository,
 ) : MetricsProvider<SearchMetricsRequestDto, TransactionMetricsResponseDto> {
 
     override fun computeMetrics(

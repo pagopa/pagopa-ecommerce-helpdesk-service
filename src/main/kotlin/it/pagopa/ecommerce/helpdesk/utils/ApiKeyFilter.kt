@@ -4,17 +4,18 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
-import org.springframework.stereotype.Component
+import jakarta.enterprise.context.ApplicationScoped
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 
-@Component
+@ApplicationScoped
 class ApiKeyFilter(
-    @Value("\${security.apiKey.primary}") private val primaryApiKey: String,
-    @Value("\${security.apiKey.secondary}") private val secondaryApiKey: String,
-    @Value("\${security.apiKey.securedPaths}") private val securedPaths: List<String>,
+    @ConfigProperty(name = "security.apiKey.primary") private val primaryApiKey: String,
+    @ConfigProperty(name = "security.apiKey.secondary") private val secondaryApiKey: String,
+    @ConfigProperty(name = "security.apiKey.securedPaths") private val securedPaths: List<String>,
 ) : WebFilter {
     private var logger: Logger = LoggerFactory.getLogger(this.javaClass)
     private val validApiKeys = setOf(primaryApiKey, secondaryApiKey)

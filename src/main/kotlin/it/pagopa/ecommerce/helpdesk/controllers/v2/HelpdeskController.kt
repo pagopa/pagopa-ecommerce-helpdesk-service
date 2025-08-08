@@ -3,21 +3,25 @@ package it.pagopa.ecommerce.helpdesk.controllers.v2
 import it.pagopa.ecommerce.helpdesk.services.v2.HelpdeskService
 import it.pagopa.ecommerce.helpdesk.utils.PmProviderType
 import it.pagopa.generated.ecommerce.helpdesk.v2.api.HelpdeskApi
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.HelpDeskSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
+import jakarta.inject.Inject
+import jakarta.inject.Named
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
+import jakarta.ws.rs.Path
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
-@RestController("HelpdeskV2Controller")
+@Path("/v2/helpdesk/searchTransaction")
+@Named("HelpdeskV2Controller")
 class HelpdeskController(
-    @Autowired val helpdeskService: HelpdeskService,
-    @Value("\${search.pm.in.ecommerce.history.enabled:false}")
+    @Inject val helpdeskService: HelpdeskService,
+    @ConfigProperty(name = "search.pm.in.ecommerce.history.enabled:false")
     private val searchPmInEcommerceHistory: Boolean
 ) : HelpdeskApi {
     private val logger = LoggerFactory.getLogger(this.javaClass)

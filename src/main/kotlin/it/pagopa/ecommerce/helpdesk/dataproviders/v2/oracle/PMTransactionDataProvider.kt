@@ -8,8 +8,8 @@ import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.resultToTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
@@ -20,8 +20,8 @@ import reactor.kotlin.core.publisher.toMono
  *
  * @see TransactionDataProvider
  */
-@Component("PMTransactionDataProviderV2")
-class PMTransactionDataProvider(@Autowired private val connectionFactory: ConnectionFactory) :
+@ApplicationScoped("PMTransactionDataProviderV2")
+class PMTransactionDataProvider(@Inject private val connectionFactory: ConnectionFactory) :
     TransactionDataProvider {
 
     private val logger = LoggerFactory.getLogger(javaClass)

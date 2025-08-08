@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
-import org.springframework.beans.factory.annotation.Autowired
+import jakarta.inject.Inject
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono
 @WebFluxTest(HelpdeskController::class)
 @TestPropertySource(properties = ["search.pm.in.ecommerce.history.enabled=true"])
 class HelpdeskControllerTestEcommerceHistory {
-    @Autowired lateinit var webClient: WebTestClient
+    @Inject lateinit var webClient: WebTestClient
 
     @MockBean lateinit var helpdeskService: HelpdeskService
 

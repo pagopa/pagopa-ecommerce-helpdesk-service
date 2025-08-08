@@ -7,18 +7,22 @@ import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.*
+import jakarta.enterprise.context.ApplicationScoped
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
+import jakarta.inject.Inject
+import jakarta.inject.Named
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
-@Service("PmServiceV1")
+@ApplicationScoped
+@Named("PmServiceV1")
 class PmService(
-    @Autowired val pmTransactionDataProvider: PMTransactionDataProvider,
-    @Autowired val pmPaymentMethodsDataProvider: PMPaymentMethodsDataProvider,
-    @Autowired val pmBulkTransactionDataProvider: PMBulkTransactionDataProvider,
-    @Value("\${search.pm.transactionIdRangeMax}") private val transactionIdRangeMax: Int
+    @Inject val pmTransactionDataProvider: PMTransactionDataProvider,
+    @Inject val pmPaymentMethodsDataProvider: PMPaymentMethodsDataProvider,
+    @Inject val pmBulkTransactionDataProvider: PMBulkTransactionDataProvider,
+    @ConfigProperty(name = "search.pm.transactionIdRangeMax") private val transactionIdRangeMax: Int
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)

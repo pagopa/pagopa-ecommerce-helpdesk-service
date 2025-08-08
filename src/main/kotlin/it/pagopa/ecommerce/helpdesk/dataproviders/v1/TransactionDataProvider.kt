@@ -21,7 +21,7 @@ interface TransactionDataProvider :
     /** Retrieve total record count for the given search parameters */
     override fun totalRecordCount(
         searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>
-    ): Mono<Int>
+    ): Int
 
     /**
      * Perform paginated query for retrieve transaction information for the given search criteria
@@ -30,5 +30,5 @@ interface TransactionDataProvider :
         searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>,
         skip: Int,
         limit: Int
-    ): Mono<List<TransactionResultDto>>
+    ): List<TransactionResultDto>
 }

@@ -13,24 +13,27 @@ import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
+import jakarta.enterprise.context.ApplicationScoped
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
+import jakarta.inject.Inject
+import jakarta.inject.Named
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 /** Service class that recover records from both eCommerce and PM DB merging results */
-@Service("HelpdeskServiceV2")
+@ApplicationScoped
+@Named("HelpdeskServiceV2")
 class HelpdeskService(
-    @Autowired val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
-    @Autowired val pmTransactionDataProvider: PMTransactionDataProvider,
-    @Autowired
+    @Inject val ecommerceTransactionDataProvider: EcommerceTransactionDataProvider,
+    @Inject val pmTransactionDataProvider: PMTransactionDataProvider,
+    @Inject
     @Qualifier("confidential-data-manager-client-email")
     private val confidentialDataManagerEmail: ConfidentialDataManager,
-    @Autowired
+    @Inject
     @Qualifier("confidential-data-manager-client-fiscal-code")
     private val confidentialDataManagerFiscalCode: ConfidentialDataManager,
-    @Autowired val pmEcommerceHistoryDataProvider: PmTransactionHistoryDataProvider
+    @Inject val pmEcommerceHistoryDataProvider: PmTransactionHistoryDataProvider
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
