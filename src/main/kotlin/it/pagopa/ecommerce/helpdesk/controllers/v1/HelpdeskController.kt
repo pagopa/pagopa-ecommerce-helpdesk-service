@@ -2,47 +2,55 @@ package it.pagopa.ecommerce.helpdesk.controllers.v1
 
 import it.pagopa.ecommerce.helpdesk.services.v1.HelpdeskService
 import it.pagopa.ecommerce.helpdesk.services.v1.PmService
-import it.pagopa.generated.ecommerce.helpdesk.api.HelpdeskApi
-import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchPaymentMethodResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import io.smallrye.mutiny.Uni
+import jakarta.inject.Inject
+import jakarta.inject.Named
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
+import jakarta.ws.rs.*
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ServerWebExchange
-import reactor.core.publisher.Mono
 
-@RestController("HelpdeskV1Controller")
+@Path("/helpdesk")
+@Named("HelpdeskV1Controller")
 class HelpdeskController(
-    @Autowired val helpdeskService: HelpdeskService,
-    @Autowired val pmService: PmService
-) : HelpdeskApi {
+    @Inject val helpdeskService: HelpdeskService,
+    @Inject val pmService: PmService
+) {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
-    override fun helpDeskSearchTransaction(
-        @Min(0) pageNumber: Int,
-        @Min(1) @Max(20) pageSize: Int,
-        helpDeskSearchTransactionRequestDto: Mono<HelpDeskSearchTransactionRequestDto>,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<SearchTransactionResponseDto>> =
-        helpDeskSearchTransactionRequestDto
-            .flatMap {
-                helpdeskService.searchTransaction(
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
-                    searchTransactionRequestDto = it
-                )
-            }
-            .map { ResponseEntity.ok(it) }
+    @POST
+    @Path("/searchTransaction")
+    @Consumes("application/json")
+    @Produces("application/json")
+    fun helpDeskSearchTransaction(
+        @QueryParam("pageNumber") @DefaultValue("0") @Min(0) pageNumber: Int,
+        @QueryParam("pageSize") @DefaultValue("10") @Min(1) @Max(20) pageSize: Int,
+        @Valid helpDeskSearchTransactionRequestDto: HelpDeskSearchTransactionRequestDto
+    ): Uni<SearchTransactionResponseDto> {
+        return Uni.createFrom().publisher(
+            helpdeskService.searchTransaction(
+                pageNumber = pageNumber,
+                pageSize = pageSize,
+                searchTransactionRequestDto = helpDeskSearchTransactionRequestDto
+            )
+        )
+    }
 
-    override fun helpDeskSearchPaymentMethod(
-        pmSearchPaymentMethodRequestDto: Mono<PmSearchPaymentMethodRequestDto>,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<SearchPaymentMethodResponseDto>> {
+    @POST
+    @Path("/searchPaymentMethod")
+    @Consumes("application/json")
+    @Produces("application/json")
+    fun helpDeskSearchPaymentMethod(
+        @Valid pmSearchPaymentMethodRequestDto: PmSearchPaymentMethodRequestDto
+    ): Uni<SearchPaymentMethodResponseDto> {
         logger.info("[HelpDesk controller] pmSearchPaymentMethod")
-        return pmSearchPaymentMethodRequestDto
-            .flatMap { pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = it) }
-            .map { ResponseEntity.ok(it) }
+        return Uni.createFrom().publisher(
+            pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = pmSearchPaymentMethodRequestDto)
+        )
     }
 }

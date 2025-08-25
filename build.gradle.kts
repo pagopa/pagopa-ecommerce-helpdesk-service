@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "it.pagopa.ecommerce.helpdesk"
@@ -7,17 +8,14 @@ version = "2.1.2"
 description = "pagopa-ecommerce-helpdesk-service"
 
 plugins {
-  id("java")
-  id("org.springframework.boot") version "3.4.5"
-  id("io.spring.dependency-management") version "1.1.0"
+  id("io.quarkus") version "3.25.0"
+  kotlin("plugin.allopen") version "1.9.0"
   id("com.diffplug.spotless") version "6.25.0"
-  id("org.openapi.generator") version "7.13.0"
+  id("org.openapi.generator") version "7.14.0"
   id("org.sonarqube") version "6.0.1.5171"
   id("com.dipien.semantic-version") version "2.0.0" apply false
-  kotlin("plugin.spring") version "2.2.0"
   kotlin("jvm") version "2.2.0"
   jacoco
-  application
 }
 
 // eCommerce commons library version
@@ -33,13 +31,6 @@ repositories {
   mavenLocal()
 }
 
-dependencyManagement {
-  imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.5") }
-  // Kotlin BOM
-  imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:2.2.0") }
-  imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.3") }
-}
-
 // dependencies versions
 val mockWebServerVersion = "4.11.0"
 val ecsLoggingVersion = "1.5.0"
@@ -47,60 +38,75 @@ val httpclientVersion = "4.5.13"
 val mockitoInlineVersion = "5.2.0"
 
 dependencies {
-  implementation("io.projectreactor:reactor-core")
-  implementation("io.projectreactor.netty:reactor-netty")
-  implementation("org.springframework.boot:spring-boot-starter-webflux")
-  implementation("org.springframework.boot:spring-boot-starter-validation")
-  implementation("org.springframework.boot:spring-boot-starter-actuator")
-  implementation("org.springframework.boot:spring-boot-starter-web-services")
+  implementation(enforcedPlatform("io.quarkus:quarkus-bom:3.25.0"))
+  implementation(enforcedPlatform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"))
+  implementation("io.quarkus:quarkus-smallrye-openapi")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+  implementation("org.openapitools:openapi-generator-gradle-plugin:7.14.0")
+  implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+  implementation("io.quarkus:quarkus-rest-kotlin")
+  implementation("io.quarkus:quarkus-rest-client")
+  implementation("io.quarkus:quarkus-rest-client-jackson")
+  implementation("io.quarkus:quarkus-kotlin")
+  implementation("io.quarkus:quarkus-smallrye-openapi")
+  implementation("io.quarkus:quarkus-smallrye-health")
+  implementation("io.quarkus:quarkus-mongodb-client:3.25.0")
+  implementation("io.smallrye.reactive:mutiny:2.9.4")
+  implementation("io.quarkiverse.openapi.generator:quarkus-openapi-generator-server:2.11.0")
+  implementation("org.mongodb:mongodb-driver-sync:4.11.0")
+  runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.10.2")
+  runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.10.2")
+  implementation("jakarta.json.bind:jakarta.json.bind-api:2.0.0")
+  implementation("jakarta.annotation:jakarta.annotation-api:2.1.0")
+  implementation("io.quarkiverse.cxf:quarkus-cxf:3.23.1")
   implementation("org.glassfish.jaxb:jaxb-runtime")
   implementation("jakarta.xml.bind:jakarta.xml.bind-api")
-  implementation("io.swagger.core.v3:swagger-annotations:2.2.8")
   implementation("org.apache.httpcomponents:httpclient:$httpclientVersion")
-  implementation("com.google.code.findbugs:jsr305:3.0.2")
-  implementation("org.projectlombok:lombok")
-  implementation("org.openapitools:openapi-generator-gradle-plugin:6.5.0")
-  implementation("org.openapitools:jackson-databind-nullable:0.2.6")
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-  implementation("org.springframework.boot:spring-boot-starter-aop")
-  implementation("io.netty:netty-resolver-dns-native-macos:4.1.90.Final")
-  implementation("com.diffplug.spotless:spotless-plugin-gradle:6.25.0")
-  implementation("javax.annotation:javax.annotation-api:1.3.2")
-  // Kotlin dependencies
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-  implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-  implementation("org.jetbrains.kotlin:kotlin-reflect")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+ implementation("co.elastic.logging:logback-ecs-encoder:$ecsLoggingVersion")
   implementation("it.pagopa:pagopa-ecommerce-commons:$ecommerceCommonsVersion")
 
-  // oracle
-  implementation("com.oracle.database.jdbc:ojdbc11:23.2.0.0")
+  // Oracle DB
+  implementation("com.oracle.database.jdbc:ojdbc11:23.2.0")
   implementation("com.oracle.database.r2dbc:oracle-r2dbc:1.1.1")
 
-  // ECS logback encoder
-  implementation("co.elastic.logging:logback-ecs-encoder:$ecsLoggingVersion")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0")
+  implementation("org.jetbrains.kotlin:kotlin-reflect")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-  runtimeOnly("org.springframework.boot:spring-boot-devtools")
-  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
+
+  implementation("io.quarkus:quarkus-rest-client")
+  implementation("io.quarkus:quarkus-rest-client-jackson")
+  implementation("io.quarkus:quarkus-smallrye-openapi")
+  implementation("jakarta.validation:jakarta.validation-api")
+
+  implementation("io.quarkus:quarkus-hibernate-validator")
+  implementation("io.quarkus:quarkus-micrometer")
+  implementation("io.quarkus:quarkus-vertx:3.15.1") // core Vert.x supportato da Quarkus
+  implementation("io.quarkus:quarkus-kotlin:3.15.1")
+  implementation("io.quarkus:quarkus-vertx-kotlin:3.15.1") // supporto Kotlin
+  implementation("jakarta.ws.rs:jakarta.ws.rs-api:3.1.0")
+
+  testImplementation("io.quarkus:quarkus-junit5")
   testImplementation("org.mockito:mockito-inline:$mockitoInlineVersion")
-  testImplementation("io.projectreactor:reactor-test")
-  // Kotlin dependencies
-  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
   testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
   testImplementation("com.squareup.okhttp3:mockwebserver:$mockWebServerVersion")
   testImplementation("com.squareup.okhttp3:okhttp:$mockWebServerVersion")
   testImplementation("it.pagopa:pagopa-ecommerce-commons:$ecommerceCommonsVersion:tests")
   testImplementation("com.h2database:h2:2.2.220")
-  testImplementation("io.r2dbc:r2dbc-h2:1.0.0.RELEASE")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+
+  quarkusDev("io.quarkus:quarkus-arc-dev:3.25.0")
+  quarkusDev("io.quarkus:quarkus-smallrye-openapi-dev:3.25.0")
+  quarkusDev("io.quarkus:quarkus-smallrye-health-dev:3.25.0")
+  quarkusDev("io.quarkus:quarkus-devui:3.25.0")
+  quarkusDev("io.quarkus:quarkus-assistant-dev:3.25.0")
 }
 
 configurations {
-  implementation.configure {
-    exclude(module = "spring-boot-starter-web")
-    exclude("org.apache.tomcat")
-    exclude(group = "org.slf4j", module = "slf4j-simple")
-  }
+  implementation.configure { exclude(group = "org.slf4j", module = "slf4j-simple") }
 }
 // Dependency locking - lock all dependencies
 dependencyLocking { lockAllConfigurations() }
@@ -118,10 +124,7 @@ sourceSets {
   }
 }
 
-springBoot {
-  mainClass.set("it.pagopa.ecommerce.helpdesk.PagopaEcommerceHelpdeskServiceApplicationKt")
-  buildInfo { properties { additional.set(mapOf("description" to project.description)) } }
-}
+
 
 tasks
   .register("applySemanticVersionPlugin") { dependsOn("prepareKotlinBuildScriptModel") }
@@ -159,14 +162,25 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
   outputDir.set(layout.buildDirectory.get().dir("generated").asFile.toString())
   apiPackage.set("it.pagopa.generated.ecommerce.helpdesk.api")
   modelPackage.set("it.pagopa.generated.ecommerce.helpdesk.model")
-  generateApiTests.set(false)
   generateApiDocumentation.set(false)
   generateApiTests.set(false)
   generateModelTests.set(false)
   library.set("spring-boot")
   modelNameSuffix.set("Dto")
+  globalProperties.set(
+    mapOf(
+      "models" to "",               // Solo i model
+      "modelDocs" to "false",       // Niente documentazione per i model
+      "modelTests" to "false",      // Niente test per i model
+      "apis" to "false",            // Disabilita API
+      "apiDocs" to "false",         // Disabilita doc API
+      "apiTests" to "false",        // Disabilita test API
+      "supportingFiles" to "false"  // (opzionale) disabilita file di supporto
+    )
+  )
   configOptions.set(
     mapOf(
+      "sourceFolder" to "src/main/java",
       "swaggerAnnotations" to "false",
       "openApiNullable" to "true",
       "interfaceOnly" to "true",
@@ -174,10 +188,16 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
       "skipDefaultInterface" to "true",
       "useSwaggerUI" to "false",
       "reactive" to "true",
-      "useSpringBoot3" to "true",
       "oas3" to "true",
+      "useJakartaEe" to "true",
       "generateSupportingFiles" to "true",
-      "enumPropertyNaming" to "MACRO_CASE"
+      "enumPropertyNaming" to "MACRO_CASE",
+      "useMutiny" to "true",
+      "returnResponse" to "false",
+      "dateLibrary" to "java8",
+      "serializationLibrary" to "jackson",
+      "useGenericResponse" to "false",
+      "additionalModelTypeAnnotations" to "@io.quarkus.runtime.annotations.RegisterForReflection"
     )
   )
 }
@@ -188,14 +208,25 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
   outputDir.set(layout.buildDirectory.get().dir("generated").asFile.toString())
   apiPackage.set("it.pagopa.generated.ecommerce.helpdesk.v2.api")
   modelPackage.set("it.pagopa.generated.ecommerce.helpdesk.v2.model")
-  generateApiTests.set(false)
   generateApiDocumentation.set(false)
   generateApiTests.set(false)
   generateModelTests.set(false)
   library.set("spring-boot")
   modelNameSuffix.set("Dto")
+  globalProperties.set(
+    mapOf(
+      "models" to "",
+      "modelDocs" to "false",
+      "modelTests" to "false",
+      "apis" to "false",
+      "apiDocs" to "false",
+      "apiTests" to "false",
+      "supportingFiles" to "false"
+    )
+  )
   configOptions.set(
     mapOf(
+      "sourceFolder" to "src/main/java",
       "swaggerAnnotations" to "false",
       "openApiNullable" to "true",
       "interfaceOnly" to "true",
@@ -203,31 +234,45 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
       "skipDefaultInterface" to "true",
       "useSwaggerUI" to "false",
       "reactive" to "true",
-      "useSpringBoot3" to "true",
       "oas3" to "true",
+      "useJakartaEe" to "true",
       "generateSupportingFiles" to "true",
       "enumPropertyNaming" to "MACRO_CASE",
-      "useTags" to "true"
+      "useTags" to "true",
+      "useMutiny" to "true",
+      "returnResponse" to "false",
+      "dateLibrary" to "java8"
     )
   )
 }
 
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("nodo") {
-  generatorName.set("java")
+  generatorName.set("spring")
   remoteInputSpec.set(
     "https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.465.0/src/core/api/nodopagamenti_api/nodoPerPM/v2/_openapi.json.tpl"
   )
   outputDir.set(layout.buildDirectory.get().dir("generated").asFile.toString())
   apiPackage.set("it.pagopa.generated.ecommerce.nodo.v2.api")
   modelPackage.set("it.pagopa.generated.ecommerce.nodo.v2.model")
-  generateApiTests.set(false)
   generateApiDocumentation.set(false)
   generateApiTests.set(false)
   generateModelTests.set(false)
-  library.set("webclient")
+  library.set("spring-boot")
   modelNameSuffix.set("Dto")
+  globalProperties.set(
+    mapOf(
+      "models" to "",
+      "modelDocs" to "false",
+      "modelTests" to "false",
+      "apis" to "false",
+      "apiDocs" to "false",
+      "apiTests" to "false",
+      "supportingFiles" to "false"
+    )
+  )
   configOptions.set(
     mapOf(
+      "sourceFolder" to "src/main/java",
       "swaggerAnnotations" to "false",
       "openApiNullable" to "true",
       "interfaceOnly" to "true",
@@ -235,13 +280,24 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("nod
       "skipDefaultInterface" to "true",
       "useSwaggerUI" to "false",
       "reactive" to "true",
-      "useSpringBoot3" to "true",
       "oas3" to "true",
+      "useJakartaEe" to "true",
       "generateSupportingFiles" to "true",
-      "enumPropertyNaming" to "MACRO_CASE"
+      "enumPropertyNaming" to "MACRO_CASE",
+      "useMutiny" to "true",
+      "returnResponse" to "false",
+      "dateLibrary" to "java8"
     )
   )
 }
+
+tasks.register("generateHelpdeskDTOs") {
+  group = "openapi"
+  description = "Generates DTOs for Helpdesk (Hybrid Approach - no interface generation)"
+
+  dependsOn("helpdesk-v1", "helpdesk-v2", "nodo")
+}
+
 
 tasks.register<Exec>("install-commons") {
   val buildCommons = providers.gradleProperty("buildCommons")
@@ -294,3 +350,6 @@ tasks.processResources {
     )
   }
 }
+
+
+
