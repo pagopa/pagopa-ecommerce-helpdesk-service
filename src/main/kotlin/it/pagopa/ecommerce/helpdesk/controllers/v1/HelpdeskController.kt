@@ -32,14 +32,15 @@ class HelpdeskController(
         @QueryParam("pageSize") @DefaultValue("10") @Min(1) @Max(20) pageSize: Int,
         @Valid helpDeskSearchTransactionRequestDto: HelpDeskSearchTransactionRequestDto
     ): Uni<SearchTransactionResponseDto> {
+        // TODO: refactor after service migration - remove Mono->Uni conversion, return service call directly
         return Uni.createFrom()
-            .publisher(
+            .completionStage {
                 helpdeskService.searchTransaction(
                     pageNumber = pageNumber,
                     pageSize = pageSize,
                     searchTransactionRequestDto = helpDeskSearchTransactionRequestDto
-                )
-            )
+                ).toFuture() // remove when service returns Uni<T> instead of Mono<T>
+            }
     }
 
     @POST
@@ -50,11 +51,11 @@ class HelpdeskController(
         @Valid pmSearchPaymentMethodRequestDto: PmSearchPaymentMethodRequestDto
     ): Uni<SearchPaymentMethodResponseDto> {
         logger.info("[HelpDesk controller] pmSearchPaymentMethod")
-        return Uni.createFrom()
-            .publisher(
-                pmService.searchPaymentMethod(
-                    pmSearchPaymentMethodRequestDto = pmSearchPaymentMethodRequestDto
-                )
-            )
+        // TODO: refactor after service migration - remove Mono->Uni conversion, return service call directly
+        return Uni.createFrom().completionStage {
+            pmService.searchPaymentMethod(
+                pmSearchPaymentMethodRequestDto = pmSearchPaymentMethodRequestDto
+            ).toFuture() // remove when service returns Uni<T> instead of Mono<T>
+        }
     }
 }

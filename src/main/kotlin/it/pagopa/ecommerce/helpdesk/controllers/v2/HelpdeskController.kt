@@ -35,8 +35,9 @@ class HelpdeskController(
         logger.info(
             "[HelpDesk V2 controller] SearchTransaction using ${if (searchPmInEcommerceHistory) "v2 (ecommerce history db)" else "v1 (pm legacy db)"} search"
         )
+        // TODO: refactor after service migration - remove Mono->Uni conversion, return service call directly
         return Uni.createFrom()
-            .publisher(
+            .completionStage {
                 helpdeskService.searchTransaction(
                     pageNumber = pageNumber,
                     pageSize = pageSize,
@@ -44,7 +45,7 @@ class HelpdeskController(
                     pmProviderType =
                         if (searchPmInEcommerceHistory) PmProviderType.ECOMMERCE_HISTORY
                         else PmProviderType.PM_LEGACY
-                )
-            )
+                ).toFuture() // remove when service returns Uni<T> instead of Mono<T>
+            }
     }
 }

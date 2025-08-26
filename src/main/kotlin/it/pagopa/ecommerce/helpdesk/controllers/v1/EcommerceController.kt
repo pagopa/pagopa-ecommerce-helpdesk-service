@@ -27,13 +27,13 @@ class EcommerceController(@Inject val ecommerceService: EcommerceService) {
         @Valid @NotNull ecommerceSearchTransactionRequestDto: EcommerceSearchTransactionRequestDto
     ): Uni<SearchTransactionResponseDto> {
         logger.info("Handling ecommerceSearchTransaction")
-
-        return Uni.createFrom().item {
+        // TODO: refactor after service migration - remove Mono->Uni conversion, return service call directly
+        return Uni.createFrom().completionStage {
             ecommerceService.searchTransaction(
                 pageNumber = pageNumber,
                 pageSize = pageSize,
                 ecommerceSearchTransactionRequestDto = ecommerceSearchTransactionRequestDto
-            )
+            ).toFuture() // remove when service returns Uni<T> instead of Mono<T>
         }
     }
 
@@ -49,13 +49,13 @@ class EcommerceController(@Inject val ecommerceService: EcommerceService) {
         ecommerceSearchDeadLetterEventsRequestDto: EcommerceSearchDeadLetterEventsRequestDto
     ): Uni<SearchDeadLetterEventResponseDto> {
         logger.info("[HelpDesk controller] ecommerceSearchDeadLetterEvents")
-
-        return Uni.createFrom().item {
+        // TODO: refactor after service migration - remove Mono->Uni conversion, return service call directly
+        return Uni.createFrom().completionStage {
             ecommerceService.searchDeadLetterEvents(
                 pageNumber = pageNumber,
                 pageSize = pageSize,
                 searchRequest = ecommerceSearchDeadLetterEventsRequestDto
-            )
+            ).toFuture() // remove when service returns Uni<T> instead of Mono<T>
         }
     }
 
@@ -66,10 +66,11 @@ class EcommerceController(@Inject val ecommerceService: EcommerceService) {
     fun ecommerceSearchNpgOperationsPost(
         @Valid searchNpgOperationsRequestDto: SearchNpgOperationsRequestDto
     ): Uni<SearchNpgOperationsResponseDto> {
-        return Uni.createFrom().item {
+        // TODO: refactor after service migration - remove Mono->Uni conversion, return service call directly
+        return Uni.createFrom().completionStage {
             ecommerceService.searchNpgOperations(
                 transactionId = searchNpgOperationsRequestDto.idTransaction
-            )
+            ).toFuture() // remove when service returns Uni<T> instead of Mono<T>
         }
     }
 }
