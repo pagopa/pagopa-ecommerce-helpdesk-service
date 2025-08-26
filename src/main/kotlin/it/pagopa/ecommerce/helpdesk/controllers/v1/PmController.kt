@@ -27,14 +27,15 @@ class PmController(@Inject val pmService: PmService) {
         @Valid pmSearchTransactionRequestDto: PmSearchTransactionRequestDto
     ): Uni<SearchTransactionResponseDto> {
         logger.info("[HelpDesk controller] pmSearchTransaction")
+        // TODO: refactor after service migration - remove Mono->Uni conversion, return service call directly
         return Uni.createFrom()
-            .publisher(
+            .completionStage {
                 pmService.searchTransaction(
                     pageSize = pageSize,
                     pageNumber = pageNumber,
                     pmSearchTransactionRequestDto = pmSearchTransactionRequestDto
-                )
-            )
+                ).toFuture() // remove when service returns Uni<T> instead of Mono<T>
+            }
     }
 
     @POST
@@ -45,12 +46,13 @@ class PmController(@Inject val pmService: PmService) {
         @Valid pmSearchPaymentMethodRequestDto: PmSearchPaymentMethodRequestDto
     ): Uni<SearchPaymentMethodResponseDto> {
         logger.info("[HelpDesk controller] pmSearchPaymentMethod")
+        // TODO: refactor after service migration - remove Mono->Uni conversion, return service call directly
         return Uni.createFrom()
-            .publisher(
+            .completionStage {
                 pmService.searchPaymentMethod(
                     pmSearchPaymentMethodRequestDto = pmSearchPaymentMethodRequestDto
-                )
-            )
+                ).toFuture() // remove when service returns Uni<T> instead of Mono<T>
+            }
     }
 
     @POST
@@ -61,8 +63,12 @@ class PmController(@Inject val pmService: PmService) {
         @Valid pmSearchBulkTransactionRequestDto: PmSearchBulkTransactionRequestDto
     ): Multi<TransactionBulkResultDto> {
         logger.info("[HelpDesk controller] pmSearchBulkTransaction")
+        // TODO: refactor after service migration - remove Mono->Multi conversion, return service call directly
         return Multi.createFrom()
-            .publisher(pmService.searchBulkTransaction(pmSearchBulkTransactionRequestDto))
+            .completionStage {
+                pmService.searchBulkTransaction(pmSearchBulkTransactionRequestDto)
+                    .toFuture() // remove when service returns Multi<T> instead of Mono<T>
+            }
             .onItem()
             .transformToMultiAndMerge { list -> Multi.createFrom().iterable(list) }
     }

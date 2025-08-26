@@ -29,14 +29,15 @@ class EcommerceController(@Inject val ecommerceService: EcommerceService) {
         @Valid ecommerceSearchTransactionRequestDto: EcommerceSearchTransactionRequestDto
     ): Uni<SearchTransactionResponseDto> {
         logger.info("[HelpDesk controller] ecommerceSearchTransaction")
+        // TODO: refactor after service migration - remove Mono->Uni conversion, return service call directly
         return Uni.createFrom()
-            .publisher(
+            .completionStage {
                 ecommerceService.searchTransaction(
                     pageNumber = pageNumber,
                     pageSize = pageSize,
                     ecommerceSearchTransactionRequestDto = ecommerceSearchTransactionRequestDto
-                )
-            )
+                ).toFuture() // remove when service returns Uni<T> instead of Mono<T>
+            }
     }
 
     @POST
@@ -47,9 +48,11 @@ class EcommerceController(@Inject val ecommerceService: EcommerceService) {
         @Valid searchMetricsRequestDto: SearchMetricsRequestDto
     ): Uni<TransactionMetricsResponseDto> {
         logger.info("[HelpDesk controller] ecommerceSearchMetrics")
+        // TODO: refactor after service migration - remove Mono->Uni conversion, return service call directly
         return Uni.createFrom()
-            .publisher(
+            .completionStage {
                 ecommerceService.searchMetrics(searchMetricsRequestDto = searchMetricsRequestDto)
-            )
+                    .toFuture() // Remove when service returns Uni<T> instead of Mono<T>
+            }
     }
 }
