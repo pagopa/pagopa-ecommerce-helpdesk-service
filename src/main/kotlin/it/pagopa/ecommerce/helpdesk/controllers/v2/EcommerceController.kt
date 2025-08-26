@@ -1,11 +1,11 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v2
 
+import io.smallrye.mutiny.Uni
 import it.pagopa.ecommerce.helpdesk.services.v2.EcommerceService
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.EcommerceSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchMetricsRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionMetricsResponseDto
-import io.smallrye.mutiny.Uni
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import jakarta.validation.Valid
@@ -29,13 +29,14 @@ class EcommerceController(@Inject val ecommerceService: EcommerceService) {
         @Valid ecommerceSearchTransactionRequestDto: EcommerceSearchTransactionRequestDto
     ): Uni<SearchTransactionResponseDto> {
         logger.info("[HelpDesk controller] ecommerceSearchTransaction")
-        return Uni.createFrom().publisher(
-            ecommerceService.searchTransaction(
-                pageNumber = pageNumber,
-                pageSize = pageSize,
-                ecommerceSearchTransactionRequestDto = ecommerceSearchTransactionRequestDto
+        return Uni.createFrom()
+            .publisher(
+                ecommerceService.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    ecommerceSearchTransactionRequestDto = ecommerceSearchTransactionRequestDto
+                )
             )
-        )
     }
 
     @POST
@@ -46,8 +47,9 @@ class EcommerceController(@Inject val ecommerceService: EcommerceService) {
         @Valid searchMetricsRequestDto: SearchMetricsRequestDto
     ): Uni<TransactionMetricsResponseDto> {
         logger.info("[HelpDesk controller] ecommerceSearchMetrics")
-        return Uni.createFrom().publisher(
-            ecommerceService.searchMetrics(searchMetricsRequestDto = searchMetricsRequestDto)
-        )
+        return Uni.createFrom()
+            .publisher(
+                ecommerceService.searchMetrics(searchMetricsRequestDto = searchMetricsRequestDto)
+            )
     }
 }
