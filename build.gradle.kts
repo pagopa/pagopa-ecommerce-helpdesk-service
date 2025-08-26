@@ -63,10 +63,9 @@ dependencies {
   implementation("org.glassfish.jaxb:jaxb-runtime")
   implementation("jakarta.xml.bind:jakarta.xml.bind-api")
   implementation("org.apache.httpcomponents:httpclient:$httpclientVersion")
- implementation("co.elastic.logging:logback-ecs-encoder:$ecsLoggingVersion")
+  implementation("co.elastic.logging:logback-ecs-encoder:$ecsLoggingVersion")
   implementation("it.pagopa:pagopa-ecommerce-commons:$ecommerceCommonsVersion")
 
-  // Oracle DB
   implementation("com.oracle.database.jdbc:ojdbc11:23.2.0")
   implementation("com.oracle.database.r2dbc:oracle-r2dbc:1.1.1")
 
@@ -76,7 +75,6 @@ dependencies {
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
-
   implementation("io.quarkus:quarkus-rest-client")
   implementation("io.quarkus:quarkus-rest-client-jackson")
   implementation("io.quarkus:quarkus-smallrye-openapi")
@@ -84,9 +82,9 @@ dependencies {
 
   implementation("io.quarkus:quarkus-hibernate-validator")
   implementation("io.quarkus:quarkus-micrometer")
-  implementation("io.quarkus:quarkus-vertx:3.15.1") // core Vert.x supportato da Quarkus
+  implementation("io.quarkus:quarkus-vertx:3.15.1")
   implementation("io.quarkus:quarkus-kotlin:3.15.1")
-  implementation("io.quarkus:quarkus-vertx-kotlin:3.15.1") // supporto Kotlin
+  implementation("io.quarkus:quarkus-vertx-kotlin:3.15.1")
   implementation("jakarta.ws.rs:jakarta.ws.rs-api:3.1.0")
 
   testImplementation("io.quarkus:quarkus-junit5")
@@ -123,8 +121,6 @@ sourceSets {
     resources { srcDirs("src/resources") }
   }
 }
-
-
 
 tasks
   .register("applySemanticVersionPlugin") { dependsOn("prepareKotlinBuildScriptModel") }
@@ -169,13 +165,13 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("hel
   modelNameSuffix.set("Dto")
   globalProperties.set(
     mapOf(
-      "models" to "",               // Solo i model
-      "modelDocs" to "false",       // Niente documentazione per i model
-      "modelTests" to "false",      // Niente test per i model
-      "apis" to "false",            // Disabilita API
-      "apiDocs" to "false",         // Disabilita doc API
-      "apiTests" to "false",        // Disabilita test API
-      "supportingFiles" to "false"  // (opzionale) disabilita file di supporto
+      "models" to "",
+      "modelDocs" to "false",
+      "modelTests" to "false",
+      "apis" to "false",
+      "apiDocs" to "false",
+      "apiTests" to "false",
+      "supportingFiles" to "false"
     )
   )
   configOptions.set(
@@ -298,7 +294,6 @@ tasks.register("generateHelpdeskDTOs") {
   dependsOn("helpdesk-v1", "helpdesk-v2", "nodo")
 }
 
-
 tasks.register<Exec>("install-commons") {
   val buildCommons = providers.gradleProperty("buildCommons")
   onlyIf("To build commons library run gradle build -PbuildCommons") { buildCommons.isPresent }
@@ -350,6 +345,3 @@ tasks.processResources {
     )
   }
 }
-
-
-

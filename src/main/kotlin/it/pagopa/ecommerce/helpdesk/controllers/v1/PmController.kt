@@ -1,10 +1,9 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v1
 
-import io.swagger.v3.oas.annotations.Parameter
-import it.pagopa.ecommerce.helpdesk.services.v1.PmService
-import it.pagopa.generated.ecommerce.helpdesk.model.*
 import io.smallrye.mutiny.Multi
 import io.smallrye.mutiny.Uni
+import it.pagopa.ecommerce.helpdesk.services.v1.PmService
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import jakarta.validation.Valid
@@ -28,13 +27,14 @@ class PmController(@Inject val pmService: PmService) {
         @Valid pmSearchTransactionRequestDto: PmSearchTransactionRequestDto
     ): Uni<SearchTransactionResponseDto> {
         logger.info("[HelpDesk controller] pmSearchTransaction")
-        return Uni.createFrom().publisher(
-            pmService.searchTransaction(
-                pageSize = pageSize,
-                pageNumber = pageNumber,
-                pmSearchTransactionRequestDto = pmSearchTransactionRequestDto
+        return Uni.createFrom()
+            .publisher(
+                pmService.searchTransaction(
+                    pageSize = pageSize,
+                    pageNumber = pageNumber,
+                    pmSearchTransactionRequestDto = pmSearchTransactionRequestDto
+                )
             )
-        )
     }
 
     @POST
@@ -45,9 +45,12 @@ class PmController(@Inject val pmService: PmService) {
         @Valid pmSearchPaymentMethodRequestDto: PmSearchPaymentMethodRequestDto
     ): Uni<SearchPaymentMethodResponseDto> {
         logger.info("[HelpDesk controller] pmSearchPaymentMethod")
-        return Uni.createFrom().publisher(
-            pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = pmSearchPaymentMethodRequestDto)
-        )
+        return Uni.createFrom()
+            .publisher(
+                pmService.searchPaymentMethod(
+                    pmSearchPaymentMethodRequestDto = pmSearchPaymentMethodRequestDto
+                )
+            )
     }
 
     @POST
@@ -58,10 +61,9 @@ class PmController(@Inject val pmService: PmService) {
         @Valid pmSearchBulkTransactionRequestDto: PmSearchBulkTransactionRequestDto
     ): Multi<TransactionBulkResultDto> {
         logger.info("[HelpDesk controller] pmSearchBulkTransaction")
-        return Multi.createFrom().publisher(
-            pmService.searchBulkTransaction(pmSearchBulkTransactionRequestDto)
-        ).onItem().transformToMultiAndMerge { list ->
-            Multi.createFrom().iterable(list)
-        }
+        return Multi.createFrom()
+            .publisher(pmService.searchBulkTransaction(pmSearchBulkTransactionRequestDto))
+            .onItem()
+            .transformToMultiAndMerge { list -> Multi.createFrom().iterable(list) }
     }
 }

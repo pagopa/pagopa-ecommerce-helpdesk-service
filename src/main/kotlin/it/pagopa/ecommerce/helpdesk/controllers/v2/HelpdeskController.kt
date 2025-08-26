@@ -1,10 +1,10 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v2
 
+import io.smallrye.mutiny.Uni
 import it.pagopa.ecommerce.helpdesk.services.v2.HelpdeskService
 import it.pagopa.ecommerce.helpdesk.utils.PmProviderType
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
-import io.smallrye.mutiny.Uni
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import jakarta.validation.Valid
@@ -35,15 +35,16 @@ class HelpdeskController(
         logger.info(
             "[HelpDesk V2 controller] SearchTransaction using ${if (searchPmInEcommerceHistory) "v2 (ecommerce history db)" else "v1 (pm legacy db)"} search"
         )
-        return Uni.createFrom().publisher(
-            helpdeskService.searchTransaction(
-                pageNumber = pageNumber,
-                pageSize = pageSize,
-                searchTransactionRequestDto = helpDeskSearchTransactionRequestDto,
-                pmProviderType =
-                    if (searchPmInEcommerceHistory) PmProviderType.ECOMMERCE_HISTORY
-                    else PmProviderType.PM_LEGACY
+        return Uni.createFrom()
+            .publisher(
+                helpdeskService.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchTransactionRequestDto = helpDeskSearchTransactionRequestDto,
+                    pmProviderType =
+                        if (searchPmInEcommerceHistory) PmProviderType.ECOMMERCE_HISTORY
+                        else PmProviderType.PM_LEGACY
+                )
             )
-        )
     }
 }

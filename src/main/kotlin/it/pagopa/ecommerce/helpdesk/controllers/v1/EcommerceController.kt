@@ -1,8 +1,8 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v1
 
+import io.smallrye.mutiny.Uni
 import it.pagopa.ecommerce.helpdesk.services.v1.EcommerceService
 import it.pagopa.generated.ecommerce.helpdesk.model.*
-import io.smallrye.mutiny.Uni
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import jakarta.validation.Valid
@@ -44,7 +44,9 @@ class EcommerceController(@Inject val ecommerceService: EcommerceService) {
     fun ecommerceSearchDeadLetterEvents(
         @QueryParam("pageNumber") @DefaultValue("0") @Min(0) pageNumber: Int,
         @QueryParam("pageSize") @DefaultValue("10") @Min(1) @Max(1000) pageSize: Int,
-        @Valid @NotNull ecommerceSearchDeadLetterEventsRequestDto: EcommerceSearchDeadLetterEventsRequestDto
+        @Valid
+        @NotNull
+        ecommerceSearchDeadLetterEventsRequestDto: EcommerceSearchDeadLetterEventsRequestDto
     ): Uni<SearchDeadLetterEventResponseDto> {
         logger.info("[HelpDesk controller] ecommerceSearchDeadLetterEvents")
 
@@ -65,7 +67,9 @@ class EcommerceController(@Inject val ecommerceService: EcommerceService) {
         @Valid searchNpgOperationsRequestDto: SearchNpgOperationsRequestDto
     ): Uni<SearchNpgOperationsResponseDto> {
         return Uni.createFrom().item {
-            ecommerceService.searchNpgOperations(transactionId = searchNpgOperationsRequestDto.idTransaction)
+            ecommerceService.searchNpgOperations(
+                transactionId = searchNpgOperationsRequestDto.idTransaction
+            )
         }
     }
 }

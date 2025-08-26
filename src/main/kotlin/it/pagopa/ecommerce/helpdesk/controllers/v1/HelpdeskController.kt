@@ -1,12 +1,12 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v1
 
+import io.smallrye.mutiny.Uni
 import it.pagopa.ecommerce.helpdesk.services.v1.HelpdeskService
 import it.pagopa.ecommerce.helpdesk.services.v1.PmService
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchPaymentMethodRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchPaymentMethodResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
-import io.smallrye.mutiny.Uni
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import jakarta.validation.Valid
@@ -32,13 +32,14 @@ class HelpdeskController(
         @QueryParam("pageSize") @DefaultValue("10") @Min(1) @Max(20) pageSize: Int,
         @Valid helpDeskSearchTransactionRequestDto: HelpDeskSearchTransactionRequestDto
     ): Uni<SearchTransactionResponseDto> {
-        return Uni.createFrom().publisher(
-            helpdeskService.searchTransaction(
-                pageNumber = pageNumber,
-                pageSize = pageSize,
-                searchTransactionRequestDto = helpDeskSearchTransactionRequestDto
+        return Uni.createFrom()
+            .publisher(
+                helpdeskService.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchTransactionRequestDto = helpDeskSearchTransactionRequestDto
+                )
             )
-        )
     }
 
     @POST
@@ -49,8 +50,11 @@ class HelpdeskController(
         @Valid pmSearchPaymentMethodRequestDto: PmSearchPaymentMethodRequestDto
     ): Uni<SearchPaymentMethodResponseDto> {
         logger.info("[HelpDesk controller] pmSearchPaymentMethod")
-        return Uni.createFrom().publisher(
-            pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = pmSearchPaymentMethodRequestDto)
-        )
+        return Uni.createFrom()
+            .publisher(
+                pmService.searchPaymentMethod(
+                    pmSearchPaymentMethodRequestDto = pmSearchPaymentMethodRequestDto
+                )
+            )
     }
 }
