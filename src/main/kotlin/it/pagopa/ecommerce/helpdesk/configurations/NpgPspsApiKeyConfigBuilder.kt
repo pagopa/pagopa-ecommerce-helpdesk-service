@@ -4,12 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import it.pagopa.ecommerce.commons.client.NpgClient.PaymentMethod
 import it.pagopa.ecommerce.commons.utils.NpgApiKeyConfiguration
 import it.pagopa.ecommerce.commons.utils.NpgPspApiKeysConfig
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.inject.Produces
+import jakarta.inject.Named
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-@Configuration
+@ApplicationScoped
 class NpgPspsApiKeyConfigBuilder {
 
     private val objectMapper = ObjectMapper()
@@ -22,11 +26,12 @@ class NpgPspsApiKeyConfigBuilder {
      *
      * @return the parsed map
      */
-    @Qualifier("npgCardsApiKeys")
-    @Bean
+    @Named("npgCardsApiKeys")
+    @Produces
+    @ApplicationScoped
     fun npgCardsApiKeys(
-        @Value("\${npg.authorization.cards.keys}") apiKeys: String,
-        @Value("\${npg.authorization.cards.pspList}") pspToHandle: Set<String>
+        @ConfigProperty(name = "npg.authorization.cards.keys") apiKeys: String,
+        @ConfigProperty(name = "npg.authorization.cards.pspList") pspToHandle: Set<String>
     ): NpgPspApiKeysConfig =
         parsePspApiKeyConfiguration(
             apiKeys = apiKeys,
@@ -42,11 +47,12 @@ class NpgPspsApiKeyConfigBuilder {
      *
      * @return the parsed map
      */
-    @Qualifier("npgPaypalApiKeys")
-    @Bean
+    @Named("npgPaypalApiKeys")
+    @Produces
+    @ApplicationScoped
     fun npgPaypalApiKeys(
-        @Value("\${npg.authorization.paypal.keys}") apiKeys: String,
-        @Value("\${npg.authorization.paypal.pspList}") pspToHandle: Set<String>
+        @ConfigProperty(name = "npg.authorization.paypal.keys") apiKeys: String,
+        @ConfigProperty(name = "npg.authorization.paypal.pspList") pspToHandle: Set<String>
     ): NpgPspApiKeysConfig =
         parsePspApiKeyConfiguration(
             apiKeys = apiKeys,
@@ -62,11 +68,12 @@ class NpgPspsApiKeyConfigBuilder {
      *
      * @return the parsed map
      */
-    @Qualifier("npgBancomatPayApiKeys")
-    @Bean
+    @Named("npgBancomatPayApiKeys")
+    @Produces
+    @ApplicationScoped
     fun npgBancomatPayApiKeys(
-        @Value("\${npg.authorization.bancomatpay.keys}") apiKeys: String,
-        @Value("\${npg.authorization.bancomatpay.pspList}") pspToHandle: Set<String>
+        @ConfigProperty(name = "npg.authorization.bancomatpay.keys") apiKeys: String,
+        @ConfigProperty(name = "npg.authorization.bancomatpay.pspList") pspToHandle: Set<String>
     ): NpgPspApiKeysConfig =
         parsePspApiKeyConfiguration(
             apiKeys = apiKeys,
@@ -82,11 +89,12 @@ class NpgPspsApiKeyConfigBuilder {
      *
      * @return the parsed map
      */
-    @Qualifier("npgMyBankApiKeys")
-    @Bean
+    @Named("npgMyBankApiKeys")
+    @Produces
+    @ApplicationScoped
     fun npgMyBankApiKeys(
-        @Value("\${npg.authorization.mybank.keys}") apiKeys: String,
-        @Value("\${npg.authorization.mybank.pspList}") pspToHandle: Set<String>
+        @ConfigProperty(name = "npg.authorization.mybank.keys") apiKeys: String,
+        @ConfigProperty(name = "npg.authorization.mybank.pspList") pspToHandle: Set<String>
     ): NpgPspApiKeysConfig =
         parsePspApiKeyConfiguration(
             apiKeys = apiKeys,
@@ -102,11 +110,12 @@ class NpgPspsApiKeyConfigBuilder {
      *
      * @return the parsed map
      */
-    @Qualifier("npgApplePayApiKeys")
-    @Bean
+    @Named("npgApplePayApiKeys")
+    @Produces
+    @ApplicationScoped
     fun npgApplePayApiKeys(
-        @Value("\${npg.authorization.applepay.keys}") apiKeys: String,
-        @Value("\${npg.authorization.applepay.pspList}") pspToHandle: Set<String>
+        @ConfigProperty(name = "npg.authorization.applepay.keys") apiKeys: String,
+        @ConfigProperty(name = "npg.authorization.applepay.pspList") pspToHandle: Set<String>
     ): NpgPspApiKeysConfig =
         parsePspApiKeyConfiguration(
             apiKeys = apiKeys,
@@ -122,11 +131,12 @@ class NpgPspsApiKeyConfigBuilder {
      *
      * @return the parsed map
      */
-    @Qualifier("npgSatispayApiKeys")
-    @Bean
+    @Named("npgSatispayApiKeys")
+    @Produces
+    @ApplicationScoped
     fun npgSatispayApiKeys(
-        @Value("\${npg.authorization.satispay.keys}") apiKeys: String,
-        @Value("\${npg.authorization.satispay.pspList}") pspToHandle: Set<String>
+        @ConfigProperty(name = "npg.authorization.satispay.keys") apiKeys: String,
+        @ConfigProperty(name = "npg.authorization.satispay.pspList") pspToHandle: Set<String>
     ): NpgPspApiKeysConfig =
         parsePspApiKeyConfiguration(
             apiKeys = apiKeys,
@@ -142,11 +152,12 @@ class NpgPspsApiKeyConfigBuilder {
      *
      * @return the parsed map
      */
-    @Qualifier("npgGooglePayApiKeys")
-    @Bean
+    @Named("npgGooglePayApiKeys")
+    @Produces
+    @ApplicationScoped
     fun npgGooglePayApiKeys(
-        @Value("\${npg.authorization.googlepay.keys}") apiKeys: String,
-        @Value("\${npg.authorization.googlepay.pspList}") pspToHandle: Set<String>
+        @ConfigProperty(name = "npg.authorization.googlepay.keys") apiKeys: String,
+        @ConfigProperty(name = "npg.authorization.googlepay.pspList") pspToHandle: Set<String>
     ): NpgPspApiKeysConfig =
         parsePspApiKeyConfiguration(
             apiKeys = apiKeys,
@@ -164,7 +175,8 @@ class NpgPspsApiKeyConfigBuilder {
      * @formatter:on
      */
     @SuppressWarnings("kotlin:S107")
-    @Bean
+    @Produces
+    @ApplicationScoped
     fun npgApiKeyHandler(
         npgCardsApiKeys: NpgPspApiKeysConfig,
         npgPaypalApiKeys: NpgPspApiKeysConfig,
@@ -173,7 +185,7 @@ class NpgPspsApiKeyConfigBuilder {
         npgApplePayApiKeys: NpgPspApiKeysConfig,
         npgSatispayApiKeys: NpgPspApiKeysConfig,
         npgGooglePayApiKeys: NpgPspApiKeysConfig,
-        @Value("\${npg.client.apiKey}") defaultApiKey: String
+        @ConfigProperty(name = "npg.client.apiKey") defaultApiKey: String
     ) =
         NpgApiKeyConfiguration.Builder()
             .setDefaultApiKey(defaultApiKey)

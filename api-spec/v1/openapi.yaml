@@ -694,13 +694,43 @@ components:
         statusDetails:
           type: string
         eventStatus:
-          $ref: "https://raw.githubusercontent.com/pagopa/pagopa-ecommerce-transactions-service/main/api-spec/v1/transactions-api.yaml#/components/schemas/TransactionStatus"
+          type: string
+          description: Possible statuses a transaction can be in
+          enum:
+            - ACTIVATED
+            - AUTHORIZATION_REQUESTED
+            - AUTHORIZATION_COMPLETED
+            - CLOSURE_REQUESTED
+            - CLOSED
+            - CLOSURE_ERROR
+            - NOTIFIED_OK
+            - NOTIFIED_KO
+            - NOTIFICATION_ERROR
+            - NOTIFICATION_REQUESTED
+            - EXPIRED
+            - REFUNDED
+            - CANCELED
+            - EXPIRED_NOT_AUTHORIZED
+            - UNAUTHORIZED
+            - REFUND_ERROR
+            - REFUND_REQUESTED
+            - CANCELLATION_REQUESTED
+            - CANCELLATION_EXPIRED
         amount:
-          $ref: '#/components/schemas/AmountEuroCents'
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Amount for payments, in euro cents
         fee:
-          $ref: '#/components/schemas/AmountEuroCents'
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Amount for payments, in euro cents
         grandTotal:
-          $ref: '#/components/schemas/AmountEuroCents'
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Amount for payments, in euro cents
         rrn:
           type: string
         authorizationCode:
@@ -1136,7 +1166,28 @@ components:
         authorizationRequestId:
           type: string
         eCommerceStatus:
-          $ref: "https://raw.githubusercontent.com/pagopa/pagopa-ecommerce-transactions-service/main/api-spec/v1/transactions-api.yaml#/components/schemas/TransactionStatus"
+          type: string
+          description: Possible statuses a transaction can be in
+          enum:
+              - ACTIVATED
+              - AUTHORIZATION_REQUESTED
+              - AUTHORIZATION_COMPLETED
+              - CLOSURE_REQUESTED
+              - CLOSED
+              - CLOSURE_ERROR
+              - NOTIFIED_OK
+              - NOTIFIED_KO
+              - NOTIFICATION_ERROR
+              - NOTIFICATION_REQUESTED
+              - EXPIRED
+              - REFUNDED
+              - CANCELED
+              - EXPIRED_NOT_AUTHORIZED
+              - UNAUTHORIZED
+              - REFUND_ERROR
+              - REFUND_REQUESTED
+              - CANCELLATION_REQUESTED
+              - CANCELLATION_EXPIRED
         paymentGateway:
           type: string
           description: Payment gateway used to perform transaction

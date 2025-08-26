@@ -1,4 +1,4 @@
-package it.pagopa.ecommerce.helpdesk.configurations
+/*package it.pagopa.ecommerce.helpdesk.configurations
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories
@@ -8,4 +8,4 @@ import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRep
     basePackages = ["it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history"],
     reactiveMongoTemplateRef = "ecommerceHistoryReactiveMongoTemplate"
 )
-class EcommerceHistoryMongoRepositoryConfig {}
+class EcommerceHistoryMongoRepositoryConfig {}*/

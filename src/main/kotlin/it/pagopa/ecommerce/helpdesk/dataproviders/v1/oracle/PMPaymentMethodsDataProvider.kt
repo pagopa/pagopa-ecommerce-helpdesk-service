@@ -6,8 +6,8 @@ import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToPaymentMethodDtoList
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
@@ -16,8 +16,8 @@ import reactor.core.publisher.Mono
  *
  * @see PMPaymentMethodsDataProvider
  */
-@Component
-class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: ConnectionFactory) :
+@ApplicationScoped
+class PMPaymentMethodsDataProvider(@Inject private val connectionFactory: ConnectionFactory) :
     PaymentMethodDataProvider {
 
     private val logger = LoggerFactory.getLogger(javaClass)

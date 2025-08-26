@@ -1,18 +1,22 @@
 package it.pagopa.ecommerce.helpdesk.configurations
 
 import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchEventSourceDto
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.inject.Produces
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import java.util.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 /** Dead letter search configuration */
-@Configuration
+@ApplicationScoped
 class DeadLetterQueueSearchConfig {
     /** Dead letter event source dto to dead letter name mapping */
-    @Bean
+    @Produces
+    @ApplicationScoped
     fun deadLetterQueueMapping(
-        @Value("#{\${deadLetter.queueMapping}}") deadLetterMapping: Map<String, String>
+        @ConfigProperty(name = "deadLetter.queueMapping") deadLetterMapping: Map<String, String>
     ): EnumMap<DeadLetterSearchEventSourceDto, String> {
         val mapping: EnumMap<DeadLetterSearchEventSourceDto, String> =
             EnumMap(DeadLetterSearchEventSourceDto::class.java)

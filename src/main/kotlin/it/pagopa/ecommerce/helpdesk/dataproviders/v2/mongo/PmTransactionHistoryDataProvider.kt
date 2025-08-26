@@ -9,14 +9,16 @@ import it.pagopa.ecommerce.helpdesk.utils.v2.pmTransactionToTransactionInfoDtoV2
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.HelpDeskSearchTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionResultDto
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Named
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-@Component("PmTransactionHistoryDataProviderV2")
+@ApplicationScoped
+@Named("PmTransactionHistoryDataProviderV2")
 class PmTransactionHistoryDataProvider(
-    @Autowired private val pmTransactionsRepository: PmTransactionsRepository
+    @Inject private val pmTransactionsRepository: PmTransactionsRepository
 ) : TransactionDataProvider {
     override fun totalRecordCount(
         searchParams: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto>
