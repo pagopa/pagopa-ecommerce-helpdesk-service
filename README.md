@@ -12,8 +12,8 @@ This microservice is responsible for ...
         + [Run docker container](#run-docker-container)
     * [Develop Locally 💻](#develop-locally-)
         + [Prerequisites](#prerequisites-1)
+        + [GitHub Token Setup](#github-token-setup)
         + [Run the project](#run-the-project)
-        + [Install ecommerce commons library](#install-ecommerce-commons-library-locally)
         + [Testing 🧪](#testing-)
             - [Unit testing](#unit-testing)
             - [Integration testing](#integration-testing)
@@ -134,6 +134,7 @@ see [docs](https://www.mongodb.com/docs/drivers/java/sync/v4.3/fundamentals/conn
 ### Run docker container
 
 ```shell
+$ export GITHUB_TOKEN=your_github_token_with_packages_read_permission
 $ docker compose up --build
 ```
 
@@ -146,41 +147,24 @@ $ docker compose up --build
 - git
 - gradle
 - jdk-21
-- ecommerce-commons library installed into maven local folder
+- GitHub personal access token with `packages:read` permission
+
+### GitHub Token Setup
+
+To access the `pagopa-ecommerce-commons` library from GitHub Packages, you need to set up authentication:
+
+1. Create a GitHub personal access token with `packages:read` permission
+2. Set the token as an environment variable:
+
+```shell
+export GITHUB_TOKEN=your_github_token_with_packages_read_permission
+```
 
 ### Run the project
 
 ```shell
 $ ./gradlew bootRun
 ```
-
-### Install eCommerce commons library locally
-
-There is a task into the Gradle build file that take cares for you of properly fetching and
-building `ecommerce-commons`. It does so by performing a repository clone, checking out to the version set into the
-build file and building the library with Maven.
-
-If you want to re-build `ecommerce-commons` library you can run the build command with a `-PbuildCommons`.
-
-This two properties maps `ecommerce-commons` version and git ref:
-
-````
-val ecommerceCommonsVersion = "x.y.z" -> valued with ecommerce commons wanted pom version
-val ecommerceCommonsGitRef = ecommerceCommonsVersion -> the branch/tag to be checkout.
-````
-
-`ecommerceCommonsGitRef` has by default the same value as `ecommerceCommonsVersion`, so that version tagged
-with `"x.y.z"` will be checked out and installed locally.
-
-This value was left as a separate property because, during developing phases can be changed to a feature branch
-making the local build use a ref branch other than a tag for developing purpose.
-
-```Shell
-$ ./gradlew build -PbuildCommons
-```
-
-Running the above command the version above task will run before project compilation building eCommerce commons locally
-inside maven local repository
 
 ### Testing 🧪
 
