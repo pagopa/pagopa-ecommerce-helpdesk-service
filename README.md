@@ -166,6 +166,25 @@ export GITHUB_TOKEN=your_github_token_with_packages_read_permission
 $ ./gradlew bootRun
 ```
 
+### eCommerce Commons Library
+
+The service uses the `ecommerce-commons` library which is now distributed via GitHub Packages. The library version is configured in `build.gradle.kts`.
+
+This two properties maps `ecommerce-commons` version and git ref:
+
+````
+val ecommerceCommonsVersion = "x.y.z" -> valued with ecommerce commons wanted pom version
+val ecommerceCommonsGitRef = ecommerceCommonsVersion -> the branch/tag to be checkout.
+````
+
+`ecommerceCommonsGitRef` has by default the same value as `ecommerceCommonsVersion`, so that version tagged
+with `"x.y.z"` will be checked out and installed locally.
+
+This value was left as a separate property because, during developing phases can be changed to a feature branch
+making the local build use a ref branch other than a tag for developing purpose.
+
+The library is automatically downloaded from GitHub Packages during the build process using the configured GitHub token.
+
 ### Testing 🧪
 
 #### Unit testing
