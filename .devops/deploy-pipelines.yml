@@ -68,6 +68,8 @@ stages:
     jobs:
       - job: Build_docker
         displayName: Build docker with Build.SourceVersion as TAG
+        env:
+          GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
         steps:
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
@@ -77,8 +79,6 @@ stages:
               DOCKER_IMAGE_TAG: $(Build.SourceVersion)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
               DOCKER_BUILD_ARGS: '--secret id=GITHUB_TOKEN,env=GITHUB_TOKEN'
-        env:
-          GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
 
   - stage: 'Deploy_for_DEV'
     displayName: 'Deploy DEV'
@@ -161,6 +161,8 @@ stages:
     jobs:
       - job: "build"
         displayName: 'Build release candidate docker image'
+        env:
+          GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
         steps:
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
@@ -171,8 +173,6 @@ stages:
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
               DOCKER_BUILD_ARGS: '--secret id=GITHUB_TOKEN,env=GITHUB_TOKEN'
           - template: azure-templates/chart-current-version.yml
-        env:
-          GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
 
   - stage: "Deploy_UAT_Blue"
     displayName: 'UAT blue deployment'
