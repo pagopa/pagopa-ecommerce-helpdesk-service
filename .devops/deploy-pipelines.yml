@@ -76,6 +76,8 @@ stages:
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
               DOCKER_IMAGE_TAG: $(Build.SourceVersion)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+            env:
+              GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
 
   - stage: 'Deploy_for_DEV'
     displayName: 'Deploy DEV'
@@ -166,6 +168,8 @@ stages:
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
               DOCKER_IMAGE_TAG: $(Build.SourceVersion)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+            env:
+              GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
           - template: azure-templates/chart-current-version.yml
 
   - stage: "Deploy_UAT_Blue"
