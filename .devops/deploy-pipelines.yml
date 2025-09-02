@@ -76,7 +76,7 @@ stages:
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
               DOCKER_IMAGE_TAG: $(Build.SourceVersion)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
-              DOCKER_BUILD_ARGS: '--secret id=GITHUB_TOKEN,env=GITHUB_RO_TOKEN'
+              DOCKER_BUILD_ARGS: '--secret id=GITHUB_TOKEN,env=GITHUB_RO_TOKEN --progress=plain'
 
   - stage: 'Deploy_for_DEV'
     displayName: 'Deploy DEV'
