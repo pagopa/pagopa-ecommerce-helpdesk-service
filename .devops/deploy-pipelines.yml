@@ -68,15 +68,9 @@ stages:
     jobs:
       - job: Build_docker
         displayName: Build docker with Build.SourceVersion as TAG
-        variables:
-          TEST_VAR: 'TEST_VAR_VALUE'
+        env:
           GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
         steps:
-          - bash: |
-              echo "TEST_VAR is set: $(if [ -n "TEST_VAR" ]; then echo "Yes"; else echo "No"; fi)"
-              echo "Length: ${#TEST_VAR}"
-            displayName: 'Verify TEST_VAR'
-
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
               CONTAINER_REGISTRY_SERVICE_CONN: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
@@ -164,11 +158,11 @@ stages:
       startsWith(variables['Build.SourceBranch'], 'refs/tags')
       )
       )
+    env:
+      GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
     jobs:
       - job: "build"
         displayName: 'Build release candidate docker image'
-        variables:
-          GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
         steps:
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
