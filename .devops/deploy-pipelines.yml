@@ -68,23 +68,7 @@ stages:
     jobs:
       - job: Build_docker
         displayName: Build docker with Build.SourceVersion as TAG
-        variables:
-          TEST_VAR: 'TEST_VAR_VALUE'
-          GITHUB_TOKEN_QUOTE_MAIUSC: '$(GITHUB_RO_TOKEN)'
-          GITHUB_TOKEN_QUOTE_MIN: '$(github_ro_token)'
-          GITHUB_TOKEN: $(github_ro_token)
         steps:
-          - bash: |
-              echo "TEST_VAR is set: $(if [ -n "TEST_VAR" ]; then echo "Yes"; else echo "No"; fi)"
-              echo "Length: ${#TEST_VAR}"
-              echo "GITHUB_TOKEN_QUOTE_MAIUSC is set: $(if [ -n "GITHUB_TOKEN_QUOTE_MAIUSC" ]; then echo "Yes"; else echo "No"; fi)"
-              echo "Length: ${#GITHUB_TOKEN_QUOTE_MAIUSC}"
-              echo "GITHUB_TOKEN_QUOTE_MIN is set: $(if [ -n "GITHUB_TOKEN_QUOTE_MIN" ]; then echo "Yes"; else echo "No"; fi)"
-              echo "Length: ${#GITHUB_TOKEN_QUOTE_MIN}"
-              echo "GITHUB_TOKEN is set: $(if [ -n "GITHUB_TOKEN" ]; then echo "Yes"; else echo "No"; fi)"
-              echo "Length: ${#GITHUB_TOKEN}"
-            displayName: 'Verify TEST_VAR and TOKEN'
-
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
               CONTAINER_REGISTRY_SERVICE_CONN: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
@@ -92,7 +76,7 @@ stages:
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
               DOCKER_IMAGE_TAG: $(Build.SourceVersion)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
-              DOCKER_BUILD_ARGS: '--secret id=GITHUB_TOKEN,env=GITHUB_TOKEN'
+              DOCKER_BUILD_ARGS: '--secret id=GITHUB_TOKEN,env=GITHUB_RO_TOKEN'
 
   - stage: 'Deploy_for_DEV'
     displayName: 'Deploy DEV'
