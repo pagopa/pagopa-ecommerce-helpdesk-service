@@ -68,9 +68,14 @@ stages:
     jobs:
       - job: Build_docker
         displayName: Build docker with Build.SourceVersion as TAG
-        env:
+        variables:
           GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
         steps:
+          - bash: |
+              echo "GITHUB_TOKEN is set: $(if [ -n "$GITHUB_TOKEN" ]; then echo "Yes"; else echo "No"; fi)"
+              echo "Length: ${#GITHUB_TOKEN}"
+            displayName: 'Verify GITHUB_TOKEN'
+
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
               CONTAINER_REGISTRY_SERVICE_CONN: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
@@ -161,7 +166,7 @@ stages:
     jobs:
       - job: "build"
         displayName: 'Build release candidate docker image'
-        env:
+        variables:
           GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
         steps:
           - template: templates/docker-release/template.yaml@pagopaCommons
