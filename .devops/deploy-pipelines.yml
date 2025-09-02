@@ -172,8 +172,6 @@ stages:
       startsWith(variables['Build.SourceBranch'], 'refs/tags')
       )
       )
-    env:
-      GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
     jobs:
       - job: "build"
         displayName: 'Build release candidate docker image'
