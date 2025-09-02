@@ -69,12 +69,13 @@ stages:
       - job: Build_docker
         displayName: Build docker with Build.SourceVersion as TAG
         variables:
+          TEST_VAR: 'TEST_VAR_VALUE'
           GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
         steps:
           - bash: |
-              echo "GITHUB_TOKEN is set: $(if [ -n "$GITHUB_TOKEN" ]; then echo "Yes"; else echo "No"; fi)"
-              echo "Length: ${#GITHUB_TOKEN}"
-            displayName: 'Verify GITHUB_TOKEN'
+              echo "TEST_VAR is set: $(if [ -n "TEST_VAR" ]; then echo "Yes"; else echo "No"; fi)"
+              echo "Length: ${#TEST_VAR}"
+            displayName: 'Verify TEST_VAR'
 
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
