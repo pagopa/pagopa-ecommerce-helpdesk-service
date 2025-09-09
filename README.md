@@ -1,4 +1,4 @@
-# pagoPA Help desk service
+# pagopa-helpdesk-service
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-ecommerce-helpdesk-service&metric=alert_status)](https://sonarcloud.io/dashboard?id=pagopa_pagopa-ecommerce-helpdesk-service)
 
@@ -12,8 +12,8 @@ This microservice is responsible for ...
         + [Run docker container](#run-docker-container)
     * [Develop Locally 💻](#develop-locally-)
         + [Prerequisites](#prerequisites-1)
+        + [GitHub Token Setup](#github-token-setup)
         + [Run the project](#run-the-project)
-        + [Install ecommerce commons library](#install-ecommerce-commons-library-locally)
         + [Testing 🧪](#testing-)
             - [Unit testing](#unit-testing)
             - [Integration testing](#integration-testing)
@@ -134,6 +134,7 @@ see [docs](https://www.mongodb.com/docs/drivers/java/sync/v4.3/fundamentals/conn
 ### Run docker container
 
 ```shell
+$ export GITHUB_TOKEN=your_github_token_with_packages_read_permission
 $ docker compose up --build
 ```
 
@@ -146,7 +147,18 @@ $ docker compose up --build
 - git
 - gradle
 - jdk-21
-- ecommerce-commons library installed into maven local folder
+- GitHub personal access token with `packages:read` permission
+
+### GitHub Token Setup
+
+To access the `pagopa-ecommerce-commons` library from GitHub Packages, you need to set up authentication:
+
+1. Create a GitHub personal access token with `packages:read` permission
+2. Set the token as an environment variable:
+
+```shell
+export GITHUB_TOKEN=your_github_token_with_packages_read_permission
+```
 
 ### Run the project
 
@@ -154,13 +166,9 @@ $ docker compose up --build
 $ ./gradlew bootRun
 ```
 
-### Install eCommerce commons library locally
+### eCommerce Commons Library
 
-There is a task into the Gradle build file that take cares for you of properly fetching and
-building `ecommerce-commons`. It does so by performing a repository clone, checking out to the version set into the
-build file and building the library with Maven.
-
-If you want to re-build `ecommerce-commons` library you can run the build command with a `-PbuildCommons`.
+The service uses the `ecommerce-commons` library which is now distributed via GitHub Packages. The library version is configured in `build.gradle.kts`.
 
 This two properties maps `ecommerce-commons` version and git ref:
 
@@ -175,12 +183,7 @@ with `"x.y.z"` will be checked out and installed locally.
 This value was left as a separate property because, during developing phases can be changed to a feature branch
 making the local build use a ref branch other than a tag for developing purpose.
 
-```Shell
-$ ./gradlew build -PbuildCommons
-```
-
-Running the above command the version above task will run before project compilation building eCommerce commons locally
-inside maven local repository
+The library is automatically downloaded from GitHub Packages during the build process using the configured GitHub token.
 
 ### Testing 🧪
 
