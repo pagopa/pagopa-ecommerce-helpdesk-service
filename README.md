@@ -1,4 +1,4 @@
-# pagoPA Help desk service
+# pagopa-helpdesk-service
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-ecommerce-helpdesk-service&metric=alert_status)](https://sonarcloud.io/dashboard?id=pagopa_pagopa-ecommerce-helpdesk-service)
 
@@ -127,7 +127,7 @@ If you want to customize the application environment, reference this table:
 | SECURITY_API_KEY_SECURED_PATHS          | Secured paths for API Key                                                                                                                                  | string             |         |
 | SECURITY_API_KEY_PRIMARY                | Primary API Key used to secure helpdesk-service service's APIs                                                                                             | string             |         |
 | SECURITY_API_KEY_SECONDARY              | Secondary API Key used to secure helpdesk-service service's APIs                                                                                           | string             |         |
-| GITHUB_TOKEN                            | GitHub Personal Access Token with packages:read permission for accessing pagopa-ecommerce-commons from GitHub Packages                                     | string             |         |
+
 (*): for Mongo connection string options
 see [docs](https://www.mongodb.com/docs/drivers/java/sync/v4.3/fundamentals/connection/connection-options/#connection-options)
 
