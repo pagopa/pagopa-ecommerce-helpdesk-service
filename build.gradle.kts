@@ -30,7 +30,14 @@ java { toolchain { languageVersion.set(JavaLanguageVersion.of(21)) } }
 
 repositories {
   mavenCentral()
-  mavenLocal()
+  maven {
+    name = "GitHubPackages"
+    url = uri("https://maven.pkg.github.com/pagopa/pagopa-ecommerce-commons")
+    credentials {
+      username = "token"
+      password = System.getenv("GITHUB_TOKEN")
+    }
+  }
 }
 
 dependencyManagement {
@@ -241,12 +248,6 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("nod
       "enumPropertyNaming" to "MACRO_CASE"
     )
   )
-}
-
-tasks.register<Exec>("install-commons") {
-  val buildCommons = providers.gradleProperty("buildCommons")
-  onlyIf("To build commons library run gradle build -PbuildCommons") { buildCommons.isPresent }
-  commandLine("sh", "./pagopa-ecommerce-commons-maven-install.sh", ecommerceCommonsGitRef)
 }
 
 tasks.withType<KotlinCompile> {
