@@ -356,7 +356,7 @@ components:
         authenticationType:
           type: string
       example:
-        userFiscalCode: "user_fiscal_code"
+        userFiscalCode: "MRGHRN97L02C469W"
         notificationEmail: "test@test.it"
         surname: "Surname"
         name: "Name"
@@ -665,7 +665,7 @@ components:
             search by rpt id:
               value:
                 type: RPT_ID
-                rptId: "77777777777111111111111111111"
+                rptId: "77777777777111111111111111112"
             search by payment token:
               value:
                 type: PAYMENT_TOKEN
@@ -681,7 +681,7 @@ components:
             search by user fiscal code:
               value:
                 type: USER_FISCAL_CODE
-                userFiscalCode: "user_fiscal_code"
+                userFiscalCode: "MRGHRN97L02C469W"
     SearchTransactionRequest:
       required: true
       content:
@@ -702,7 +702,7 @@ components:
             search by user fiscal code:
               value:
                 type: USER_FISCAL_CODE
-                userFiscalCode: "user_fiscal_code"
+                userFiscalCode: "MRGHRN97L02C469W"
             search by user email:
               value:
                 type: USER_EMAIL
@@ -710,7 +710,7 @@ components:
             search by rpt id:
               value:
                 type: RPT_ID
-                rptId: "77777777777111111111111111111"
+                rptId: "77777777777111111111111111112"
             search by payment token:
               value:
                 type: PAYMENT_TOKEN
@@ -718,4 +718,4 @@ components:
             search by transaction id:
               value:
                 type: TRANSACTION_ID
-                transactionId: "d7821f6c3a2b1e4f5c9d8e7f6a5b4c3d"
+                transactionId: "c9644451389e47b0a7d8e9d488fcd502"
