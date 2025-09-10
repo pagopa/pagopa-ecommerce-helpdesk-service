@@ -10,7 +10,6 @@ servers:
   - url: https://{host}
     variables:
       host:
-        default: api.platform.pagopa.it
         description: The hostname of the API server
 tags:
   - name: ecommerce
