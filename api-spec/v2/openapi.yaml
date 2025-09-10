@@ -30,22 +30,8 @@ paths:
   /v2/ecommerce/searchTransaction:
     post:
       parameters:
-        - in: query
-          name: pageNumber
-          schema:
-            type: integer
-            default: 0
-          required: true
-          description: "Searched page number, starting from 0"
-        - in: query
-          name: pageSize
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 20
-            default: 10
-          required: true
-          description: "Max element per page"
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
       tags:
         - ecommerce
       operationId: ecommerceSearchTransaction
@@ -117,22 +103,8 @@ paths:
   /v2/helpdesk/searchTransaction:
     post:
       parameters:
-        - in: query
-          name: pageNumber
-          schema:
-            type: integer
-            default: 0
-          required: true
-          description: "Searched page number, starting from 0"
-        - in: query
-          name: pageSize
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 20
-            default: 10
-          required: true
-          description: "Max element per page"
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
       tags:
         - helpdesk
       operationId: helpDeskSearchTransaction
@@ -171,6 +143,19 @@ components:
       type: apiKey
       in: header
       name: x-api-key
+  parameters:
+    PageNumber:
+      in: query
+      name: pageNumber
+      required: true
+      schema:
+        $ref: '#/components/schemas/PageNumberParameter'
+    PageSize:
+      in: query
+      name: pageSize
+      required: true
+      schema:
+        $ref: '#/components/schemas/PageSizeParameter'
   schemas:
     ProblemJson:
       type: object
@@ -356,7 +341,7 @@ components:
         authenticationType:
           type: string
       example:
-        userFiscalCode: "MRGHRN97L02C469W"
+        userFiscalCode: "user_fiscal_code"
         notificationEmail: "test@test.it"
         surname: "Surname"
         name: "Name"
@@ -514,6 +499,16 @@ components:
       type: string
       enum: [ "PM", "ECOMMERCE" ]
       description: Product from which transaction belongs
+    PageNumberParameter:
+      type: integer
+      default: 0
+      description: "Searched page number, starting from 0"
+    PageSizeParameter:
+      type: integer
+      minimum: 1
+      maximum: 20
+      default: 10
+      description: "Max element per page"
     EcommerceSearchTransactionRequest:
       type: object
       oneOf:
@@ -665,7 +660,7 @@ components:
             search by rpt id:
               value:
                 type: RPT_ID
-                rptId: "77777777777111111111111111112"
+                rptId: "77777777777111111111111111111"
             search by payment token:
               value:
                 type: PAYMENT_TOKEN
@@ -681,7 +676,7 @@ components:
             search by user fiscal code:
               value:
                 type: USER_FISCAL_CODE
-                userFiscalCode: "MRGHRN97L02C469W"
+                userFiscalCode: "user_fiscal_code"
     SearchTransactionRequest:
       required: true
       content:
@@ -690,11 +685,19 @@ components:
             oneOf:
               - $ref: '#/components/schemas/PmSearchTransactionRequest'
               - $ref: '#/components/schemas/EcommerceSearchTransactionRequest'
+            discriminator:
+              propertyName: type
+              mapping:
+                USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
+                USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
+                RPT_ID: "#/components/schemas/SearchTransactionRequestRptId"
+                PAYMENT_TOKEN: "#/components/schemas/SearchTransactionRequestPaymentToken"
+                TRANSACTION_ID: "#/components/schemas/SearchTransactionRequestTransactionId"
           examples:
             search by user fiscal code:
               value:
                 type: USER_FISCAL_CODE
-                userFiscalCode: "MRGHRN97L02C469W"
+                userFiscalCode: "user_fiscal_code"
             search by user email:
               value:
                 type: USER_EMAIL
@@ -702,7 +705,7 @@ components:
             search by rpt id:
               value:
                 type: RPT_ID
-                rptId: "77777777777111111111111111112"
+                rptId: "77777777777111111111111111111"
             search by payment token:
               value:
                 type: PAYMENT_TOKEN
@@ -710,4 +713,4 @@ components:
             search by transaction id:
               value:
                 type: TRANSACTION_ID
-                transactionId: "c9644451389e47b0a7d8e9d488fcd502"
+                transactionId: "d7821f6c3a2b1e4f5c9d8e7f6a5b4c3d"
