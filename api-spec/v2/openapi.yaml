@@ -540,7 +540,7 @@ components:
         eventCode:
           type: string
       example:
-        creationDate: "2023-08-07T15:32:56.592837917Z[Etc/UTC]"
+        creationDate: "2023-08-07T15:32:56.592Z"
         eventCode: "TRANSACTION_ACTIVATED_EVENT"
     SearchMetricsRequest:
       type: object
@@ -639,15 +639,19 @@ components:
                 timeRange:
                   startDate: "2023-11-30T14:00:00.000Z"
                   endDate: "2023-11-30T14:59:59.999Z"
-            only clientId:
+            with optional filters - case 2:
               value:
                 clientId: "client-app-456"
+                pspId: "psp-456"
+                paymentTypeCode: "TYPE_XYZ"
                 timeRange:
                   startDate: "2023-11-30T15:00:00.000Z"
                   endDate: "2023-11-30T15:45:00.000Z"
-            only pspId:
+            with optional filters - case 3:
               value:
+                clientId: "client-app-789"
                 pspId: "psp-xyz"
+                paymentTypeCode: "TYPE_DEF"
                 timeRange:
                   startDate: "2023-12-01T10:00:00.000Z"
                   endDate: "2023-12-01T10:50:00.000Z"
@@ -669,7 +673,7 @@ components:
             search by transaction id:
               value:
                 type: TRANSACTION_ID
-                transactionId: "transactionId"
+                transactionId: "c9644451389e47b0a7d8e9d488fcd502"
             search by user email:
               value:
                 type: USER_EMAIL
@@ -714,4 +718,4 @@ components:
             search by transaction id:
               value:
                 type: TRANSACTION_ID
-                transactionId: "transactionId"
+                transactionId: "d7821f6c3a2b1e4f5c9d8e7f6a5b4c3d"
