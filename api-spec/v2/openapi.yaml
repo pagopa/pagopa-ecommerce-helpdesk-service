@@ -3,11 +3,23 @@ info:
   version: 2.0.0
   title: Pagopa eCommerce services for assistance api
   description: This microservice that expose eCommerce services for assistance api.
+  contact:
+    name: PagoPA S.p.A.
+    url: https://www.pagopa.it/
 servers:
-  - url: https://${host}
+  - url: https://{host}
+    variables:
+      host:
+        default: api.platform.pagopa.it
+        description: The hostname of the API server
 tags:
-  - name: eCommerce
+  - name: ecommerce
     description: Api's for performing transaction search on ecommerce DB
+    externalDocs:
+      url: https://pagopa.atlassian.net/wiki/spaces/I/pages/492339720/pagoPA+eCommerce+Design+Review
+      description: Technical specifications
+  - name: helpdesk
+    description: Api's for performing helpdesk transaction search operations
     externalDocs:
       url: https://pagopa.atlassian.net/wiki/spaces/I/pages/492339720/pagoPA+eCommerce+Design+Review
       description: Technical specifications
@@ -405,7 +417,7 @@ components:
           type: string
           description: payment gateway authorization error code
       example:
-        creationDate: "2023-08-02T14:42:54.047"
+        creationDate: "2023-08-02T14:42:54.047Z"
         status: "status"
         statusDetails: "status detail"
         eventStatus: "NOTIFIED_OK"
