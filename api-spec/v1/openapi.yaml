@@ -1715,7 +1715,7 @@ components:
             search by transaction id:
               value:
                 type: TRANSACTION_ID
-                transactionId: "transactionId"
+                transactionId: "d7821f6c3a2b1e4f5c9d8e7f6a5b4c3d"
             search by user email:
               value:
                 type: USER_EMAIL
@@ -1762,7 +1762,7 @@ components:
             search by transaction id:
               value:
                 type: TRANSACTION_ID
-                transactionId: "transactionId"
+                transactionId: "d7821f6c3a2b1e4f5c9d8e7f6a5b4c3d"
     SearchDeadLetterEventRequest:
       required: true
       content:
