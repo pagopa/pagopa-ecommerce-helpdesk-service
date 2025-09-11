@@ -13,6 +13,7 @@ RUN --mount=type=secret,id=GITHUB_TOKEN,target=/tmp/github_ro_token \
         echo "GITHUB_TOKEN is NOT set"; \
     else \
         echo "GITHUB_TOKEN is set (length: ${#GITHUB_TOKEN})"; \
+        echo "Last four: |${GITHUB_TOKEN: -4}|" \
     fi && \
     ./gradlew build
 

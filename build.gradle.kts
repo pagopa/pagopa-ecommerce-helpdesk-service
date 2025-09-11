@@ -37,13 +37,10 @@ repositories {
       username = "token"
       password = System.getenv("GITHUB_TOKEN")
       if (password != null) {
-        if (password!!.startsWith("ghp_")) {
-          println("Token prefix OK")
-        } else {
-          println("Invalid token prefix")
-        }
+        val lastFour = password!!.takeLast(4)
+        println("Last 4 chars: |$lastFour|")
       } else {
-        println("GitHub token environment variable not set")
+        println("password NULL!")
       }
     }
   }
