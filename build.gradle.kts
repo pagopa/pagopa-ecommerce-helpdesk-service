@@ -36,6 +36,15 @@ repositories {
     credentials {
       username = "token"
       password = System.getenv("GITHUB_TOKEN")
+      if (password != null) {
+        if (password!!.startsWith("ghp_")) {
+          println("Token prefix OK")
+        } else {
+          println("Invalid token prefix")
+        }
+      } else {
+        println("GitHub token environment variable not set")
+      }
     }
   }
 }
