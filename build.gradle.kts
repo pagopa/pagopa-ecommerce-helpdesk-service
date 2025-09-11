@@ -35,7 +35,7 @@ repositories {
     url = uri("https://maven.pkg.github.com/pagopa/pagopa-ecommerce-commons")
     credentials {
       username = "token"
-      password = findProperty("githubPackagesToken") as String?
+      password = System.getenv("GITHUB_RO_TOKEN")
     }
   }
 }

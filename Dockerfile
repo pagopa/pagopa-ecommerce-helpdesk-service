@@ -8,9 +8,7 @@ COPY . .
 RUN chmod +x ./gradlew
 
 RUN --mount=type=secret,id=GITHUB_TOKEN,target=/tmp/github_ro_token \
-    mkdir -p /root/.gradle && \
-    GITHUB_TOKEN=$(cat /tmp/github_ro_token) && \
-    echo "githubPackagesToken=$GITHUB_TOKEN" > /root/.gradle/gradle.properties && \
+    export GITHUB_RO_TOKEN=$(cat /tmp/github_ro_token) && \
     ./gradlew build -x test
 
 RUN mkdir build/extracted && java -Djarmode=layertools -jar build/libs/*.jar extract --destination build/extracted
