@@ -7,14 +7,6 @@ RUN apk add --no-cache findutils
 COPY . .
 RUN chmod +x ./gradlew
 
-#
-# magari a questo punto potremmo provare così sh -c 'GITHUB_TOKEN=$(cat /run/secrets/GITHUB_TOKEN) ./gradlew :nativeCompile', cioè puntare direttamente al file già montato
-#
-
-#RUN --mount=type=secret,id=GITHUB_TOKEN,target=/tmp/github_ro_token \
-    #GITHUB_TOKEN=$(cat /run/secrets/GITHUB_TOKEN) ./gradlew build
-    #export GITHUB_TOKEN=$(cat /tmp/github_ro_token) && \
-
 RUN --mount=type=secret,id=GITHUB_TOKEN \
     GITHUB_TOKEN=$(cat /run/secrets/GITHUB_TOKEN) \
     ./gradlew build -x test

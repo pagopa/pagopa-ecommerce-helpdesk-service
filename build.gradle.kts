@@ -36,12 +36,6 @@ repositories {
     credentials {
       username = "token"
       password = System.getenv("GITHUB_TOKEN")
-      if (password != null) {
-        val lastFour = password!!.takeLast(4)
-        println("Last 4 chars: |$lastFour|")
-      } else {
-        println("password NULL!")
-      }
     }
   }
 }
