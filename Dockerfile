@@ -9,7 +9,13 @@ RUN chmod +x ./gradlew
 
 RUN --mount=type=secret,id=GITHUB_TOKEN,target=/tmp/github_ro_token \
     export GITHUB_TOKEN=$(cat /tmp/github_ro_token) && \
-    ./gradlew --no-daemon build -x test
+    if [ -z "$GITHUB_TOKEN" ]; then \
+        echo "GITHUB_TOKEN is NOT set"; \
+    else \
+        echo "GITHUB_TOKEN is set (length: ${#GITHUB_TOKEN})"; \
+    fi && \
+    ./gradlew build
+
 
 RUN mkdir build/extracted && java -Djarmode=layertools -jar build/libs/*.jar extract --destination build/extracted
 
