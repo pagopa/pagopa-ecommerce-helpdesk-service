@@ -1577,7 +1577,7 @@ components:
                 excludedStatuses:
                   ecommerceStatuses: [ "NOTIFIED_OK" ]
                   npgStatuses: [ "DECLINED", "CANCELLED" ]
-            search by source with time range and excluded statuses:
+            search with time range and exclusions:
               value:
                 source: ALL
                 timeRange:
