@@ -7,7 +7,8 @@ RUN apk add --no-cache findutils
 COPY . .
 RUN chmod +x ./gradlew
 
-RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN \
+RUN --mount=type=secret,id=GITHUB_TOKEN \
+    GITHUB_TOKEN=$(cat /run/secrets/GITHUB_TOKEN) \
     ./gradlew build -x test
 
 RUN mkdir build/extracted && java -Djarmode=layertools -jar build/libs/*.jar extract --destination build/extracted
