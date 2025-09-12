@@ -118,8 +118,8 @@ microservice-chart:
     NPG_MYBANK_PSP_LIST: "BCITITMM,UNCRITMM"
     NPG_BANCOMATPAY_PSP_LIST: "BCITITMM"
     NPG_SATISPAY_PSP_LIST: "SATYLUL1"
-    NPG_APPLEPAY_PSP_LIST: "SIGPITM1XXX"
-    NPG_GOOGLE_PAY_PSP_LIST: ""
+    NPG_APPLEPAY_PSP_LIST: "SIGPITM1XXX,CIPBITMM"
+    NPG_GOOGLE_PAY_PSP_LIST: "CIPBITMM"
     SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
       {ALL: '*', ECOMMERCE: 'pagopa-p-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-p-weu-ecommerce-notifications-service-errors-queue'}
 
