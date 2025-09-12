@@ -1463,7 +1463,7 @@ components:
             search by transactionId range:
               value:
                 type: TRANSACTION_ID_RANGE
-                timeRange:
+                transactionIdRange:
                   startTransactionId: "1"
                   endTransactionId: "1000"
     PmSearchTransactionResponse:
@@ -1532,7 +1532,7 @@ components:
             search by user fiscal code:
               value:
                 type: USER_FISCAL_CODE
-                userFiscalCode: "user_fiscal_code"
+                userFiscalCode: "MRGHRN97L02C469W"
             search by user email:
               value:
                 type: USER_EMAIL
@@ -1575,8 +1575,8 @@ components:
                   startDate: "2023-01-01T00:00:00.000Z"
                   endDate: "2023-01-01T02:00:00.000Z"
                 excludedStatuses:
-                  npgStatus: [ "DECLINED", "CANCELLED" ]
-                  ecommerceStatus: [ "NOTIFIED_OK" ]
+                  ecommerceStatuses: [ "NOTIFIED_OK" ]
+                  npgStatuses: [ "DECLINED", "CANCELLED" ]
             search by source with time range and excluded statuses:
               value:
                 source: ALL
@@ -1606,7 +1606,7 @@ components:
             search by user fiscal code:
               value:
                 type: USER_FISCAL_CODE
-                userFiscalCode: "user_fiscal_code"
+                userFiscalCode: "MRGHRN97L02C469W"
             search by user email:
               value:
                 type: USER_EMAIL
