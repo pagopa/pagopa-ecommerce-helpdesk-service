@@ -56,26 +56,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SearchTransactionResponse'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '400':
           description: Formally invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
         '404':
@@ -84,13 +70,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '429':
           $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
@@ -116,26 +95,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SearchBulkTransactionResponse'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '400':
           description: Formally invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
         '404':
@@ -144,13 +109,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '429':
           $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
@@ -176,26 +134,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SearchPaymentMethodResponse'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '400':
           description: Formally invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
         '404':
@@ -204,13 +148,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '429':
           $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
@@ -239,26 +176,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SearchTransactionResponse'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '400':
           description: Formally invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
         '404':
@@ -267,13 +190,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '429':
           $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
@@ -302,26 +218,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SearchTransactionResponse'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '400':
           description: Formally invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
         '404':
@@ -330,13 +232,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '429':
           $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
@@ -362,26 +257,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SearchPaymentMethodResponse'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '400':
           description: Formally invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
         '404':
@@ -390,13 +271,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '429':
           $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
@@ -425,26 +299,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SearchDeadLetterEventResponse'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '400':
           description: Formally invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
         '404':
@@ -453,13 +313,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '429':
           $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
@@ -484,26 +337,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SearchNpgOperationsResponse'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '400':
           description: Formally invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
         '404':
@@ -512,26 +351,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '422':
           description: Unsupported version
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
         '429':
           $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
@@ -571,29 +396,6 @@ components:
       schema:
         $ref: '#/components/schemas/PageSizeLargeParameter'
 
-  headers:
-    X-RateLimit-Limit:
-      description: The number of allowed requests in the current period
-      schema:
-        type: integer
-        example: 100
-    X-RateLimit-Remaining:
-      description: The number of remaining requests in the current period
-      schema:
-        type: integer
-        example: 95
-    X-RateLimit-Reset:
-      description: The time at which the current rate limit window resets (Unix timestamp)
-      schema:
-        type: integer
-        format: int64
-        example: 1634567890
-    Retry-After:
-      description: Number of seconds to wait before making a new request
-      schema:
-        type: integer
-        example: 60
-
   responses:
     UnauthorizedResponse:
       description: Authentication credentials not provided or invalid
@@ -601,28 +403,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ProblemJson'
-      headers:
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/X-RateLimit-Limit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/X-RateLimit-Remaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/X-RateLimit-Reset'
     TooManyRequestsResponse:
       description: Too many requests - rate limit exceeded
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ProblemJson'
-      headers:
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/X-RateLimit-Limit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/X-RateLimit-Remaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/X-RateLimit-Reset'
-        Retry-After:
-          $ref: '#/components/headers/Retry-After'
 
   schemas:
     ProblemJson:
