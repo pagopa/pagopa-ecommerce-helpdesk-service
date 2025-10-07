@@ -3,8 +3,19 @@ info:
   version: 1.0.0
   title: Pagopa eCommerce services for assistance api
   description: This microservice that expose eCommerce services for assistance api.
+  contact:
+    name: PagoPA S.p.A.
+    url: https://www.pagopa.it/
 servers:
-  - url: https://${host}
+  - url: https://{host}
+    variables:
+      host:
+        description: The hostname of the API server
+        default: api.dev.platform.pagopa.it
+        enum:
+          - api.dev.platform.pagopa.it
+          - api.uat.platform.pagopa.it
+
 tags:
   - name: PM
     description: Api's for performing transaction search on PM DB
@@ -21,6 +32,7 @@ tags:
     externalDocs:
       url: https://pagopa.atlassian.net/wiki/spaces/I/pages/492339720/pagoPA+eCommerce+Design+Review
       description: Technical specifications
+
 security:
   - ApiKeyAuth: [ ]
 
@@ -28,22 +40,8 @@ paths:
   /pm/searchTransaction:
     post:
       parameters:
-        - in: query
-          name: pageNumber
-          schema:
-            type: integer
-            default: 0
-          required: true
-          description: "Searched page number, starting from 0"
-        - in: query
-          name: pageSize
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 20
-            default: 10
-          required: true
-          description: "Max element per page"
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
       tags:
         - PM
       operationId: pmSearchTransaction
@@ -64,18 +62,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
         '404':
           description: Transaction not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+
   /pm/searchBulkTransaction:
     post:
       tags:
@@ -98,18 +101,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
         '404':
           description: Transaction not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+
   /pm/searchPaymentMethod:
     post:
       tags:
@@ -132,37 +140,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
         '404':
           description: Transaction not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+
   /ecommerce/searchTransaction:
     post:
       parameters:
-        - in: query
-          name: pageNumber
-          schema:
-            type: integer
-            default: 0
-          required: true
-          description: "Searched page number, starting from 0"
-        - in: query
-          name: pageSize
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 20
-            default: 10
-          required: true
-          description: "Max element per page"
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
       tags:
         - eCommerce
       operationId: ecommerceSearchTransaction
@@ -183,37 +182,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
         '404':
           description: Transaction not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+
   /helpdesk/searchTransaction:
     post:
       parameters:
-        - in: query
-          name: pageNumber
-          schema:
-            type: integer
-            default: 0
-          required: true
-          description: "Searched page number, starting from 0"
-        - in: query
-          name: pageSize
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 20
-            default: 10
-          required: true
-          description: "Max element per page"
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
       tags:
         - helpDesk
       operationId: helpDeskSearchTransaction
@@ -234,18 +224,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
         '404':
           description: Transaction not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+
   /helpdesk/searchPaymentMethod:
     post:
       tags:
@@ -268,37 +263,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
         '404':
           description: Transaction not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+
   /ecommerce/searchDeadLetterEvents:
     post:
       parameters:
-        - in: query
-          name: pageNumber
-          schema:
-            type: integer
-            default: 0
-          required: true
-          description: "Searched page number, starting from 0"
-        - in: query
-          name: pageSize
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 1000
-            default: 10
-          required: true
-          description: "Max element per page"
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSizeLarge'
       requestBody:
         $ref: "#/components/requestBodies/SearchDeadLetterEventRequest"
       tags:
@@ -319,18 +305,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
         '404':
           description: Transaction not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+
   /ecommerce/searchNpgOperations:
     post:
       tags:
@@ -352,6 +343,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
         '404':
           description: Transaction not found
           content:
@@ -364,18 +357,59 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+
 components:
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
       in: header
       name: x-api-key
+
+  parameters:
+    PageNumber:
+      in: query
+      name: pageNumber
+      required: true
+      description: Searched page number, starting from 0
+      schema:
+        $ref: '#/components/schemas/PageNumberParameter'
+    PageSize:
+      in: query
+      name: pageSize
+      required: true
+      description: Max element per page
+      schema:
+        $ref: '#/components/schemas/PageSizeParameter'
+    PageSizeLarge:
+      in: query
+      name: pageSize
+      required: true
+      description: Max element per page (dead letter search)
+      schema:
+        $ref: '#/components/schemas/PageSizeLargeParameter'
+
+  responses:
+    UnauthorizedResponse:
+      description: Authentication credentials not provided or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemJson'
+    TooManyRequestsResponse:
+      description: Too many requests - rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemJson'
+
   schemas:
     ProblemJson:
       type: object
@@ -435,9 +469,10 @@ components:
       example:
         type: "USER_FISCAL_CODE"
         userFiscalCode: "MRGHRN97L02C469W"
+
     SearchTransactionRequestEmail:
       type: object
-      description: Search transaction by user fiscal code
+      description: Search transaction by user email
       properties:
         type:
           type: string
@@ -450,6 +485,7 @@ components:
       example:
         type: "USER_EMAIL"
         userEmail: "mario.rossi@pagopa.it"
+
     SearchTransactionRequestDate:
       type: object
       description: Search transaction by date and time range
@@ -475,6 +511,7 @@ components:
       required:
         - type
         - timeRange
+
     SearchTransactionRequestTransactionIdRange:
       type: object
       description: Search transaction by transactionId range
@@ -496,6 +533,7 @@ components:
       required:
         - type
         - transactionIdRange
+
     SearchTransactionResponse:
       type: object
       description: TransactionResponse
@@ -509,11 +547,13 @@ components:
       required:
         - transactions
         - page
+
     SearchBulkTransactionResponse:
       type: array
       description: TransactionBulkResponse
       items:
         $ref: '#/components/schemas/TransactionBulkResult'
+
     SearchTransactionRequestRptId:
       type: object
       description: Search transaction by user fiscal code
@@ -529,6 +569,7 @@ components:
       example:
         type: "RPT_ID"
         rptId: "77777777777302011111111111111"
+
     SearchTransactionRequestPaymentToken:
       type: object
       description: Search transaction by payment token
@@ -543,6 +584,7 @@ components:
       example:
         type: "PAYMENT_TOKEN"
         paymentToken: "paymentToken"
+
     SearchTransactionRequestTransactionId:
       type: object
       description: Search transaction by transaction id
@@ -559,6 +601,7 @@ components:
       example:
         type: "TRANSACTION_ID"
         transactionId: "c9644451389e47b0a7d8e9d488fcd502"
+
     SearchPaymentMethodRequestFiscalCode:
       type: object
       description: Search transaction by user fiscal code
@@ -575,6 +618,7 @@ components:
       example:
         type: "USER_FISCAL_CODE"
         userFiscalCode: "MRGHRN97L02C469W"
+
     SearchPaymentMethodRequestEmail:
       type: object
       description: Search transaction by user fiscal code
@@ -590,6 +634,7 @@ components:
       example:
         type: "USER_EMAIL"
         userEmail: "mario.rossi@pagopa.it"
+
     TransactionResult:
       type: object
       description: TransactionResponse
@@ -610,6 +655,7 @@ components:
         - paymentInfo
         - pspInfo
         - product
+
     TransactionBulkResult:
       type: object
       description: TransactionResponse
@@ -635,6 +681,7 @@ components:
         - paymentInfo
         - pspInfo
         - product
+
     UserInfoBulk:
       type: object
       description: User information
@@ -649,9 +696,10 @@ components:
         authenticationType:
           type: string
       example:
-        userFiscalCode: "user_fiscal_code"
+        userFiscalCode: "MRGHRN97L02C469W"
         notificationEmail: "test@test.it"
         authenticationType: "auth type"
+
     UserInfo:
       type: object
       description: User information
@@ -675,12 +723,13 @@ components:
         authenticationType:
           type: string
       example:
-        userFiscalCode: "user_fiscal_code"
+        userFiscalCode: "MRGHRN97L02C469W"
         notificationEmail: "test@test.it"
         surname: "Surname"
         name: "Name"
         username: "username"
         authenticationType: "auth type"
+
     TransactionInfo:
       type: object
       description: Transaction info
@@ -726,7 +775,7 @@ components:
           type: string
           description: payment gateway authorization error code
       example:
-        creationDate: "2023-08-02T14:42:54.047"
+        creationDate: "2023-08-02T14:42:54.047Z"
         status: "status"
         statusDetails: "status detail"
         eventStatus: "NOTIFIED_OK"
@@ -742,6 +791,7 @@ components:
         correlationId: "30846e8f-efa1-47ad-abad-08cfb30e5c09"
         gatewayAuthorizationStatus: "DECLINED"
         gatewayErrorCode: "121"
+
     PaymentInfo:
       type: object
       description: Payment info
@@ -752,6 +802,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PaymentDetailInfo'
+
     PaymentDetailInfo:
       type: object
       description: Payment details
@@ -777,8 +828,8 @@ components:
         idTransaction: "paymentContextCode"
         paymentToken: "payment token"
         creditorInstitution: "66666666666"
-        amount: 99999999
         paFiscalCode: "77777777777"
+
     PspInfo:
       type: object
       description: PSP info
@@ -793,11 +844,13 @@ components:
         pspId: "EXAMPLEPSP"
         businessName: "businessName"
         idChannel: "13212880150_02_ONUS"
+
     AmountEuroCents:
       description: Amount for payments, in euro cents
       type: integer
       minimum: 0
       maximum: 99999999
+
     PageInfo:
       description: Information about the returned query page
       type: object
@@ -815,10 +868,12 @@ components:
         - current
         - results
         - total
+
     Product:
       type: string
       enum: [ "PM", "ECOMMERCE" ]
       description: Product from which transaction belongs
+
     PmSearchTransactionRequest:
       type: object
       oneOf:
@@ -831,6 +886,7 @@ components:
           USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
           USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
           DATE_TIME_RANGE: "#/components/schemas/SearchTransactionRequestDate"
+
     EcommerceSearchTransactionRequest:
       type: object
       oneOf:
@@ -1067,6 +1123,7 @@ components:
       required:
         - deadLetterEvents
         - page
+
     DeadLetterEvent:
       type: object
       description: Dead letter event
@@ -1088,10 +1145,12 @@ components:
         - queueName
         - data
         - timestamp
+
     DeadLetterSearchEventSource:
       type: string
       enum: [ ALL, ECOMMERCE, NOTIFICATIONS_SERVICE ]
       description: Dead letter event source
+
     DeadLetterSearchDateTimeRange:
       type: object
       description: Dead letter date time filter
@@ -1107,6 +1166,7 @@ components:
       required:
         - startDate
         - endDate
+
     DeadLetterExcludedStatuses:
       type: object
       properties:
@@ -1114,17 +1174,18 @@ components:
           type: array
           items:
             type: string
-          description: "List of eCommerce statuses to exclude"
+          description: List of eCommerce statuses to exclude
           example: [ "NOTIFIED_OK" ]
         npgStatuses:
           type: array
           items:
             type: string
-          description: "List of NPG statuses to exclude"
-          example: [ "DECLINED","CANCELLED" ]
+          description: List of NPG statuses to exclude
+          example: [ "DECLINED", "CANCELLED" ]
       required:
         - ecommerceStatuses
         - npgStatuses
+
     DeadLetterTransactionInfo:
       type: object
       description: Dead letter transaction info
@@ -1186,6 +1247,7 @@ components:
           description: NPG payment end to end id
       required:
         - type
+
     RedirectTransactionInfoDetailsData:
       type: object
       description: Npg transaction info details
@@ -1196,6 +1258,7 @@ components:
           type: string
       required:
         - type
+
     SearchNpgOperationsRequest:
       type: object
       description: ''
@@ -1208,6 +1271,7 @@ components:
           example: 3fa85f6457174562b3fc2c963f66afa6
       required:
         - idTransaction
+
     SearchNpgOperationsResponse:
       type: object
       description: ''
@@ -1216,6 +1280,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
+
     Operation:
       type: object
       properties:
@@ -1267,6 +1332,7 @@ components:
           example: e723hedsdew
         paymentMethod:
           $ref: '#/components/schemas/PaymentMethod'
+
     OperationResult:
       type: string
       description: "Transaction output:\n* AUTHORIZED - Payment authorized\n* EXECUTED
@@ -1291,6 +1357,7 @@ components:
         - VOIDED
         - REFUNDED
         - FAILED
+
     OperationType:
       type: string
       description: "It indicates the purpose of the request:\n* AUTHORIZATION - any
@@ -1305,6 +1372,7 @@ components:
         - VOID
         - REFUND
         - CANCEL
+
     PaymentMethod:
       type: string
       description: |
@@ -1314,11 +1382,32 @@ components:
       enum:
         - CARD
         - APM
+
     PaymentCircuit:
       type: string
       description: |
         one of the payment circuit values returned by the GET payment_methods web service. The list may include (but not limited to) VISA, MC, AMEX, DINERS, GOOGLE_PAY, APPLE_PAY, PAYPAL, BANCONTACT, BANCOMAT_PAY, MYBANK, PIS, AMAZON_PAY, ALIPAY."
       example: VISA
+
+    PageNumberParameter:
+      type: integer
+      default: 0
+      description: Searched page number, starting from 0
+
+    PageSizeParameter:
+      type: integer
+      minimum: 1
+      maximum: 20
+      default: 10
+      description: Max element per page
+
+    PageSizeLargeParameter:
+      type: integer
+      minimum: 1
+      maximum: 1000
+      default: 10
+      description: Max element per page (dead letter search)
+
   requestBodies:
     PmSearchTransactionRequest:
       required: true
@@ -1339,7 +1428,7 @@ components:
             search by user fiscal code:
               value:
                 type: USER_FISCAL_CODE
-                userFiscalCode: "user_fiscal_code"
+                userFiscalCode: "MRGHRN97L02C469W"
             search by user email:
               value:
                 type: USER_EMAIL
@@ -1348,8 +1437,9 @@ components:
               value:
                 type: DATE_TIME_RANGE
                 timeRange:
-                  startDate: "2023-01-01T00:00:00.000"
-                  endDate: "2023-01-01T02:00:00.000"
+                  startDate: "2023-01-01T00:00:00.000Z"
+                  endDate: "2023-01-01T02:00:00.000Z"
+
     PmSearchBulkTransactionRequest:
       required: true
       content:
@@ -1373,7 +1463,7 @@ components:
             search by transactionId range:
               value:
                 type: TRANSACTION_ID_RANGE
-                timeRange:
+                transactionIdRange:
                   startTransactionId: "1"
                   endTransactionId: "1000"
     PmSearchTransactionResponse:
@@ -1411,7 +1501,7 @@ components:
             search by transaction id:
               value:
                 type: TRANSACTION_ID
-                transactionId: "transactionId"
+                transactionId: "d7821f6c3a2b1e4f5c9d8e7f6a5b4c3d"
             search by user email:
               value:
                 type: USER_EMAIL
@@ -1442,7 +1532,7 @@ components:
             search by user fiscal code:
               value:
                 type: USER_FISCAL_CODE
-                userFiscalCode: "user_fiscal_code"
+                userFiscalCode: "MRGHRN97L02C469W"
             search by user email:
               value:
                 type: USER_EMAIL
@@ -1458,7 +1548,7 @@ components:
             search by transaction id:
               value:
                 type: TRANSACTION_ID
-                transactionId: "transactionId"
+                transactionId: "d7821f6c3a2b1e4f5c9d8e7f6a5b4c3d"
     SearchDeadLetterEventRequest:
       required: true
       content:
@@ -1485,9 +1575,9 @@ components:
                   startDate: "2023-01-01T00:00:00.000Z"
                   endDate: "2023-01-01T02:00:00.000Z"
                 excludedStatuses:
-                  npgStatus: [ "DECLINED", "CANCELLED" ]
-                  ecommerceStatus: [ "NOTIFIED_OK" ]
-            search by source with time range and excluded statuses:
+                  ecommerceStatuses: [ "NOTIFIED_OK" ]
+                  npgStatuses: [ "DECLINED", "CANCELLED" ]
+            search with time range and exclusions:
               value:
                 source: ALL
                 timeRange:
@@ -1516,7 +1606,7 @@ components:
             search by user fiscal code:
               value:
                 type: USER_FISCAL_CODE
-                userFiscalCode: "user_fiscal_code"
+                userFiscalCode: "MRGHRN97L02C469W"
             search by user email:
               value:
                 type: USER_EMAIL
