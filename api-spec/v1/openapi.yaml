@@ -330,6 +330,7 @@ paths:
     post:
       tags:
         - eCommerce
+      operationId: ecommerceSearchNpgOperationsPost
       summary: Search npg operations by TransactionId
       description: 'GET with body payload - no resources created'
       requestBody:
