@@ -722,14 +722,6 @@ components:
             oneOf:
               - $ref: '#/components/schemas/PmSearchTransactionRequest'
               - $ref: '#/components/schemas/EcommerceSearchTransactionRequest'
-            discriminator:
-              propertyName: type
-              mapping:
-                USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
-                USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
-                RPT_ID: "#/components/schemas/SearchTransactionRequestRptId"
-                PAYMENT_TOKEN: "#/components/schemas/SearchTransactionRequestPaymentToken"
-                TRANSACTION_ID: "#/components/schemas/SearchTransactionRequestTransactionId"
           examples:
             search by user fiscal code:
               value:
