@@ -4,8 +4,12 @@ info:
   title: Pagopa eCommerce services for assistance api
   description: This microservice that expose eCommerce services for assistance api.
   contact:
-    name: PagoPA S.p.A.
+    name: pagoPA - Touchpoints team
     url: https://www.pagopa.it/
+    email: info@pagopa.it
+  license:
+    name: EUPL-1.2
+    url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
 servers:
   - url: https://{host}
     variables:
