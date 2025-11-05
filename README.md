@@ -3,7 +3,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-ecommerce-helpdesk-service&metric=alert_status)](https://sonarcloud.io/dashboard?id=pagopa_pagopa-ecommerce-helpdesk-service)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-ecommerce-helpdesk-service&metric=coverage)](https://sonarcloud.io/summary/new_code?id=pagopa_pagopa-ecommerce-helpdesk-service)
 
-This microservice is responsible for ...
+This microservice is responsible for expose apis used by helpdesk to analyze transactions checking transaction status, DLQ events and so on
 
 - [pagoPA Help Desk Service](#pagopa-helpdesk-service)
     * [Api Documentation 📖](#api-documentation-)
