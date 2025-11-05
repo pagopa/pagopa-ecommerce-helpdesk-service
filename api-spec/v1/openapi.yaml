@@ -1529,10 +1529,6 @@ components:
               value:
                 type: USER_FISCAL_CODE
                 userFiscalCode: "MRGHRN97L02C469W"
-            search by user email:
-              value:
-                type: USER_EMAIL
-                userEmail: "test@test.it"
             search by rpt id:
               value:
                 type: RPT_ID
