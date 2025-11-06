@@ -172,15 +172,15 @@ class EcommerceTransactionDataProvider(
         transaction: BaseTransactionView,
         confidentialMailUtils: ConfidentialMailUtils
     ): Mono<TransactionResultDto> {
-        val events: Flux<Any> =
-            Flux.concat (
-                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+        val events =
+            Mono.just(transaction).flatMapMany {
+                Flux.merge(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transaction.transactionId
                 ),
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transaction.transactionId
-                )
-            )
+                ))
+            }
 
         return when (transaction) {
             is it.pagopa.ecommerce.commons.documents.v1.Transaction ->
