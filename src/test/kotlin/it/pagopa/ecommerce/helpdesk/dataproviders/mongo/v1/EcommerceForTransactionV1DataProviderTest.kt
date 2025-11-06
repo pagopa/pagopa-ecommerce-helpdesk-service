@@ -443,7 +443,9 @@ class EcommerceForTransactionV1DataProviderTest {
                     limit = pageSize
                 )
             )
-            .expectNext(expected)
+            .assertNext {
+                assertEquals(expected, it)
+            }
             .verifyComplete()
     }
 
