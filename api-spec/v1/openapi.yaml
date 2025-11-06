@@ -1471,12 +1471,6 @@ components:
                 transactionIdRange:
                   startTransactionId: "1"
                   endTransactionId: "1000"
-    PmSearchTransactionResponse:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SearchTransactionResponse'
     EcommerceSearchTransactionRequest:
       required: true
       content:
@@ -1511,12 +1505,6 @@ components:
               value:
                 type: USER_EMAIL
                 userEmail: "test@test.it"
-    EcommerceSearchTransactionResponse:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SearchTransactionResponse'
     SearchTransactionRequest:
       required: true
       content:
