@@ -139,7 +139,7 @@ class EcommerceTransactionDataProvider(
                                 )
                         )
                     is SearchTransactionRequestTransactionIdDto ->
-                        Flux.concat (
+                        Flux.concat(
                             transactionsViewRepository.findById(it.transactionId).toFlux(),
                             transactionsViewHistoryRepository.findById(it.transactionId).toFlux(),
                         )
@@ -174,12 +174,13 @@ class EcommerceTransactionDataProvider(
     ): Mono<TransactionResultDto> {
         val events =
             Mono.just(transaction).flatMapMany {
-                Flux.merge(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                    transaction.transactionId
-                ),
-                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                    transaction.transactionId
-                ))
+                Flux.merge(
+                    transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                        transaction.transactionId
+                    ),
+                    transactionsEventStoreHistoryRepository
+                        .findByTransactionIdOrderByCreationDateAsc(transaction.transactionId)
+                )
             }
 
         return when (transaction) {
