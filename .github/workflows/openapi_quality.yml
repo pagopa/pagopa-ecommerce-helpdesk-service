@@ -9,6 +9,9 @@ on:
       - 'api-spec/**/*.yaml'
       - 'api-spec/**/*.yml'
 
+permissions:
+  contents: read
+
 jobs:
   openapi_quality:
     runs-on: ubuntu-latest
