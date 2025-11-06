@@ -10,6 +10,8 @@ import it.pagopa.ecommerce.commons.v2.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreRepository as TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewRepository as TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.PmTransactionHistoryDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.oracle.PMTransactionDataProvider
@@ -52,7 +54,12 @@ class HelpdeskServiceTest {
 
     private val encryptedEmail = TransactionTestUtils.EMAIL.opaqueData
     private val transactionsViewRepository: TransactionsViewRepository = mock()
+    private val transactionsViewHistoryRepository: TransactionsViewHistoryRepository = mock()
+
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
+    private val transactionsEventStoreHistoryRepository:
+        TransactionsEventStoreHistoryRepository<Any> =
+        mock()
 
     @Test
     fun `Should recover records from eCommerce DB only`() {
@@ -592,7 +599,10 @@ class HelpdeskServiceTest {
                 ecommerceTransactionDataProvider =
                     EcommerceTransactionDataProvider(
                         transactionsViewRepository = transactionsViewRepository,
-                        transactionsEventStoreRepository = transactionsEventStoreRepository
+                        transactionsViewHistoryRepository = transactionsViewHistoryRepository,
+                        transactionsEventStoreRepository = transactionsEventStoreRepository,
+                        transactionsEventStoreHistoryRepository =
+                            transactionsEventStoreHistoryRepository,
                     ),
                 confidentialDataManagerEmail = confidentialDataManager,
                 confidentialDataManagerFiscalCode = confidentialDataManager,
@@ -658,7 +668,10 @@ class HelpdeskServiceTest {
                 ecommerceTransactionDataProvider =
                     EcommerceTransactionDataProvider(
                         transactionsViewRepository = transactionsViewRepository,
-                        transactionsEventStoreRepository = transactionsEventStoreRepository
+                        transactionsViewHistoryRepository = transactionsViewHistoryRepository,
+                        transactionsEventStoreRepository = transactionsEventStoreRepository,
+                        transactionsEventStoreHistoryRepository =
+                            transactionsEventStoreHistoryRepository,
                     ),
                 confidentialDataManagerEmail = confidentialDataManager,
                 confidentialDataManagerFiscalCode = confidentialDataManager,
@@ -749,7 +762,10 @@ class HelpdeskServiceTest {
                 ecommerceTransactionDataProvider =
                     EcommerceTransactionDataProvider(
                         transactionsViewRepository = transactionsViewRepository,
-                        transactionsEventStoreRepository = transactionsEventStoreRepository
+                        transactionsViewHistoryRepository = transactionsViewHistoryRepository,
+                        transactionsEventStoreRepository = transactionsEventStoreRepository,
+                        transactionsEventStoreHistoryRepository =
+                            transactionsEventStoreHistoryRepository,
                     ),
                 confidentialDataManagerEmail = confidentialDataManager,
                 confidentialDataManagerFiscalCode = confidentialDataManager,

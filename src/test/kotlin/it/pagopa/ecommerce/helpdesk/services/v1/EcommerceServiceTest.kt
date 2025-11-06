@@ -22,6 +22,8 @@ import it.pagopa.ecommerce.commons.v2.TransactionTestUtils.TRANSACTION_ID
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreRepository as TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewRepository as TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.DeadLetterDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
@@ -69,7 +71,11 @@ class EcommerceServiceTest {
     private val testEmail = "test@test.it"
     private val encryptedEmail = TransactionTestUtils.EMAIL.opaqueData
     private val transactionsViewRepository: TransactionsViewRepository = mock()
+    private val transactionsViewHistoryRepository: TransactionsViewHistoryRepository = mock()
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
+    private val transactionsEventStoreHistoryRepository:
+        TransactionsEventStoreHistoryRepository<Any> =
+        mock()
     private val npgApiKeyConfiguration: NpgApiKeyConfiguration = mock()
     private val npgClient: NpgClient = mock()
 
@@ -313,13 +319,19 @@ class EcommerceServiceTest {
                 ecommerceTransactionDataProvider =
                     EcommerceTransactionDataProvider(
                         transactionsViewRepository = transactionsViewRepository,
-                        transactionsEventStoreRepository = transactionsEventStoreRepository
+                        transactionsViewHistoryRepository = transactionsViewHistoryRepository,
+                        transactionsEventStoreRepository = transactionsEventStoreRepository,
+                        transactionsEventStoreHistoryRepository =
+                            transactionsEventStoreHistoryRepository
                     ),
                 ecommerceTransactionDataProviderV2 =
                     it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo
                         .EcommerceTransactionDataProvider(
                             transactionsViewRepository = transactionsViewRepository,
-                            transactionsEventStoreRepository = transactionsEventStoreRepository
+                            transactionsViewHistoryRepository = transactionsViewHistoryRepository,
+                            transactionsEventStoreRepository = transactionsEventStoreRepository,
+                            transactionsEventStoreHistoryRepository =
+                                transactionsEventStoreHistoryRepository
                         ),
                 deadLetterDataProvider = deadLetterDataProvider,
                 npgClient = npgClient,

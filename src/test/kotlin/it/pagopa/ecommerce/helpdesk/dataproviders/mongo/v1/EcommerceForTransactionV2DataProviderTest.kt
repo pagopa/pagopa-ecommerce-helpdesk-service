@@ -29,6 +29,8 @@ import it.pagopa.ecommerce.commons.v2.TransactionTestUtils as TransactionTestUti
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreRepository as TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewRepository as TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
@@ -182,15 +184,21 @@ class EcommerceForTransactionV2DataProviderTest {
     }
 
     private val transactionsViewRepository: TransactionsViewRepository = mock()
+    private val transactionsViewHistoryRepository: TransactionsViewHistoryRepository = mock()
 
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
+    private val transactionsEventStoreHistoryRepository:
+        TransactionsEventStoreHistoryRepository<Any> =
+        mock()
 
     private val confidentialDataManager: ConfidentialDataManager = mock()
 
     private val ecommerceTransactionDataProvider =
         EcommerceTransactionDataProvider(
             transactionsViewRepository,
-            transactionsEventStoreRepository
+            transactionsViewHistoryRepository,
+            transactionsEventStoreRepository,
+            transactionsEventStoreHistoryRepository
         )
 
     @Test
