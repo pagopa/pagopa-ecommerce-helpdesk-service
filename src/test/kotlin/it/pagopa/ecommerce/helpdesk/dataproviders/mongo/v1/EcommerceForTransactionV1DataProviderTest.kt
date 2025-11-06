@@ -134,10 +134,10 @@ class EcommerceForTransactionV1DataProviderTest {
             )
             .willReturn(Mono.just(2))
         given(
-            transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
             )
-        )
             .willReturn(Mono.just(2))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
@@ -199,10 +199,10 @@ class EcommerceForTransactionV1DataProviderTest {
             )
             .willReturn(Mono.just(0))
         given(
-            transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
             )
-        )
             .willReturn(Mono.just(0))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
@@ -246,7 +246,7 @@ class EcommerceForTransactionV1DataProviderTest {
             .willReturn(Mono.just(2))
         given(transactionsViewHistoryRepository.countTransactionsWithEmail(mailToken))
             .willReturn(Mono.just(2))
-             StepVerifier.create(
+        StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoder(
                         searchParameter = searchCriteria,
@@ -337,13 +337,13 @@ class EcommerceForTransactionV1DataProviderTest {
             )
             .willReturn(Flux.just(transactionView))
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                    rptId = searchCriteria.rptId,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                        rptId = searchCriteria.rptId,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.just(transactionView))
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
@@ -352,12 +352,12 @@ class EcommerceForTransactionV1DataProviderTest {
             )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
-             given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -495,13 +495,13 @@ class EcommerceForTransactionV1DataProviderTest {
             )
             .willReturn(Flux.just(transactionView))
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                    paymentToken = searchCriteria.paymentToken,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
+                        paymentToken = searchCriteria.paymentToken,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.just(transactionView))
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
@@ -510,12 +510,12 @@ class EcommerceForTransactionV1DataProviderTest {
             )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
-             given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
