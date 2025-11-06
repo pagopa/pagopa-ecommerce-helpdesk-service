@@ -1592,12 +1592,6 @@ components:
               value:
                 type: USER_EMAIL
                 userEmail: "test@test.it"
-    SearchPaymentMethodResponse:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SearchPaymentMethodResponse'
     SearchNpgOperationsRequest:
       required: true
       content:
