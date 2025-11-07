@@ -4,8 +4,12 @@ info:
   title: Pagopa eCommerce services for assistance api
   description: This microservice that expose eCommerce services for assistance api.
   contact:
-    name: PagoPA S.p.A.
+    name: pagoPA - Touchpoints team
     url: https://www.pagopa.it/
+    email: info@pagopa.it
+  license:
+    name: EUPL-1.2
+    url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
 servers:
   - url: https://{host}
     variables:
@@ -326,6 +330,7 @@ paths:
     post:
       tags:
         - eCommerce
+      operationId: ecommerceSearchNpgOperationsPost
       summary: Search npg operations by TransactionId
       description: 'GET with body payload - no resources created'
       requestBody:
@@ -1466,12 +1471,6 @@ components:
                 transactionIdRange:
                   startTransactionId: "1"
                   endTransactionId: "1000"
-    PmSearchTransactionResponse:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SearchTransactionResponse'
     EcommerceSearchTransactionRequest:
       required: true
       content:
@@ -1506,12 +1505,6 @@ components:
               value:
                 type: USER_EMAIL
                 userEmail: "test@test.it"
-    EcommerceSearchTransactionResponse:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SearchTransactionResponse'
     SearchTransactionRequest:
       required: true
       content:
@@ -1520,23 +1513,11 @@ components:
             oneOf:
               - $ref: '#/components/schemas/PmSearchTransactionRequest'
               - $ref: '#/components/schemas/EcommerceSearchTransactionRequest'
-            discriminator:
-              propertyName: type
-              mapping:
-                USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
-                USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
-                RPT_ID: "#/components/schemas/SearchTransactionRequestRptId"
-                PAYMENT_TOKEN: "#/components/schemas/SearchTransactionRequestPaymentToken"
-                TRANSACTION_ID: "#/components/schemas/SearchTransactionRequestTransactionId"
           examples:
             search by user fiscal code:
               value:
                 type: USER_FISCAL_CODE
                 userFiscalCode: "MRGHRN97L02C469W"
-            search by user email:
-              value:
-                type: USER_EMAIL
-                userEmail: "test@test.it"
             search by rpt id:
               value:
                 type: RPT_ID
@@ -1611,12 +1592,6 @@ components:
               value:
                 type: USER_EMAIL
                 userEmail: "test@test.it"
-    SearchPaymentMethodResponse:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SearchPaymentMethodResponse'
     SearchNpgOperationsRequest:
       required: true
       content:
