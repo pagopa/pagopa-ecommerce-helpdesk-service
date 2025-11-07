@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono
 
 /** eCommerce Mongo transaction view repository */
 @Repository
-interface TransactionsViewRepository : ReactiveCrudRepository<BaseTransactionView, String> {
+interface TransactionsViewHistoryRepository : ReactiveCrudRepository<BaseTransactionView, String> {
 
     @Query("{'paymentNotices.paymentToken': '?0'}", count = true)
     fun countTransactionsWithPaymentToken(paymentToken: String): Mono<Long>

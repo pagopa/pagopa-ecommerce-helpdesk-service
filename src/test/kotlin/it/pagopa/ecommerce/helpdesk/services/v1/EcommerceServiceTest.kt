@@ -22,8 +22,8 @@ import it.pagopa.ecommerce.commons.v2.TransactionTestUtils.TRANSACTION_ID
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreRepository as TransactionsEventStoreHistoryRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewRepository as TransactionsViewHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository as TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.DeadLetterDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
@@ -298,6 +298,8 @@ class EcommerceServiceTest {
             .willReturn(Mono.just(Confidential(encryptedEmail)))
         given(transactionsViewRepository.countTransactionsWithEmail(encryptedEmail))
             .willReturn(Mono.just(totalCount.toLong()))
+        given(transactionsViewHistoryRepository.countTransactionsWithEmail(encryptedEmail))
+            .willReturn(Mono.just(totalCount.toLong()))
         given(
                 transactionsViewRepository
                     .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
@@ -306,6 +308,15 @@ class EcommerceServiceTest {
                         limit = any()
                     )
             )
+            .willReturn(Flux.just(transactionDocument))
+        given(
+            transactionsViewHistoryRepository
+                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                    encryptedEmail = any(),
+                    skip = any(),
+                    limit = any()
+                )
+        )
             .willReturn(Flux.just(transactionDocument))
         given(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(any()))
             .willReturn(

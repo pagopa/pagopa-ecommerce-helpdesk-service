@@ -29,8 +29,8 @@ import it.pagopa.ecommerce.commons.v2.TransactionTestUtils as TransactionTestUti
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreRepository as TransactionsEventStoreHistoryRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewRepository as TransactionsViewHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository as TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
@@ -371,6 +371,7 @@ class EcommerceForTransactionV2DataProviderTest {
         val events =
             listOf(transactionActivatedEvent, transactionAuthorizationRequestedEvent)
                 as List<TransactionEventV2<Any>>
+        val events_history = listOf(transactionActivatedEvent) as List<TransactionEventV2<Any>>
         val baseTransaction =
             TransactionTestUtilsV2.reduceEvents(*events.toTypedArray())
                 as BaseTransactionWithRequestedAuthorizationV2
@@ -389,7 +390,7 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events_history))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         given(

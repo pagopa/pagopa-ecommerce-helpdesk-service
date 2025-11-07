@@ -24,8 +24,8 @@ import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils.convertEventsToEventInfoLi
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreRepository as TransactionsEventStoreHistoryRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewRepository as TransactionsViewHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository as TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialFiscalCodeUtils
@@ -102,6 +102,8 @@ class EcommerceForTransactionV1DataProviderTest {
         val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByRptId()
         given(transactionsViewRepository.countTransactionsWithRptId(searchCriteria.rptId))
             .willReturn(Mono.just(2))
+        given(transactionsViewHistoryRepository.countTransactionsWithRptId(searchCriteria.rptId))
+            .willReturn(Mono.just(2))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
@@ -112,7 +114,7 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-            .expectNext(2)
+            .expectNext(4)
             .verifyComplete()
     }
 
@@ -121,6 +123,12 @@ class EcommerceForTransactionV1DataProviderTest {
         val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByPaymentToken()
         given(
                 transactionsViewRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(2))
+        given(
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
                     searchCriteria.paymentToken
                 )
             )
@@ -135,7 +143,7 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-            .expectNext(2)
+            .expectNext(4)
             .verifyComplete()
     }
 
@@ -143,6 +151,8 @@ class EcommerceForTransactionV1DataProviderTest {
     fun `should count total transactions by transactionId successfully`() {
         val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByTransactionId()
         given(transactionsViewRepository.existsById(searchCriteria.transactionId))
+            .willReturn(Mono.just(true))
+        given(transactionsViewHistoryRepository.existsById(searchCriteria.transactionId))
             .willReturn(Mono.just(true))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
@@ -154,7 +164,7 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-            .expectNext(1)
+            .expectNext(2)
             .verifyComplete()
     }
 
@@ -162,6 +172,8 @@ class EcommerceForTransactionV1DataProviderTest {
     fun `should handle no transactions found by rptId successfully`() {
         val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByRptId()
         given(transactionsViewRepository.countTransactionsWithRptId(searchCriteria.rptId))
+            .willReturn(Mono.just(0))
+        given(transactionsViewHistoryRepository.countTransactionsWithRptId(searchCriteria.rptId))
             .willReturn(Mono.just(0))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
@@ -186,6 +198,12 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Mono.just(0))
+        given(
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(0))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoderV2(
@@ -204,6 +222,8 @@ class EcommerceForTransactionV1DataProviderTest {
     fun `should handle no transaction found by transactionId successfully`() {
         val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByTransactionId()
         given(transactionsViewRepository.existsById(searchCriteria.transactionId))
+            .willReturn(Mono.just(false))
+        given(transactionsViewHistoryRepository.existsById(searchCriteria.transactionId))
             .willReturn(Mono.just(false))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(

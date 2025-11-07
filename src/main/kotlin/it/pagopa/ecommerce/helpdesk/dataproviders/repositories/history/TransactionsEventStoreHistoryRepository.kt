@@ -7,7 +7,7 @@ import reactor.core.publisher.Flux
 
 /** eCommerce Mongo event store repository */
 @Repository
-interface TransactionsEventStoreRepository<T> :
+interface TransactionsEventStoreHistoryRepository<T> :
     ReactiveCrudRepository<BaseTransactionEvent<T>, String> {
     fun findByTransactionIdOrderByCreationDateAsc(
         idTransaction: String
