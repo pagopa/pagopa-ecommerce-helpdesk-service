@@ -245,11 +245,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         val mailToken = UUID.randomUUID().toString()
         given(confidentialDataManager.encrypt(eq(Email(searchCriteria.userEmail))))
             .willReturn(Mono.just(Confidential(mailToken)))
-        given(
-                confidentialDataManager.encrypt(
-                    eq(Email(searchCriteria.userEmail))
-                )
-            )
+        given(confidentialDataManager.encrypt(eq(Email(searchCriteria.userEmail))))
             .willReturn(Mono.just(Confidential(mailToken)))
         Hooks.onOperatorDebug()
         given(transactionsViewRepository.countTransactionsWithEmail(mailToken))
@@ -375,29 +371,24 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
             .willReturn(Flux.fromIterable(events.drop(3)))
 
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                    rptId = searchCriteria.rptId,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                        rptId = searchCriteria.rptId,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.just(transactionView))
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.take(3)))
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -609,37 +600,32 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
             .willReturn(Flux.just(transactionView))
 
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.take(3)))
 
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                    paymentToken = searchCriteria.paymentToken,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
+                        paymentToken = searchCriteria.paymentToken,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.just(transactionView))
 
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -852,20 +838,15 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -1075,12 +1056,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(confidentialDataManager.encrypt(Email(TEST_EMAIL))).willReturn {
             Mono.just(Confidential(tokenizedEmail))
         }
-        given(
-                confidentialDataManager.encrypt(
-                    Email(TEST_EMAIL)
-                )
-            )
-            .willReturn { Mono.just(Confidential(tokenizedEmail)) }
+        given(confidentialDataManager.encrypt(Email(TEST_EMAIL))).willReturn {
+            Mono.just(Confidential(tokenizedEmail))
+        }
         given(
                 transactionsViewRepository
                     .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
@@ -1098,29 +1076,24 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
             .willReturn(Flux.fromIterable(events.take(3)))
 
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                    encryptedEmail = tokenizedEmail,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = tokenizedEmail,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -1339,16 +1312,20 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
             .willReturn(Flux.fromIterable(events.take(3)))
 
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
-                    encryptedFiscalCode = any(),
-                    skip = any(),
-                    limit = any()
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
+                        encryptedFiscalCode = any(),
+                        skip = any(),
+                        limit = any()
+                    )
+            )
             .willReturn(Flux.just(transactionView))
-        given(transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(any()))
-            .willReturn(Flux.fromIterable( events.drop(3)))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    any()
+                )
+            )
+            .willReturn(Flux.fromIterable(events.drop(3)))
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1573,19 +1550,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
@@ -1728,20 +1700,15 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -1936,20 +1903,15 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -2149,19 +2111,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -2364,19 +2321,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -2579,19 +2531,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -2794,19 +2741,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -2996,19 +2938,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
@@ -3159,19 +3096,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
 
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -3317,19 +3249,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
@@ -3482,19 +3409,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -3704,19 +3626,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -3932,19 +3849,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -4163,19 +4075,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -4394,19 +4301,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -4625,19 +4527,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -4869,19 +4766,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -5131,19 +5023,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -5412,19 +5299,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -5707,19 +5589,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -5951,19 +5828,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
@@ -6161,19 +6033,14 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = 0
@@ -6332,27 +6199,26 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
             .willReturn(Flux.just(transactionView))
 
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.take(3)))
 
-
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                    rptId = searchCriteria.rptId,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                        rptId = searchCriteria.rptId,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(
@@ -6368,12 +6234,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     )
                 )
             )
-        given(
-                confidentialDataManager.decrypt(
-                    any<Confidential<Email>>(),
-                    any()
-                )
-            )
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(
                 Mono.error(
                     ConfidentialDataException(

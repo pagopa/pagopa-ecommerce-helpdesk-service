@@ -132,13 +132,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.countTransactionsWithRptId(searchCriteria.rptId))
             .willReturn(Mono.just(0))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(2)
             .verifyComplete()
     }
@@ -151,13 +151,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.countTransactionsWithRptId(searchCriteria.rptId))
             .willReturn(Mono.just(0))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(2)
             .verifyComplete()
     }
@@ -193,25 +193,25 @@ class EcommerceForTransactionV1DataProviderTest {
     fun `should count total transactions by paymentToken successfully runtime`() {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
         given(
-            transactionsViewRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
-            )
-        )
-            .willReturn(Mono.just(2))
-        given(
-            transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
-            )
-        )
-            .willReturn(Mono.just(0))
-        StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                transactionsViewRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
                 )
             )
-        )
+            .willReturn(Mono.just(2))
+        given(
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(0))
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
+            )
             .expectNext(2)
             .verifyComplete()
     }
@@ -220,25 +220,25 @@ class EcommerceForTransactionV1DataProviderTest {
     fun `should count total transactions by paymentToken successfully history`() {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
         given(
-            transactionsViewRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
-            )
-        )
-            .willReturn(Mono.just(0))
-        given(
-            transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
-            )
-        )
-            .willReturn(Mono.just(2))
-        StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                transactionsViewRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
                 )
             )
-        )
+            .willReturn(Mono.just(0))
+        given(
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(2))
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
+            )
             .expectNext(2)
             .verifyComplete()
     }
@@ -262,7 +262,6 @@ class EcommerceForTransactionV1DataProviderTest {
             .verifyComplete()
     }
 
-
     @Test
     fun `should count total transactions by transactionId successfully in history`() {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
@@ -271,13 +270,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.existsById(searchCriteria.transactionId))
             .willReturn(Mono.just(true))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(1)
             .verifyComplete()
     }
@@ -382,13 +381,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.countTransactionsWithEmail(mailToken))
             .willReturn(Mono.just(0))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(2)
             .verifyComplete()
     }
@@ -405,13 +404,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.countTransactionsWithEmail(mailToken))
             .willReturn(Mono.just(2))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(2)
             .verifyComplete()
     }
@@ -2608,7 +2607,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             )
                     )
                     .product(ProductDto.ECOMMERCE),
-
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
@@ -3556,7 +3554,6 @@ class EcommerceForTransactionV1DataProviderTest {
                             )
                     )
                     .product(ProductDto.ECOMMERCE),
-
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(

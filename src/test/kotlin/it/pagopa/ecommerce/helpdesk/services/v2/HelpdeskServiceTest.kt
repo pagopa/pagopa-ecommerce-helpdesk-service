@@ -643,9 +643,7 @@ class HelpdeskServiceTest {
                     any()
                 )
             )
-            .willReturn(
-                Flux.empty()
-            )
+            .willReturn(Flux.empty())
         given(
                 pmTransactionDataProvider.totalRecordCount(
                     argThat {
@@ -752,10 +750,11 @@ class HelpdeskServiceTest {
                 )
             )
         given(
-                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(any()))
-            .willReturn(
-                Flux.empty()
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    any()
+                )
             )
+            .willReturn(Flux.empty())
         given(
                 pmTransactionDataProvider.totalRecordCount(
                     argThat {
@@ -853,18 +852,20 @@ class HelpdeskServiceTest {
         given(transactionsViewHistoryRepository.countTransactionsWithEmail(encryptedEmail))
             .willReturn(Mono.just(0))
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                    encryptedEmail = any(),
-                    skip = any(),
-                    limit = any()
-                )
-        )
-            .willReturn(Flux.empty())
-        given(transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(any()))
-            .willReturn(
-                Flux.empty()
+                transactionsViewHistoryRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
+                    )
             )
+            .willReturn(Flux.empty())
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    any()
+                )
+            )
+            .willReturn(Flux.empty())
         given(
                 pmTransactionDataProvider.totalRecordCount(
                     argThat {

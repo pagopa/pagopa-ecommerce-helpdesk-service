@@ -375,19 +375,19 @@ class EcommerceForTransactionV1DataProviderTest {
             .willReturn(Flux.empty())
 
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                    rptId = searchCriteria.rptId,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                        rptId = searchCriteria.rptId,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
@@ -540,27 +540,27 @@ class EcommerceForTransactionV1DataProviderTest {
             .willReturn(Flux.just(transactionView))
 
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
 
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                    paymentToken = searchCriteria.paymentToken,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
+                        paymentToken = searchCriteria.paymentToken,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.empty())
 
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
@@ -714,10 +714,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
@@ -891,19 +891,19 @@ class EcommerceForTransactionV1DataProviderTest {
             .willReturn(Flux.fromIterable(events))
 
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                    encryptedEmail = tokenizedEmail,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = tokenizedEmail,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
@@ -1062,15 +1062,19 @@ class EcommerceForTransactionV1DataProviderTest {
             .willReturn(Flux.fromIterable(events))
 
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
-                    encryptedFiscalCode = any(),
-                    skip = any(),
-                    limit = any()
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
+                        encryptedFiscalCode = any(),
+                        skip = any(),
+                        limit = any()
+                    )
+            )
             .willReturn(Flux.empty())
-        given(transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(any()))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    any()
+                )
+            )
             .willReturn(Flux.empty())
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
@@ -1227,10 +1231,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1342,10 +1346,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
@@ -1487,10 +1491,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
@@ -1634,10 +1638,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1783,10 +1787,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1932,10 +1936,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2081,10 +2085,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2217,10 +2221,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2340,10 +2344,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2458,10 +2462,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2583,10 +2587,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2739,10 +2743,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2898,10 +2902,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3060,10 +3064,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3222,10 +3226,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3384,10 +3388,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3559,10 +3563,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3752,10 +3756,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3964,10 +3968,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -4190,10 +4194,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -4365,10 +4369,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -4506,10 +4510,10 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -4637,27 +4641,26 @@ class EcommerceForTransactionV1DataProviderTest {
             .willReturn(Flux.just(transactionView))
 
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
 
-
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                    rptId = searchCriteria.rptId,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                        rptId = searchCriteria.rptId,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(

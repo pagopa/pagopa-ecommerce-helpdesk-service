@@ -324,10 +324,12 @@ class EcommerceServiceTest {
                     TransactionTestUtils.transactionActivateEvent() as BaseTransactionEvent<Any>
                 )
             )
-        given(transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(any()))
-            .willReturn(
-                Flux.empty()
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    any()
+                )
             )
+            .willReturn(Flux.empty())
         val ecommerceServiceLocalMock =
             EcommerceService(
                 confidentialDataManager = confidentialDataManager,

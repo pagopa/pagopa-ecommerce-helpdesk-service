@@ -234,10 +234,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -388,10 +388,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(1)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -597,10 +597,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(1)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -704,7 +704,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as? NpgTransactionGatewayAuthorizationData)
                                     ?.operationId
                             )
@@ -835,10 +835,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -939,7 +939,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -1067,10 +1067,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1171,7 +1171,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -1297,10 +1297,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1401,7 +1401,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -1529,10 +1529,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1633,7 +1633,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -1741,10 +1741,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(1)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1902,10 +1902,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(1)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2059,10 +2059,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(1)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2234,10 +2234,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2339,7 +2339,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -2477,10 +2477,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2581,7 +2581,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -2719,10 +2719,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2823,7 +2823,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -2963,10 +2963,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3067,7 +3067,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -3208,10 +3208,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3312,7 +3312,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -3452,10 +3452,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3556,7 +3556,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -3713,10 +3713,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3817,7 +3817,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -3991,10 +3991,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -4094,7 +4094,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (baseTransactionRefundRequested.transactionAuthorizationGatewayData
-                                    .get() as NpgTransactionGatewayAuthorizationData)
+                                        .get() as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
                             .refundOperationId(null)
@@ -4288,10 +4288,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -4392,7 +4392,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -4601,10 +4601,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -4705,7 +4705,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -4859,10 +4859,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -4963,7 +4963,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
                             .authorizationOperationId(
                                 (transactionAuthorizationCompletedEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -5073,10 +5073,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(1)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -5298,10 +5298,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -5312,9 +5312,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto()
-                            .authenticationType("REGISTERED")
-                            .notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -5383,9 +5381,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                     .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto()
-                            .authenticationType("REGISTERED")
-                            .notificationEmail(TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -5403,7 +5399,7 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .rrn(null)
                             .authorizationOperationId(
                                 (transactionRefundRetryEvent.data
-                                    .transactionGatewayAuthorizationData
+                                        .transactionGatewayAuthorizationData
                                         as NpgTransactionGatewayAuthorizationData)
                                     .operationId
                             )
@@ -5545,10 +5541,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
@@ -5793,10 +5789,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(
@@ -6017,10 +6013,10 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
