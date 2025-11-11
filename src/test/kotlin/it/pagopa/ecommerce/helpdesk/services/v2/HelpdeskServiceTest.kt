@@ -613,7 +613,7 @@ class HelpdeskServiceTest {
         given(transactionsViewRepository.countTransactionsWithEmail(encryptedEmail))
             .willReturn(Mono.just(totalEcommerceCount.toLong()))
         given(transactionsViewHistoryRepository.countTransactionsWithEmail(encryptedEmail))
-            .willReturn(Mono.just(totalEcommerceCount.toLong()))
+            .willReturn(Mono.just(0))
         given(
                 transactionsViewRepository
                     .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
@@ -631,7 +631,7 @@ class HelpdeskServiceTest {
                         limit = any()
                     )
             )
-            .willReturn(Flux.just(transactionDocument))
+            .willReturn(Flux.empty())
         given(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(any()))
             .willReturn(
                 Flux.just(
@@ -644,9 +644,7 @@ class HelpdeskServiceTest {
                 )
             )
             .willReturn(
-                Flux.just(
-                    TransactionTestUtils.transactionActivateEvent() as BaseTransactionEvent<Any>
-                )
+                Flux.empty()
             )
         given(
                 pmTransactionDataProvider.totalRecordCount(
@@ -728,7 +726,7 @@ class HelpdeskServiceTest {
         given(transactionsViewRepository.countTransactionsWithEmail(encryptedEmail))
             .willReturn(Mono.just(totalEcommerceCount.toLong()))
         given(transactionsViewHistoryRepository.countTransactionsWithEmail(encryptedEmail))
-            .willReturn(Mono.just(totalEcommerceCount.toLong()))
+            .willReturn(Mono.just(0))
         given(
                 transactionsViewRepository
                     .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
@@ -746,7 +744,7 @@ class HelpdeskServiceTest {
                         limit = any()
                     )
             )
-            .willReturn(Flux.just(transactionDocument))
+            .willReturn(Flux.empty())
         given(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(any()))
             .willReturn(
                 Flux.just(
@@ -754,14 +752,9 @@ class HelpdeskServiceTest {
                 )
             )
         given(
-                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                    any()
-                )
-            )
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(any()))
             .willReturn(
-                Flux.just(
-                    TransactionTestUtils.transactionActivateEvent() as BaseTransactionEvent<Any>
-                )
+                Flux.empty()
             )
         given(
                 pmTransactionDataProvider.totalRecordCount(
@@ -856,6 +849,21 @@ class HelpdeskServiceTest {
                 Flux.just(
                     TransactionTestUtils.transactionActivateEvent() as BaseTransactionEvent<Any>
                 )
+            )
+        given(transactionsViewHistoryRepository.countTransactionsWithEmail(encryptedEmail))
+            .willReturn(Mono.just(0))
+        given(
+            transactionsViewHistoryRepository
+                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                    encryptedEmail = any(),
+                    skip = any(),
+                    limit = any()
+                )
+        )
+            .willReturn(Flux.empty())
+        given(transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(any()))
+            .willReturn(
+                Flux.empty()
             )
         given(
                 pmTransactionDataProvider.totalRecordCount(

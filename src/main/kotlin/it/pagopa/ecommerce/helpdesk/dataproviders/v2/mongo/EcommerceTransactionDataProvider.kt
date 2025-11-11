@@ -125,7 +125,7 @@ class EcommerceTransactionDataProvider(
             decodedSearchParam.flatMapMany {
                 when (it) {
                     is SearchTransactionRequestPaymentTokenDto ->
-                        Flux.merge(
+                        Flux.concat(
                             transactionsViewRepository
                                 .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
                                     paymentToken = it.paymentToken,
@@ -140,7 +140,7 @@ class EcommerceTransactionDataProvider(
                                 )
                         )
                     is SearchTransactionRequestRptIdDto ->
-                        Flux.merge(
+                        Flux.concat(
                             transactionsViewRepository
                                 .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
                                     rptId = it.rptId,
@@ -155,12 +155,12 @@ class EcommerceTransactionDataProvider(
                                 )
                         )
                     is SearchTransactionRequestTransactionIdDto ->
-                        Flux.merge(
+                        Flux.concat(
                             transactionsViewRepository.findById(it.transactionId).toFlux(),
                             transactionsViewHistoryRepository.findById(it.transactionId).toFlux()
                         )
                     is SearchTransactionRequestEmailDto ->
-                        Flux.merge(
+                        Flux.concat(
                             transactionsViewRepository
                                 .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
                                     encryptedEmail = it.userEmail,
@@ -175,7 +175,7 @@ class EcommerceTransactionDataProvider(
                                 )
                         )
                     is SearchTransactionRequestFiscalCodeDto ->
-                        Flux.merge(
+                        Flux.concat(
                             transactionsViewRepository
                                 .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
                                     encryptedFiscalCode = it.userFiscalCode,

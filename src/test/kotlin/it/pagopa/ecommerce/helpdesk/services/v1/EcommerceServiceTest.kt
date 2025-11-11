@@ -299,7 +299,7 @@ class EcommerceServiceTest {
         given(transactionsViewRepository.countTransactionsWithEmail(encryptedEmail))
             .willReturn(Mono.just(totalCount.toLong()))
         given(transactionsViewHistoryRepository.countTransactionsWithEmail(encryptedEmail))
-            .willReturn(Mono.just(totalCount.toLong()))
+            .willReturn(Mono.just(0))
         given(
                 transactionsViewRepository
                     .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
@@ -310,19 +310,23 @@ class EcommerceServiceTest {
             )
             .willReturn(Flux.just(transactionDocument))
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                    encryptedEmail = any(),
-                    skip = any(),
-                    limit = any()
-                )
-        )
-            .willReturn(Flux.just(transactionDocument))
+                transactionsViewHistoryRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
+                    )
+            )
+            .willReturn(Flux.empty())
         given(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(any()))
             .willReturn(
                 Flux.just(
                     TransactionTestUtils.transactionActivateEvent() as BaseTransactionEvent<Any>
                 )
+            )
+        given(transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(any()))
+            .willReturn(
+                Flux.empty()
             )
         val ecommerceServiceLocalMock =
             EcommerceService(

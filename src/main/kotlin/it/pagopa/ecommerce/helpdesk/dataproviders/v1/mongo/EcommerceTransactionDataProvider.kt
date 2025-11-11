@@ -70,13 +70,17 @@ class EcommerceTransactionDataProvider(
                             )
                             .map { it.t1 + it.t2 }
                     is SearchTransactionRequestTransactionIdDto ->
-                        transactionsViewRepository.existsById(it.transactionId).map { exist ->
-                            if (exist) {
-                                1
-                            } else {
-                                0
+                        transactionsViewRepository.existsById(it.transactionId)
+                            .flatMap { exist ->
+                                if (exist) {
+                                    Mono.just(1)
+                                } else {
+                                    transactionsViewHistoryRepository.existsById(it.transactionId)
+                                        .map { existInHistory ->
+                                            if (existInHistory) 1 else 0
+                                        }
+                                }
                             }
-                        }
                     is SearchTransactionRequestEmailDto ->
                         Mono.zip(
                                 transactionsViewRepository.countTransactionsWithEmail(it.userEmail),
@@ -174,7 +178,7 @@ class EcommerceTransactionDataProvider(
     ): Mono<TransactionResultDto> {
         val events =
             Mono.just(transaction).flatMapMany {
-                Flux.merge(
+                Flux.concat(
                     transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                         transaction.transactionId
                     ),
