@@ -53,22 +53,22 @@ class EcommerceTransactionDataProvider(
                 when (it) {
                     is SearchTransactionRequestPaymentTokenDto ->
                         Mono.zip(
-                                transactionsViewRepository.countTransactionsWithPaymentToken(
-                                    it.paymentToken
-                                ),
-                                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
-                                    it.paymentToken
-                                )
+                            transactionsViewRepository.countTransactionsWithPaymentToken(
+                                it.paymentToken
+                            ),
+                            transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                                it.paymentToken
                             )
-                            .map { it.t1 + it.t2 }
+                        ) { transactionsViewCount, transactionsViewHistoryCount ->
+                            transactionsViewCount + transactionsViewHistoryCount
+                        }
                     is SearchTransactionRequestRptIdDto ->
                         Mono.zip(
-                                transactionsViewRepository.countTransactionsWithRptId(it.rptId),
-                                transactionsViewHistoryRepository.countTransactionsWithRptId(
-                                    it.rptId
-                                )
-                            )
-                            .map { it.t1 + it.t2 }
+                            transactionsViewRepository.countTransactionsWithRptId(it.rptId),
+                            transactionsViewHistoryRepository.countTransactionsWithRptId(it.rptId)
+                        ) { transactionsViewCount, transactionsViewHistoryCount ->
+                            transactionsViewCount + transactionsViewHistoryCount
+                        }
                     is SearchTransactionRequestTransactionIdDto ->
                         transactionsViewRepository.existsById(it.transactionId).flatMap { exist ->
                             if (exist) {
@@ -81,12 +81,13 @@ class EcommerceTransactionDataProvider(
                         }
                     is SearchTransactionRequestEmailDto ->
                         Mono.zip(
-                                transactionsViewRepository.countTransactionsWithEmail(it.userEmail),
-                                transactionsViewHistoryRepository.countTransactionsWithEmail(
-                                    it.userEmail
-                                )
+                            transactionsViewRepository.countTransactionsWithEmail(it.userEmail),
+                            transactionsViewHistoryRepository.countTransactionsWithEmail(
+                                it.userEmail
                             )
-                            .map { it.t1 + it.t2 }
+                        ) { transactionsViewCount, transactionsViewHistoryCount ->
+                            transactionsViewCount + transactionsViewHistoryCount
+                        }
                     is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
                     else -> invalidSearchCriteriaError
                 }
