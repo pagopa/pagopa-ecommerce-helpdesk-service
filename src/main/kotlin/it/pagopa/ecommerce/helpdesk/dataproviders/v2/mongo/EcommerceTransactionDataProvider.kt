@@ -85,12 +85,13 @@ class EcommerceTransactionDataProvider(
                         }
                     is SearchTransactionRequestEmailDto ->
                         Mono.zip(
-                                transactionsViewRepository.countTransactionsWithEmail(it.userEmail),
-                                transactionsViewHistoryRepository.countTransactionsWithEmail(
-                                    it.userEmail
-                                )
+                            transactionsViewRepository.countTransactionsWithEmail(it.userEmail),
+                            transactionsViewHistoryRepository.countTransactionsWithEmail(
+                                it.userEmail
                             )
-                            .map { it.t1 + it.t2 }
+                        ) { transactionsViewCount, transactionsViewHistoryCount ->
+                            transactionsViewCount + transactionsViewHistoryCount
+                        }
                     is SearchTransactionRequestFiscalCodeDto ->
                         Mono.zip(
                             transactionsViewRepository.countTransactionsWithFiscalCode(
