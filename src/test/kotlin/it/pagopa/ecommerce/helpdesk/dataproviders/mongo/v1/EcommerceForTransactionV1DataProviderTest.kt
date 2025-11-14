@@ -22,6 +22,8 @@ import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository as TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
@@ -86,15 +88,21 @@ class EcommerceForTransactionV1DataProviderTest {
     }
 
     private val transactionsViewRepository: TransactionsViewRepository = mock()
+    private val transactionsViewHistoryRepository: TransactionsViewHistoryRepository = mock()
 
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
+    private val transactionsEventStoreHistoryRepository:
+        TransactionsEventStoreHistoryRepository<Any> =
+        mock()
 
     private val confidentialDataManager: ConfidentialDataManager = mock()
 
     private val ecommerceTransactionDataProvider =
         EcommerceTransactionDataProvider(
             transactionsViewRepository,
-            transactionsEventStoreRepository
+            transactionsViewHistoryRepository,
+            transactionsEventStoreRepository,
+            transactionsEventStoreHistoryRepository
         )
 
     @Test
@@ -102,6 +110,46 @@ class EcommerceForTransactionV1DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId()
         given(transactionsViewRepository.countTransactionsWithRptId(searchCriteria.rptId))
             .willReturn(Mono.just(2))
+        given(transactionsViewHistoryRepository.countTransactionsWithRptId(searchCriteria.rptId))
+            .willReturn(Mono.just(2))
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
+            )
+            .expectNext(4)
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should count total transactions by rptId successfully runtime`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId()
+        given(transactionsViewRepository.countTransactionsWithRptId(searchCriteria.rptId))
+            .willReturn(Mono.just(2))
+        given(transactionsViewHistoryRepository.countTransactionsWithRptId(searchCriteria.rptId))
+            .willReturn(Mono.just(0))
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
+            )
+            .expectNext(2)
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should count total transactions by rptId successfully history`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId()
+        given(transactionsViewRepository.countTransactionsWithRptId(searchCriteria.rptId))
+            .willReturn(Mono.just(2))
+        given(transactionsViewHistoryRepository.countTransactionsWithRptId(searchCriteria.rptId))
+            .willReturn(Mono.just(0))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoder(
@@ -123,6 +171,66 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Mono.just(2))
+        given(
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(2))
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
+            )
+            .expectNext(4)
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should count total transactions by paymentToken successfully runtime`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
+        given(
+                transactionsViewRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(2))
+        given(
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(0))
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
+            )
+            .expectNext(2)
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should count total transactions by paymentToken successfully history`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
+        given(
+                transactionsViewRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(0))
+        given(
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(2))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoder(
@@ -140,6 +248,27 @@ class EcommerceForTransactionV1DataProviderTest {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         given(transactionsViewRepository.existsById(searchCriteria.transactionId))
             .willReturn(Mono.just(true))
+        given(transactionsViewHistoryRepository.existsById(searchCriteria.transactionId))
+            .willReturn(Mono.just(false))
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
+            )
+            .expectNext(1)
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should count total transactions by transactionId successfully in history`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
+        given(transactionsViewRepository.existsById(searchCriteria.transactionId))
+            .willReturn(Mono.just(false))
+        given(transactionsViewHistoryRepository.existsById(searchCriteria.transactionId))
+            .willReturn(Mono.just(true))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoder(
@@ -156,6 +285,8 @@ class EcommerceForTransactionV1DataProviderTest {
     fun `should handle no transactions found by rptId successfully`() {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByRptId()
         given(transactionsViewRepository.countTransactionsWithRptId(searchCriteria.rptId))
+            .willReturn(Mono.just(0))
+        given(transactionsViewHistoryRepository.countTransactionsWithRptId(searchCriteria.rptId))
             .willReturn(Mono.just(0))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
@@ -178,6 +309,12 @@ class EcommerceForTransactionV1DataProviderTest {
                 )
             )
             .willReturn(Mono.just(0))
+        given(
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(0))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
                     SearchParamDecoder(
@@ -194,6 +331,8 @@ class EcommerceForTransactionV1DataProviderTest {
     fun `should handle no transaction found by transactionId successfully`() {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByTransactionId()
         given(transactionsViewRepository.existsById(searchCriteria.transactionId))
+            .willReturn(Mono.just(false))
+        given(transactionsViewHistoryRepository.existsById(searchCriteria.transactionId))
             .willReturn(Mono.just(false))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
@@ -215,6 +354,54 @@ class EcommerceForTransactionV1DataProviderTest {
             .willReturn(Mono.just(Confidential(mailToken)))
         Hooks.onOperatorDebug()
         given(transactionsViewRepository.countTransactionsWithEmail(mailToken))
+            .willReturn(Mono.just(2))
+        given(transactionsViewHistoryRepository.countTransactionsWithEmail(mailToken))
+            .willReturn(Mono.just(2))
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
+            )
+            .expectNext(4)
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should count total transactions by email successfully encrypting with PDV runtime`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it")
+        val mailToken = UUID.randomUUID().toString()
+        given(confidentialDataManager.encrypt(eq(Email(searchCriteria.userEmail))))
+            .willReturn(Mono.just(Confidential(mailToken)))
+        Hooks.onOperatorDebug()
+        given(transactionsViewRepository.countTransactionsWithEmail(mailToken))
+            .willReturn(Mono.just(2))
+        given(transactionsViewHistoryRepository.countTransactionsWithEmail(mailToken))
+            .willReturn(Mono.just(0))
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
+            )
+            .expectNext(2)
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should count total transactions by email successfully encrypting with PDV history`() {
+        val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserMail("test@test.it")
+        val mailToken = UUID.randomUUID().toString()
+        given(confidentialDataManager.encrypt(eq(Email(searchCriteria.userEmail))))
+            .willReturn(Mono.just(Confidential(mailToken)))
+        Hooks.onOperatorDebug()
+        given(transactionsViewRepository.countTransactionsWithEmail(mailToken))
+            .willReturn(Mono.just(0))
+        given(transactionsViewHistoryRepository.countTransactionsWithEmail(mailToken))
             .willReturn(Mono.just(2))
         StepVerifier.create(
                 ecommerceTransactionDataProvider.totalRecordCount(
@@ -307,11 +494,26 @@ class EcommerceForTransactionV1DataProviderTest {
             )
             .willReturn(Flux.just(transactionView))
         given(
+                transactionsViewHistoryRepository
+                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                        rptId = searchCriteria.rptId,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
+            .willReturn(Flux.empty())
+        given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -398,7 +600,7 @@ class EcommerceForTransactionV1DataProviderTest {
                     limit = pageSize
                 )
             )
-            .expectNext(expected)
+            .assertNext { assertEquals(expected, it) }
             .verifyComplete()
     }
 
@@ -450,11 +652,26 @@ class EcommerceForTransactionV1DataProviderTest {
             )
             .willReturn(Flux.just(transactionView))
         given(
+                transactionsViewHistoryRepository
+                    .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
+                        paymentToken = searchCriteria.paymentToken,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
+            .willReturn(Flux.empty())
+        given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -585,12 +802,20 @@ class EcommerceForTransactionV1DataProviderTest {
                 as TransactionWithUserReceiptOkV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -759,11 +984,26 @@ class EcommerceForTransactionV1DataProviderTest {
             )
             .willReturn(Flux.just(transactionView))
         given(
+                transactionsViewHistoryRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = tokenizedEmail,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
+            .willReturn(Flux.empty())
+        given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -890,12 +1130,20 @@ class EcommerceForTransactionV1DataProviderTest {
         val baseTransaction = TransactionTestUtils.reduceEvents(*events.toTypedArray())
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -985,12 +1233,20 @@ class EcommerceForTransactionV1DataProviderTest {
                 as BaseTransactionWithRequestedAuthorizationV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1109,12 +1365,20 @@ class EcommerceForTransactionV1DataProviderTest {
                 as BaseTransactionWithCompletedAuthorizationV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1236,12 +1500,20 @@ class EcommerceForTransactionV1DataProviderTest {
                 as BaseTransactionWithCompletedAuthorizationV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1366,12 +1638,20 @@ class EcommerceForTransactionV1DataProviderTest {
                 as BaseTransactionWithCompletedAuthorizationV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1496,12 +1776,20 @@ class EcommerceForTransactionV1DataProviderTest {
                 as BaseTransactionWithCompletedAuthorizationV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1626,12 +1914,20 @@ class EcommerceForTransactionV1DataProviderTest {
                 .transactionAtPreviousState as BaseTransactionWithCompletedAuthorizationV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1743,12 +2039,23 @@ class EcommerceForTransactionV1DataProviderTest {
         val baseTransaction = (TransactionTestUtils.reduceEvents(*events.toTypedArray()))
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
+
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1845,12 +2152,21 @@ class EcommerceForTransactionV1DataProviderTest {
         val baseTransaction = (TransactionTestUtils.reduceEvents(*events.toTypedArray()))
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
+
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
 
@@ -1944,12 +2260,20 @@ class EcommerceForTransactionV1DataProviderTest {
         val baseTransaction = (TransactionTestUtils.reduceEvents(*events.toTypedArray()))
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -2050,12 +2374,20 @@ class EcommerceForTransactionV1DataProviderTest {
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -2187,12 +2519,20 @@ class EcommerceForTransactionV1DataProviderTest {
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -2266,7 +2606,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.pspChannelCode
                             )
                     )
-                    .product(ProductDto.ECOMMERCE)
+                    .product(ProductDto.ECOMMERCE),
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
@@ -2327,12 +2667,20 @@ class EcommerceForTransactionV1DataProviderTest {
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -2470,12 +2818,20 @@ class EcommerceForTransactionV1DataProviderTest {
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -2613,12 +2969,20 @@ class EcommerceForTransactionV1DataProviderTest {
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -2756,12 +3120,20 @@ class EcommerceForTransactionV1DataProviderTest {
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -2912,12 +3284,20 @@ class EcommerceForTransactionV1DataProviderTest {
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -3086,12 +3466,20 @@ class EcommerceForTransactionV1DataProviderTest {
                 as BaseTransactionWithUserReceiptV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -3165,7 +3553,7 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData.pspChannelCode
                             )
                     )
-                    .product(ProductDto.ECOMMERCE)
+                    .product(ProductDto.ECOMMERCE),
             )
         StepVerifier.create(
                 ecommerceTransactionDataProvider.findResult(
@@ -3278,12 +3666,20 @@ class EcommerceForTransactionV1DataProviderTest {
                 as BaseTransactionWithUserReceiptV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -3485,12 +3881,20 @@ class EcommerceForTransactionV1DataProviderTest {
                 as BaseTransactionWithUserReceiptV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -3641,12 +4045,20 @@ class EcommerceForTransactionV1DataProviderTest {
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -3763,12 +4175,20 @@ class EcommerceForTransactionV1DataProviderTest {
         val baseTransaction = TransactionTestUtils.reduceEvents(*events.toTypedArray())
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
         given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -3883,11 +4303,26 @@ class EcommerceForTransactionV1DataProviderTest {
             )
             .willReturn(Flux.just(transactionView))
         given(
+                transactionsViewHistoryRepository
+                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                        rptId = searchCriteria.rptId,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
+            .willReturn(Flux.empty())
+        given(
                 transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
             .willReturn(Flux.fromIterable(events))
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(
                 Mono.error(
