@@ -10,6 +10,8 @@ import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository as TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.StateMetricsDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
@@ -35,7 +37,12 @@ class EcommerceServiceTest {
 
     private val encryptedEmail = TransactionTestUtils.EMAIL.opaqueData
     private val transactionsViewRepository: TransactionsViewRepository = mock()
+    private val transactionsViewHistoryRepository: TransactionsViewHistoryRepository = mock()
+
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
+    private val transactionsEventStoreHistoryRepository:
+        TransactionsEventStoreHistoryRepository<Any> =
+        mock()
 
     private val ecommerceService =
         EcommerceService(
@@ -153,6 +160,23 @@ class EcommerceServiceTest {
                     TransactionTestUtils.transactionActivateEvent() as BaseTransactionEvent<Any>
                 )
             )
+        given(transactionsViewHistoryRepository.countTransactionsWithEmail(encryptedEmail))
+            .willReturn(Mono.just(0))
+        given(
+                transactionsViewHistoryRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
+                    )
+            )
+            .willReturn(Flux.empty())
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    any()
+                )
+            )
+            .willReturn(Flux.empty())
         val ecommerceServiceLocalMock =
             EcommerceService(
                 confidentialDataManagerEmail = confidentialDataManager,
@@ -160,7 +184,10 @@ class EcommerceServiceTest {
                 ecommerceTransactionDataProvider =
                     EcommerceTransactionDataProvider(
                         transactionsViewRepository = transactionsViewRepository,
-                        transactionsEventStoreRepository = transactionsEventStoreRepository
+                        transactionsViewHistoryRepository = transactionsViewHistoryRepository,
+                        transactionsEventStoreRepository = transactionsEventStoreRepository,
+                        transactionsEventStoreHistoryRepository =
+                            transactionsEventStoreHistoryRepository,
                     ),
                 stateMetricsDataProvider = stateMetricsDataProvider
             )

@@ -10,6 +10,8 @@ import it.pagopa.ecommerce.commons.v2.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository as TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.PmTransactionHistoryDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.oracle.PMTransactionDataProvider
@@ -52,7 +54,12 @@ class HelpdeskServiceTest {
 
     private val encryptedEmail = TransactionTestUtils.EMAIL.opaqueData
     private val transactionsViewRepository: TransactionsViewRepository = mock()
+    private val transactionsViewHistoryRepository: TransactionsViewHistoryRepository = mock()
+
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
+    private val transactionsEventStoreHistoryRepository:
+        TransactionsEventStoreHistoryRepository<Any> =
+        mock()
 
     @Test
     fun `Should recover records from eCommerce DB only`() {
@@ -592,7 +599,10 @@ class HelpdeskServiceTest {
                 ecommerceTransactionDataProvider =
                     EcommerceTransactionDataProvider(
                         transactionsViewRepository = transactionsViewRepository,
-                        transactionsEventStoreRepository = transactionsEventStoreRepository
+                        transactionsViewHistoryRepository = transactionsViewHistoryRepository,
+                        transactionsEventStoreRepository = transactionsEventStoreRepository,
+                        transactionsEventStoreHistoryRepository =
+                            transactionsEventStoreHistoryRepository,
                     ),
                 confidentialDataManagerEmail = confidentialDataManager,
                 confidentialDataManagerFiscalCode = confidentialDataManager,
@@ -602,6 +612,8 @@ class HelpdeskServiceTest {
             .willReturn(Mono.just(Confidential(encryptedEmail)))
         given(transactionsViewRepository.countTransactionsWithEmail(encryptedEmail))
             .willReturn(Mono.just(totalEcommerceCount.toLong()))
+        given(transactionsViewHistoryRepository.countTransactionsWithEmail(encryptedEmail))
+            .willReturn(Mono.just(0))
         given(
                 transactionsViewRepository
                     .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
@@ -611,12 +623,27 @@ class HelpdeskServiceTest {
                     )
             )
             .willReturn(Flux.just(transactionDocument))
+        given(
+                transactionsViewHistoryRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
+                    )
+            )
+            .willReturn(Flux.empty())
         given(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(any()))
             .willReturn(
                 Flux.just(
                     TransactionTestUtils.transactionActivateEvent() as BaseTransactionEvent<Any>
                 )
             )
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    any()
+                )
+            )
+            .willReturn(Flux.empty())
         given(
                 pmTransactionDataProvider.totalRecordCount(
                     argThat {
@@ -658,7 +685,10 @@ class HelpdeskServiceTest {
                 ecommerceTransactionDataProvider =
                     EcommerceTransactionDataProvider(
                         transactionsViewRepository = transactionsViewRepository,
-                        transactionsEventStoreRepository = transactionsEventStoreRepository
+                        transactionsViewHistoryRepository = transactionsViewHistoryRepository,
+                        transactionsEventStoreRepository = transactionsEventStoreRepository,
+                        transactionsEventStoreHistoryRepository =
+                            transactionsEventStoreHistoryRepository,
                     ),
                 confidentialDataManagerEmail = confidentialDataManager,
                 confidentialDataManagerFiscalCode = confidentialDataManager,
@@ -693,6 +723,8 @@ class HelpdeskServiceTest {
             .willReturn(Mono.just(Confidential(encryptedEmail)))
         given(transactionsViewRepository.countTransactionsWithEmail(encryptedEmail))
             .willReturn(Mono.just(totalEcommerceCount.toLong()))
+        given(transactionsViewHistoryRepository.countTransactionsWithEmail(encryptedEmail))
+            .willReturn(Mono.just(0))
         given(
                 transactionsViewRepository
                     .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
@@ -702,12 +734,27 @@ class HelpdeskServiceTest {
                     )
             )
             .willReturn(Flux.just(transactionDocument))
+        given(
+                transactionsViewHistoryRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
+                    )
+            )
+            .willReturn(Flux.empty())
         given(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(any()))
             .willReturn(
                 Flux.just(
                     TransactionTestUtils.transactionActivateEvent() as BaseTransactionEvent<Any>
                 )
             )
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    any()
+                )
+            )
+            .willReturn(Flux.empty())
         given(
                 pmTransactionDataProvider.totalRecordCount(
                     argThat {
@@ -749,7 +796,10 @@ class HelpdeskServiceTest {
                 ecommerceTransactionDataProvider =
                     EcommerceTransactionDataProvider(
                         transactionsViewRepository = transactionsViewRepository,
-                        transactionsEventStoreRepository = transactionsEventStoreRepository
+                        transactionsViewHistoryRepository = transactionsViewHistoryRepository,
+                        transactionsEventStoreRepository = transactionsEventStoreRepository,
+                        transactionsEventStoreHistoryRepository =
+                            transactionsEventStoreHistoryRepository,
                     ),
                 confidentialDataManagerEmail = confidentialDataManager,
                 confidentialDataManagerFiscalCode = confidentialDataManager,
@@ -799,6 +849,23 @@ class HelpdeskServiceTest {
                     TransactionTestUtils.transactionActivateEvent() as BaseTransactionEvent<Any>
                 )
             )
+        given(transactionsViewHistoryRepository.countTransactionsWithEmail(encryptedEmail))
+            .willReturn(Mono.just(0))
+        given(
+                transactionsViewHistoryRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
+                    )
+            )
+            .willReturn(Flux.empty())
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    any()
+                )
+            )
+            .willReturn(Flux.empty())
         given(
                 pmTransactionDataProvider.totalRecordCount(
                     argThat {
