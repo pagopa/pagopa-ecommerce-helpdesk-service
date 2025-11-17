@@ -59,7 +59,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
-class EcommerceForTransactionV2DataProviderTest {
+class EcommerceForTransactionV2DataProviderWithHistoryTest {
 
     companion object {
         val testedStatuses: MutableSet<TransactionStatusDto> = HashSet()
@@ -232,7 +232,7 @@ class EcommerceForTransactionV2DataProviderTest {
             )
             .willReturn(Flux.fromIterable(events))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
@@ -246,6 +246,47 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Cancellato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(null)
+                            .authorizationCode(null)
+                            .paymentMethodName(null)
+                            .brand(null)
+                            .correlationId(UUID.fromString(correlationId))
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(PspInfoDto().pspId(null).businessName(null).idChannel(null))
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -343,15 +384,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(1)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(1)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -359,6 +400,67 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Cancellato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(null)
+                            .authorizationCode(null)
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -491,15 +593,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(1)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(1)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -507,6 +609,81 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Rifiutato")
+                            .statusDetails(expectedErrorCode)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as? NpgTransactionGatewayAuthorizationData)
+                                    ?.operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand(brand)
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(
+                                gatewayAuthorizationData?.authorizationStatus
+                            )
+                            .gatewayErrorCode(gatewayAuthorizationData?.errorCode)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -654,15 +831,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -670,6 +847,78 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -814,15 +1063,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -830,6 +1079,78 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -972,15 +1293,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -988,6 +1309,78 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -1132,15 +1525,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1148,6 +1541,78 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -1272,15 +1737,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(1)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(1)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1288,6 +1753,47 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Cancellato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(null)
+                            .authorizationCode(null)
+                            .paymentMethodName(null)
+                            .brand(null)
+                            .correlationId(UUID.fromString(correlationId))
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(PspInfoDto().pspId(null).businessName(null).idChannel(null))
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -1392,15 +1898,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(1)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(1)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1408,6 +1914,47 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Cancellato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(null)
+                            .authorizationCode(null)
+                            .paymentMethodName(null)
+                            .brand(null)
+                            .correlationId(UUID.fromString(correlationId))
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(PspInfoDto().pspId(null).businessName(null).idChannel(null))
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -1508,15 +2055,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(1)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(1)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1524,6 +2071,47 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Cancellato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(null)
+                            .authorizationCode(null)
+                            .paymentMethodName(null)
+                            .brand(null)
+                            .correlationId(UUID.fromString(correlationId))
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(PspInfoDto().pspId(null).businessName(null).idChannel(null))
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -1642,15 +2230,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1658,6 +2246,79 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Rifiutato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.DECLINED.value)
+                            .gatewayErrorCode("101")
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -1812,15 +2473,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1828,6 +2489,78 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -1981,16 +2714,16 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
 
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1998,6 +2731,78 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -2154,15 +2959,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -2170,6 +2975,78 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -2327,15 +3204,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -2343,6 +3220,78 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -2499,15 +3448,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -2515,6 +3464,78 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -2688,15 +3709,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -2704,6 +3725,78 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -2894,15 +3987,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -2910,6 +4003,77 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (baseTransactionRefundRequested.transactionAuthorizationGatewayData
+                                        .get() as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -3120,15 +4284,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -3136,6 +4300,78 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(refundOperationId)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -3361,15 +4597,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -3377,6 +4613,78 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(refundOperationId)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -3547,15 +4855,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -3563,6 +4871,78 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (transactionAuthorizationCompletedEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -3689,15 +5069,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(1)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(1)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -3705,6 +5085,49 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Cancellato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(null)
+                            .authorizationCode(null)
+                            .paymentMethodName(null)
+                            .authorizationRequestId(null)
+                            .refundOperationId(null)
+                            .brand(null)
+                            .correlationId(UUID.fromString(correlationId))
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(PspInfoDto().pspId(null).businessName(null).idChannel(null))
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -3871,17 +5294,17 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
-            .willReturn(Mono.just(Email(EcommerceForTransactionV2DataProviderTest.TEST_EMAIL)))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
         val fee = baseTransaction.transactionAuthorizationRequestData.fee
         val totalAmount = amount.plus(fee)
@@ -3889,9 +5312,76 @@ class EcommerceForTransactionV2DataProviderTest {
             listOf(
                 TransactionResultDto()
                     .userInfo(
-                        UserInfoDto()
-                            .authenticationType("REGISTERED")
-                            .notificationEmail(EcommerceForTransactionV2DataProviderTest.TEST_EMAIL)
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Cancellato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(null)
+                            .authorizationOperationId(
+                                (transactionRefundRetryEvent.data
+                                        .transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(refundOperationId)
+                            .authorizationCode(null)
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(null)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
                     )
                     .transactionInfo(
                         TransactionInfoDto()
@@ -3974,7 +5464,7 @@ class EcommerceForTransactionV2DataProviderTest {
             )
             .consumeNextWith {
                 assertEquals(expected, it)
-                EcommerceForTransactionV2DataProviderTest.testedStatuses.add(
+                testedStatuses.add(
                     TransactionStatusDto.valueOf(it[0].transactionInfo.eventStatus.toString())
                 )
             }
@@ -4047,15 +5537,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
 
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -4064,6 +5554,80 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (authorizedEvent.data.transactionGatewayAuthorizationData
+                                        as? NpgTransactionGatewayAuthorizationData)
+                                    ?.operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand(expectedBrand)
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(
+                                gatewayAuthorizationData?.authorizationStatus
+                            )
+                            .gatewayErrorCode(gatewayAuthorizationData?.errorCode)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
@@ -4221,15 +5785,15 @@ class EcommerceForTransactionV2DataProviderTest {
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.fromIterable(events))
+            .willReturn(Flux.fromIterable(events.take(3)))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
                 )
             )
-            .willReturn(Flux.empty())
+            .willReturn(Flux.fromIterable(events.drop(3)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(
                 Mono.error(
@@ -4249,6 +5813,77 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail("N/A")
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (authorizedEvent.data.transactionGatewayAuthorizationData
+                                        as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto().authenticationType("REGISTERED").notificationEmail("N/A")
@@ -4376,7 +6011,7 @@ class EcommerceForTransactionV2DataProviderTest {
             )
             .willReturn(Flux.fromIterable(events))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
-            .willReturn(Mono.empty())
+            .willReturn(Mono.just(transactionView))
         given(
                 transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                     transactionView.transactionId
@@ -4390,6 +6025,49 @@ class EcommerceForTransactionV2DataProviderTest {
         val totalAmount = amount.plus(fee)
         val expected =
             listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto()
+                            .authenticationType(expectedAuthType)
+                            .notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Cancellato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(null)
+                            .authorizationCode(null)
+                            .paymentMethodName(null)
+                            .brand(null)
+                            .correlationId(UUID.fromString(correlationId))
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(PspInfoDto().pspId(null).businessName(null).idChannel(null))
+                    .product(ProductDto.ECOMMERCE),
                 TransactionResultDto()
                     .userInfo(
                         UserInfoDto()
