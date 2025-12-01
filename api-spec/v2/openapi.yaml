@@ -68,8 +68,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-        '429':
-          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -109,8 +107,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-        '429':
-          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -151,8 +147,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-        '429':
-          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -646,12 +640,6 @@ components:
   responses:
     UnauthorizedResponse:
       description: Authentication credentials not provided or invalid
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ProblemJson'
-    TooManyRequestsResponse:
-      description: Too many requests - rate limit exceeded
       content:
         application/json:
           schema:
