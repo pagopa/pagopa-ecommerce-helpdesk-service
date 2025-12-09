@@ -4,17 +4,21 @@ info:
   title: Pagopa eCommerce services for assistance api
   description: This microservice that expose eCommerce services for assistance api.
   contact:
-    name: PagoPA S.p.A.
+    name: pagoPA - Touchpoints team
     url: https://www.pagopa.it/
+  license:
+    name: EUPL-1.2
+    url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
 servers:
   - url: https://{host}
     variables:
       host:
         description: The hostname of the API server
-        default: api.dev.platform.pagopa.it
+        default: weuprod.ecommerce.internal.platform.pagopa.it
         enum:
-          - api.dev.platform.pagopa.it
-          - api.uat.platform.pagopa.it
+          - weudev.ecommerce.internal.dev.platform.pagopa.it
+          - weuuat.ecommerce.internal.uat.platform.pagopa.it
+          - weuprod.ecommerce.internal.platform.pagopa.it
 tags:
   - name: ecommerce
     description: Api's for performing transaction search on ecommerce DB
@@ -63,8 +67,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-        '429':
-          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -104,8 +106,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-        '429':
-          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -146,8 +146,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-        '429':
-          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -645,12 +643,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ProblemJson'
-    TooManyRequestsResponse:
-      description: Too many requests - rate limit exceeded
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ProblemJson'
   requestBodies:
     SearchMetricsRequest:
       required: true
@@ -718,23 +710,7 @@ components:
             oneOf:
               - $ref: '#/components/schemas/PmSearchTransactionRequest'
               - $ref: '#/components/schemas/EcommerceSearchTransactionRequest'
-            discriminator:
-              propertyName: type
-              mapping:
-                USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
-                USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
-                RPT_ID: "#/components/schemas/SearchTransactionRequestRptId"
-                PAYMENT_TOKEN: "#/components/schemas/SearchTransactionRequestPaymentToken"
-                TRANSACTION_ID: "#/components/schemas/SearchTransactionRequestTransactionId"
           examples:
-            search by user fiscal code:
-              value:
-                type: USER_FISCAL_CODE
-                userFiscalCode: "MRGHRN97L02C469W"
-            search by user email:
-              value:
-                type: USER_EMAIL
-                userEmail: "test@test.it"
             search by rpt id:
               value:
                 type: RPT_ID
