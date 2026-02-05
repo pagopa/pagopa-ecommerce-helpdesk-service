@@ -59,7 +59,7 @@ class DeadLetterDataProvider(
                 if (timeRange != null) {
                     val startDate = timeRange.startDate.toString()
                     val endDate = timeRange.endDate.toString()
-                    if(paymentGateway.isNotEmpty()) {
+                    if (paymentGateway.isNotEmpty()) {
                         logger.info(
                             "Counting all dead letter events in time range {} - {}, with eCommerceStatus not in {}, npgStatus not in {} and paymentGateway in {}",
                             startDate,
@@ -68,13 +68,14 @@ class DeadLetterDataProvider(
                             npgStatuses,
                             paymentGateway
                         )
-                        deadLetterRepository.countAllDeadLetterEventInTimeRangeWithExcludeStatusesAndPaymentGateway(
-                            startTime = startDate,
-                            endTime = endDate,
-                            ecommerceStatusesToExclude = eCommerceStatuses.toSet(),
-                            npgStatusesToExclude = npgStatuses.toSet(),
-                            paymentGatewayToInclude = paymentGateway.toSet()
-                        )
+                        deadLetterRepository
+                            .countAllDeadLetterEventInTimeRangeWithExcludeStatusesAndPaymentGateway(
+                                startTime = startDate,
+                                endTime = endDate,
+                                ecommerceStatusesToExclude = eCommerceStatuses.toSet(),
+                                npgStatusesToExclude = npgStatuses.toSet(),
+                                paymentGatewayToInclude = paymentGateway.toSet()
+                            )
                     } else {
                         logger.info(
                             "Counting all dead letter events in time range {} - {}, with eCommerceStatus not in {} and npgStatus not in {}",
@@ -90,7 +91,6 @@ class DeadLetterDataProvider(
                             npgStatusesToExclude = npgStatuses.toSet()
                         )
                     }
-
                 } else {
                     logger.info("Counting all dead letter events")
                     deadLetterRepository.count()
@@ -102,7 +102,7 @@ class DeadLetterDataProvider(
                     val startDate = timeRange.startDate.toString()
                     val endDate = timeRange.endDate.toString()
                     val queueName = deadLetterQueueMapping[source]!!
-                    if(paymentGateway.isNotEmpty()) {
+                    if (paymentGateway.isNotEmpty()) {
                         logger.info(
                             "Counting all dead letter events for queue {} in time range {} - {}, with eCommerceStatus not in {}, npgStatus not in {} and paymentGateway in {}",
                             queueName,
@@ -112,14 +112,15 @@ class DeadLetterDataProvider(
                             npgStatuses,
                             paymentGateway
                         )
-                        deadLetterRepository.countDeadLetterEventForQueueInTimeRangeWithExcludeStatusesAndPaymentGateway(
-                            queueName = queueName,
-                            startTime = startDate,
-                            endTime = endDate,
-                            ecommerceStatusesToExclude = eCommerceStatuses.toSet(),
-                            npgStatusesToExclude = npgStatuses.toSet(),
-                            paymentGatewayToInclude = paymentGateway.toSet()
-                        )
+                        deadLetterRepository
+                            .countDeadLetterEventForQueueInTimeRangeWithExcludeStatusesAndPaymentGateway(
+                                queueName = queueName,
+                                startTime = startDate,
+                                endTime = endDate,
+                                ecommerceStatusesToExclude = eCommerceStatuses.toSet(),
+                                npgStatusesToExclude = npgStatuses.toSet(),
+                                paymentGatewayToInclude = paymentGateway.toSet()
+                            )
                     } else {
                         logger.info(
                             "Counting all dead letter events for queue {} in time range {} - {}, with eCommerceStatus not in {} and npgStatus not in {}",
@@ -129,13 +130,14 @@ class DeadLetterDataProvider(
                             eCommerceStatuses,
                             npgStatuses
                         )
-                        deadLetterRepository.countDeadLetterEventForQueueInTimeRangeWithExcludeStatuses(
-                            queueName = queueName,
-                            startTime = startDate,
-                            endTime = endDate,
-                            ecommerceStatusesToExclude = eCommerceStatuses.toSet(),
-                            npgStatusesToExclude = npgStatuses.toSet()
-                        )
+                        deadLetterRepository
+                            .countDeadLetterEventForQueueInTimeRangeWithExcludeStatuses(
+                                queueName = queueName,
+                                startTime = startDate,
+                                endTime = endDate,
+                                ecommerceStatusesToExclude = eCommerceStatuses.toSet(),
+                                npgStatusesToExclude = npgStatuses.toSet()
+                            )
                     }
                 } else {
                     val queueName = deadLetterQueueMapping[source]!!
@@ -177,7 +179,7 @@ class DeadLetterDataProvider(
                         val startDate = timeRange.startDate.toString()
                         val endDate = timeRange.endDate.toString()
 
-                        if(paymentGateway.isNotEmpty()) {
+                        if (paymentGateway.isNotEmpty()) {
                             logger.info(
                                 "Finding all dead letter events in time range {} - {} with eCommerceStatus not in {} and npgStatus not in {} and paymentGateway in {}",
                                 startDate,
@@ -229,7 +231,7 @@ class DeadLetterDataProvider(
                         val startDate = timeRange.startDate.toString()
                         val endDate = timeRange.endDate.toString()
 
-                        if(paymentGateway.isNotEmpty()) {
+                        if (paymentGateway.isNotEmpty()) {
                             logger.info(
                                 "Finding all dead letter events for queue {} in time range {} - {} with eCommerceStatus not in {}, npgStatus not in {} and paymentGateway in {}",
                                 queueName,
