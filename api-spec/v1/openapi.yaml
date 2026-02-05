@@ -1169,6 +1169,14 @@ components:
         - ecommerceStatuses
         - npgStatuses
 
+    DeadLetterPaymentGateway:
+      type: array
+      items:
+        type: string
+      description: Deadletter payment gateway filter
+      example: [ "NPG" ]
+
+
     DeadLetterTransactionInfo:
       type: object
       description: Dead letter transaction info
@@ -1521,6 +1529,8 @@ components:
                 $ref: '#/components/schemas/DeadLetterSearchDateTimeRange'
               excludedStatuses:
                 $ref: '#/components/schemas/DeadLetterExcludedStatuses'
+              paymentGateway:
+                $ref: '#/components/schemas/DeadLetterPaymentGateway'
             required:
               - source
           examples:
@@ -1548,6 +1558,20 @@ components:
                   npgStatuses:
                     - DECLINED
                     - CANCELLED
+            search with time range, exclusions and payment gateway:
+              value:
+                source: ALL
+                timeRange:
+                  startDate: '2023-01-01T00:00:00.000Z'
+                  endDate: '2023-01-01T02:00:00.000Z'
+                excludedStatuses:
+                  ecommerceStatuses:
+                    - NOTIFIED_OK
+                  npgStatuses:
+                    - DECLINED
+                    - CANCELLED
+                paymentGateway:
+                  - NPG
     SearchPaymentMethodRequest:
       required: true
       content:
