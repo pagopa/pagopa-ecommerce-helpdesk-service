@@ -594,7 +594,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2023-11-30T14:50:27.001Z\",\n      \"endDate\": \"2023-11-30T14:50:27.999Z\"\n  }\n}",
+          "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2025-01-30T14:50:27.001Z\",\n      \"endDate\": \"2025-12-30T14:50:27.999Z\"\n  }\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -648,8 +648,8 @@
               "    pm.expect(response.page.results).to.be.lte(10);",
               "",
               "    // Define the time range limits",
-              "    const startDate = new Date(\"2024-11-30T14:50:27.001Z\");",
-              "    const endDate = new Date(\"2024-12-30T14:50:27.999Z\");",
+              "    const startDate = new Date(\"2025-01-30T14:50:27.001Z\");",
+              "    const endDate = new Date(\"2025-12-30T14:50:27.999Z\");",
               "",
               "    // Define excluded statuses",
               "    const excludedEcommerceStatuses = [\"EXPIRED\"];",
@@ -696,7 +696,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2024-11-30T14:50:27.001Z\",\n      \"endDate\": \"2024-12-30T14:50:27.999Z\"\n  },\n  \"excludedStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"EXECUTED\"]\n  }\n}",
+          "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2025-01-30T14:50:27.001Z\",\n      \"endDate\": \"2025-12-30T14:50:27.999Z\"\n  },\n  \"excludedStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"EXECUTED\"]\n  }\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -750,7 +750,7 @@
               "    pm.expect(response.page.results).to.be.lte(10);",
               "",
               "    // Define the time range limits",
-              "    const startDate = new Date(\"2025-10-30T14:50:27.001Z\");",
+              "    const startDate = new Date(\"2025-01-30T14:50:27.001Z\");",
               "    const endDate = new Date(\"2025-12-30T14:50:27.999Z\");",
               "",
               "    // Define excluded statuses",
@@ -806,7 +806,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2025-10-30T14:50:27.001Z\",\n      \"endDate\": \"2025-12-30T14:50:27.999Z\"\n  },\n  \"excludedStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"EXECUTED\"]\n  },\"excludedPaymentGateway\": [\"NPG\"]\n}",
+          "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2025-01-30T14:50:27.001Z\",\n      \"endDate\": \"2025-12-30T14:50:27.999Z\"\n  },\n  \"excludedStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"EXECUTED\"]\n  },\"excludedPaymentGateway\": [\"NPG\"]\n}",
           "options": {
             "raw": {
               "language": "json"
