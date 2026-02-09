@@ -13,18 +13,7 @@ import reactor.core.publisher.Mono
 interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String> {
 
     @Query(
-        "{'insertionDate': {'\$gte': '?0','\$lte': '?1'}, 'transactionInfo.eCommerceStatus': {'\$nin': ?2}, 'transactionInfo.details.operationResult': {'\$nin': ?3} }",
-        count = true
-    )
-    fun countAllDeadLetterEventInTimeRangeWithExcludeStatuses(
-        startTime: String,
-        endTime: String,
-        ecommerceStatusesToExclude: Set<String>,
-        npgStatusesToExclude: Set<String>
-    ): Mono<Long>
-
-    @Query(
-        "{'insertionDate': {'\$gte': '?0','\$lte': '?1'}, 'transactionInfo.eCommerceStatus': {'\$nin': ?2}, 'transactionInfo.details.operationResult': {'\$nin': ?3}, 'transactionInfo.gateway': {'\$in': ?4} }",
+        "{'insertionDate': {'\$gte': '?0','\$lte': '?1'}, 'transactionInfo.eCommerceStatus': {'\$nin': ?2}, 'transactionInfo.details.operationResult': {'\$nin': ?3}, 'transactionInfo.gateway': {'\$nin': ?4} }",
         count = true
     )
     fun countAllDeadLetterEventInTimeRangeWithExcludeStatusesAndPaymentGateway(
@@ -32,26 +21,14 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         endTime: String,
         ecommerceStatusesToExclude: Set<String>,
         npgStatusesToExclude: Set<String>,
-        paymentGatewayToInclude: Set<String>
+        paymentGatewayToExclude: Set<String>
     ): Mono<Long>
 
     @Query("{'queueName': '?0'}", count = true)
     fun countDeadLetterEventForQueue(queueName: String): Mono<Long>
 
     @Query(
-        "{'insertionDate': {'\$gte': '?1','\$lte': '?2'},'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?3}, 'transactionInfo.details.operationResult': {'\$nin': ?4}}",
-        count = true
-    )
-    fun countDeadLetterEventForQueueInTimeRangeWithExcludeStatuses(
-        queueName: String,
-        startTime: String,
-        endTime: String,
-        ecommerceStatusesToExclude: Set<String>,
-        npgStatusesToExclude: Set<String>
-    ): Mono<Long>
-
-    @Query(
-        "{'insertionDate': {'\$gte': '?1','\$lte': '?2'},'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?3}, 'transactionInfo.details.operationResult': {'\$nin': ?4}, 'transactionInfo.gateway': {'\$in': ?5}}",
+        "{'insertionDate': {'\$gte': '?1','\$lte': '?2'},'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?3}, 'transactionInfo.details.operationResult': {'\$nin': ?4}, 'transactionInfo.gateway': {'\$nin': ?5}}",
         count = true
     )
     fun countDeadLetterEventForQueueInTimeRangeWithExcludeStatusesAndPaymentGateway(
@@ -60,7 +37,7 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         endTime: String,
         ecommerceStatusesToExclude: Set<String>,
         npgStatusesToExclude: Set<String>,
-        paymentGatewayToInclude: Set<String>
+        paymentGatewayToExclude: Set<String>
     ): Mono<Long>
 
     @Aggregation(
@@ -76,23 +53,7 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
     ): Flux<DeadLetterEvent>
 
     @Aggregation(
-        "{\$match: {'insertionDate': {'\$gte': '?3','\$lte': '?4'},'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?5}, 'transactionInfo.details.operationResult': {'\$nin': ?6}}}",
-        "{\$sort: {'insertionDate': -1}}",
-        "{\$skip: ?1}",
-        "{\$limit: ?2}",
-    )
-    fun findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
-        queueName: String,
-        skip: Int,
-        limit: Int,
-        startTime: String,
-        endTime: String,
-        ecommerceStatusesToExclude: Set<String>,
-        npgStatusesToExclude: Set<String>
-    ): Flux<DeadLetterEvent>
-
-    @Aggregation(
-        "{\$match: {'insertionDate': {'\$gte': '?3','\$lte': '?4'},'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?5}, 'transactionInfo.details.operationResult': {'\$nin': ?6}, 'transactionInfo.gateway': {'\$in': ?7}}}",
+        "{\$match: {'insertionDate': {'\$gte': '?3','\$lte': '?4'},'queueName': '?0', 'transactionInfo.eCommerceStatus': {'\$nin': ?5}, 'transactionInfo.details.operationResult': {'\$nin': ?6}, 'transactionInfo.gateway': {'\$nin': ?7}}}",
         "{\$sort: {'insertionDate': -1}}",
         "{\$skip: ?1}",
         "{\$limit: ?2}",
@@ -105,7 +66,7 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         endTime: String,
         ecommerceStatusesToExclude: Set<String>,
         npgStatusesToExclude: Set<String>,
-        paymentGatewayToInclude: Set<String>
+        paymentGatewayToExclude: Set<String>
     ): Flux<DeadLetterEvent>
 
     @Aggregation(
@@ -119,22 +80,7 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
     ): Flux<DeadLetterEvent>
 
     @Aggregation(
-        "{\$match: {'insertionDate': {'\$gte': '?2','\$lte': '?3'}, 'transactionInfo.eCommerceStatus': {'\$nin': ?4}, 'transactionInfo.details.operationResult': {'\$nin': ?5}}}",
-        "{\$sort: {'insertionDate': -1}}",
-        "{\$skip: ?0}",
-        "{\$limit: ?1}",
-    )
-    fun findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatuses(
-        skip: Int,
-        limit: Int,
-        startTime: String,
-        endTime: String,
-        ecommerceStatusesToExclude: Set<String>,
-        npgStatusesToExclude: Set<String>
-    ): Flux<DeadLetterEvent>
-
-    @Aggregation(
-        "{\$match: {'insertionDate': {'\$gte': '?2','\$lte': '?3'}, 'transactionInfo.eCommerceStatus': {'\$nin': ?4}, 'transactionInfo.details.operationResult': {'\$nin': ?5}, 'transactionInfo.gateway': {'\$in': ?6}}}",
+        "{\$match: {'insertionDate': {'\$gte': '?2','\$lte': '?3'}, 'transactionInfo.eCommerceStatus': {'\$nin': ?4}, 'transactionInfo.details.operationResult': {'\$nin': ?5}, 'transactionInfo.gateway': {'\$nin': ?6}}}",
         "{\$sort: {'insertionDate': -1}}",
         "{\$skip: ?0}",
         "{\$limit: ?1}",
@@ -146,6 +92,6 @@ interface DeadLetterRepository : ReactiveCrudRepository<DeadLetterEvent, String>
         endTime: String,
         ecommerceStatusesToExclude: Set<String>,
         npgStatusesToExclude: Set<String>,
-        paymentGatewayToInclude: Set<String>
+        paymentGatewayToExclude: Set<String>
     ): Flux<DeadLetterEvent>
 }
