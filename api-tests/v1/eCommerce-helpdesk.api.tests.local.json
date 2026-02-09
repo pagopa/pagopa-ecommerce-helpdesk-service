@@ -761,6 +761,117 @@
 			},
 			"response": []
 		},
+        {
+          "name": "eCommerce retrieve ALL dead letter events [with time range, excluded statuses and excluded gateway]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"eCommerce search ALL dead letter events with time range, excluded statuses and excluded gateway - Status code is 200 with valid json response\", function () {",
+                  "    // Ensure the response status code is 200 (OK)",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "",
+                  "    // Check that there are events in the response",
+                  "    pm.expect(response.deadLetterEvents.length).to.be.greaterThan(0);",
+                  "",
+                  "    // Validate pagination information",
+                  "    pm.expect(response.page.current).to.be.eq(0);",
+                  "    pm.expect(response.page.total).to.be.gt(0);",
+                  "    pm.expect(response.page.results).to.be.lte(10);",
+                  "",
+                  "    // Define the time range limits",
+                  "    const startDate = new Date(\"2025-10-30T14:50:27.001Z\");",
+                  "    const endDate = new Date(\"2025-12-30T14:50:27.999Z\");",
+                  "",
+                  "    // Define excluded statuses",
+                  "    const excludedEcommerceStatuses = [\"EXPIRED\"];",
+                  "    const excludedNpgStatuses = [\"EXECUTED\"];",
+                  "    const excludedPaymentGateway = [\"NPG\"];",
+                  "",
+                  "    // Iterate through each event in the response",
+                  "    response.deadLetterEvents.forEach(event => {",
+                  "        const eventDate = new Date(event.timestamp);",
+                  "        ",
+                  "        // Ensure the event timestamp is within the specified time range",
+                  "        pm.expect(eventDate).to.be.within(startDate, endDate);",
+                  "        ",
+                  "        // Ensure the eCommerce status is not in the excluded list",
+                  "        if (event.transactionInfo && event.transactionInfo.eCommerceStatus) {",
+                  "            pm.expect(excludedEcommerceStatuses).to.not.include(event.transactionInfo.eCommerceStatus);",
+                  "        }",
+                  "",
+                  "        // Ensure the NPG status (operationResult) is not in the excluded list",
+                  "        if (event.transactionInfo && event.transactionInfo.details && event.transactionInfo.details.operationResult) {",
+                  "            pm.expect(excludedNpgStatuses).to.not.include(event.transactionInfo.details.operationResult);",
+                  "        }",
+                  "",
+                  "        // Ensure the payment gateway is not in the excluded list",
+                  "        if (event.transactionInfo && event.transactionInfo.paymentGateway) {",
+                  "            pm.expect(excludedPaymentGateway).to.not.include(event.transactionInfo.paymentGateway);",
+                  "        }",
+                  "",
+                  "    });",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Ocp-Apim-Subscription-Key",
+                "value": "{{API_SUBSCRIPTION_KEY}}",
+                "type": "text"
+              },
+              {
+                "key": "deployment",
+                "value": "{{DEPLOYMENT}}",
+                "type": "text"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{SECURITY_API_KEY_PRIMARY}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2025-10-30T14:50:27.001Z\",\n      \"endDate\": \"2025-12-30T14:50:27.999Z\"\n  },\n  \"excludedStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"EXECUTED\"]\n  },\"excludedPaymentGateway\": [\"NPG\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOSTNAME}}/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
+              "host": [
+                "{{HOSTNAME}}"
+              ],
+              "path": [
+                "ecommerce",
+                "searchDeadLetterEvents"
+              ],
+              "query": [
+                {
+                  "key": "pageNumber",
+                  "value": "0"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
 		{
 			"name": "eCommerce retrieve ECOMMERCE dead letter events [no time range]",
 			"event": [
