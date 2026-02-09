@@ -2,8 +2,8 @@ apiVersion: v2
 name: pagopa-ecommerce-helpdesk-service
 description: Microservice that handles assistance api for ecommerce
 type: application
-version: 2.6.0
-appVersion: 2.6.0
+version: 2.7.0
+appVersion: 2.7.0
 dependencies:
   - name: microservice-chart
     version: 7.5.0
