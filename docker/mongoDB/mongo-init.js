@@ -19,7 +19,7 @@ try {
     }
 }
 
-const db = connect("mongodb://admin:password@pagopa-ecommerce-helpdesk-mongo:27017/ecommerce?retryWrites=true&replicaSet=globaldb&readPreference=primary&maxIdleTimeMS=10000&connectTimeoutMS=10000&socketTimeoutMS=10000&serverSelectionTimeoutMS=60000&waitQueueTimeoutMS=10000");
+const db = connect("mongodb://admin:password@pagopa-ecommerce-helpdesk-mongo:27017/?retryWrites=true&replicaSet=globaldb&readPreference=primary&maxIdleTimeMS=10000&connectTimeoutMS=10000&socketTimeoutMS=10000&serverSelectionTimeoutMS=60000&waitQueueTimeoutMS=10000");
 
 db.getCollection('eventstore').insertMany([{
   "_id": "45917e51-30ce-4cf1-aacd-b691b50e2710",
@@ -451,7 +451,7 @@ db.getCollection('dead-letter-events').insertMany([{
     "_class":"it.pagopa.ecommerce.commons.documents.DeadLetterEvent"
   }]);
 
-const db2 = connect("mongodb://admin:password@pagopa-ecommerce-helpdesk-mongo:27017/ecommerce-history?retryWrites=true&replicaSet=globaldb&readPreference=primary&maxIdleTimeMS=10000&connectTimeoutMS=10000&socketTimeoutMS=10000&serverSelectionTimeoutMS=60000&waitQueueTimeoutMS=10000");
+const db2 = connect("mongodb://admin:password@pagopa-ecommerce-helpdesk-mongo:27017/?retryWrites=true&replicaSet=globaldb&readPreference=primary&maxIdleTimeMS=10000&connectTimeoutMS=10000&socketTimeoutMS=10000&serverSelectionTimeoutMS=60000&waitQueueTimeoutMS=10000");
 
 db2.getCollection('pm-transactions-view').insertMany([{
     "userInfo": {
