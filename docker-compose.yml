@@ -55,10 +55,33 @@ services:
     networks:
       - pagopa-ecommerce-net
     healthcheck:
-      test: echo "db.stats().ok" | mongo --quiet
-      interval: 10s
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongosh admin --username admin --password password --quiet | grep 1
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+    entrypoint:
+      - bash
+      - -c
+      - |
+        openssl rand -base64 756 > /data/replica.key 
+        chmod 400 /data/replica.key
+        chown 999:999 /data/replica.key
+        exec docker-entrypoint.sh mongod --replSet globaldb --bind_ip_all --port 27017 --keyFile /data/replica.key
+
+  mongo-init:
+    container_name: mongo-init
+    image: alpine/mongosh
+    # connects to the mongo service and runs the script.
+    # it run once and then exit
+    command: mongosh --host  pagopa-ecommerce-helpdesk-mongo --port 27017 --username admin --password password --file /scripts/mongo-init.js
     volumes:
-      - ./docker/mongoDB/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./docker/mongoDB/mongo-init.js:/scripts/mongo-init.js:ro
+    networks:
+      - pagopa-ecommerce-net
+    depends_on:
+      mongo:
+        condition: service_healthy
 
   mongo-express:
     container_name: pagopa-ecommerce-helpdesk-express
