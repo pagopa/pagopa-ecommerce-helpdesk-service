@@ -153,7 +153,8 @@ class EcommerceService(
             val optionalResult = list.firstOrNull()?.let { Optional.of(it) } ?: Optional.empty()
             if (
                 optionalResult.isPresent &&
-                    optionalResult.get().transactionInfo?.correlationId != null
+                    optionalResult.get().transactionInfo?.correlationId != null &&
+                        optionalResult.get().transactionInfo?.authorizationRequestId != null
             ) {
                 performGetOrderNPG(
                         transactionId = TransactionId(transactionId),
