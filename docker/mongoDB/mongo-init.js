@@ -20,6 +20,8 @@ try {
 }
 
 const db = connect("mongodb://admin:password@pagopa-ecommerce-helpdesk-mongo:27017/?retryWrites=true&replicaSet=globaldb&readPreference=primary&maxIdleTimeMS=10000&connectTimeoutMS=10000&socketTimeoutMS=10000&serverSelectionTimeoutMS=60000&waitQueueTimeoutMS=10000");
+db = db.getSiblingDB("ecommerce");
+console.log("Currently using DB:", db.getName());
 
 db.getCollection('eventstore').insertMany([{
   "_id": "45917e51-30ce-4cf1-aacd-b691b50e2710",
@@ -452,6 +454,8 @@ db.getCollection('dead-letter-events').insertMany([{
   }]);
 
 const db2 = connect("mongodb://admin:password@pagopa-ecommerce-helpdesk-mongo:27017/?retryWrites=true&replicaSet=globaldb&readPreference=primary&maxIdleTimeMS=10000&connectTimeoutMS=10000&socketTimeoutMS=10000&serverSelectionTimeoutMS=60000&waitQueueTimeoutMS=10000");
+db2 = db2.getSiblingDB("ecommerce-history");
+console.log("Currently using DB:", db2.getName());
 
 db2.getCollection('pm-transactions-view').insertMany([{
     "userInfo": {
