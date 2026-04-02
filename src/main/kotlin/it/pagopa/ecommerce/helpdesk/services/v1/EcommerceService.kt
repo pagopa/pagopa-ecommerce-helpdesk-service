@@ -154,7 +154,7 @@ class EcommerceService(
             if (
                 optionalResult.isPresent &&
                     optionalResult.get().transactionInfo?.correlationId != null &&
-                        optionalResult.get().transactionInfo?.authorizationRequestId != null
+                    optionalResult.get().transactionInfo?.authorizationRequestId != null
             ) {
                 performGetOrderNPG(
                         transactionId = TransactionId(transactionId),
