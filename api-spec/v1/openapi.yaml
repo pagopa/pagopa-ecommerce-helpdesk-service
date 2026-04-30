@@ -1532,6 +1532,7 @@ components:
                 $ref: '#/components/schemas/DeadLetterExcludedPaymentGateway'
             required:
               - source
+              - timeRange
           examples:
             search by source without time range:
               value:
