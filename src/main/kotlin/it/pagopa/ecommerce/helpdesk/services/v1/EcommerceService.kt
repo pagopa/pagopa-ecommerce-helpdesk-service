@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import java.time.Duration
 
 @Service("EcommerceServiceV1")
 class EcommerceService(
@@ -91,13 +92,21 @@ class EcommerceService(
             "[helpDesk ecommerce service] search dead letter events, type: {}",
             searchRequest.source
         )
-        val timeRange: DeadLetterSearchDateTimeRangeDto? = searchRequest.timeRange
+        val timeRange: DeadLetterSearchDateTimeRangeDto = searchRequest.timeRange
         return mono { searchRequest }
-            .filter { timeRange == null || timeRange.startDate < timeRange.endDate }
+            .filter { timeRange.startDate < timeRange.endDate }
             .switchIfEmpty(
                 Mono.error(
                     InvalidSearchCriteriaException(
-                        "Invalid time range: startDate [${timeRange?.startDate}] is not greater than endDate: [${timeRange?.endDate}]"
+                        "Invalid time range: startDate [${timeRange.startDate}] is not greater than endDate: [${timeRange.endDate}]"
+                    )
+                )
+            )
+            .filter { Duration.between(timeRange.startDate, timeRange.endDate).toDays() <= 7}
+            .switchIfEmpty(
+                Mono.error(
+                    InvalidSearchCriteriaException(
+                        "Invalid time range: time range must not exceed 7 days"
                     )
                 )
             )
