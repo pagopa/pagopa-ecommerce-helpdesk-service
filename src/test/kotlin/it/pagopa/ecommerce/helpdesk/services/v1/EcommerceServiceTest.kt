@@ -46,6 +46,7 @@ import java.time.OffsetDateTime
 import java.time.ZonedDateTime
 import java.util.*
 import kotlinx.coroutines.reactor.mono
+import org.junit.Assert.assertThrows
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -161,9 +162,25 @@ class EcommerceServiceTest {
     }
 
     @Test
-    fun `Should return dead letter event for no input time range`() {
+    fun `Should return error when time range is missing`() {
         val request =
             EcommerceSearchDeadLetterEventsRequestDto().source(DeadLetterSearchEventSourceDto.ALL)
+
+        assertThrows(InvalidSearchCriteriaException::class.java) {
+            ecommerceService.searchDeadLetterEvents(0, 10, request)
+        }
+    }
+
+    @Test
+    fun `Should return dead letter event with valid time range within 7 days`() {
+        val request =
+            EcommerceSearchDeadLetterEventsRequestDto()
+                .source(DeadLetterSearchEventSourceDto.ALL)
+                .timeRange(
+                    DeadLetterSearchDateTimeRangeDto()
+                        .startDate(OffsetDateTime.now().minusDays(3))
+                        .endDate(OffsetDateTime.now())
+                )
         val pageNumber = 0
         val pageSize = 10
         val deadLetterEventList =
@@ -197,36 +214,18 @@ class EcommerceServiceTest {
     }
 
     @Test
-    fun `Should return dead letter event with time range filter`() {
+    fun `Should return error when time range exceeds 7 days`() {
         val request =
             EcommerceSearchDeadLetterEventsRequestDto()
                 .source(DeadLetterSearchEventSourceDto.ALL)
                 .timeRange(
                     DeadLetterSearchDateTimeRangeDto()
-                        .startDate(OffsetDateTime.MIN)
-                        .endDate(OffsetDateTime.MAX)
+                        .startDate(OffsetDateTime.now().minusDays(10))
+                        .endDate(OffsetDateTime.now())
                 )
         val pageNumber = 0
         val pageSize = 10
-        val deadLetterEventList =
-            listOf(
-                DeadLetterEventDto()
-                    .queueName("queueName1")
-                    .data("data1")
-                    .timestamp(OffsetDateTime.MIN),
-                DeadLetterEventDto()
-                    .queueName("queueName2")
-                    .data("data2")
-                    .timestamp(OffsetDateTime.MIN)
-            )
-        val expectedResponse =
-            SearchDeadLetterEventResponseDto()
-                .deadLetterEvents(deadLetterEventList)
-                .page(PageInfoDto().current(0).results(deadLetterEventList.size).total(1))
-        given(deadLetterDataProvider.totalRecordCount(request))
-            .willReturn(mono { deadLetterEventList.size })
-        given(deadLetterDataProvider.findResult(request, 0, 10))
-            .willReturn(mono { deadLetterEventList })
+
         StepVerifier.create(
                 ecommerceService.searchDeadLetterEvents(
                     pageNumber = pageNumber,
@@ -234,8 +233,8 @@ class EcommerceServiceTest {
                     searchRequest = request
                 )
             )
-            .expectNext(expectedResponse)
-            .verifyComplete()
+            .expectError(InvalidSearchCriteriaException::class.java)
+            .verify()
     }
 
     @Test
@@ -245,8 +244,8 @@ class EcommerceServiceTest {
                 .source(DeadLetterSearchEventSourceDto.ALL)
                 .timeRange(
                     DeadLetterSearchDateTimeRangeDto()
-                        .startDate(OffsetDateTime.MAX)
-                        .endDate(OffsetDateTime.MIN)
+                        .startDate(OffsetDateTime.now())
+                        .endDate(OffsetDateTime.now().minusDays(3))
                 )
         val pageNumber = 0
         val pageSize = 10

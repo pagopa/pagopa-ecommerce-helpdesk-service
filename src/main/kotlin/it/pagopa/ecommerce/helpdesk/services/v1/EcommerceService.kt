@@ -33,6 +33,7 @@ import it.pagopa.generated.ecommerce.helpdesk.model.SearchDeadLetterEventRespons
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestTransactionIdDto as SearchTransactionRequestTransactionIdDtoV2
+import java.time.Duration
 import java.util.*
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
@@ -40,7 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import java.time.Duration
 
 @Service("EcommerceServiceV1")
 class EcommerceService(
@@ -92,7 +92,10 @@ class EcommerceService(
             "[helpDesk ecommerce service] search dead letter events, type: {}",
             searchRequest.source
         )
-        val timeRange: DeadLetterSearchDateTimeRangeDto = searchRequest.timeRange
+        val timeRange: DeadLetterSearchDateTimeRangeDto =
+            searchRequest.timeRange
+                ?: throw InvalidSearchCriteriaException("timeRange must not be null")
+
         return mono { searchRequest }
             .filter { timeRange.startDate < timeRange.endDate }
             .switchIfEmpty(
@@ -102,7 +105,7 @@ class EcommerceService(
                     )
                 )
             )
-            .filter { Duration.between(timeRange.startDate, timeRange.endDate).toDays() <= 7}
+            .filter { Duration.between(timeRange.startDate, timeRange.endDate).toDays() <= 7 }
             .switchIfEmpty(
                 Mono.error(
                     InvalidSearchCriteriaException(
