@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v1
 
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.services.v1.EcommerceService
 import it.pagopa.generated.ecommerce.helpdesk.model.*
@@ -311,23 +312,22 @@ class EcommerceControllerTest {
         }
 
     @Test
-    fun `Post search dead letter should return records successfully searching for all dead letter events without time range`() =
+    fun `Post search dead letter should return 400 when time range is missing`() =
         runTest {
             val pageNumber = 1
             val pageSize = 15
             val request =
                 EcommerceSearchDeadLetterEventsRequestDto()
                     .source(DeadLetterSearchEventSourceDto.ALL)
-            val expected = SearchDeadLetterEventResponseDto()
 
             given(
-                    ecommerceService.searchDeadLetterEvents(
-                        pageNumber = pageNumber,
-                        pageSize = pageSize,
-                        searchRequest = request
-                    )
+                ecommerceService.searchDeadLetterEvents(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    searchRequest = request
                 )
-                .willReturn(Mono.just(SearchDeadLetterEventResponseDto()))
+            ).willReturn(Mono.error(InvalidSearchCriteriaException("Time range is required")))
+
             webClient
                 .post()
                 .uri { uriBuilder ->
@@ -342,9 +342,7 @@ class EcommerceControllerTest {
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
-                .isOk
-                .expectBody<SearchDeadLetterEventResponseDto>()
-                .isEqualTo(expected)
+                .isBadRequest
         }
 
     @Test
