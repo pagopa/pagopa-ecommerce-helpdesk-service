@@ -39,6 +39,7 @@ import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -51,7 +52,8 @@ class EcommerceService(
     @Qualifier("confidential-data-manager-client-email")
     private val confidentialDataManager: ConfidentialDataManager,
     @Autowired val npgClient: NpgClient,
-    @Autowired val npgApiKeyConfiguration: NpgApiKeyConfiguration
+    @Autowired val npgApiKeyConfiguration: NpgApiKeyConfiguration,
+    @Value("\${deadLetter.timeRangeMax}") private val deadLetterTimeRangeMax: Int
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -105,11 +107,14 @@ class EcommerceService(
                     )
                 )
             )
-            .filter { Duration.between(timeRange.startDate, timeRange.endDate).toDays() <= 7 }
+            .filter {
+                Duration.between(timeRange.startDate, timeRange.endDate).toDays() <=
+                    deadLetterTimeRangeMax
+            }
             .switchIfEmpty(
                 Mono.error(
                     InvalidSearchCriteriaException(
-                        "Invalid time range: time range must not exceed 7 days"
+                        "Invalid time range: time range must not exceed [${deadLetterTimeRangeMax}] days"
                     )
                 )
             )

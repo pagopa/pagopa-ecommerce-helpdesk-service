@@ -79,6 +79,7 @@ class EcommerceServiceTest {
         mock()
     private val npgApiKeyConfiguration: NpgApiKeyConfiguration = mock()
     private val npgClient: NpgClient = mock()
+    private val deadLetterTimeRangeMax = 7
 
     private val ecommerceService =
         EcommerceService(
@@ -87,7 +88,8 @@ class EcommerceServiceTest {
             deadLetterDataProvider,
             confidentialDataManager,
             npgClient = npgClient,
-            npgApiKeyConfiguration = npgApiKeyConfiguration
+            npgApiKeyConfiguration = npgApiKeyConfiguration,
+            deadLetterTimeRangeMax = deadLetterTimeRangeMax
         )
 
     @Test
@@ -351,7 +353,8 @@ class EcommerceServiceTest {
                         ),
                 deadLetterDataProvider = deadLetterDataProvider,
                 npgClient = npgClient,
-                npgApiKeyConfiguration = npgApiKeyConfiguration
+                npgApiKeyConfiguration = npgApiKeyConfiguration,
+                deadLetterTimeRangeMax = deadLetterTimeRangeMax
             )
 
         StepVerifier.create(

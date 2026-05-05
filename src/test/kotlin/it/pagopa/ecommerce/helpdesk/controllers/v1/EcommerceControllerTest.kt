@@ -312,38 +312,37 @@ class EcommerceControllerTest {
         }
 
     @Test
-    fun `Post search dead letter should return 400 when time range is missing`() =
-        runTest {
-            val pageNumber = 1
-            val pageSize = 15
-            val request =
-                EcommerceSearchDeadLetterEventsRequestDto()
-                    .source(DeadLetterSearchEventSourceDto.ALL)
+    fun `Post search dead letter should return 400 when time range is missing`() = runTest {
+        val pageNumber = 1
+        val pageSize = 15
+        val request =
+            EcommerceSearchDeadLetterEventsRequestDto().source(DeadLetterSearchEventSourceDto.ALL)
 
-            given(
+        given(
                 ecommerceService.searchDeadLetterEvents(
                     pageNumber = pageNumber,
                     pageSize = pageSize,
                     searchRequest = request
                 )
-            ).willReturn(Mono.error(InvalidSearchCriteriaException("Time range is required")))
+            )
+            .willReturn(Mono.error(InvalidSearchCriteriaException("Time range is required")))
 
-            webClient
-                .post()
-                .uri { uriBuilder ->
-                    uriBuilder
-                        .path("/ecommerce/searchDeadLetterEvents")
-                        .queryParam("pageNumber", "{pageNumber}")
-                        .queryParam("pageSize", "{pageSize}")
-                        .build(pageNumber, pageSize)
-                }
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("x-api-key", "primary-key")
-                .bodyValue(request)
-                .exchange()
-                .expectStatus()
-                .isBadRequest
-        }
+        webClient
+            .post()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/ecommerce/searchDeadLetterEvents")
+                    .queryParam("pageNumber", "{pageNumber}")
+                    .queryParam("pageSize", "{pageSize}")
+                    .build(pageNumber, pageSize)
+            }
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isBadRequest
+    }
 
     @Test
     fun `post search NPG operations succeeded`() = runTest {
