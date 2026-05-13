@@ -355,6 +355,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
 
+  /ecommerce/searchNpgOperationsByOrderId:
+    post:
+      tags:
+        - eCommerce
+      operationId: ecommerceSearchNpgOperationsByOrderId
+      summary: Search npg operations by OrderId
+      description: 'GET with body payload - no resources created'
+      requestBody:
+        $ref: '#/components/requestBodies/SearchNpgOperationsByOrderIdRequest'
+      responses:
+        '200':
+          description: Transaction status found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchNpgOperationsResponse'
+        '400':
+          description: Formally invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '422':
+          description: Unsupported version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -584,6 +627,34 @@ components:
       example:
         type: "TRANSACTION_ID"
         transactionId: "c9644451389e47b0a7d8e9d488fcd502"
+
+    SearchTransactionRequestOrderId:
+      type: object
+      description: Search transaction by order id
+      properties:
+        type:
+          type: string
+        orderId:
+          maxLength: 27
+          type: string
+          description: "Merchant order id, unique in the merchant domain"
+          example: btid2384983
+        pspId:
+          type: string
+          description: The identifier of the psp
+        paymentMethod:
+          type: string
+          example: "PAYPAL"
+      required:
+        - type
+        - orderId
+        - pspId
+        - paymentMethod
+      example:
+        type: "ORDER_ID"
+        orderId: "btid2384983"
+        pspId: "EXAMPLEPSP"
+        paymentMethod: "PAYPAL"
 
     SearchPaymentMethodRequestFiscalCode:
       type: object
@@ -1262,6 +1333,26 @@ components:
       required:
         - idTransaction
 
+    SearchNpgOperationsByOrderIdRequest:
+      type: object
+      description: ''
+      properties:
+        orderId:
+          maxLength: 27
+          type: string
+          description: "Merchant order id, unique in the merchant domain"
+          example: btid2384983
+        pspId:
+          type: string
+          description: The identifier of the psp
+        paymentMethod:
+          type: string
+          example: "PAYPAL"
+      required:
+        - orderId
+        - pspId
+        - paymentMethod
+
     SearchNpgOperationsResponse:
       type: object
       description: ''
@@ -1587,3 +1678,9 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/SearchNpgOperationsRequest'
+    SearchNpgOperationsByOrderIdRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SearchNpgOperationsByOrderIdRequest'

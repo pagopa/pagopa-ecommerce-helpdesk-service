@@ -196,7 +196,7 @@ class EcommerceService(
                                                 OperationTypeDto.valueOf(
                                                     operation.operationType.toString()
                                                 )
-                                            orderId = operation.orderId
+                                            this.orderId = operation.orderId
                                             paymentCircuit = operation.paymentCircuit
                                             paymentEndToEndId = operation.paymentEndToEndId
                                             paymentMethod =
@@ -215,6 +215,69 @@ class EcommerceService(
     }
 
     /**
+     * Searches for NPG operations associated with a given order ID, psp ID and payment method
+     *
+     * The search process follows these steps:
+     * 1. Retrieves NPG order details using [performGetOrderNPG]
+     * 3. Maps the NPG order response to a [SearchNpgOperationsResponseDto] containing operation
+     *    details
+     *
+     * @param orderId The ID of the order to search for
+     * @return Mono<SearchNpgOperationsResponseDto> containing the NPG operations data, or
+     *   NoResultFoundException if the transaction is not found or lacks required data
+     */
+    fun searchNpgOperationsByOrderId(
+        orderId: String,
+        pspId: String,
+        paymentMethod: String
+    ): Mono<SearchNpgOperationsResponseDto> {
+
+        return performGetOrderNPG(
+                orderId = orderId,
+                pspId = pspId,
+                correlationId = UUID.randomUUID().toString(),
+                paymentMethod = PaymentMethod.valueOf(paymentMethod)
+            )
+            .map { orderResponse ->
+                SearchNpgOperationsResponseDto().apply {
+                    operations =
+                        orderResponse.operations
+                            ?.map { operation ->
+                                OperationDto().apply {
+                                    additionalData =
+                                        OperationAdditionalDataDto().apply {
+                                            authorizationCode =
+                                                operation.additionalData
+                                                    ?.get("authorizationCode")
+                                                    ?.toString()
+                                            rrn = operation.additionalData?.get("rrn")?.toString()
+                                        }
+
+                                    operationAmount = operation.operationAmount
+                                    operationCurrency = operation.operationCurrency
+                                    operationId = operation.operationId
+                                    operationResult =
+                                        OperationResultDto.valueOf(
+                                            operation.operationResult.toString()
+                                        )
+                                    operationTime = operation.operationTime
+                                    operationType =
+                                        OperationTypeDto.valueOf(operation.operationType.toString())
+                                    this.orderId = operation.orderId
+                                    paymentCircuit = operation.paymentCircuit
+                                    paymentEndToEndId = operation.paymentEndToEndId
+                                    this.paymentMethod =
+                                        operation.paymentMethod?.let {
+                                            PaymentMethodDto.valueOf(it.toString())
+                                        }
+                                }
+                            }
+                            ?.toList()
+                }
+            }
+    }
+
+    /**
      * Imported from transactions-scheduler.
      *
      * @see <a
@@ -222,7 +285,7 @@ class EcommerceService(
      *   on transactions-scheduler</a>
      */
     private fun performGetOrderNPG(
-        transactionId: TransactionId,
+        transactionId: TransactionId? = null,
         orderId: String,
         pspId: String,
         correlationId: String,
@@ -230,7 +293,7 @@ class EcommerceService(
     ): Mono<OrderResponseDto> {
         logger.info(
             "Performing get order for transaction with id: [{}], orderId [{}], pspId: [{}], correlationId: [{}], paymentMethod: [{}]",
-            transactionId.value(),
+            transactionId?.value(),
             orderId,
             pspId,
             correlationId,
@@ -248,7 +311,7 @@ class EcommerceService(
                             if (it.is5xxServerError) {
                                 NpgBadGatewayException("$it")
                             } else {
-                                NpgBadRequestException(transactionId.value(), "$it")
+                                NpgBadRequestException(transactionId?.value(), "$it")
                             }
                         }
                         .orElse(exception)

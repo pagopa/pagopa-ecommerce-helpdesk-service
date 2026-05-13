@@ -48,6 +48,7 @@ import java.util.*
 import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
@@ -693,6 +694,75 @@ class EcommerceServiceTest {
 
         verify(npgClient)
             .getOrder(eq(correlationId), eq("test-api-key"), eq(authorizationRequestId))
+    }
+
+    @Test
+    fun `Should successfully map NPG operation response by order id with all fields`() {
+        val orderId = "order123"
+        val pspId = PSP_ID
+        val paymentMethod = PaymentMethod.CARDS
+
+        val npgOperation =
+            OperationDtoV1().apply {
+                operationResult = OperationResultDtoV1.EXECUTED
+                operationType = OperationTypeDtoV1.AUTHORIZATION
+            }
+        val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
+
+        given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("test-api-key"))
+        given(npgClient.getOrder(any(), eq("test-api-key"), eq(orderId)))
+            .willReturn(Mono.just(orderResponse))
+
+        StepVerifier.create(
+                ecommerceService.searchNpgOperationsByOrderId(
+                    orderId = orderId,
+                    pspId = pspId,
+                    paymentMethod = paymentMethod.toString()
+                )
+            )
+            .expectNextMatches { response -> response.operations?.size == 1 }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should throw exception when paymentMethod is invalid`() {
+        assertThrows<IllegalArgumentException> {
+            ecommerceService.searchNpgOperationsByOrderId(
+                orderId = "order123",
+                pspId = PSP_ID,
+                paymentMethod = "INVALID_METHOD"
+            )
+        }
+    }
+
+    @Test
+    fun `Should handle NPG server error by order id`() {
+        val orderId = "order123"
+        val pspId = PSP_ID
+        val paymentMethod = PaymentMethod.CARDS
+
+        given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("test-api-key"))
+        given(npgClient.getOrder(any(), any(), eq(orderId)))
+            .willReturn(
+                Mono.error(
+                    NpgResponseException(
+                        "error",
+                        emptyList(),
+                        Optional.of(HttpStatus.INTERNAL_SERVER_ERROR),
+                        RuntimeException()
+                    )
+                )
+            )
+
+        StepVerifier.create(
+                ecommerceService.searchNpgOperationsByOrderId(
+                    orderId = orderId,
+                    pspId = pspId,
+                    paymentMethod = paymentMethod.toString()
+                )
+            )
+            .expectError(NpgBadGatewayException::class.java)
+            .verify()
     }
 
     @Test

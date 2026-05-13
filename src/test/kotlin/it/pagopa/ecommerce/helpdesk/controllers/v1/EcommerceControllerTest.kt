@@ -6,6 +6,8 @@ import it.pagopa.ecommerce.helpdesk.services.v1.EcommerceService
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
@@ -418,6 +420,78 @@ class EcommerceControllerTest {
             .expectBody(ProblemJsonDto::class.java)
             .isEqualTo(expectedProblemJson)
     }
+
+    @Test
+    fun `post search NPG operations by order id succeeded`() = runTest {
+        val orderId = "order123"
+        val pspId = "psp456"
+        val paymentMethod = "CARDS"
+
+        val request =
+            SearchNpgOperationsByOrderIdRequestDto()
+                .orderId(orderId)
+                .pspId(pspId)
+                .paymentMethod(paymentMethod)
+
+        val response = SearchNpgOperationsResponseDto()
+
+        given(
+                ecommerceService.searchNpgOperationsByOrderId(
+                    orderId = eq(orderId),
+                    pspId = eq(pspId),
+                    paymentMethod = eq(paymentMethod)
+                )
+            )
+            .willReturn(Mono.just(response))
+
+        webClient
+            .post()
+            .uri { uriBuilder ->
+                uriBuilder.path("/ecommerce/searchNpgOperationsByOrderId").build()
+            }
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("x-api-key", "primary-key")
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<SearchNpgOperationsResponseDto>()
+            .isEqualTo(response)
+    }
+
+    @Test
+    fun `post search NPG operations by order id should return 400 for invalid request body`() =
+        runTest {
+            val request = SearchNpgOperationsByOrderIdRequestDto()
+
+            webClient
+                .post()
+                .uri { uriBuilder ->
+                    uriBuilder.path("/ecommerce/searchNpgOperationsByOrderId").build()
+                }
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("x-api-key", "primary-key")
+                .bodyValue(request)
+                .exchange()
+                .expectStatus()
+                .isBadRequest
+                .expectBody(ProblemJsonDto::class.java)
+                .consumeWith { result ->
+                    val body = result.responseBody!!
+                    Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), body.status)
+                    Assertions.assertEquals("Bad request", body.title)
+                    val actualFields =
+                        body.detail
+                            .removePrefix("Input request is invalid. Invalid fields: ")
+                            .split(",")
+                            .map { it.trim() }
+                            .sorted()
+                    Assertions.assertEquals(
+                        listOf("orderId", "paymentMethod", "pspId"),
+                        actualFields
+                    )
+                }
+        }
 
     @Test
     fun `should return unauthorized if request has not api key header`() = runTest {
