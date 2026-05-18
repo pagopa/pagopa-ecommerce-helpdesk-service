@@ -628,34 +628,6 @@ components:
         type: "TRANSACTION_ID"
         transactionId: "c9644451389e47b0a7d8e9d488fcd502"
 
-    SearchTransactionRequestOrderId:
-      type: object
-      description: Search transaction by order id
-      properties:
-        type:
-          type: string
-        orderId:
-          maxLength: 27
-          type: string
-          description: "Merchant order id, unique in the merchant domain"
-          example: btid2384983
-        pspId:
-          type: string
-          description: The identifier of the psp
-        paymentMethod:
-          type: string
-          example: "PAYPAL"
-      required:
-        - type
-        - orderId
-        - pspId
-        - paymentMethod
-      example:
-        type: "ORDER_ID"
-        orderId: "btid2384983"
-        pspId: "EXAMPLEPSP"
-        paymentMethod: "PAYPAL"
-
     SearchPaymentMethodRequestFiscalCode:
       type: object
       description: Search transaction by user fiscal code
@@ -895,7 +867,7 @@ components:
         idChannel:
           type: string
       example:
-        pspId: "EXAMPLEPSP"
+        pspId: "BPPIITRRXXX"
         businessName: "businessName"
         idChannel: "13212880150_02_ONUS"
 
@@ -1345,6 +1317,7 @@ components:
         pspId:
           type: string
           description: The identifier of the psp
+          example: BPPIITRRXXX
         paymentMethod:
           type: string
           example: "PAYPAL"
