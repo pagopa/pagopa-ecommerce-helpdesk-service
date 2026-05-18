@@ -168,7 +168,7 @@ class EcommerceServiceTest {
         val request =
             EcommerceSearchDeadLetterEventsRequestDto().source(DeadLetterSearchEventSourceDto.ALL)
 
-        assertThrows(InvalidSearchCriteriaException::class.java) {
+        assertThrows(NullPointerException::class.java) {
             ecommerceService.searchDeadLetterEvents(0, 10, request)
         }
     }

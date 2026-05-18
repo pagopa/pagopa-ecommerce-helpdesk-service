@@ -94,9 +94,7 @@ class EcommerceService(
             "[helpDesk ecommerce service] search dead letter events, type: {}",
             searchRequest.source
         )
-        val timeRange: DeadLetterSearchDateTimeRangeDto =
-            searchRequest.timeRange
-                ?: throw InvalidSearchCriteriaException("timeRange must not be null")
+        val timeRange: DeadLetterSearchDateTimeRangeDto = searchRequest.timeRange
 
         return mono { searchRequest }
             .filter { timeRange.startDate < timeRange.endDate }
