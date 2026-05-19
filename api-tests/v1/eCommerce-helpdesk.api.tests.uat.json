@@ -1149,7 +1149,7 @@
               }
             },
             "url": {
-              "raw": "{{HOSTNAME}}/ecommerce/searchNpgOperationsByOrderId",
+              "raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperationsByOrderId",
               "host": [
                 "{{HOSTNAME}}"
               ],
