@@ -1155,6 +1155,9 @@
               ],
               "path": [
                 "ecommerce",
+                "helpdesk-service",
+                "v1",
+                "ecommerce",
                 "searchNpgOperationsByOrderId"
               ]
             }

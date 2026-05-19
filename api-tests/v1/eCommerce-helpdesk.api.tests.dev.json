@@ -1176,7 +1176,7 @@
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test(\"eCommerce SearchNpgOperations SearchNpgOperations by TRANSACTION_ID - Status code is 200 with valid json response\", function () {",
+              "pm.test(\"eCommerce SearchNpgOperations SearchNpgOperations by ORDER_ID - Status code is 200 with valid json response\", function () {",
               "    pm.response.to.have.status(200);",
               "    const response = pm.response.json();",
               "    pm.expect(response).to.have.property('operations');",
@@ -1224,6 +1224,9 @@
             "{{HOSTNAME}}"
           ],
           "path": [
+            "ecommerce",
+            "helpdesk-service",
+            "v1",
             "ecommerce",
             "searchNpgOperationsByOrderId"
           ]
