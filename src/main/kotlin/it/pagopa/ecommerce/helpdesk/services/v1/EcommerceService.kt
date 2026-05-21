@@ -30,9 +30,11 @@ import it.pagopa.generated.ecommerce.helpdesk.model.OperationResultDto
 import it.pagopa.generated.ecommerce.helpdesk.model.OperationTypeDto
 import it.pagopa.generated.ecommerce.helpdesk.model.PaymentMethodDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchDeadLetterEventResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsByOrderIdRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestTransactionIdDto as SearchTransactionRequestTransactionIdDtoV2
+import jakarta.validation.constraints.NotNull
 import java.util.*
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
@@ -167,48 +169,7 @@ class EcommerceService(
                                 optionalResult.get().transactionInfo.paymentMethodName
                             )
                     )
-                    .map { orderResponse ->
-                        SearchNpgOperationsResponseDto().apply {
-                            operations =
-                                orderResponse.operations
-                                    ?.map { operation ->
-                                        OperationDto().apply {
-                                            additionalData =
-                                                OperationAdditionalDataDto().apply {
-                                                    authorizationCode =
-                                                        operation.additionalData
-                                                            ?.get("authorizationCode")
-                                                            ?.toString()
-                                                    rrn =
-                                                        operation.additionalData
-                                                            ?.get("rrn")
-                                                            ?.toString()
-                                                }
-
-                                            operationAmount = operation.operationAmount
-                                            operationCurrency = operation.operationCurrency
-                                            operationId = operation.operationId
-                                            operationResult =
-                                                OperationResultDto.valueOf(
-                                                    operation.operationResult.toString()
-                                                )
-                                            operationTime = operation.operationTime
-                                            operationType =
-                                                OperationTypeDto.valueOf(
-                                                    operation.operationType.toString()
-                                                )
-                                            this.orderId = operation.orderId
-                                            paymentCircuit = operation.paymentCircuit
-                                            paymentEndToEndId = operation.paymentEndToEndId
-                                            paymentMethod =
-                                                operation.paymentMethod?.let {
-                                                    PaymentMethodDto.valueOf(it.toString())
-                                                }
-                                        }
-                                    }
-                                    ?.toList()
-                        }
-                    }
+                    .map(::mapNpgOperationsResponse)
             } else {
                 Mono.error(NoResultFoundException(transactionId))
             }
@@ -230,53 +191,54 @@ class EcommerceService(
     fun searchNpgOperationsByOrderId(
         orderId: String,
         pspId: String,
-        paymentMethod: String
+        paymentMethod: @NotNull SearchNpgOperationsByOrderIdRequestDto.PaymentMethodEnum?
     ): Mono<SearchNpgOperationsResponseDto> {
 
         return performGetOrderNPG(
                 orderId = orderId,
                 pspId = pspId,
                 correlationId = UUID.randomUUID().toString(),
-                paymentMethod = PaymentMethod.valueOf(paymentMethod)
+                paymentMethod = PaymentMethod.valueOf(paymentMethod.toString())
             )
-            .map { orderResponse ->
-                SearchNpgOperationsResponseDto().apply {
-                    operations =
-                        orderResponse.operations
-                            ?.map { operation ->
-                                OperationDto().apply {
-                                    additionalData =
-                                        OperationAdditionalDataDto().apply {
-                                            authorizationCode =
-                                                operation.additionalData
-                                                    ?.get("authorizationCode")
-                                                    ?.toString()
-                                            rrn = operation.additionalData?.get("rrn")?.toString()
-                                        }
-
-                                    operationAmount = operation.operationAmount
-                                    operationCurrency = operation.operationCurrency
-                                    operationId = operation.operationId
-                                    operationResult =
-                                        OperationResultDto.valueOf(
-                                            operation.operationResult.toString()
-                                        )
-                                    operationTime = operation.operationTime
-                                    operationType =
-                                        OperationTypeDto.valueOf(operation.operationType.toString())
-                                    this.orderId = operation.orderId
-                                    paymentCircuit = operation.paymentCircuit
-                                    paymentEndToEndId = operation.paymentEndToEndId
-                                    this.paymentMethod =
-                                        operation.paymentMethod?.let {
-                                            PaymentMethodDto.valueOf(it.toString())
-                                        }
-                                }
-                            }
-                            ?.toList()
-                }
-            }
+            .map(::mapNpgOperationsResponse)
     }
+
+    private fun mapNpgOperationsResponse(
+        orderResponse: OrderResponseDto
+    ): SearchNpgOperationsResponseDto =
+        SearchNpgOperationsResponseDto().apply {
+            operations =
+                orderResponse.operations
+                    ?.map { operation ->
+                        OperationDto().apply {
+                            additionalData =
+                                OperationAdditionalDataDto().apply {
+                                    authorizationCode =
+                                        operation.additionalData
+                                            ?.get("authorizationCode")
+                                            ?.toString()
+                                    rrn = operation.additionalData?.get("rrn")?.toString()
+                                }
+
+                            operationAmount = operation.operationAmount
+                            operationCurrency = operation.operationCurrency
+                            operationId = operation.operationId
+                            operationResult =
+                                OperationResultDto.valueOf(operation.operationResult.toString())
+                            operationTime = operation.operationTime
+                            operationType =
+                                OperationTypeDto.valueOf(operation.operationType.toString())
+                            this.orderId = operation.orderId
+                            paymentCircuit = operation.paymentCircuit
+                            paymentEndToEndId = operation.paymentEndToEndId
+                            this.paymentMethod =
+                                operation.paymentMethod?.let {
+                                    PaymentMethodDto.valueOf(it.toString())
+                                }
+                        }
+                    }
+                    ?.toList()
+        }
 
     /**
      * Imported from transactions-scheduler.

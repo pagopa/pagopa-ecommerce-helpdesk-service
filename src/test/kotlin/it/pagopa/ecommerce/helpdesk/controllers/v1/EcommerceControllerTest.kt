@@ -1,12 +1,13 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v1
 
+import it.pagopa.ecommerce.commons.client.NpgClient.PaymentMethod
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.services.v1.EcommerceService
 import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsByOrderIdRequestDto.PaymentMethodEnum
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.argThat
@@ -425,13 +426,13 @@ class EcommerceControllerTest {
     fun `post search NPG operations by order id succeeded`() = runTest {
         val orderId = "order123"
         val pspId = "psp456"
-        val paymentMethod = "CARDS"
+        val paymentMethod = PaymentMethod.CARDS
 
         val request =
             SearchNpgOperationsByOrderIdRequestDto()
                 .orderId(orderId)
                 .pspId(pspId)
-                .paymentMethod(paymentMethod)
+                .paymentMethod(PaymentMethodEnum.valueOf(paymentMethod.toString()))
 
         val response = SearchNpgOperationsResponseDto()
 
@@ -439,7 +440,7 @@ class EcommerceControllerTest {
                 ecommerceService.searchNpgOperationsByOrderId(
                     orderId = eq(orderId),
                     pspId = eq(pspId),
-                    paymentMethod = eq(paymentMethod)
+                    paymentMethod = eq(PaymentMethodEnum.valueOf(paymentMethod.toString()))
                 )
             )
             .willReturn(Mono.just(response))

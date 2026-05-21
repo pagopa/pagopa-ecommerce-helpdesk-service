@@ -38,6 +38,7 @@ import it.pagopa.generated.ecommerce.helpdesk.model.OperationResultDto as Operat
 import it.pagopa.generated.ecommerce.helpdesk.model.PageInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchDeadLetterEventResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsByOrderIdRequestDto.PaymentMethodEnum
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.PspInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionInfoDto
@@ -48,7 +49,6 @@ import java.util.*
 import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
@@ -697,6 +697,37 @@ class EcommerceServiceTest {
     }
 
     @Test
+    fun `Should handle NPG client error by order id`() {
+        val orderId = "order123"
+        val pspId = PSP_ID
+        val paymentMethod = PaymentMethod.CARDS
+
+        given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("test-api-key"))
+
+        given(npgClient.getOrder(any(), any(), any()))
+            .willReturn(
+                Mono.error(
+                    NpgResponseException(
+                        "error",
+                        emptyList(),
+                        Optional.of(HttpStatus.BAD_REQUEST),
+                        RuntimeException()
+                    )
+                )
+            )
+
+        StepVerifier.create(
+                ecommerceService.searchNpgOperationsByOrderId(
+                    orderId = orderId,
+                    pspId = pspId,
+                    paymentMethod = PaymentMethodEnum.valueOf(paymentMethod.toString())
+                )
+            )
+            .expectErrorSatisfies { Assertions.assertTrue(it is NpgBadRequestException) }
+            .verify()
+    }
+
+    @Test
     fun `Should successfully map NPG operation response by order id with all fields`() {
         val orderId = "order123"
         val pspId = PSP_ID
@@ -717,22 +748,11 @@ class EcommerceServiceTest {
                 ecommerceService.searchNpgOperationsByOrderId(
                     orderId = orderId,
                     pspId = pspId,
-                    paymentMethod = paymentMethod.toString()
+                    paymentMethod = PaymentMethodEnum.valueOf(paymentMethod.toString())
                 )
             )
             .expectNextMatches { response -> response.operations?.size == 1 }
             .verifyComplete()
-    }
-
-    @Test
-    fun `Should throw exception when paymentMethod is invalid`() {
-        assertThrows<IllegalArgumentException> {
-            ecommerceService.searchNpgOperationsByOrderId(
-                orderId = "order123",
-                pspId = PSP_ID,
-                paymentMethod = "INVALID_METHOD"
-            )
-        }
     }
 
     @Test
@@ -758,7 +778,7 @@ class EcommerceServiceTest {
                 ecommerceService.searchNpgOperationsByOrderId(
                     orderId = orderId,
                     pspId = pspId,
-                    paymentMethod = paymentMethod.toString()
+                    paymentMethod = PaymentMethodEnum.valueOf(paymentMethod.toString())
                 )
             )
             .expectError(NpgBadGatewayException::class.java)
