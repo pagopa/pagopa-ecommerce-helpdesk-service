@@ -6,6 +6,7 @@ info:
   contact:
     name: pagoPA - Touchpoints team
     url: https://www.pagopa.it/
+    email: "mario.rossi@pagopa.it"
   license:
     name: EUPL-1.2
     url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
@@ -74,6 +75,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -111,6 +114,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -148,6 +153,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -188,6 +195,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -228,6 +237,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -265,6 +276,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -305,6 +318,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -348,6 +363,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -391,6 +408,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -435,6 +454,25 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ProblemJson'
+    TooManyRequestsResponse:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemJson'
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: The number of allowed requests in the current period
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: The number of remaining requests in the current period
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: The number of seconds left in the current period
 
   schemas:
     ProblemJson:

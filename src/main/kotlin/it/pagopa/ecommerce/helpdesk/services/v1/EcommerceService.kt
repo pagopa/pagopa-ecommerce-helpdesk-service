@@ -34,7 +34,6 @@ import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsByOrderId
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestTransactionIdDto as SearchTransactionRequestTransactionIdDtoV2
-import jakarta.validation.constraints.NotNull
 import java.util.*
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
@@ -181,7 +180,7 @@ class EcommerceService(
      *
      * The search process follows these steps:
      * 1. Retrieves NPG order details using [performGetOrderNPG]
-     * 3. Maps the NPG order response to a [SearchNpgOperationsResponseDto] containing operation
+     * 2. Maps the NPG order response to a [SearchNpgOperationsResponseDto] containing operation
      *    details
      *
      * @param orderId The ID of the order to search for
@@ -191,7 +190,7 @@ class EcommerceService(
     fun searchNpgOperationsByOrderId(
         orderId: String,
         pspId: String,
-        paymentMethod: @NotNull SearchNpgOperationsByOrderIdRequestDto.PaymentMethodEnum?
+        paymentMethod: SearchNpgOperationsByOrderIdRequestDto.PaymentMethodEnum
     ): Mono<SearchNpgOperationsResponseDto> {
 
         return performGetOrderNPG(
@@ -277,7 +276,7 @@ class EcommerceService(
                                 NpgBadRequestException(transactionId?.value(), "$it")
                             }
                         }
-                        .orElse(exception)
+                        .orElse(NpgBadGatewayException("NPG generic error"))
                 }
             }
         )
