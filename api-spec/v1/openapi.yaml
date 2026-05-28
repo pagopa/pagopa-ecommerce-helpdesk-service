@@ -383,7 +383,7 @@ paths:
         $ref: '#/components/requestBodies/SearchNpgOperationsByOrderIdRequest'
       responses:
         '200':
-          description: Transaction status found
+          description: Order Id status found
           content:
             application/json:
               schema:
@@ -397,7 +397,7 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
         '404':
-          description: Transaction not found
+          description: Order Id not found
           content:
             application/json:
               schema:

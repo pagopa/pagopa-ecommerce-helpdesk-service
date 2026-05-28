@@ -723,7 +723,16 @@ class EcommerceServiceTest {
                     paymentMethod = PaymentMethodEnum.valueOf(paymentMethod.toString())
                 )
             )
-            .expectErrorSatisfies { Assertions.assertTrue(it is NpgBadRequestException) }
+            .expectErrorSatisfies { throwable ->
+                Assertions.assertTrue(throwable is NpgBadRequestException)
+                val exception = throwable as NpgBadRequestException
+                Assertions.assertTrue(exception.message?.contains("BAD_REQUEST") == true)
+
+                val restException = exception.toRestException()
+                Assertions.assertEquals(HttpStatus.BAD_REQUEST, restException.httpStatus)
+                Assertions.assertEquals("Bad request", restException.title)
+                Assertions.assertEquals(exception.message, restException.description)
+            }
             .verify()
     }
 
@@ -781,7 +790,16 @@ class EcommerceServiceTest {
                     paymentMethod = PaymentMethodEnum.valueOf(paymentMethod.toString())
                 )
             )
-            .expectError(NpgBadGatewayException::class.java)
+            .expectErrorSatisfies { throwable ->
+                Assertions.assertTrue(throwable is NpgBadGatewayException)
+                val exception = throwable as NpgBadGatewayException
+                Assertions.assertTrue(exception.message?.contains("INTERNAL_SERVER_ERROR") == true)
+
+                val restException = exception.toRestException()
+                Assertions.assertEquals(HttpStatus.BAD_GATEWAY, restException.httpStatus)
+                Assertions.assertEquals("Bad gateway", restException.title)
+                Assertions.assertEquals(exception.message, restException.description)
+            }
             .verify()
     }
 
