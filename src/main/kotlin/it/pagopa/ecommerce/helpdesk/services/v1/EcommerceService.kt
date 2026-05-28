@@ -262,7 +262,7 @@ class EcommerceService(
             paymentMethod.serviceName,
         )
         return npgApiKeyConfiguration[paymentMethod, pspId].fold(
-            { ex -> Mono.error(ex) },
+            { ex -> Mono.error(NpgBadGatewayException(ex.message)) },
             { apiKey ->
                 npgClient.getOrder(UUID.fromString(correlationId), apiKey, orderId).onErrorMap(
                     NpgResponseException::class.java
