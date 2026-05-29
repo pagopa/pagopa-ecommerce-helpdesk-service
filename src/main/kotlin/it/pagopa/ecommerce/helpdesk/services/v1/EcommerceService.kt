@@ -30,6 +30,7 @@ import it.pagopa.generated.ecommerce.helpdesk.model.OperationResultDto
 import it.pagopa.generated.ecommerce.helpdesk.model.OperationTypeDto
 import it.pagopa.generated.ecommerce.helpdesk.model.PaymentMethodDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchDeadLetterEventResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsByOrderIdRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestTransactionIdDto as SearchTransactionRequestTransactionIdDtoV2
@@ -167,53 +168,76 @@ class EcommerceService(
                                 optionalResult.get().transactionInfo.paymentMethodName
                             )
                     )
-                    .map { orderResponse ->
-                        SearchNpgOperationsResponseDto().apply {
-                            operations =
-                                orderResponse.operations
-                                    ?.map { operation ->
-                                        OperationDto().apply {
-                                            additionalData =
-                                                OperationAdditionalDataDto().apply {
-                                                    authorizationCode =
-                                                        operation.additionalData
-                                                            ?.get("authorizationCode")
-                                                            ?.toString()
-                                                    rrn =
-                                                        operation.additionalData
-                                                            ?.get("rrn")
-                                                            ?.toString()
-                                                }
-
-                                            operationAmount = operation.operationAmount
-                                            operationCurrency = operation.operationCurrency
-                                            operationId = operation.operationId
-                                            operationResult =
-                                                OperationResultDto.valueOf(
-                                                    operation.operationResult.toString()
-                                                )
-                                            operationTime = operation.operationTime
-                                            operationType =
-                                                OperationTypeDto.valueOf(
-                                                    operation.operationType.toString()
-                                                )
-                                            orderId = operation.orderId
-                                            paymentCircuit = operation.paymentCircuit
-                                            paymentEndToEndId = operation.paymentEndToEndId
-                                            paymentMethod =
-                                                operation.paymentMethod?.let {
-                                                    PaymentMethodDto.valueOf(it.toString())
-                                                }
-                                        }
-                                    }
-                                    ?.toList()
-                        }
-                    }
+                    .map(::mapNpgOperationsResponse)
             } else {
                 Mono.error(NoResultFoundException(transactionId))
             }
         }
     }
+
+    /**
+     * Searches for NPG operations associated with a given order ID, psp ID and payment method
+     *
+     * The search process follows these steps:
+     * 1. Retrieves NPG order details using [performGetOrderNPG]
+     * 2. Maps the NPG order response to a [SearchNpgOperationsResponseDto] containing operation
+     *    details
+     *
+     * @param orderId The ID of the order to search for
+     * @return Mono<SearchNpgOperationsResponseDto> containing the NPG operations data, or
+     *   NoResultFoundException if the transaction is not found or lacks required data
+     */
+    fun searchNpgOperationsByOrderId(
+        orderId: String,
+        pspId: String,
+        paymentMethod: SearchNpgOperationsByOrderIdRequestDto.PaymentMethodEnum
+    ): Mono<SearchNpgOperationsResponseDto> {
+
+        return performGetOrderNPG(
+                orderId = orderId,
+                pspId = pspId,
+                correlationId = UUID.randomUUID().toString(),
+                paymentMethod = PaymentMethod.valueOf(paymentMethod.toString())
+            )
+            .map(::mapNpgOperationsResponse)
+    }
+
+    private fun mapNpgOperationsResponse(
+        orderResponse: OrderResponseDto
+    ): SearchNpgOperationsResponseDto =
+        SearchNpgOperationsResponseDto().apply {
+            operations =
+                orderResponse.operations
+                    ?.map { operation ->
+                        OperationDto().apply {
+                            additionalData =
+                                OperationAdditionalDataDto().apply {
+                                    authorizationCode =
+                                        operation.additionalData
+                                            ?.get("authorizationCode")
+                                            ?.toString()
+                                    rrn = operation.additionalData?.get("rrn")?.toString()
+                                }
+
+                            operationAmount = operation.operationAmount
+                            operationCurrency = operation.operationCurrency
+                            operationId = operation.operationId
+                            operationResult =
+                                OperationResultDto.valueOf(operation.operationResult.toString())
+                            operationTime = operation.operationTime
+                            operationType =
+                                OperationTypeDto.valueOf(operation.operationType.toString())
+                            this.orderId = operation.orderId
+                            paymentCircuit = operation.paymentCircuit
+                            paymentEndToEndId = operation.paymentEndToEndId
+                            this.paymentMethod =
+                                operation.paymentMethod?.let {
+                                    PaymentMethodDto.valueOf(it.toString())
+                                }
+                        }
+                    }
+                    ?.toList()
+        }
 
     /**
      * Imported from transactions-scheduler.
@@ -223,7 +247,7 @@ class EcommerceService(
      *   on transactions-scheduler</a>
      */
     private fun performGetOrderNPG(
-        transactionId: TransactionId,
+        transactionId: TransactionId? = null,
         orderId: String,
         pspId: String,
         correlationId: String,
@@ -231,14 +255,14 @@ class EcommerceService(
     ): Mono<OrderResponseDto> {
         logger.info(
             "Performing get order for transaction with id: [{}], orderId [{}], pspId: [{}], correlationId: [{}], paymentMethod: [{}]",
-            transactionId.value(),
+            transactionId?.value(),
             orderId,
             pspId,
             correlationId,
             paymentMethod.serviceName,
         )
         return npgApiKeyConfiguration[paymentMethod, pspId].fold(
-            { ex -> Mono.error(ex) },
+            { ex -> Mono.error(NpgBadGatewayException(ex.message)) },
             { apiKey ->
                 npgClient.getOrder(UUID.fromString(correlationId), apiKey, orderId).onErrorMap(
                     NpgResponseException::class.java
@@ -249,10 +273,10 @@ class EcommerceService(
                             if (it.is5xxServerError) {
                                 NpgBadGatewayException("$it")
                             } else {
-                                NpgBadRequestException(transactionId.value(), "$it")
+                                NpgBadRequestException(transactionId?.value(), orderId, "$it")
                             }
                         }
-                        .orElse(exception)
+                        .orElse(NpgBadGatewayException("NPG generic error"))
                 }
             }
         )
