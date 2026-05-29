@@ -15,12 +15,12 @@ class NpgBadGatewayException(errorCodeReason: String?) :
         )
 }
 
-class NpgBadRequestException(transactionId: String?, errorCodeReason: String?) :
+class NpgBadRequestException(transactionId: String?, orderId: String?, errorCodeReason: String?) :
     ApiError(
         transactionId?.let {
-            "Transaction with id $it npg state cannot be retrieved. Reason: Received HTTP error code from NPG: $errorCodeReason"
+            "Transaction with id $it cannot be retrieved. Reason: Received HTTP error code from NPG: $errorCodeReason"
         }
-            ?: "Npg state cannot be retrieved. Reason: Received HTTP error code from NPG: $errorCodeReason"
+            ?: "Npg state cannot be retrieved with orderId $orderId. Reason: Received HTTP error code from NPG: $errorCodeReason"
     ) {
     override fun toRestException() =
         RestApiException(

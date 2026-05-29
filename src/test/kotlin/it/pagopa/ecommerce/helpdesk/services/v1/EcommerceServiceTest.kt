@@ -689,7 +689,21 @@ class EcommerceServiceTest {
             )
 
         StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
-            .expectError(NpgBadRequestException::class.java)
+            .expectErrorSatisfies { throwable ->
+                Assertions.assertTrue(throwable is NpgBadRequestException)
+                val exception = throwable as NpgBadRequestException
+                Assertions.assertTrue(
+                    exception.message?.contains(
+                        "Transaction with id $TRANSACTION_ID cannot be retrieved"
+                    ) == true
+                )
+                Assertions.assertTrue(exception.message?.contains("BAD_REQUEST") == true)
+
+                val restException = exception.toRestException()
+                Assertions.assertEquals(HttpStatus.BAD_REQUEST, restException.httpStatus)
+                Assertions.assertEquals("Bad request", restException.title)
+                Assertions.assertEquals(exception.message, restException.description)
+            }
             .verify()
 
         verify(npgClient)
@@ -726,6 +740,11 @@ class EcommerceServiceTest {
             .expectErrorSatisfies { throwable ->
                 Assertions.assertTrue(throwable is NpgBadRequestException)
                 val exception = throwable as NpgBadRequestException
+                Assertions.assertTrue(
+                    exception.message?.contains(
+                        "Npg state cannot be retrieved with orderId $orderId"
+                    ) == true
+                )
                 Assertions.assertTrue(exception.message?.contains("BAD_REQUEST") == true)
 
                 val restException = exception.toRestException()

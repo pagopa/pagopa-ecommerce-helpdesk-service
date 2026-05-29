@@ -273,7 +273,7 @@ class EcommerceService(
                             if (it.is5xxServerError) {
                                 NpgBadGatewayException("$it")
                             } else {
-                                NpgBadRequestException(transactionId?.value(), "$it")
+                                NpgBadRequestException(transactionId?.value(), orderId, "$it")
                             }
                         }
                         .orElse(NpgBadGatewayException("NPG generic error"))
