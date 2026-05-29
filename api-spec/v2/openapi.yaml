@@ -488,7 +488,7 @@ components:
         idChannel:
           type: string
       example:
-        pspId: "EXAMPLEPSP"
+        pspId: "BPPIITRRXXX"
         businessName: "businessName"
         idChannel: "13212880150_02_ONUS"
     AmountEuroCents:
