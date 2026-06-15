@@ -89,14 +89,14 @@ class ExceptionHandlerTest {
         val response = exceptionHandler.handleException(exception)
         assertEquals(
             HelpdeskTestUtils.buildProblemJson(
-                httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+                httpStatus = HttpStatus.BAD_REQUEST,
                 title = "Invalid search criteria",
                 description =
                     "Invalid search criteria with type: $searchCriteria for product: ${ProductDto.PM}"
             ),
             response.body
         )
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.statusCode)
+        assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
     }
 
     @Test
@@ -110,14 +110,14 @@ class ExceptionHandlerTest {
         val response = exceptionHandler.handleException(exception)
         assertEquals(
             HelpdeskTestUtils.buildProblemJson(
-                httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+                httpStatus = HttpStatus.BAD_REQUEST,
                 title = "Invalid search criteria",
                 description =
                     "Invalid search criteria with type: $searchCriteria for product: ${it.pagopa.generated.ecommerce.helpdesk.v2.model.ProductDto.ECOMMERCE}"
             ),
             response.body
         )
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.statusCode)
+        assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
     }
 
     @Test
