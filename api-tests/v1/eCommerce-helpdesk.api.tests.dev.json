@@ -1,9 +1,9 @@
 {
   "info": {
-    "_postman_id": "62af13dd-7060-47c3-8211-75d6b2378b1a",
+    "_postman_id": "16dafa8f-be09-495c-88a7-947a23d68199",
     "name": "Ecommerce helpDesk-service DEV",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "29917658"
+    "_exporter_id": "23963988"
   },
   "item": [
     {
@@ -490,75 +490,6 @@
       "response": []
     },
     {
-      "name": "eCommerce retrieve ALL dead letter events [no time range]",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"eCommerce search ALL dead letter events without time range - Status code is 200 with valid json response\", function () {",
-              "    pm.response.to.have.status(200);",
-              "    const response = pm.response.json();",
-              "    pm.expect(response.deadLetterEvents.length).greaterThan(0);",
-              "    pm.expect(response.page.current).to.be.eq(0);",
-              "    pm.expect(response.page.total).to.be.gt(0);",
-              "    pm.expect(response.page.results).to.be.lte(10);",
-              "});"
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Ocp-Apim-Subscription-Key",
-            "value": "{{API_SUBSCRIPTION_KEY}}",
-            "type": "text"
-          },
-          {
-            "key": "deployment",
-            "value": "{{DEPLOYMENT}}",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"source\": \"ALL\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
-          "host": [
-            "{{HOSTNAME}}"
-          ],
-          "path": [
-            "ecommerce",
-            "helpdesk-service",
-            "v1",
-            "ecommerce",
-            "searchDeadLetterEvents"
-          ],
-          "query": [
-            {
-              "key": "pageNumber",
-              "value": "0"
-            },
-            {
-              "key": "pageSize",
-              "value": "10"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
       "name": "eCommerce retrieve ALL dead letter events [with time range]",
       "event": [
         {
@@ -574,7 +505,9 @@
               "    pm.expect(response.page.results).to.be.lte(10);",
               "});"
             ],
-            "type": "text/javascript"
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -594,7 +527,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2025-01-30T14:50:27.001Z\",\n      \"endDate\": \"2025-12-30T14:50:27.999Z\"\n  }\n}",
+          "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2025-03-13T00:00:00.001Z\",\n      \"endDate\": \"2025-03-20T23:00:00.999Z\"\n  }\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -648,12 +581,12 @@
               "    pm.expect(response.page.results).to.be.lte(10);",
               "",
               "    // Define the time range limits",
-              "    const startDate = new Date(\"2025-01-30T14:50:27.001Z\");",
-              "    const endDate = new Date(\"2025-12-30T14:50:27.999Z\");",
+              "    const startDate = new Date(\"2025-03-13T00:00:00.001Z\");",
+              "    const endDate = new Date(\"2025-03-20T23:00:00.999Z\");",
               "",
               "    // Define excluded statuses",
               "    const excludedEcommerceStatuses = [\"EXPIRED\"];",
-              "    const excludedNpgStatuses = [\"EXECUTED\"];",
+              "    const excludedNpgStatuses = [\"CANCELED\"];",
               "",
               "    // Iterate through each event in the response",
               "    response.deadLetterEvents.forEach(event => {",
@@ -676,7 +609,8 @@
               ""
             ],
             "type": "text/javascript",
-            "packages": {}
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -696,7 +630,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2025-01-30T14:50:27.001Z\",\n      \"endDate\": \"2025-12-30T14:50:27.999Z\"\n  },\n  \"excludedStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"EXECUTED\"]\n  }\n}",
+          "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2025-03-13T00:00:00.001Z\",\n      \"endDate\": \"2025-03-20T23:00:00.999Z\"\n  },\n  \"excludedStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"CANCELED\"]\n  }\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -750,13 +684,13 @@
               "    pm.expect(response.page.results).to.be.lte(10);",
               "",
               "    // Define the time range limits",
-              "    const startDate = new Date(\"2025-01-30T14:50:27.001Z\");",
-              "    const endDate = new Date(\"2025-12-30T14:50:27.999Z\");",
+              "    const startDate = new Date(\"2025-03-13T00:00:00.001Z\");",
+              "    const endDate = new Date(\"2025-03-20T23:00:00.999Z\");",
               "",
               "    // Define excluded statuses",
               "    const excludedEcommerceStatuses = [\"EXPIRED\"];",
-              "    const excludedNpgStatuses = [\"EXECUTED\"];",
-              "    const excludedPaymentGateway = [\"NPG\"];",
+              "    const excludedNpgStatuses = [\"CANCELED\"];",
+              "    const excludedPaymentGateway = [\"REDIRECT\"];",
               "",
               "    // Iterate through each event in the response",
               "    response.deadLetterEvents.forEach(event => {",
@@ -806,7 +740,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2025-01-30T14:50:27.001Z\",\n      \"endDate\": \"2025-12-30T14:50:27.999Z\"\n  },\n  \"excludedStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"EXECUTED\"]\n  },\"excludedPaymentGateway\": [\"NPG\"]\n}",
+          "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2025-03-13T00:00:00.001Z\",\n      \"endDate\": \"2025-03-20T23:00:00.999Z\"\n  },\n  \"excludedStatuses\": {\n    \"ecommerceStatuses\": [\"EXPIRED\"],\n    \"npgStatuses\": [\"CANCELED\"]\n  },\"excludedPaymentGateway\": [\"REDIRECT\"]\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -840,22 +774,21 @@
       "response": []
     },
     {
-      "name": "eCommerce retrieve ECOMMERCE dead letter events [no time range]",
+      "name": "eCommerce retrieve ALL dead letter events [with time range] - 400 for too large search time",
       "event": [
         {
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test(\"eCommerce search ECOMMERCE dead letter events - Status code is 200 with valid json response\", function () {",
-              "    pm.response.to.have.status(200);",
+              "pm.test(\"eCommerce search ALL dead letter events with time range - Status code is 400 for request with time range too large\", function () {",
+              "    pm.response.to.have.status(400);",
               "    const response = pm.response.json();",
-              "    pm.expect(response.deadLetterEvents.length).greaterThan(0);",
-              "    pm.expect(response.page.current).to.be.eq(0);",
-              "    pm.expect(response.page.total).to.be.gt(0);",
-              "    pm.expect(response.page.results).to.be.lte(10);",
+              "    pm.expect(response.detail).to.be.eq(\"Invalid time range: time range must not exceed [7] days\");",
               "});"
             ],
-            "type": "text/javascript"
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -875,7 +808,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"source\": \"ECOMMERCE\"\n}",
+          "raw": "{\n  \"source\": \"ALL\",\n  \"timeRange\": {\n      \"startDate\": \"2025-01-01T00:00:00.001Z\",\n      \"endDate\": \"2025-02-21T23:00:00.999Z\"\n  }\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -909,22 +842,19 @@
       "response": []
     },
     {
-      "name": "eCommerce retrieve NOTIFICATIONS_SERVICE dead letter events [no time range]",
+      "name": "eCommerce retrieve ALL dead letter events [no time range] - 400 for missing time range",
       "event": [
         {
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test(\"eCommerce search NOTIFICATIONS_SERVICE dead letter events - Status code is 200 with valid json response\", function () {",
-              "    pm.response.to.have.status(200);",
-              "    const response = pm.response.json();",
-              "    pm.expect(response.deadLetterEvents.length).greaterThan(0);",
-              "    pm.expect(response.page.current).to.be.eq(0);",
-              "    pm.expect(response.page.total).to.be.gt(0);",
-              "    pm.expect(response.page.results).to.be.lte(10);",
+              "pm.test(\"eCommerce search ALL dead letter events - Status code is 400 for request without time range\", function () {",
+              "    pm.response.to.have.status(400);",
               "});"
             ],
-            "type": "text/javascript"
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -944,7 +874,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"source\": \"NOTIFICATIONS_SERVICE\"\n}",
+          "raw": "{\n  \"source\": \"ALL\"\n}",
           "options": {
             "raw": {
               "language": "json"
