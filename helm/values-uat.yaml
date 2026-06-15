@@ -20,7 +20,7 @@ microservice-chart:
     envSecret: {}
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercehelpdeskservice
-    tag: "2.7.6"
+    tag: "2.9.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -78,6 +78,7 @@ microservice-chart:
           type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
           value: "75"
   envConfig:
+    ACTIVE_PROFILE: k8s
     DEFAULT_LOGGING_LEVEL: "info"
     APP_LOGGING_LEVEL: "info"
     WEB_LOGGING_LEVEL: "off"
@@ -107,7 +108,7 @@ microservice-chart:
     NPG_URI: https://stg-ta.nexigroup.com/api/phoenix-0.0
     NPG_READ_TIMEOUT: "10000"
     NPG_CONNECTION_TIMEOUT: "10000"
-    NPG_CARDS_PSP_LIST: "BCITITMM,CIPBITMM,BIC36019,UNCRITMM,BPPIITRRXXX,PPAYITR1XXX,BNLIITRR,PASCITMM,WOLLNLB1,IFSPIT21,BPMOIT22,SARDIT31,ABI36964"
+    NPG_CARDS_PSP_LIST: "BCITITMM,CIPBITMM,BIC36019,UNCRITMM,BPPIITRRXXX,PPAYITR1XXX,BNLIITRR,PASCITMM,WOLLNLB1,BPMOIT22,SARDIT31,IFSPIT21,BCEPITMM,SELBIT2B,ABI36964"
     NPG_PAYPAL_PSP_LIST: "BCITITMM,SIGPITM1XXX,MOONITMMXXX,CIPBITMM"
     NPG_MYBANK_PSP_LIST: "BCITITMM,UNCRITMM"
     NPG_BANCOMATPAY_PSP_LIST: "BCITITMM,ABI36925"

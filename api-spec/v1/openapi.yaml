@@ -74,6 +74,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -111,6 +113,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -148,6 +152,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -188,6 +194,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -228,6 +236,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -265,6 +275,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -305,6 +317,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -348,6 +362,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+
+  /ecommerce/searchNpgOperationsByOrderId:
+    post:
+      tags:
+        - eCommerce
+      operationId: ecommerceSearchNpgOperationsByOrderId
+      summary: Search npg operations by OrderId
+      description: 'GET with body payload - no resources created'
+      requestBody:
+        $ref: '#/components/requestBodies/SearchNpgOperationsByOrderIdRequest'
+      responses:
+        '200':
+          description: Order Id status found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchNpgOperationsResponse'
+        '400':
+          description: Formally invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: Order Id not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '422':
+          description: Unsupported version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsResponse'
         '500':
           description: Internal server error
           content:
@@ -392,6 +453,25 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ProblemJson'
+    TooManyRequestsResponse:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemJson'
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: The number of allowed requests in the current period
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: The number of remaining requests in the current period
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: The number of seconds left in the current period
 
   schemas:
     ProblemJson:
@@ -824,7 +904,7 @@ components:
         idChannel:
           type: string
       example:
-        pspId: "EXAMPLEPSP"
+        pspId: "BPPIITRRXXX"
         businessName: "businessName"
         idChannel: "13212880150_02_ONUS"
 
@@ -1262,6 +1342,43 @@ components:
       required:
         - idTransaction
 
+    SearchNpgOperationsByOrderIdRequest:
+      type: object
+      description: ''
+      properties:
+        orderId:
+          maxLength: 27
+          type: string
+          description: "Merchant order id, unique in the merchant domain"
+          example: btid2384983
+        pspId:
+          type: string
+          description: The identifier of the psp
+          example: BPPIITRRXXX
+        paymentMethod:
+          type: string
+          enum:
+            - CARDS
+            - PAYPAL
+            - PAYPAL_PAGAIN3
+            - GIROPAY
+            - IDEAL
+            - MYBANK
+            - GOOGLEPAY
+            - APPLEPAY
+            - BANCOMATPAY
+            - BANCONTACT
+            - MULTIBANCO
+            - WECHAT
+            - ALIPAY
+            - PIS
+            - SATISPAY_DIRECT
+          example: "PAYPAL"
+      required:
+        - orderId
+        - pspId
+        - paymentMethod
+
     SearchNpgOperationsResponse:
       type: object
       description: ''
@@ -1588,3 +1705,9 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/SearchNpgOperationsRequest'
+    SearchNpgOperationsByOrderIdRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SearchNpgOperationsByOrderIdRequest'

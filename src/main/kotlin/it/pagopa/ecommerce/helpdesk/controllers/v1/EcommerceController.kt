@@ -60,4 +60,19 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
             .flatMap { ecommerceService.searchNpgOperations(transactionId = it.idTransaction) }
             .map { ResponseEntity.ok(it) }
     }
+
+    override fun ecommerceSearchNpgOperationsByOrderId(
+        searchNpgOperationsByOrderIdRequestDto: Mono<SearchNpgOperationsByOrderIdRequestDto>,
+        exchange: ServerWebExchange?
+    ): Mono<ResponseEntity<SearchNpgOperationsResponseDto>> {
+        return searchNpgOperationsByOrderIdRequestDto
+            .flatMap {
+                ecommerceService.searchNpgOperationsByOrderId(
+                    orderId = it.orderId,
+                    pspId = it.pspId,
+                    paymentMethod = it.paymentMethod
+                )
+            }
+            .map { ResponseEntity.ok(it) }
+    }
 }

@@ -1,9 +1,9 @@
 {
   "info": {
-    "_postman_id": "27044af8-8c81-4875-abc1-4a52b1453eed",
+    "_postman_id": "62af13dd-7060-47c3-8211-75d6b2378b1a",
     "name": "Ecommerce helpDesk-service DEV",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "46676989"
+    "_exporter_id": "29917658"
   },
   "item": [
     {
@@ -814,7 +814,7 @@
           }
         },
         "url": {
-          "raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=1000",
+          "raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchDeadLetterEvents?pageNumber=0&pageSize=10",
           "host": [
             "{{HOSTNAME}}"
           ],
@@ -1164,6 +1164,71 @@
               "key": "pageSize",
               "value": "21"
             }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "eCommerce SearchNpgOperations ORDER_ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"eCommerce SearchNpgOperations SearchNpgOperations by ORDER_ID - Status code is 200 with valid json response\", function () {",
+              "    pm.response.to.have.status(200);",
+              "    const response = pm.response.json();",
+              "    pm.expect(response).to.have.property('operations');",
+              "    pm.expect(response.operations).to.be.an('array');",
+              "    pm.expect(response.operations).to.not.be.empty; ",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Ocp-Apim-Subscription-Key",
+            "value": "{{API_SUBSCRIPTION_KEY}}",
+            "type": "text"
+          },
+          {
+            "key": "deployment",
+            "value": "{{DEPLOYMENT}}",
+            "type": "text"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{SECURITY_API_KEY_PRIMARY}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": \"{{ORDER_ID}}\",\n  \"pspId\": \"{{PSP_ID}}\",\n  \"paymentMethod\": \"{{PAYMENT_METHOD}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperationsByOrderId",
+          "host": [
+            "{{HOSTNAME}}"
+          ],
+          "path": [
+            "ecommerce",
+            "helpdesk-service",
+            "v1",
+            "ecommerce",
+            "searchNpgOperationsByOrderId"
           ]
         }
       },

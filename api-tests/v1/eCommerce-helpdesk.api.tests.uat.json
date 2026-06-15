@@ -1099,6 +1099,71 @@
 			},
 			"response": []
 		},
+        {
+          "name": "eCommerce SearchNpgOperations ORDER_ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"eCommerce SearchNpgOperations SearchNpgOperations by ORDER_ID - Status code is 200 with valid json response\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('operations');",
+                  "    pm.expect(response.operations).to.be.an('array');",
+                  "    pm.expect(response.operations).to.not.be.empty; ",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Ocp-Apim-Subscription-Key",
+                "value": "{{API_SUBSCRIPTION_KEY}}",
+                "type": "text"
+              },
+              {
+                "key": "deployment",
+                "value": "{{DEPLOYMENT}}",
+                "type": "text"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{SECURITY_API_KEY_PRIMARY}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{ORDER_ID}}\",\n  \"pspId\": \"{{PSP_ID}}\",\n  \"paymentMethod\": \"{{PAYMENT_METHOD}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOSTNAME}}/ecommerce/helpdesk-service/v1/ecommerce/searchNpgOperationsByOrderId",
+              "host": [
+                "{{HOSTNAME}}"
+              ],
+              "path": [
+                "ecommerce",
+                "helpdesk-service",
+                "v1",
+                "ecommerce",
+                "searchNpgOperationsByOrderId"
+              ]
+            }
+          },
+          "response": []
+        },
 		{
 			"name": "eCommerce SearchNpgOperations TRANSACTION_ID - Success",
 			"event": [

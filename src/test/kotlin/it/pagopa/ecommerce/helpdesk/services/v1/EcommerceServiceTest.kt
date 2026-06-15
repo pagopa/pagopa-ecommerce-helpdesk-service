@@ -38,6 +38,7 @@ import it.pagopa.generated.ecommerce.helpdesk.model.OperationResultDto as Operat
 import it.pagopa.generated.ecommerce.helpdesk.model.PageInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchDeadLetterEventResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsByOrderIdRequestDto.PaymentMethodEnum
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.PspInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionInfoDto
@@ -690,11 +691,137 @@ class EcommerceServiceTest {
             )
 
         StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
-            .expectError(NpgBadRequestException::class.java)
+            .expectErrorSatisfies { throwable ->
+                Assertions.assertTrue(throwable is NpgBadRequestException)
+                val exception = throwable as NpgBadRequestException
+                Assertions.assertTrue(
+                    exception.message?.contains(
+                        "Transaction with id $TRANSACTION_ID cannot be retrieved"
+                    ) == true
+                )
+                Assertions.assertTrue(exception.message?.contains("BAD_REQUEST") == true)
+
+                val restException = exception.toRestException()
+                Assertions.assertEquals(HttpStatus.BAD_REQUEST, restException.httpStatus)
+                Assertions.assertEquals("Bad request", restException.title)
+                Assertions.assertEquals(exception.message, restException.description)
+            }
             .verify()
 
         verify(npgClient)
             .getOrder(eq(correlationId), eq("test-api-key"), eq(authorizationRequestId))
+    }
+
+    @Test
+    fun `Should handle NPG client error by order id`() {
+        val orderId = "order123"
+        val pspId = PSP_ID
+        val paymentMethod = PaymentMethod.CARDS
+
+        given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("test-api-key"))
+
+        given(npgClient.getOrder(any(), any(), any()))
+            .willReturn(
+                Mono.error(
+                    NpgResponseException(
+                        "error",
+                        emptyList(),
+                        Optional.of(HttpStatus.BAD_REQUEST),
+                        RuntimeException()
+                    )
+                )
+            )
+
+        StepVerifier.create(
+                ecommerceService.searchNpgOperationsByOrderId(
+                    orderId = orderId,
+                    pspId = pspId,
+                    paymentMethod = PaymentMethodEnum.valueOf(paymentMethod.toString())
+                )
+            )
+            .expectErrorSatisfies { throwable ->
+                Assertions.assertTrue(throwable is NpgBadRequestException)
+                val exception = throwable as NpgBadRequestException
+                Assertions.assertTrue(
+                    exception.message?.contains(
+                        "Npg state cannot be retrieved with orderId $orderId"
+                    ) == true
+                )
+                Assertions.assertTrue(exception.message?.contains("BAD_REQUEST") == true)
+
+                val restException = exception.toRestException()
+                Assertions.assertEquals(HttpStatus.BAD_REQUEST, restException.httpStatus)
+                Assertions.assertEquals("Bad request", restException.title)
+                Assertions.assertEquals(exception.message, restException.description)
+            }
+            .verify()
+    }
+
+    @Test
+    fun `Should successfully map NPG operation response by order id with all fields`() {
+        val orderId = "order123"
+        val pspId = PSP_ID
+        val paymentMethod = PaymentMethod.CARDS
+
+        val npgOperation =
+            OperationDtoV1().apply {
+                operationResult = OperationResultDtoV1.EXECUTED
+                operationType = OperationTypeDtoV1.AUTHORIZATION
+            }
+        val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
+
+        given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("test-api-key"))
+        given(npgClient.getOrder(any(), eq("test-api-key"), eq(orderId)))
+            .willReturn(Mono.just(orderResponse))
+
+        StepVerifier.create(
+                ecommerceService.searchNpgOperationsByOrderId(
+                    orderId = orderId,
+                    pspId = pspId,
+                    paymentMethod = PaymentMethodEnum.valueOf(paymentMethod.toString())
+                )
+            )
+            .expectNextMatches { response -> response.operations?.size == 1 }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `Should handle NPG server error by order id`() {
+        val orderId = "order123"
+        val pspId = PSP_ID
+        val paymentMethod = PaymentMethod.CARDS
+
+        given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("test-api-key"))
+        given(npgClient.getOrder(any(), any(), eq(orderId)))
+            .willReturn(
+                Mono.error(
+                    NpgResponseException(
+                        "error",
+                        emptyList(),
+                        Optional.of(HttpStatus.INTERNAL_SERVER_ERROR),
+                        RuntimeException()
+                    )
+                )
+            )
+
+        StepVerifier.create(
+                ecommerceService.searchNpgOperationsByOrderId(
+                    orderId = orderId,
+                    pspId = pspId,
+                    paymentMethod = PaymentMethodEnum.valueOf(paymentMethod.toString())
+                )
+            )
+            .expectErrorSatisfies { throwable ->
+                Assertions.assertTrue(throwable is NpgBadGatewayException)
+                val exception = throwable as NpgBadGatewayException
+                Assertions.assertTrue(exception.message?.contains("INTERNAL_SERVER_ERROR") == true)
+
+                val restException = exception.toRestException()
+                Assertions.assertEquals(HttpStatus.BAD_GATEWAY, restException.httpStatus)
+                Assertions.assertEquals("Bad gateway", restException.title)
+                Assertions.assertEquals(exception.message, restException.description)
+            }
+            .verify()
     }
 
     @Test
