@@ -7,7 +7,7 @@ class InvalidSearchCriteriaException(reason: String) : ApiError(reason) {
 
     override fun toRestException() =
         RestApiException(
-            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+            httpStatus = HttpStatus.BAD_REQUEST,
             description = this.message!!,
             title = "Invalid search criteria"
         )
