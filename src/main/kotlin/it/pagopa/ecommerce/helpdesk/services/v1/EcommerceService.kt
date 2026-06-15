@@ -34,11 +34,13 @@ import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsByOrderId
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestTransactionIdDto as SearchTransactionRequestTransactionIdDtoV2
+import java.time.Duration
 import java.util.*
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -51,7 +53,8 @@ class EcommerceService(
     @Qualifier("confidential-data-manager-client-email")
     private val confidentialDataManager: ConfidentialDataManager,
     @Autowired val npgClient: NpgClient,
-    @Autowired val npgApiKeyConfiguration: NpgApiKeyConfiguration
+    @Autowired val npgApiKeyConfiguration: NpgApiKeyConfiguration,
+    @Value("\${deadLetter.timeRangeMax}") private val deadLetterTimeRangeMax: Int
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -92,13 +95,25 @@ class EcommerceService(
             "[helpDesk ecommerce service] search dead letter events, type: {}",
             searchRequest.source
         )
-        val timeRange: DeadLetterSearchDateTimeRangeDto? = searchRequest.timeRange
+        val timeRange: DeadLetterSearchDateTimeRangeDto = searchRequest.timeRange
+
         return mono { searchRequest }
-            .filter { timeRange == null || timeRange.startDate < timeRange.endDate }
+            .filter { timeRange.startDate < timeRange.endDate }
             .switchIfEmpty(
                 Mono.error(
                     InvalidSearchCriteriaException(
-                        "Invalid time range: startDate [${timeRange?.startDate}] is not greater than endDate: [${timeRange?.endDate}]"
+                        "Invalid time range: startDate [${timeRange.startDate}] is not greater than endDate: [${timeRange.endDate}]"
+                    )
+                )
+            )
+            .filter {
+                Duration.between(timeRange.startDate, timeRange.endDate).toDays() <=
+                    deadLetterTimeRangeMax
+            }
+            .switchIfEmpty(
+                Mono.error(
+                    InvalidSearchCriteriaException(
+                        "Invalid time range: time range must not exceed [${deadLetterTimeRangeMax}] days"
                     )
                 )
             )
