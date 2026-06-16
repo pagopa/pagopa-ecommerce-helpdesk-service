@@ -810,7 +810,7 @@ components:
         amount:
           $ref: '#/components/schemas/AmountEuroCents'
         fee:
-          $ref: '#/components/schemas/AmountEuroCents'
+          $ref: '#/components/schemas/FeeEuroCents'
         grandTotal:
           $ref: '#/components/schemas/AmountEuroCents'
         rrn:
@@ -911,9 +911,14 @@ components:
     AmountEuroCents:
       description: Amount for payments, in euro cents
       type: integer
+      format: int64
       minimum: 0
       maximum: 99999999
-
+    FeeEuroCents:
+      type: integer
+      format: int32
+      minimum: 0
+      maximum: 99999999
     PageInfo:
       description: Information about the returned query page
       type: object
