@@ -21,7 +21,7 @@ plugins {
 }
 
 // eCommerce commons library version
-val ecommerceCommonsVersion = "3.6.0"
+val ecommerceCommonsVersion = "3.6.0-PIDM-1763-grandTotal-Long-SNAPSHOT-a7f6848"
 
 // eCommerce commons library git ref (by default tag)
 val ecommerceCommonsGitRef = ecommerceCommonsVersion

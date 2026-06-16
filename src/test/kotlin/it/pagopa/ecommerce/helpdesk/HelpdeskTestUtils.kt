@@ -252,7 +252,7 @@ object HelpdeskTestUtils {
             listOf("paymentToken").takeIf { !partial },
             "pspId".takeIf { !partial },
             "paymentMethodName".takeIf { !partial },
-            120.takeIf { !partial },
+            120L.takeIf { !partial },
             "rrn".takeIf { !partial },
             buildTransactionInfoDetails(gateway, partial)
         )
