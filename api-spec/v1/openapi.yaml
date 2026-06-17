@@ -913,7 +913,7 @@ components:
       type: integer
       format: int64
       minimum: 0
-      maximum: 99999999
+      maximum: 99999999999
     FeeEuroCents:
       type: integer
       format: int32

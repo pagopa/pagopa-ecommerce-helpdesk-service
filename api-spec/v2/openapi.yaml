@@ -496,7 +496,7 @@ components:
       format: int64
       type: integer
       minimum: 0
-      maximum: 99999999
+      maximum: 99999999999
     FeeEuroCents:
       type: integer
       format: int32
