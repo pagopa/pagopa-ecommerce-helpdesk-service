@@ -386,7 +386,7 @@ components:
         amount:
           $ref: '#/components/schemas/AmountEuroCents'
         fee:
-          $ref: '#/components/schemas/AmountEuroCents'
+          $ref: '#/components/schemas/FeeEuroCents'
         grandTotal:
           $ref: '#/components/schemas/AmountEuroCents'
         rrn:
@@ -493,7 +493,13 @@ components:
         idChannel: "13212880150_02_ONUS"
     AmountEuroCents:
       description: Amount for payments, in euro cents
+      format: int64
       type: integer
+      minimum: 0
+      maximum: 99999999999
+    FeeEuroCents:
+      type: integer
+      format: int32
       minimum: 0
       maximum: 99999999
     PageInfo:

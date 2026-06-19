@@ -23,9 +23,9 @@ data class TransactionInfo(
     val creationDate: String,
     val status: Int,
     val statusDetails: Int? = null,
-    val amount: Int? = null,
+    val amount: Long? = null,
     val fee: Int,
-    val grandTotal: Int,
+    val grandTotal: Long,
     val rrn: String? = null,
     val authorizationCode: String? = null,
     val paymentMethodName: String? = null
@@ -39,7 +39,7 @@ data class PaymentDetailInfo(
     val idTransaction: String? = null,
     val creditorInstitution: String? = null,
     val paFiscalCode: String? = null,
-    val amount: Int? = null
+    val amount: Long? = null
 )
 
 data class PspInfo(
