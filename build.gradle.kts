@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "it.pagopa.ecommerce.helpdesk"
 
-version = "2.11.0"
+version = "2.11.1"
 
 description = "pagopa-ecommerce-helpdesk-service"
 
