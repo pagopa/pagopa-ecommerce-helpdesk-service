@@ -248,6 +248,49 @@ components:
       example:
         type: "USER_EMAIL"
         userEmail: "mario.rossi@pagopa.it"
+    SearchTransactionRequestRRN:
+      type: object
+      description: Search transaction by RRN (retrieve reference number)
+      properties:
+        type:
+          type: string
+        rrn:
+          type: string
+      required:
+        - type
+        - rrn
+      example:
+        type: "RRN"
+        rrn: "rrn"
+    SearchTransactionRequestEndToEndId:
+      type: object
+      description: Search transaction by payment gateway end to end id
+      properties:
+        type:
+          type: string
+        endToEndId:
+          type: string
+      required:
+        - type
+        - endToEndId
+      example:
+        type: "END_TO_END_ID"
+        endToEndId: "endToEndId"
+    SearchTransactionRequestAuthorizationRequestId:
+      type: object
+      description: Search transaction by payment gateway authorization request id
+      properties:
+        type:
+          type: string
+        authorizationRequestId:
+          type: string
+      required:
+        - type
+        - authorizationRequestId
+      example:
+        type: "AUTHORIZATION_REQUEST_ID"
+        authorizationRequestId: "authorizationRequestId"
+
     SearchTransactionResponse:
       type: object
       description: TransactionResponse
@@ -540,7 +583,9 @@ components:
         - $ref: '#/components/schemas/SearchTransactionRequestPaymentToken'
         - $ref: '#/components/schemas/SearchTransactionRequestTransactionId'
         - $ref: '#/components/schemas/SearchTransactionRequestEmail'
-        - $ref: '#/components/schemas/SearchTransactionRequestFiscalCode'
+        - $ref: '#/components/schemas/SearchTransactionRequestRRN'
+        - $ref: '#/components/schemas/SearchTransactionRequestAuthorizationRequestId'
+        - $ref: '#/components/schemas/SearchTransactionRequestEndToEndId'
       discriminator:
         propertyName: type
         mapping:
@@ -549,6 +594,9 @@ components:
           TRANSACTION_ID: "#/components/schemas/SearchTransactionRequestTransactionId"
           USER_EMAIL: "#/components/schemas/SearchTransactionRequestEmail"
           USER_FISCAL_CODE: "#/components/schemas/SearchTransactionRequestFiscalCode"
+          RRN: "#/components/schemas/SearchTransactionRequestRRN"
+          AUTHORIZATION_REQUEST_ID: "#/components/schemas/SearchTransactionRequestAuthorizationRequestId"
+          END_TO_END_ID: "#/components/schemas/SearchTransactionRequestEndToEndId"
     EventInfo:
       type: object
       description: Event info
@@ -708,6 +756,18 @@ components:
               value:
                 type: USER_FISCAL_CODE
                 userFiscalCode: "user_fiscal_code"
+            search by authorization request id (NPG order id or redirect psp transactionId):
+              value:
+                type: AUTHORIZATION_REQUEST_ID
+                authorizationRequestId: "authId"
+            search by RRN:
+              value:
+                type: RRN
+                rrn: "rrn"
+            search by user end to end id (NPG payment gateway specific):
+              value:
+                type: END_TO_END_ID
+                endToEndId: "endToEndId"
     SearchTransactionRequest:
       required: true
       content:
@@ -729,3 +789,15 @@ components:
               value:
                 type: TRANSACTION_ID
                 transactionId: "c9644451389e47b0a7d8e9d488fcd502"
+            search by authorization request id (NPG order id or redirect psp transactionId):
+              value:
+                type: AUTHORIZATION_REQUEST_ID
+                authorizationRequestId: "authId"
+            search by RRN:
+              value:
+                type: RRN
+                rrn: "rrn"
+            search by user end to end id (NPG payment gateway specific):
+              value:
+                type: END_TO_END_ID
+                endToEndId: "endToEndId"
