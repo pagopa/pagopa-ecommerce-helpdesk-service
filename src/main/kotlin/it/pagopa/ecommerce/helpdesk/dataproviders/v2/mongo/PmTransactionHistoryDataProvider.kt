@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo
 
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.PmTransactionsRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.documents.PmTransactionHistory
@@ -20,7 +21,7 @@ class PmTransactionHistoryDataProvider(
 ) : TransactionDataProvider {
     override fun totalRecordCount(
         searchParams: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto>
-    ): Mono<Int> {
+    ): Mono<CountInfo> {
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
             decodedSearchParam.flatMap {
@@ -41,13 +42,14 @@ class PmTransactionHistoryDataProvider(
                     else -> invalidSearchCriteriaError
                 }
             }
-            .map { it.toInt() }
+            .map { CountInfo(it.toLong(), 0) }
     }
 
     override fun findResult(
         searchParams: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto>,
         skip: Int,
-        limit: Int
+        limit: Int,
+        countInfo: CountInfo
     ): Mono<List<TransactionResultDto>> {
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =

@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.services.v2
 
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.PmTransactionHistoryDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.oracle.PMTransactionDataProvider
@@ -53,7 +54,9 @@ class HelpdeskService(
                         confidentialFiscalCodeUtils = confidentialFiscalCodeUtils
                     )
                 )
-                .onErrorResume(InvalidSearchCriteriaException::class.java) { Mono.just(0) }
+                .onErrorResume(InvalidSearchCriteriaException::class.java) {
+                    Mono.just(CountInfo(0, 0))
+                }
 
         val totalPmCount =
             when (pmProviderType) {
@@ -67,10 +70,12 @@ class HelpdeskService(
                         confidentialFiscalCodeUtils = null
                     )
                 )
-                .onErrorResume(InvalidSearchCriteriaException::class.java) { Mono.just(0) }
+                .onErrorResume(InvalidSearchCriteriaException::class.java) {
+                    Mono.just(CountInfo(0, 0))
+                }
         return totalEcommerceCount.zipWith(totalPmCount, ::Pair).flatMap {
-            (totalEcommerceCount, totalPmCount) ->
-            if (totalPmCount + totalEcommerceCount == 0) {
+            (ecommerceCountInfo, pmCountInfo) ->
+            if (pmCountInfo.totalCount() + ecommerceCountInfo.totalCount() == 0L) {
                 return@flatMap Mono.error(NoResultFoundException(searchTransactionRequestDto.type))
             }
             val skip = pageNumber * pageSize
@@ -79,11 +84,14 @@ class HelpdeskService(
                 pageNumber,
                 pageSize,
                 skip,
-                totalEcommerceCount,
-                totalPmCount
+                ecommerceCountInfo,
+                pmCountInfo
             )
             val (ecommerceTotalPages, ecommerceRemainder) =
-                calculatePages(pageSize = pageSize, totalCount = totalEcommerceCount)
+                calculatePages(
+                    pageSize = pageSize,
+                    totalCount = ecommerceCountInfo.totalCount().toInt()
+                )
             val records =
                 if (pageNumber < ecommerceTotalPages - 1) {
                     logger.info("Recovering records from eCommerce DB. Skip: {}", skip)
@@ -96,7 +104,8 @@ class HelpdeskService(
                                     confidentialFiscalCodeUtils = confidentialFiscalCodeUtils
                                 ),
                             skip = skip,
-                            limit = pageSize
+                            limit = pageSize,
+                            countInfo = ecommerceCountInfo,
                         )
                         .onErrorResume(InvalidSearchCriteriaException::class.java) {
                             Mono.just(emptyList())
@@ -116,7 +125,8 @@ class HelpdeskService(
                                         confidentialFiscalCodeUtils = confidentialFiscalCodeUtils
                                     ),
                                 skip = skip,
-                                limit = pageSize
+                                limit = pageSize,
+                                countInfo = ecommerceCountInfo,
                             )
                             .onErrorResume(InvalidSearchCriteriaException::class.java) {
                                 Mono.just(emptyList())
@@ -136,7 +146,8 @@ class HelpdeskService(
                                         confidentialFiscalCodeUtils = confidentialFiscalCodeUtils
                                     ),
                                 skip = skip,
-                                limit = ecommerceRemainder
+                                limit = ecommerceRemainder,
+                                countInfo = ecommerceCountInfo,
                             )
                             .onErrorResume(InvalidSearchCriteriaException::class.java) {
                                 Mono.just(emptyList())
@@ -155,7 +166,8 @@ class HelpdeskService(
                                                 confidentialFiscalCodeUtils = null
                                             ),
                                         skip = 0,
-                                        limit = pageSize - ecommerceRemainder
+                                        limit = pageSize - ecommerceRemainder,
+                                        countInfo = pmCountInfo,
                                     )
                                     .map { pmRecords -> ecommerceRecords + pmRecords }
                                     .onErrorResume(InvalidSearchCriteriaException::class.java) {
@@ -164,7 +176,7 @@ class HelpdeskService(
                             }
                     }
                 } else {
-                    val skipFromPmDB = skip - totalEcommerceCount
+                    val skipFromPmDB = skip - ecommerceCountInfo.totalCount()
                     logger.info("Recovering records from PM DB, Skip: {}", skipFromPmDB)
                     when (pmProviderType) {
                             PmProviderType.PM_LEGACY -> pmTransactionDataProvider
@@ -177,8 +189,9 @@ class HelpdeskService(
                                     confidentialMailUtils = null,
                                     confidentialFiscalCodeUtils = null
                                 ),
-                            skip = skipFromPmDB,
-                            limit = pageSize
+                            skip = skipFromPmDB.toInt(),
+                            limit = pageSize,
+                            countInfo = pmCountInfo,
                         )
                         .onErrorResume(InvalidSearchCriteriaException::class.java) {
                             Mono.just(emptyList())
@@ -187,7 +200,8 @@ class HelpdeskService(
             return@flatMap records.map { results ->
                 buildTransactionSearchResponse(
                     currentPage = pageNumber,
-                    totalCount = totalEcommerceCount + totalPmCount,
+                    totalCount =
+                        (ecommerceCountInfo.totalCount() + pmCountInfo.totalCount()).toInt(),
                     pageSize = pageSize,
                     results = results
                 )

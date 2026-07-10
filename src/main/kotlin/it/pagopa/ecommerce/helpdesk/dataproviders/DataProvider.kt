@@ -9,10 +9,17 @@ import reactor.core.publisher.Mono
 interface DataProvider<K, T> {
 
     /** Retrieve total record count for the given search parameters */
-    fun totalRecordCount(searchParams: K): Mono<Int>
+    fun totalRecordCount(searchParams: K): Mono<CountInfo>
 
     /**
      * Perform paginated query for retrieve transaction information for the given search criteria
      */
-    fun findResult(searchParams: K, skip: Int, limit: Int): Mono<List<T>>
+    fun findResult(searchParams: K, skip: Int, limit: Int, countInfo: CountInfo): Mono<List<T>>
+}
+
+data class CountInfo(
+    val onlineDbCount: Long,
+    val historyDbCount: Long,
+) {
+    fun totalCount() = onlineDbCount + historyDbCount
 }

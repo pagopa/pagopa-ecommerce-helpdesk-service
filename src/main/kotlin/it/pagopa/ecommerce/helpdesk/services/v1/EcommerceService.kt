@@ -7,6 +7,7 @@ import it.pagopa.ecommerce.commons.exceptions.NpgResponseException
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OrderResponseDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.utils.NpgApiKeyConfiguration
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.DeadLetterDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider as EcommerceTransactionDataProviderV1
@@ -165,29 +166,31 @@ class EcommerceService(
                 confidentialFiscalCodeUtils = ConfidentialFiscalCodeUtils(confidentialDataManager)
             )
 
-        return ecommerceTransactionDataProviderV2.findResult(searchCriteria, 0, 1).flatMap { list ->
-            val optionalResult = list.firstOrNull()?.let { Optional.of(it) } ?: Optional.empty()
-            if (
-                optionalResult.isPresent &&
-                    optionalResult.get().transactionInfo?.correlationId != null &&
-                    optionalResult.get().transactionInfo?.authorizationRequestId != null
-            ) {
-                performGetOrderNPG(
-                        transactionId = TransactionId(transactionId),
-                        orderId = optionalResult.get().transactionInfo.authorizationRequestId,
-                        pspId = optionalResult.get().pspInfo.pspId,
-                        correlationId =
-                            optionalResult.get().transactionInfo.correlationId.toString(),
-                        paymentMethod =
-                            NpgClient.PaymentMethod.valueOf(
-                                optionalResult.get().transactionInfo.paymentMethodName
-                            )
-                    )
-                    .map(::mapNpgOperationsResponse)
-            } else {
-                Mono.error(NoResultFoundException(transactionId))
+        return ecommerceTransactionDataProviderV2
+            .findResult(searchCriteria, 0, 1, CountInfo(1, 1))
+            .flatMap { list ->
+                val optionalResult = list.firstOrNull()?.let { Optional.of(it) } ?: Optional.empty()
+                if (
+                    optionalResult.isPresent &&
+                        optionalResult.get().transactionInfo?.correlationId != null &&
+                        optionalResult.get().transactionInfo?.authorizationRequestId != null
+                ) {
+                    performGetOrderNPG(
+                            transactionId = TransactionId(transactionId),
+                            orderId = optionalResult.get().transactionInfo.authorizationRequestId,
+                            pspId = optionalResult.get().pspInfo.pspId,
+                            correlationId =
+                                optionalResult.get().transactionInfo.correlationId.toString(),
+                            paymentMethod =
+                                NpgClient.PaymentMethod.valueOf(
+                                    optionalResult.get().transactionInfo.paymentMethodName
+                                )
+                        )
+                        .map(::mapNpgOperationsResponse)
+                } else {
+                    Mono.error(NoResultFoundException(transactionId))
+                }
             }
-        }
     }
 
     /**
@@ -304,7 +307,8 @@ class EcommerceService(
         dataProvider: DataProvider<K, V>,
         searchCriteriaType: String
     ): Mono<Pair<List<V>, Int>> {
-        return dataProvider.totalRecordCount(searchCriteria).flatMap { totalCount ->
+        return dataProvider.totalRecordCount(searchCriteria).flatMap { countInfo ->
+            val totalCount = countInfo.totalCount().toInt()
             if (totalCount > 0) {
                 val skip = pageSize * pageNumber
                 logger.info(
@@ -314,7 +318,12 @@ class EcommerceService(
                     pageSize
                 )
                 dataProvider
-                    .findResult(searchParams = searchCriteria, skip = skip, limit = pageSize)
+                    .findResult(
+                        searchParams = searchCriteria,
+                        skip = skip,
+                        limit = pageSize,
+                        countInfo = countInfo
+                    )
                     .zipWith(mono { totalCount }, ::Pair)
             } else {
                 Mono.error(NoResultFoundException(searchCriteriaType))

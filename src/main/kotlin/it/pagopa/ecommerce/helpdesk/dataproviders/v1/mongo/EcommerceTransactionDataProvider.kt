@@ -4,6 +4,7 @@ import it.pagopa.ecommerce.commons.documents.BaseTransactionView
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager.ConfidentialData
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository
@@ -42,63 +43,61 @@ class EcommerceTransactionDataProvider(
 
     override fun totalRecordCount(
         searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>
-    ): Mono<Int> {
+    ): Mono<CountInfo> {
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
             decodedSearchParam.flatMap {
-                Mono.error<Long>(InvalidSearchCriteriaException(it.type, ProductDto.ECOMMERCE))
+                Mono.error<CountInfo>(InvalidSearchCriteriaException(it.type, ProductDto.ECOMMERCE))
             }
-        return decodedSearchParam
-            .flatMap {
-                when (it) {
-                    is SearchTransactionRequestPaymentTokenDto ->
-                        Mono.zip(
-                            transactionsViewRepository.countTransactionsWithPaymentToken(
-                                it.paymentToken
-                            ),
-                            transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
-                                it.paymentToken
-                            )
-                        ) { transactionsViewCount, transactionsViewHistoryCount ->
-                            transactionsViewCount + transactionsViewHistoryCount
-                        }
-                    is SearchTransactionRequestRptIdDto ->
-                        Mono.zip(
-                            transactionsViewRepository.countTransactionsWithRptId(it.rptId),
-                            transactionsViewHistoryRepository.countTransactionsWithRptId(it.rptId)
-                        ) { transactionsViewCount, transactionsViewHistoryCount ->
-                            transactionsViewCount + transactionsViewHistoryCount
-                        }
-                    is SearchTransactionRequestTransactionIdDto ->
-                        transactionsViewRepository.existsById(it.transactionId).flatMap { exist ->
-                            if (exist) {
-                                Mono.just(1)
-                            } else {
-                                transactionsViewHistoryRepository
-                                    .existsById(it.transactionId)
-                                    .map { existInHistory -> if (existInHistory) 1 else 0 }
+        return decodedSearchParam.flatMap {
+            when (it) {
+                is SearchTransactionRequestPaymentTokenDto ->
+                    Mono.zip(
+                        transactionsViewRepository.countTransactionsWithPaymentToken(
+                            it.paymentToken
+                        ),
+                        transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                            it.paymentToken
+                        )
+                    ) { transactionsViewCount, transactionsViewHistoryCount ->
+                        CountInfo(transactionsViewCount, transactionsViewHistoryCount)
+                    }
+                is SearchTransactionRequestRptIdDto ->
+                    Mono.zip(
+                        transactionsViewRepository.countTransactionsWithRptId(it.rptId),
+                        transactionsViewHistoryRepository.countTransactionsWithRptId(it.rptId)
+                    ) { transactionsViewCount, transactionsViewHistoryCount ->
+                        CountInfo(transactionsViewCount, transactionsViewHistoryCount)
+                    }
+                is SearchTransactionRequestTransactionIdDto ->
+                    transactionsViewRepository.existsById(it.transactionId).flatMap { exist ->
+                        if (exist) {
+                            Mono.just(CountInfo(1, 0))
+                        } else {
+                            transactionsViewHistoryRepository.existsById(it.transactionId).map {
+                                existInHistory ->
+                                if (existInHistory) CountInfo(0, 1) else CountInfo(0, 0)
                             }
                         }
-                    is SearchTransactionRequestEmailDto ->
-                        Mono.zip(
-                            transactionsViewRepository.countTransactionsWithEmail(it.userEmail),
-                            transactionsViewHistoryRepository.countTransactionsWithEmail(
-                                it.userEmail
-                            )
-                        ) { transactionsViewCount, transactionsViewHistoryCount ->
-                            transactionsViewCount + transactionsViewHistoryCount
-                        }
-                    is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
-                    else -> invalidSearchCriteriaError
-                }
+                    }
+                is SearchTransactionRequestEmailDto ->
+                    Mono.zip(
+                        transactionsViewRepository.countTransactionsWithEmail(it.userEmail),
+                        transactionsViewHistoryRepository.countTransactionsWithEmail(it.userEmail)
+                    ) { transactionsViewCount, transactionsViewHistoryCount ->
+                        CountInfo(transactionsViewCount, transactionsViewHistoryCount)
+                    }
+                is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
+                else -> invalidSearchCriteriaError
             }
-            .map { it.toInt() }
+        }
     }
 
     override fun findResult(
         searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>,
         skip: Int,
-        limit: Int
+        limit: Int,
+        countInfo: CountInfo
     ): Mono<List<TransactionResultDto>> {
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =

@@ -22,6 +22,7 @@ import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils.convertEventsToEventInfoList
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
@@ -114,7 +115,7 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-            .expectNext(4)
+            .expectNext(CountInfo(4,0))
             .verifyComplete()
     }
 
@@ -143,7 +144,7 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-            .expectNext(4)
+            .expectNext(CountInfo(4,0))
             .verifyComplete()
     }
 
@@ -164,7 +165,7 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-            .expectNext(2)
+            .expectNext(CountInfo(2,0))
             .verifyComplete()
     }
 
@@ -185,7 +186,7 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-            .expectNext(0)
+            .expectNext(CountInfo(0,0))
             .verifyComplete()
     }
 
@@ -214,7 +215,7 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-            .expectNext(0)
+            .expectNext(CountInfo(0,0))
             .verifyComplete()
     }
 
@@ -235,7 +236,7 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-            .expectNext(0)
+            .expectNext(CountInfo(0,0))
             .verifyComplete()
     }
 
@@ -267,7 +268,7 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-            .expectNext(2)
+            .expectNext(CountInfo(2,0))
             .verifyComplete()
     }
 
@@ -293,7 +294,7 @@ class EcommerceForTransactionV1DataProviderTest {
                     )
                 )
             )
-            .expectNext(2)
+            .expectNext(CountInfo(2,0))
             .verifyComplete()
         verify(confidentialDataManager, times(1)).encrypt(FiscalCode(searchCriteria.userFiscalCode))
         verify(transactionsViewRepository, times(1))
@@ -484,7 +485,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize * pageNumber,
-                    limit = pageSize
+                    limit = pageSize,
+                            countInfo = CountInfo(1,0)
                 )
             )
             .expectNext(expected)
@@ -657,7 +659,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize * pageNumber,
-                    limit = pageSize
+                    limit = pageSize,
+                            countInfo = CountInfo(1,0)
                 )
             )
             .expectNext(expected)
@@ -814,7 +817,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -1000,7 +1004,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize * pageNumber,
-                    limit = pageSize
+                    limit = pageSize,
+                            countInfo = CountInfo(1,0)
                 )
             )
             .expectNext(expected)
@@ -1164,7 +1169,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize * pageNumber,
-                    limit = pageSize
+                    limit = pageSize,
+                            countInfo = CountInfo(1,0)
                 )
             )
             .expectNext(expected)
@@ -1199,7 +1205,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -1301,7 +1308,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -1440,7 +1448,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -1588,7 +1597,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                            countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -1734,7 +1744,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -1883,7 +1894,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -2032,7 +2044,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -2181,7 +2194,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -2291,7 +2305,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -2415,7 +2430,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -2532,7 +2548,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -2683,7 +2700,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -2842,7 +2860,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -3001,7 +3020,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -3163,7 +3183,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -3325,7 +3346,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -3487,7 +3509,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -3662,7 +3685,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -3855,7 +3879,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -4067,7 +4092,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -4293,7 +4319,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -4468,7 +4495,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -4580,7 +4608,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize,
-                    limit = pageNumber
+                    limit = pageNumber,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .consumeNextWith {
@@ -4778,7 +4807,8 @@ class EcommerceForTransactionV1DataProviderTest {
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
                     skip = pageSize * pageNumber,
-                    limit = pageSize
+                    limit = pageSize,
+                            countInfo = CountInfo(1,0)
                 )
             )
             .expectNext(expected)

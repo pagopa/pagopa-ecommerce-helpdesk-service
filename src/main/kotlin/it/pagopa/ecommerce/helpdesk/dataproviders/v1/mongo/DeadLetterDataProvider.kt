@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterNpgTransact
 import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterRedirectTransactionInfoDetailsData
 import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransactionInfo
 import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransactionInfoDetailsData
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.DeadLetterRepository
 import it.pagopa.generated.ecommerce.helpdesk.model.*
@@ -44,7 +45,7 @@ class DeadLetterDataProvider(
     @SuppressWarnings("kotlin:S6611")
     override fun totalRecordCount(
         searchParams: EcommerceSearchDeadLetterEventsRequestDto
-    ): Mono<Int> {
+    ): Mono<CountInfo> {
         val source = searchParams.source!!
         val timeRange = searchParams.timeRange
         val excludedStatuses = searchParams.excludedStatuses
@@ -110,7 +111,7 @@ class DeadLetterDataProvider(
                     deadLetterRepository.countDeadLetterEventForQueue(queueName)
                 }
             }
-        }.map { it.toInt() }
+        }.map { CountInfo(it, 0) }
     }
 
     /*
@@ -127,7 +128,8 @@ class DeadLetterDataProvider(
     override fun findResult(
         searchParams: EcommerceSearchDeadLetterEventsRequestDto,
         skip: Int,
-        limit: Int
+        limit: Int,
+        countInfo: CountInfo
     ): Mono<List<DeadLetterEventDto>> {
         val source = searchParams.source!!
         val timeRange = searchParams.timeRange
