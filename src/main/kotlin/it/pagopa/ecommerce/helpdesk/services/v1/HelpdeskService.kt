@@ -6,6 +6,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionD
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.PageUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
@@ -72,7 +73,7 @@ class HelpdeskService(
                 pmCountInfo
             )
             val (ecommerceTotalPages, ecommerceRemainder) =
-                calculatePages(
+                PageUtils.calculatePages(
                     pageSize = pageSize,
                     totalCount = ecommerceCountInfo.totalCount().toInt()
                 )
@@ -178,20 +179,6 @@ class HelpdeskService(
                     results = results
                 )
             }
-        }
-    }
-
-    /**
-     * Calculate pages for display all records given a page size. Return a Pair<Int,Int> where first
-     * argument is page size, second one is total count /page size remainder
-     */
-    fun calculatePages(pageSize: Int, totalCount: Int): Pair<Int, Int> {
-        val remainder = totalCount % pageSize
-        val pages = totalCount / pageSize
-        return if (remainder == 0) {
-            Pair(pages, remainder)
-        } else {
-            Pair(pages + 1, remainder)
         }
     }
 }
