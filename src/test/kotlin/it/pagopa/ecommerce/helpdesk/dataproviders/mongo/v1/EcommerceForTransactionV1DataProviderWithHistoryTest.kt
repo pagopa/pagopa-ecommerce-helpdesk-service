@@ -509,7 +509,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize * pageNumber,
                     limit = pageSize,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .assertNext { assertEquals(expected, it) }
@@ -735,7 +735,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize * pageNumber,
                     limit = pageSize,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectNext(expected)
@@ -947,7 +947,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -974,7 +974,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -1204,7 +1204,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize * pageNumber,
                     limit = pageSize,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectNext(expected)
@@ -1226,7 +1226,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -1355,7 +1355,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -1543,7 +1543,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -1743,7 +1743,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -1943,7 +1943,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -2146,7 +2146,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -2349,7 +2349,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -2552,7 +2552,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -2693,7 +2693,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -2844,7 +2844,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -2989,7 +2989,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -3194,7 +3194,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -3410,7 +3410,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -3626,7 +3626,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -3845,7 +3845,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -4064,7 +4064,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -4283,7 +4283,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -4515,7 +4515,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -4765,7 +4765,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -5033,7 +5033,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -5316,7 +5316,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -5548,7 +5548,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -5688,7 +5688,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -5927,7 +5927,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = pageSize * pageNumber,
                     limit = pageSize,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectNext(expected)

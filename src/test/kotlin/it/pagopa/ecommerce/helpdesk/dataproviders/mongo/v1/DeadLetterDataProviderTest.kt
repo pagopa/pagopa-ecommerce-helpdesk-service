@@ -284,7 +284,9 @@ class DeadLetterDataProviderTest {
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
 
-        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1,0)))
+        StepVerifier.create(
+                deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1, 0))
+            )
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
 
@@ -337,7 +339,9 @@ class DeadLetterDataProviderTest {
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
 
-        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1,0)))
+        StepVerifier.create(
+                deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1, 0))
+            )
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
 
@@ -398,7 +402,9 @@ class DeadLetterDataProviderTest {
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
 
-        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1,0)))
+        StepVerifier.create(
+                deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1, 0))
+            )
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
 
@@ -447,7 +453,9 @@ class DeadLetterDataProviderTest {
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
 
-        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1,0)))
+        StepVerifier.create(
+                deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1, 0))
+            )
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
 
@@ -498,7 +506,9 @@ class DeadLetterDataProviderTest {
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
 
-        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1,0)))
+        StepVerifier.create(
+                deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1, 0))
+            )
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
 
@@ -566,7 +576,9 @@ class DeadLetterDataProviderTest {
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
 
-        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1,0)))
+        StepVerifier.create(
+                deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1, 0))
+            )
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
 

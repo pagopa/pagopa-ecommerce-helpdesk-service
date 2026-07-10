@@ -299,7 +299,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -437,7 +437,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -596,7 +596,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -753,7 +753,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -910,7 +910,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -1065,7 +1065,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -1222,7 +1222,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -1335,7 +1335,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -1459,7 +1459,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -1579,7 +1579,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -1742,7 +1742,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -1908,7 +1908,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -2074,7 +2074,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -2243,7 +2243,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -2413,7 +2413,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -2582,7 +2582,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -2768,7 +2768,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -2971,7 +2971,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -3194,7 +3194,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -3431,7 +3431,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -3614,7 +3614,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -3730,7 +3730,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -3935,7 +3935,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -4112,7 +4112,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -4304,7 +4304,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {
@@ -4420,7 +4420,7 @@ class EcommerceForTransactionV2DataProviderTest {
                         ),
                     skip = pageSize,
                     limit = pageNumber,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .consumeNextWith {

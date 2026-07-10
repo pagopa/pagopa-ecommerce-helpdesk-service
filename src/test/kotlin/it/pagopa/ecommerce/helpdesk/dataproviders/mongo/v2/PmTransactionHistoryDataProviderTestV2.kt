@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo.v2
 
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.PmTransactionsRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.PmTransactionHistoryDataProvider
 import it.pagopa.ecommerce.helpdesk.documents.AccountingStatus
@@ -57,7 +58,7 @@ class PmTransactionHistoryDataProviderTestV2 {
                     )
                 )
             )
-            .expectNext(2)
+            .expectNext(CountInfo(2,0))
             .verifyComplete()
     }
 
@@ -80,7 +81,7 @@ class PmTransactionHistoryDataProviderTestV2 {
                     )
                 )
             )
-            .expectNext(2)
+            .expectNext(CountInfo(2,0))
             .verifyComplete()
     }
 
@@ -184,7 +185,7 @@ class PmTransactionHistoryDataProviderTestV2 {
                 pmTransactionsRepository.findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
                     email = testEmail,
                     skip = pageSize * pageNumber,
-                    limit = pageSize
+                   limit = pageSize
                 )
             )
             .willReturn(Flux.just(pmTransaction))
@@ -197,7 +198,8 @@ class PmTransactionHistoryDataProviderTestV2 {
                             confidentialFiscalCodeUtils = null
                         ),
                     skip = pageSize * pageNumber,
-                    limit = pageSize
+                   limit = pageSize,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .expectNext(expected)
@@ -271,7 +273,7 @@ class PmTransactionHistoryDataProviderTestV2 {
                     .findTransactionsWithUserFiscalCodePaginatedOrderByCreationDateDesc(
                         userFiscalCode = fiscalCode,
                         skip = pageSize * pageNumber,
-                        limit = pageSize
+                       limit = pageSize
                     )
             )
             .willReturn(Flux.just(pmTransaction))
@@ -285,7 +287,8 @@ class PmTransactionHistoryDataProviderTestV2 {
                             confidentialFiscalCodeUtils = null
                         ),
                     skip = pageSize * pageNumber,
-                    limit = pageSize
+                   limit = pageSize,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .expectNext(expected)
@@ -302,7 +305,8 @@ class PmTransactionHistoryDataProviderTestV2 {
                 pmTransactionHistoryDataProvider.findResult(
                     searchParams = searchCriteria,
                     skip = 0,
-                    limit = 0
+                    limit = 0,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -320,7 +324,8 @@ class PmTransactionHistoryDataProviderTestV2 {
                 pmTransactionHistoryDataProvider.findResult(
                     searchParams = searchParamDecoder,
                     skip = 0,
-                    limit = 0
+                    limit = 0,
+                    countInfo = CountInfo(1,0)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)

@@ -20,6 +20,7 @@ import it.pagopa.ecommerce.commons.v2.TransactionTestUtils.AUTHORIZATION_REQUEST
 import it.pagopa.ecommerce.commons.v2.TransactionTestUtils.PSP_ID
 import it.pagopa.ecommerce.commons.v2.TransactionTestUtils.TRANSACTION_ID
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
@@ -111,12 +112,13 @@ class EcommerceServiceTest {
                     argThat { this.searchParameter == searchCriteria }
                 )
             )
-            .willReturn(Mono.just(totalCount))
+            .willReturn(Mono.just(CountInfo(totalCount.toLong(),0)))
         given(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = argThat { this.searchParameter == searchCriteria },
                     skip = eq(pageSize * pageNumber),
-                    limit = eq(pageSize)
+                    limit = eq(pageSize),
+                    countInfo = CountInfo(totalCount.toLong(), 0)
                 )
             )
             .willReturn(Mono.just(transactions))
@@ -135,7 +137,7 @@ class EcommerceServiceTest {
             .verifyComplete()
 
         verify(ecommerceTransactionDataProvider, times(1)).totalRecordCount(any())
-        verify(ecommerceTransactionDataProvider, times(1)).findResult(any(), any(), any())
+        verify(ecommerceTransactionDataProvider, times(1)).findResult(any(), any(), any(), any())
     }
 
     @Test
@@ -149,7 +151,7 @@ class EcommerceServiceTest {
                     argThat { this.searchParameter == searchCriteria }
                 )
             )
-            .willReturn(Mono.just(totalCount))
+            .willReturn(Mono.just(CountInfo(totalCount.toLong(),0)))
         StepVerifier.create(
                 ecommerceService.searchTransaction(
                     pageNumber = pageNumber,
@@ -161,7 +163,7 @@ class EcommerceServiceTest {
             .verify()
 
         verify(ecommerceTransactionDataProvider, times(1)).totalRecordCount(any())
-        verify(ecommerceTransactionDataProvider, times(0)).findResult(any(), any(), any())
+        verify(ecommerceTransactionDataProvider, times(0)).findResult(any(), any(), any(),any())
     }
 
     @Test
@@ -201,9 +203,10 @@ class EcommerceServiceTest {
             SearchDeadLetterEventResponseDto()
                 .deadLetterEvents(deadLetterEventList)
                 .page(PageInfoDto().current(0).results(deadLetterEventList.size).total(1))
+        val countInfo = CountInfo(deadLetterEventList.size.toLong(),0)
         given(deadLetterDataProvider.totalRecordCount(request))
-            .willReturn(mono { deadLetterEventList.size })
-        given(deadLetterDataProvider.findResult(request, 0, 10))
+            .willReturn(mono { countInfo })
+        given(deadLetterDataProvider.findResult(request, 0, 10, countInfo))
             .willReturn(mono { deadLetterEventList })
         StepVerifier.create(
                 ecommerceService.searchDeadLetterEvents(
@@ -263,9 +266,10 @@ class EcommerceServiceTest {
                     .data("data2")
                     .timestamp(OffsetDateTime.MIN)
             )
+        val countInfo = CountInfo(deadLetterEventList.size.toLong(),0)
         given(deadLetterDataProvider.totalRecordCount(request))
-            .willReturn(mono { deadLetterEventList.size })
-        given(deadLetterDataProvider.findResult(request, 0, 10))
+            .willReturn(mono { countInfo })
+        given(deadLetterDataProvider.findResult(request, 0, 10, countInfo))
             .willReturn(mono { deadLetterEventList })
         StepVerifier.create(
                 ecommerceService.searchDeadLetterEvents(
@@ -408,7 +412,7 @@ class EcommerceServiceTest {
             }
         val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
 
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
 
         given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("test-api-key"))
@@ -452,7 +456,7 @@ class EcommerceServiceTest {
             }
         val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
 
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()  ))
             .willReturn(Mono.just(listOf(transactionResultDto)))
         given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
             .willReturn(Either.right("test-api-key"))
@@ -492,7 +496,7 @@ class EcommerceServiceTest {
             }
         val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
 
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1),any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
         given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
             .willReturn(Either.right("test-api-key"))
@@ -532,7 +536,7 @@ class EcommerceServiceTest {
             }
         val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
 
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
         given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
             .willReturn(Either.right("test-api-key"))
@@ -565,7 +569,7 @@ class EcommerceServiceTest {
 
         val orderResponse = OrderResponseDtoV1().apply { operations = null }
 
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
         given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
             .willReturn(Either.right("test-api-key"))
@@ -603,7 +607,7 @@ class EcommerceServiceTest {
 
         val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
 
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
         given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
             .willReturn(Either.right("test-api-key"))
@@ -631,7 +635,7 @@ class EcommerceServiceTest {
         val transactionResultDto =
             TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
 
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1),any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
 
         given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("test-api-key"))
@@ -673,7 +677,7 @@ class EcommerceServiceTest {
         val transactionResultDto =
             TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
 
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
 
         given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("test-api-key"))
@@ -826,7 +830,7 @@ class EcommerceServiceTest {
 
     @Test
     fun `Should throw NoResultFoundException when findResult returns empty list`() {
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(emptyList()))
 
         StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
@@ -838,7 +842,7 @@ class EcommerceServiceTest {
     fun `Should throw NoResultFoundException when transaction info is null`() {
         val transactionResultDto = TransactionResultDto()
 
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
 
         StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))
@@ -859,7 +863,7 @@ class EcommerceServiceTest {
         val transactionResultDto =
             TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
 
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1)))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
 
         StepVerifier.create(ecommerceService.searchNpgOperations(TRANSACTION_ID))

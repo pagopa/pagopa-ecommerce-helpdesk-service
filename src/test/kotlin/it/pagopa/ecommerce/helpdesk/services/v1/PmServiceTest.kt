@@ -1,16 +1,17 @@
 package it.pagopa.ecommerce.helpdesk.services.v1
 
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMBulkTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.generated.ecommerce.helpdesk.model.*
-import java.time.OffsetDateTime
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
+import java.time.OffsetDateTime
 
 class PmServiceTest {
 
@@ -36,35 +37,36 @@ class PmServiceTest {
         val transactions =
             listOf(HelpdeskTestUtils.buildTransactionResultDto(OffsetDateTime.now(), ProductDto.PM))
         given(
-                pmTransactionDataProvider.totalRecordCount(
-                    argThat { this.searchParameter == searchCriteria }
-                )
+            pmTransactionDataProvider.totalRecordCount(
+                argThat { this.searchParameter == searchCriteria }
             )
-            .willReturn(Mono.just(totalCount))
+        )
+            .willReturn(Mono.just(CountInfo(totalCount.toLong(), 0)))
         given(
-                pmTransactionDataProvider.findResult(
-                    searchParams = argThat { this.searchParameter == searchCriteria },
-                    skip = eq(pageSize * pageNumber),
-                    limit = eq(pageSize)
-                )
+            pmTransactionDataProvider.findResult(
+                searchParams = argThat { this.searchParameter == searchCriteria },
+                skip = eq(pageSize * pageNumber),
+                limit = eq(pageSize),
+                countInfo = any()
             )
+        )
             .willReturn(Mono.just(transactions))
         val expectedResponse =
             SearchTransactionResponseDto()
                 .transactions(transactions)
                 .page(PageInfoDto().results(transactions.size).total(10).current(pageNumber))
         StepVerifier.create(
-                pmService.searchTransaction(
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
-                    pmSearchTransactionRequestDto = searchCriteria
-                )
+            pmService.searchTransaction(
+                pageNumber = pageNumber,
+                pageSize = pageSize,
+                pmSearchTransactionRequestDto = searchCriteria
             )
+        )
             .expectNext(expectedResponse)
             .verifyComplete()
 
         verify(pmTransactionDataProvider, times(1)).totalRecordCount(any())
-        verify(pmTransactionDataProvider, times(1)).findResult(any(), any(), any())
+        verify(pmTransactionDataProvider, times(1)).findResult(any(), any(), any(), any())
     }
 
     @Test
@@ -75,23 +77,23 @@ class PmServiceTest {
         val totalCount = 0
 
         given(
-                pmTransactionDataProvider.totalRecordCount(
-                    argThat { this.searchParameter == searchCriteria }
-                )
+            pmTransactionDataProvider.totalRecordCount(
+                argThat { this.searchParameter == searchCriteria }
             )
-            .willReturn(Mono.just(totalCount))
+        )
+            .willReturn(Mono.just(CountInfo(totalCount.toLong(), 0)))
         StepVerifier.create(
-                pmService.searchTransaction(
-                    pageNumber = pageNumber,
-                    pageSize = pageSize,
-                    pmSearchTransactionRequestDto = searchCriteria
-                )
+            pmService.searchTransaction(
+                pageNumber = pageNumber,
+                pageSize = pageSize,
+                pmSearchTransactionRequestDto = searchCriteria
             )
+        )
             .expectError(NoResultFoundException::class.java)
             .verify()
 
         verify(pmTransactionDataProvider, times(1)).totalRecordCount(any())
-        verify(pmTransactionDataProvider, times(0)).findResult(any(), any(), any())
+        verify(pmTransactionDataProvider, times(0)).findResult(any(), any(), any(), any())
     }
 
     @Test
@@ -102,8 +104,8 @@ class PmServiceTest {
         given(pmPaymentMethodsDataProvider.findResult(searchParams = searchCriteria))
             .willReturn(Mono.just(response))
         StepVerifier.create(
-                pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = searchCriteria)
-            )
+            pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = searchCriteria)
+        )
             .expectNext(response)
             .verifyComplete()
 
@@ -120,8 +122,8 @@ class PmServiceTest {
         given(pmPaymentMethodsDataProvider.findResult(searchParams = searchCriteria))
             .willReturn(Mono.just(response))
         StepVerifier.create(
-                pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = searchCriteria)
-            )
+            pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = searchCriteria)
+        )
             .expectNext(response)
             .verifyComplete()
 
@@ -141,10 +143,10 @@ class PmServiceTest {
         val transactions = HelpdeskTestUtils.buildBulkTransactionResultDtoWithSingleElement("1")
 
         given(
-                pmBulkTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
-                )
+            pmBulkTransactionDataProvider.findResult(
+                searchParams = searchCriteria,
             )
+        )
             .willReturn(Mono.just(transactions))
         val expectedResponse = transactions
         StepVerifier.create(pmService.searchBulkTransaction(searchCriteria))
@@ -173,10 +175,10 @@ class PmServiceTest {
             )
 
         given(
-                pmBulkTransactionDataProvider.findResult(
-                    searchParams = searchCriteria,
-                )
+            pmBulkTransactionDataProvider.findResult(
+                searchParams = searchCriteria,
             )
+        )
             .willReturn(Mono.just(transactions))
         val expectedResponse =
             transactions
