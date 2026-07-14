@@ -58,7 +58,7 @@ class PmTransactionHistoryDataProviderTestV2 {
                     )
                 )
             )
-            .expectNext(CountInfo(2,0))
+            .expectNext(CountInfo(2, 0))
             .verifyComplete()
     }
 
@@ -81,7 +81,7 @@ class PmTransactionHistoryDataProviderTestV2 {
                     )
                 )
             )
-            .expectNext(CountInfo(2,0))
+            .expectNext(CountInfo(2, 0))
             .verifyComplete()
     }
 
@@ -185,7 +185,7 @@ class PmTransactionHistoryDataProviderTestV2 {
                 pmTransactionsRepository.findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
                     email = testEmail,
                     skip = pageSize * pageNumber,
-                   limit = pageSize
+                    limit = pageSize
                 )
             )
             .willReturn(Flux.just(pmTransaction))
@@ -198,8 +198,8 @@ class PmTransactionHistoryDataProviderTestV2 {
                             confidentialFiscalCodeUtils = null
                         ),
                     skip = pageSize * pageNumber,
-                   limit = pageSize,
-                    countInfo = CountInfo(1,0)
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectNext(expected)
@@ -273,7 +273,7 @@ class PmTransactionHistoryDataProviderTestV2 {
                     .findTransactionsWithUserFiscalCodePaginatedOrderByCreationDateDesc(
                         userFiscalCode = fiscalCode,
                         skip = pageSize * pageNumber,
-                       limit = pageSize
+                        limit = pageSize
                     )
             )
             .willReturn(Flux.just(pmTransaction))
@@ -287,8 +287,8 @@ class PmTransactionHistoryDataProviderTestV2 {
                             confidentialFiscalCodeUtils = null
                         ),
                     skip = pageSize * pageNumber,
-                   limit = pageSize,
-                    countInfo = CountInfo(1,0)
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectNext(expected)
@@ -306,7 +306,7 @@ class PmTransactionHistoryDataProviderTestV2 {
                     searchParams = searchCriteria,
                     skip = 0,
                     limit = 0,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -325,7 +325,7 @@ class PmTransactionHistoryDataProviderTestV2 {
                     searchParams = searchParamDecoder,
                     skip = 0,
                     limit = 0,
-                    countInfo = CountInfo(1,0)
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)

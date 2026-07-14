@@ -17,13 +17,13 @@ import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.baseTransactionToTransactionInfoDtoV1
 import it.pagopa.ecommerce.helpdesk.utils.v2.baseTransactionToTransactionInfoDtoV2
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
-import java.util.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
+import java.util.*
 
 @Component("EcommerceTransactionDataProviderV2")
 class EcommerceTransactionDataProvider(
@@ -32,7 +32,7 @@ class EcommerceTransactionDataProvider(
     @Autowired private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any>,
     @Autowired
     private val transactionsEventStoreHistoryRepository:
-        TransactionsEventStoreHistoryRepository<Any>
+    TransactionsEventStoreHistoryRepository<Any>
 ) : TransactionDataProvider {
 
     override fun totalRecordCount(
@@ -56,6 +56,7 @@ class EcommerceTransactionDataProvider(
                     ) { transactionsViewCount, transactionsViewHistoryCount ->
                         CountInfo(transactionsViewCount, transactionsViewHistoryCount)
                     }
+
                 is SearchTransactionRequestRptIdDto ->
                     Mono.zip(
                         transactionsViewRepository.countTransactionsWithRptId(it.rptId),
@@ -63,6 +64,7 @@ class EcommerceTransactionDataProvider(
                     ) { transactionsViewCount, transactionsViewHistoryCount ->
                         CountInfo(transactionsViewCount, transactionsViewHistoryCount)
                     }
+
                 is SearchTransactionRequestTransactionIdDto ->
                     Mono.zip(
                         transactionsViewRepository.existsById(it.transactionId).map { exist ->
@@ -86,6 +88,7 @@ class EcommerceTransactionDataProvider(
                             transactionsViewHistoryCount.toLong()
                         )
                     }
+
                 is SearchTransactionRequestEmailDto ->
                     Mono.zip(
                         transactionsViewRepository.countTransactionsWithEmail(it.userEmail),
@@ -93,6 +96,7 @@ class EcommerceTransactionDataProvider(
                     ) { transactionsViewCount, transactionsViewHistoryCount ->
                         CountInfo(transactionsViewCount, transactionsViewHistoryCount)
                     }
+
                 is SearchTransactionRequestFiscalCodeDto ->
                     Mono.zip(
                         transactionsViewRepository.countTransactionsWithFiscalCode(
@@ -104,6 +108,7 @@ class EcommerceTransactionDataProvider(
                     ) { transactionsViewCount, transactionsViewHistoryCount ->
                         CountInfo(transactionsViewCount, transactionsViewHistoryCount)
                     }
+
                 is SearchTransactionRequestAuthorizationRequestIdDto ->
                     Mono.zip(
                         transactionsViewRepository.countTransactionsWithAuthorizationRequestId(
@@ -114,6 +119,7 @@ class EcommerceTransactionDataProvider(
                     ) { transactionsViewCount, transactionsViewHistoryCount ->
                         CountInfo(transactionsViewCount, transactionsViewHistoryCount)
                     }
+
                 is SearchTransactionRequestRRNDto ->
                     Mono.zip(
                         transactionsViewRepository.countTransactionsWithRRN(it.rrn),
@@ -121,6 +127,7 @@ class EcommerceTransactionDataProvider(
                     ) { transactionsViewCount, transactionsViewHistoryCount ->
                         CountInfo(transactionsViewCount, transactionsViewHistoryCount)
                     }
+
                 is SearchTransactionRequestEndToEndIdDto ->
                     Mono.zip(
                         transactionsViewRepository.countTransactionsWithEndToEndId(it.endToEndId),
@@ -130,6 +137,7 @@ class EcommerceTransactionDataProvider(
                     ) { transactionsViewCount, transactionsViewHistoryCount ->
                         CountInfo(transactionsViewCount, transactionsViewHistoryCount)
                     }
+
                 else -> invalidSearchCriteriaError
             }
         }
@@ -174,6 +182,7 @@ class EcommerceTransactionDataProvider(
                             limit = limit,
                             countInfo = countInfo
                         )
+
                     is SearchTransactionRequestRptIdDto ->
                         readEventsFromDbs(
                             onlineDbQuery = { skip, limit ->
@@ -196,6 +205,7 @@ class EcommerceTransactionDataProvider(
                             limit = limit,
                             countInfo = countInfo
                         )
+
                     is SearchTransactionRequestTransactionIdDto ->
                         readEventsFromDbs(
                             onlineDbQuery = { _, _ ->
@@ -210,6 +220,7 @@ class EcommerceTransactionDataProvider(
                             limit = limit,
                             countInfo = countInfo
                         )
+
                     is SearchTransactionRequestEmailDto ->
                         readEventsFromDbs(
                             onlineDbQuery = { skip, limit ->
@@ -232,6 +243,7 @@ class EcommerceTransactionDataProvider(
                             limit = limit,
                             countInfo = countInfo
                         )
+
                     is SearchTransactionRequestFiscalCodeDto ->
                         readEventsFromDbs(
                             onlineDbQuery = { skip, limit ->
@@ -254,6 +266,7 @@ class EcommerceTransactionDataProvider(
                             limit = limit,
                             countInfo = countInfo
                         )
+
                     is SearchTransactionRequestRRNDto ->
                         readEventsFromDbs(
                             onlineDbQuery = { skip, limit ->
@@ -276,6 +289,7 @@ class EcommerceTransactionDataProvider(
                             limit = limit,
                             countInfo = countInfo
                         )
+
                     is SearchTransactionRequestAuthorizationRequestIdDto ->
                         readEventsFromDbs(
                             onlineDbQuery = { skip, limit ->
@@ -298,6 +312,7 @@ class EcommerceTransactionDataProvider(
                             limit = limit,
                             countInfo = countInfo
                         )
+
                     is SearchTransactionRequestEndToEndIdDto ->
                         readEventsFromDbs(
                             onlineDbQuery = { skip, limit ->
@@ -320,6 +335,7 @@ class EcommerceTransactionDataProvider(
                             limit = limit,
                             countInfo = countInfo
                         )
+
                     else -> invalidSearchCriteriaError
                 }
             }
@@ -336,6 +352,7 @@ class EcommerceTransactionDataProvider(
         countInfo: CountInfo
     ): Flux<BaseTransactionView> {
         val onlineCount = countInfo.onlineDbCount
+        val historicalCount = countInfo.historyDbCount
         /*
          * we serve online db records first and then historyDb ones concatenated
          * this order reflect the fact that records are ordered by descending timestamp
@@ -351,9 +368,14 @@ class EcommerceTransactionDataProvider(
                 // retrieve records from both datasource
                 val onlineDbLimit = onlineCount - skip
                 val historyDbLimit = limit - onlineDbLimit
-                onlineDbQuery(skip, onlineDbLimit.toInt()).concatWith {
-                    historyDbQuery(0, historyDbLimit.toInt())
-                }
+                Flux.concat(
+                    onlineDbQuery(skip, onlineDbLimit.toInt()),
+                    if (historicalCount > 0) {
+                        historyDbQuery(0, historyDbLimit.toInt())
+                    } else {
+                        Flux.empty()
+                    }
+                )
             } else {
                 // otherwise we have left historical db records only
                 val historyDbSkip = skip - onlineCount
@@ -395,7 +417,7 @@ class EcommerceTransactionDataProvider(
                                     val errorCause = it.cause
                                     if (
                                         errorCause is WebClientResponseException &&
-                                            errorCause.statusCode.value() == 404
+                                        errorCause.statusCode.value() == 404
                                     ) {
                                         Mono.just(Optional.empty())
                                     } else {
@@ -415,6 +437,7 @@ class EcommerceTransactionDataProvider(
                             events
                         )
                     }
+
             is it.pagopa.ecommerce.commons.documents.v2.Transaction ->
                 events
                     .reduce(
@@ -433,7 +456,7 @@ class EcommerceTransactionDataProvider(
                                     val errorCause = it.cause
                                     if (
                                         errorCause is WebClientResponseException &&
-                                            errorCause.statusCode.value() == 404
+                                        errorCause.statusCode.value() == 404
                                     ) {
                                         Mono.just(Optional.empty())
                                     } else {
@@ -453,6 +476,7 @@ class EcommerceTransactionDataProvider(
                             events
                         )
                     }
+
             else ->
                 Mono.error(
                     RuntimeException(

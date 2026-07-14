@@ -138,10 +138,7 @@ class HelpdeskServiceTest {
                 countInfo = any()
             )
         verify(pmTransactionDataProvider, times(0))
-            .findResult(
-                skip = any(), limit = any(), searchParams = any(),
-                countInfo = any()
-            )
+            .findResult(skip = any(), limit = any(), searchParams = any(), countInfo = any())
     }
 
     @Test
@@ -356,10 +353,7 @@ class HelpdeskServiceTest {
                 countInfo = any()
             )
         verify(pmTransactionDataProvider, times(0))
-            .findResult(
-                skip = any(), limit = any(), searchParams = any(),
-                countInfo = any()
-            )
+            .findResult(skip = any(), limit = any(), searchParams = any(), countInfo = any())
     }
 
     @Test
@@ -432,10 +426,7 @@ class HelpdeskServiceTest {
                 }
             )
         verify(ecommerceTransactionDataProvider, times(0))
-            .findResult(
-                skip = any(), limit = any(), searchParams = any(),
-                countInfo = any()
-            )
+            .findResult(skip = any(), limit = any(), searchParams = any(), countInfo = any())
         verify(pmTransactionDataProvider, times(1))
             .findResult(
                 searchParams =
@@ -518,10 +509,7 @@ class HelpdeskServiceTest {
                 }
             )
         verify(ecommerceTransactionDataProvider, times(0))
-            .findResult(
-                skip = any(), limit = any(), searchParams = any(),
-                countInfo = any()
-            )
+            .findResult(skip = any(), limit = any(), searchParams = any(), countInfo = any())
         verify(pmTransactionDataProvider, times(1))
             .findResult(
                 searchParams =
@@ -531,6 +519,7 @@ class HelpdeskServiceTest {
                     },
                 skip = eq(7),
                 limit = eq(4),
+                countInfo = any()
             )
     }
 
@@ -550,7 +539,7 @@ class HelpdeskServiceTest {
                 }
             )
         )
-            .willReturn(Mono.just(totalEcommerceCount))
+            .willReturn(Mono.just(CountInfo(totalEcommerceCount.toLong(), 0)))
         given(
             pmTransactionDataProvider.totalRecordCount(
                 argThat {
@@ -559,7 +548,7 @@ class HelpdeskServiceTest {
                 }
             )
         )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
 
         StepVerifier.create(
             helpdeskService.searchTransaction(
@@ -585,9 +574,9 @@ class HelpdeskServiceTest {
                 }
             )
         verify(ecommerceTransactionDataProvider, times(0))
-            .findResult(skip = any(), limit = any(), searchParams = any())
+            .findResult(skip = any(), limit = any(), searchParams = any(), countInfo = any())
         verify(pmTransactionDataProvider, times(0))
-            .findResult(skip = any(), limit = any(), searchParams = any())
+            .findResult(skip = any(), limit = any(), searchParams = any(), countInfo = any())
     }
 
     @Test
@@ -659,7 +648,7 @@ class HelpdeskServiceTest {
                 }
             )
         )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
         Hooks.onOperatorDebug()
         StepVerifier.create(
             helpDeskServiceLocalMock.searchTransaction(
@@ -709,7 +698,7 @@ class HelpdeskServiceTest {
                 }
             )
         )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
         given(
             pmTransactionDataProvider.findResult(
                 searchParams =
@@ -718,7 +707,8 @@ class HelpdeskServiceTest {
                                 testEmail
                     },
                 limit = any(),
-                skip = any()
+                skip = any(),
+                countInfo = any()
             )
         )
             .willReturn(Mono.just(pmResults))
@@ -766,7 +756,7 @@ class HelpdeskServiceTest {
                 }
             )
         )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
         Hooks.onOperatorDebug()
         StepVerifier.create(
             helpDeskServiceLocalMock.searchTransaction(
@@ -816,7 +806,7 @@ class HelpdeskServiceTest {
                 }
             )
         )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
         given(
             pmTransactionDataProvider.findResult(
                 searchParams =
@@ -825,7 +815,8 @@ class HelpdeskServiceTest {
                                 testEmail
                     },
                 limit = any(),
-                skip = any()
+                skip = any(),
+                countInfo = any()
             )
         )
             .willReturn(Mono.just(pmResults))
@@ -873,7 +864,7 @@ class HelpdeskServiceTest {
                 }
             )
         )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
         Hooks.onOperatorDebug()
         StepVerifier.create(
             helpDeskServiceLocalMock.searchTransaction(

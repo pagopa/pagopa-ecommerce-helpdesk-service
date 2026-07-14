@@ -112,7 +112,7 @@ class EcommerceServiceTest {
                     argThat { this.searchParameter == searchCriteria }
                 )
             )
-            .willReturn(Mono.just(CountInfo(totalCount.toLong(),0)))
+            .willReturn(Mono.just(CountInfo(totalCount.toLong(), 0)))
         given(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = argThat { this.searchParameter == searchCriteria },
@@ -151,7 +151,7 @@ class EcommerceServiceTest {
                     argThat { this.searchParameter == searchCriteria }
                 )
             )
-            .willReturn(Mono.just(CountInfo(totalCount.toLong(),0)))
+            .willReturn(Mono.just(CountInfo(totalCount.toLong(), 0)))
         StepVerifier.create(
                 ecommerceService.searchTransaction(
                     pageNumber = pageNumber,
@@ -163,7 +163,7 @@ class EcommerceServiceTest {
             .verify()
 
         verify(ecommerceTransactionDataProvider, times(1)).totalRecordCount(any())
-        verify(ecommerceTransactionDataProvider, times(0)).findResult(any(), any(), any(),any())
+        verify(ecommerceTransactionDataProvider, times(0)).findResult(any(), any(), any(), any())
     }
 
     @Test
@@ -203,9 +203,8 @@ class EcommerceServiceTest {
             SearchDeadLetterEventResponseDto()
                 .deadLetterEvents(deadLetterEventList)
                 .page(PageInfoDto().current(0).results(deadLetterEventList.size).total(1))
-        val countInfo = CountInfo(deadLetterEventList.size.toLong(),0)
-        given(deadLetterDataProvider.totalRecordCount(request))
-            .willReturn(mono { countInfo })
+        val countInfo = CountInfo(deadLetterEventList.size.toLong(), 0)
+        given(deadLetterDataProvider.totalRecordCount(request)).willReturn(mono { countInfo })
         given(deadLetterDataProvider.findResult(request, 0, 10, countInfo))
             .willReturn(mono { deadLetterEventList })
         StepVerifier.create(
@@ -266,9 +265,8 @@ class EcommerceServiceTest {
                     .data("data2")
                     .timestamp(OffsetDateTime.MIN)
             )
-        val countInfo = CountInfo(deadLetterEventList.size.toLong(),0)
-        given(deadLetterDataProvider.totalRecordCount(request))
-            .willReturn(mono { countInfo })
+        val countInfo = CountInfo(deadLetterEventList.size.toLong(), 0)
+        given(deadLetterDataProvider.totalRecordCount(request)).willReturn(mono { countInfo })
         given(deadLetterDataProvider.findResult(request, 0, 10, countInfo))
             .willReturn(mono { deadLetterEventList })
         StepVerifier.create(
@@ -456,7 +454,7 @@ class EcommerceServiceTest {
             }
         val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
 
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()  ))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
         given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
             .willReturn(Either.right("test-api-key"))
@@ -496,7 +494,7 @@ class EcommerceServiceTest {
             }
         val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
 
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1),any()))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
         given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
             .willReturn(Either.right("test-api-key"))
@@ -635,7 +633,7 @@ class EcommerceServiceTest {
         val transactionResultDto =
             TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
 
-        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1),any()))
+        given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
 
         given(npgApiKeyConfiguration[paymentMethod, pspId]).willReturn(Either.right("test-api-key"))

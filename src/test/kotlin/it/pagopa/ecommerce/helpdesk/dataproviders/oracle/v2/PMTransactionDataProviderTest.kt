@@ -8,12 +8,12 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v2.oracle.PMTransactionDataPro
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
+import java.time.OffsetDateTime
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import reactor.core.publisher.Hooks
 import reactor.test.StepVerifier
-import java.time.OffsetDateTime
 
 class PMTransactionDataProviderTest {
 
@@ -31,15 +31,15 @@ class PMTransactionDataProviderTest {
     fun `Should count total record successfully`() {
         Hooks.onOperatorDebug()
         StepVerifier.create(
-            pmTransactionDataProvider.totalRecordCount(
-                SearchParamDecoderV2(
-                    searchParameter =
-                        HelpdeskTestUtilsV2.buildSearchRequestByUserMail("test@test.it"),
-                    confidentialMailUtils = null,
-                    confidentialFiscalCodeUtils = null
+                pmTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoderV2(
+                        searchParameter =
+                            HelpdeskTestUtilsV2.buildSearchRequestByUserMail("test@test.it"),
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
+                    )
                 )
             )
-        )
             .expectNext(CountInfo(1, 0))
             .verifyComplete()
     }
@@ -48,15 +48,15 @@ class PMTransactionDataProviderTest {
     fun `Should handle no transaction found by email`() {
         Hooks.onOperatorDebug()
         StepVerifier.create(
-            pmTransactionDataProvider.totalRecordCount(
-                SearchParamDecoderV2(
-                    searchParameter =
-                        HelpdeskTestUtilsV2.buildSearchRequestByUserMail("unknown@test.it"),
-                    confidentialMailUtils = null,
-                    confidentialFiscalCodeUtils = null
-                ),
+                pmTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoderV2(
+                        searchParameter =
+                            HelpdeskTestUtilsV2.buildSearchRequestByUserMail("unknown@test.it"),
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
+                    ),
+                )
             )
-        )
             .expectNext(CountInfo(0, 0))
             .verifyComplete()
     }
@@ -65,14 +65,14 @@ class PMTransactionDataProviderTest {
     fun `Should thrown error counting transaction for unhandled search criteria `() {
         Hooks.onOperatorDebug()
         StepVerifier.create(
-            pmTransactionDataProvider.totalRecordCount(
-                SearchParamDecoderV2(
-                    searchParameter = HelpdeskTestUtilsV2.buildSearchRequestByTransactionId(),
-                    confidentialMailUtils = null,
-                    confidentialFiscalCodeUtils = null
-                ),
+                pmTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoderV2(
+                        searchParameter = HelpdeskTestUtilsV2.buildSearchRequestByTransactionId(),
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
+                    ),
+                )
             )
-        )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
     }
@@ -83,14 +83,14 @@ class PMTransactionDataProviderTest {
         val searchCriteria: HelpDeskSearchTransactionRequestDto = mock()
         given(searchCriteria.type).willReturn("UNKNOWN")
         StepVerifier.create(
-            pmTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoderV2(searchParameter = searchCriteria, null, null),
-                skip = 0,
-                limit = 0,
-                countInfo = CountInfo(1, 0)
+                pmTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoderV2(searchParameter = searchCriteria, null, null),
+                    skip = 0,
+                    limit = 0,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
     }
@@ -147,19 +147,19 @@ class PMTransactionDataProviderTest {
                     .product(ProductDto.PM)
             )
         StepVerifier.create(
-            pmTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoderV2(
-                        searchParameter =
-                            HelpdeskTestUtilsV2.buildSearchRequestByUserMail("test@test.it"),
-                        confidentialMailUtils = null,
-                        confidentialFiscalCodeUtils = null
-                    ),
-                limit = 10,
-                skip = 0,
-                countInfo = CountInfo(1, 0)
+                pmTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoderV2(
+                            searchParameter =
+                                HelpdeskTestUtilsV2.buildSearchRequestByUserMail("test@test.it"),
+                            confidentialMailUtils = null,
+                            confidentialFiscalCodeUtils = null
+                        ),
+                    limit = 10,
+                    skip = 0,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .expectNext(expectedResponse)
             .verifyComplete()
     }
@@ -168,15 +168,15 @@ class PMTransactionDataProviderTest {
     fun `Should count total record successfully for user fiscal code transaction search`() {
         Hooks.onOperatorDebug()
         StepVerifier.create(
-            pmTransactionDataProvider.totalRecordCount(
-                SearchParamDecoderV2(
-                    searchParameter =
-                        HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode("fiscal_code"),
-                    confidentialMailUtils = null,
-                    confidentialFiscalCodeUtils = null
-                ),
+                pmTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoderV2(
+                        searchParameter =
+                            HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode("fiscal_code"),
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
+                    ),
+                )
             )
-        )
             .expectNext(CountInfo(1, 0))
             .verifyComplete()
     }
@@ -185,17 +185,17 @@ class PMTransactionDataProviderTest {
     fun `Should handle no transaction found by user fiscal code`() {
         Hooks.onOperatorDebug()
         StepVerifier.create(
-            pmTransactionDataProvider.totalRecordCount(
-                SearchParamDecoderV2(
-                    searchParameter =
-                        HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode(
-                            "unknown-fiscal_code"
-                        ),
-                    confidentialMailUtils = null,
-                    confidentialFiscalCodeUtils = null
-                ),
+                pmTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoderV2(
+                        searchParameter =
+                            HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode(
+                                "unknown-fiscal_code"
+                            ),
+                        confidentialMailUtils = null,
+                        confidentialFiscalCodeUtils = null
+                    ),
+                )
             )
-        )
             .expectNext(CountInfo(0, 0))
             .verifyComplete()
     }
@@ -252,21 +252,21 @@ class PMTransactionDataProviderTest {
                     .product(ProductDto.PM)
             )
         StepVerifier.create(
-            pmTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoderV2(
-                        searchParameter =
-                            HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode(
-                                "fiscal_code"
-                            ),
-                        confidentialMailUtils = null,
-                        confidentialFiscalCodeUtils = null
-                    ),
-                limit = 10,
-                skip = 0,
-                countInfo = CountInfo(1, 0)
+                pmTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoderV2(
+                            searchParameter =
+                                HelpdeskTestUtilsV2.buildSearchRequestByUserFiscalCode(
+                                    "fiscal_code"
+                                ),
+                            confidentialMailUtils = null,
+                            confidentialFiscalCodeUtils = null
+                        ),
+                    limit = 10,
+                    skip = 0,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .expectNext(expectedResponse)
             .verifyComplete()
     }
@@ -275,15 +275,15 @@ class PMTransactionDataProviderTest {
     fun `Should return error for unhandled search criteria for count operation`() {
 
         StepVerifier.create(
-            pmTransactionDataProvider.totalRecordCount(
-                searchParams =
-                    SearchParamDecoderV2(
-                        searchParameter = HelpdeskTestUtilsV2.buildSearchRequestByRptId(),
-                        confidentialMailUtils = null,
-                        confidentialFiscalCodeUtils = null
-                    ),
+                pmTransactionDataProvider.totalRecordCount(
+                    searchParams =
+                        SearchParamDecoderV2(
+                            searchParameter = HelpdeskTestUtilsV2.buildSearchRequestByRptId(),
+                            confidentialMailUtils = null,
+                            confidentialFiscalCodeUtils = null
+                        ),
+                )
             )
-        )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
     }
@@ -293,11 +293,11 @@ class PMTransactionDataProviderTest {
         val searchCriteria: HelpDeskSearchTransactionRequestDto = mock()
         given(searchCriteria.type).willReturn("UNKNOWN")
         StepVerifier.create(
-            pmTransactionDataProvider.totalRecordCount(
-                searchParams =
-                    SearchParamDecoderV2(searchParameter = searchCriteria, null, null),
+                pmTransactionDataProvider.totalRecordCount(
+                    searchParams =
+                        SearchParamDecoderV2(searchParameter = searchCriteria, null, null),
+                )
             )
-        )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
     }
@@ -306,18 +306,18 @@ class PMTransactionDataProviderTest {
     fun `Should return error for invalid input search criteria for find result operation`() {
 
         StepVerifier.create(
-            pmTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoderV2(
-                        searchParameter = HelpdeskTestUtilsV2.buildSearchRequestByRptId(),
-                        confidentialMailUtils = null,
-                        confidentialFiscalCodeUtils = null
-                    ),
-                limit = 0,
-                skip = 10,
-                countInfo = CountInfo(1, 0)
+                pmTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoderV2(
+                            searchParameter = HelpdeskTestUtilsV2.buildSearchRequestByRptId(),
+                            confidentialMailUtils = null,
+                            confidentialFiscalCodeUtils = null
+                        ),
+                    limit = 0,
+                    skip = 10,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
     }

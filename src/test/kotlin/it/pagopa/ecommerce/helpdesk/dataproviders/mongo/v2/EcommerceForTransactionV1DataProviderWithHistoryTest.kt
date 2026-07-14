@@ -1,18 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo.v2
 
-import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationRequestData as TransactionAuthorizationRequestDataV1
-import it.pagopa.ecommerce.commons.documents.v1.TransactionClosureData as TransactionClosureDataV1
-import it.pagopa.ecommerce.commons.documents.v1.TransactionEvent as TransactionEventV1
-import it.pagopa.ecommerce.commons.documents.v1.TransactionUserReceiptData as TransactionUserReceiptDataV1
 import it.pagopa.ecommerce.commons.domain.Confidential
-import it.pagopa.ecommerce.commons.domain.v1.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionExpired as BaseTransactionExpiredV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithClosureError as BaseTransactionWithClosureErrorV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithCompletedAuthorization as BaseTransactionWithCompletedAuthorizationV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRefundRequested as BaseTransactionWithRefundRequestedV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRequestedAuthorization as BaseTransactionWithRequestedAuthorizationV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRequestedUserReceipt as BaseTransactionWithRequestedUserReceiptV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithUserReceipt as BaseTransactionWithUserReceiptV1
 import it.pagopa.ecommerce.commons.domain.v2.Email
 import it.pagopa.ecommerce.commons.domain.v2.FiscalCode
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
@@ -25,16 +13,14 @@ import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
 import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository as TransactionsViewHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialFiscalCodeUtils
 import it.pagopa.ecommerce.helpdesk.utils.v2.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
-import java.time.ZonedDateTime
-import java.util.*
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -48,6 +34,20 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Hooks
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
+import java.time.ZonedDateTime
+import java.util.*
+import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationRequestData as TransactionAuthorizationRequestDataV1
+import it.pagopa.ecommerce.commons.documents.v1.TransactionClosureData as TransactionClosureDataV1
+import it.pagopa.ecommerce.commons.documents.v1.TransactionEvent as TransactionEventV1
+import it.pagopa.ecommerce.commons.documents.v1.TransactionUserReceiptData as TransactionUserReceiptDataV1
+import it.pagopa.ecommerce.commons.domain.v1.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionExpired as BaseTransactionExpiredV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithClosureError as BaseTransactionWithClosureErrorV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithCompletedAuthorization as BaseTransactionWithCompletedAuthorizationV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRefundRequested as BaseTransactionWithRefundRequestedV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRequestedAuthorization as BaseTransactionWithRequestedAuthorizationV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRequestedUserReceipt as BaseTransactionWithRequestedUserReceiptV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithUserReceipt as BaseTransactionWithUserReceiptV1
 
 class EcommerceForTransactionV1DataProviderWithHistoryTest {
 
@@ -115,7 +115,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                 )
             )
         )
-            .expectNext(CountInfo(4, 0))
+            .expectNext(CountInfo(2, 2))
             .verifyComplete()
     }
 
@@ -358,9 +358,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(
             transactionsViewRepository
                 .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                    rptId = searchCriteria.rptId,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
+                    rptId = eq(searchCriteria.rptId),
+                    skip = any(),
+                    limit = any()
                 )
         )
             .willReturn(Flux.just(transactionView))
@@ -374,9 +374,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(
             transactionsViewHistoryRepository
                 .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                    rptId = searchCriteria.rptId,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
+                    rptId = eq(searchCriteria.rptId),
+                    skip = any(),
+                    limit = any()
                 )
         )
             .willReturn(Flux.just(transactionView))
@@ -546,7 +546,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     ),
                 skip = pageSize * pageNumber,
                 limit = pageSize,
-                countInfo = CountInfo(1, 0)
+                countInfo = CountInfo(1, 1)
             )
         )
             .expectNext(expected)
@@ -1060,9 +1060,6 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(confidentialDataManager.encrypt(Email(TEST_EMAIL))).willReturn {
             Mono.just(Confidential(tokenizedEmail))
         }
-        given(confidentialDataManager.encrypt(Email(TEST_EMAIL))).willReturn {
-            Mono.just(Confidential(tokenizedEmail))
-        }
         given(
             transactionsViewRepository
                 .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
@@ -1095,8 +1092,6 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         )
             .willReturn(Flux.fromIterable(events.drop(3)))
 
-        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
-            .willReturn(Mono.just(Email(TEST_EMAIL)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1254,7 +1249,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     ),
                 skip = pageSize * pageNumber,
                 limit = pageSize,
-                countInfo = CountInfo(1, 0)
+                countInfo = CountInfo(1, 1)
             )
         )
             .expectNext(expected)
@@ -1313,9 +1308,6 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                 )
         )
             .willReturn(Flux.just(transactionView))
-        given(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(any()))
-            .willReturn(Flux.fromIterable(events.take(3)))
-
         given(
             transactionsViewHistoryRepository
                 .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
@@ -1324,7 +1316,10 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     limit = any()
                 )
         )
-            .willReturn(Flux.just(transactionView))
+            .willReturn(Flux.empty())
+        given(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(any()))
+            .willReturn(Flux.fromIterable(events.take(3)))
+
         given(
             transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
                 any()
@@ -1332,6 +1327,8 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         )
             .willReturn(Flux.fromIterable(events.drop(3)))
 
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
         val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
@@ -1663,7 +1660,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     ),
                 skip = pageSize,
                 limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                countInfo = CountInfo(1, 1)
             )
         )
             .consumeNextWith {
@@ -2279,7 +2276,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     ),
                 skip = pageSize,
                 limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                countInfo = CountInfo(1, 1)
             )
         )
             .consumeNextWith {
@@ -2490,7 +2487,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     ),
                 skip = pageSize,
                 limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                countInfo = CountInfo(1, 1)
             )
         )
             .consumeNextWith {
@@ -3058,7 +3055,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     ),
                 skip = pageSize,
                 limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                countInfo = CountInfo(1, 1)
             )
         )
             .consumeNextWith {
@@ -3218,7 +3215,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     ),
                 skip = pageSize,
                 limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                countInfo = CountInfo(1, 1)
             )
         )
             .consumeNextWith {
@@ -3584,7 +3581,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     ),
                 skip = pageSize,
                 limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                countInfo = CountInfo(1, 1)
             )
         )
             .consumeNextWith {
@@ -5488,7 +5485,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     ),
                 skip = pageSize,
                 limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                countInfo = CountInfo(1, 1)
             )
         )
             .consumeNextWith {
