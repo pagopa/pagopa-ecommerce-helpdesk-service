@@ -30,8 +30,8 @@ import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository as TransactionsViewHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
@@ -336,8 +336,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -533,8 +533,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -758,8 +758,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -978,8 +978,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -1198,8 +1198,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -1416,8 +1416,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -1636,8 +1636,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -1788,8 +1788,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -1951,8 +1951,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -2110,8 +2110,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -2337,8 +2337,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -2566,8 +2566,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -2795,8 +2795,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -3027,8 +3027,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -3260,8 +3260,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -3492,8 +3492,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -3741,8 +3741,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -4007,8 +4007,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -4293,8 +4293,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -4593,8 +4593,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -4839,8 +4839,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -4995,8 +4995,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -5260,8 +5260,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -5503,8 +5503,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -5758,8 +5758,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -5915,8 +5915,8 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )

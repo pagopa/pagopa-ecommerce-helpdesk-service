@@ -184,7 +184,7 @@ class PmTransactionHistoryDataProviderTestV2 {
         given(
                 pmTransactionsRepository.findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
                     email = testEmail,
-                    skip = pageSize * pageNumber,
+                    skip = 0,
                     limit = pageSize
                 )
             )
@@ -197,7 +197,7 @@ class PmTransactionHistoryDataProviderTestV2 {
                             confidentialMailUtils = null,
                             confidentialFiscalCodeUtils = null
                         ),
-                    skip = pageSize * pageNumber,
+                    skip = 0,
                     limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
@@ -272,7 +272,7 @@ class PmTransactionHistoryDataProviderTestV2 {
                 pmTransactionsRepository
                     .findTransactionsWithUserFiscalCodePaginatedOrderByCreationDateDesc(
                         userFiscalCode = fiscalCode,
-                        skip = pageSize * pageNumber,
+                        skip = 0,
                         limit = pageSize
                     )
             )
@@ -286,7 +286,7 @@ class PmTransactionHistoryDataProviderTestV2 {
                             confidentialMailUtils = null,
                             confidentialFiscalCodeUtils = null
                         ),
-                    skip = pageSize * pageNumber,
+                    skip = 0,
                     limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )

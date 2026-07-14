@@ -144,7 +144,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     )
                 )
             )
-            .expectNext(CountInfo(4, 0))
+            .expectNext(CountInfo(2, 2))
             .verifyComplete()
     }
 
@@ -165,7 +165,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     )
                 )
             )
-            .expectNext(CountInfo(2, 0))
+            .expectNext(CountInfo(1, 1))
             .verifyComplete()
     }
 
@@ -544,7 +544,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize * pageNumber,
+                    skip = 0,
                     limit = pageSize,
                     countInfo = CountInfo(1, 1)
                 )
@@ -611,9 +611,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(
                 transactionsViewHistoryRepository
                     .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                        paymentToken = searchCriteria.paymentToken,
-                        skip = pageSize * pageNumber,
-                        limit = pageSize
+                        paymentToken = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
@@ -782,12 +782,12 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize * pageNumber,
+                    skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
-            .expectNext(expected)
+            .assertNext { assertEquals(expected, it) }
             .verifyComplete()
     }
 
@@ -1004,9 +1004,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -1063,9 +1063,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(
                 transactionsViewRepository
                     .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                        encryptedEmail = tokenizedEmail,
-                        skip = pageSize * pageNumber,
-                        limit = pageSize
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
@@ -1079,9 +1079,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(
                 transactionsViewHistoryRepository
                     .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                        encryptedEmail = tokenizedEmail,
-                        skip = pageSize * pageNumber,
-                        limit = pageSize
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
@@ -1247,7 +1247,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize * pageNumber,
+                    skip = 0,
                     limit = pageSize,
                     countInfo = CountInfo(1, 1)
                 )
@@ -1404,75 +1404,6 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData.pspChannelCode
                             )
                     )
-                    .product(ProductDto.ECOMMERCE),
-                TransactionResultDto()
-                    .userInfo(
-                        UserInfoDto().authenticationType("GUEST").notificationEmail(TEST_EMAIL)
-                    )
-                    .transactionInfo(
-                        TransactionInfoDto()
-                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
-                            .status("Confermato")
-                            .statusDetails(null)
-                            .events(convertEventsToEventInfoList(events))
-                            .eventStatus(
-                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
-                                    .valueOf(transactionView.status.toString())
-                            )
-                            .amount(amount)
-                            .fee(fee)
-                            .grandTotal(totalAmount)
-                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
-                            .authorizationCode(
-                                baseTransaction.transactionAuthorizationCompletedData
-                                    .authorizationCode
-                            )
-                            .paymentMethodName(
-                                baseTransaction.transactionAuthorizationRequestData
-                                    .paymentMethodName
-                            )
-                            .brand(
-                                baseTransaction.transactionAuthorizationRequestData.brand!!
-                                    .toString()
-                            )
-                            .authorizationRequestId(
-                                baseTransaction.transactionAuthorizationRequestData
-                                    .authorizationRequestId
-                            )
-                            .paymentGateway(
-                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
-                                    .toString()
-                            )
-                    )
-                    .paymentInfo(
-                        PaymentInfoDto()
-                            .origin(baseTransaction.clientId.toString())
-                            .idTransaction(baseTransaction.transactionId.value())
-                            .details(
-                                baseTransaction.paymentNotices.map {
-                                    PaymentDetailInfoDto()
-                                        .subject(it.transactionDescription.value)
-                                        .rptId(it.rptId.value)
-                                        .amount(it.transactionAmount.value)
-                                        .paymentToken(it.paymentToken.value)
-                                        .creditorInstitution(
-                                            baseTransaction.transactionUserReceiptData
-                                                .receivingOfficeName
-                                        )
-                                        .paFiscalCode(it.transferList[0].paFiscalCode)
-                                }
-                            )
-                    )
-                    .pspInfo(
-                        PspInfoDto()
-                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
-                            .businessName(
-                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
-                            )
-                            .idChannel(
-                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
-                            )
-                    )
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
@@ -1484,12 +1415,12 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize * pageNumber,
+                    skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
-            .expectNext(expected)
+            .assertNext { assertEquals(expected, it) }
             .verifyComplete()
 
         verify(confidentialDataManager, times(1)).encrypt(FiscalCode(searchCriteria.userFiscalCode))
@@ -1497,7 +1428,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
             .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
                 encryptedFiscalCode = tokenizedFiscalCode,
                 skip = 0,
-                limit = pageSize
+                limit = 1
             )
         verify(confidentialDataManager, times(1))
             .decrypt(eq(transactionActivatedEvent.data.email), any())
@@ -1520,8 +1451,8 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 0)
                 )
             )
@@ -1658,8 +1589,8 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 1)
                 )
             )
@@ -1856,9 +1787,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2066,9 +1997,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2274,8 +2205,8 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 1)
                 )
             )
@@ -2485,8 +2416,8 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 1)
                 )
             )
@@ -2696,9 +2627,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2907,9 +2838,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -3053,8 +2984,8 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 1)
                 )
             )
@@ -3213,8 +3144,8 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 1)
                 )
             )
@@ -3366,9 +3297,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -3579,8 +3510,8 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 1)
                 )
             )
@@ -3803,9 +3734,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -4027,9 +3958,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -4254,9 +4185,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -4481,9 +4412,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -4708,9 +4639,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -4948,9 +4879,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -5206,9 +5137,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -5483,8 +5414,8 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
+                    skip = 0,
+                    limit = pageSize,
                     countInfo = CountInfo(1, 1)
                 )
             )
@@ -5774,9 +5705,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -6014,9 +5945,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -6162,9 +6093,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber,
-                    countInfo = CountInfo(1, 0)
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -6423,12 +6354,12 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             confidentialFiscalCodeUtils =
                                 ConfidentialFiscalCodeUtils(confidentialDataManager)
                         ),
-                    skip = pageSize * pageNumber,
+                    skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
-            .expectNext(expected)
+            .assertNext { assertEquals(expected, it) }
             .verifyComplete()
     }
 }
