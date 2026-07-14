@@ -1,7 +1,19 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo.v1
 
+import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationRequestData as TransactionAuthorizationRequestDataV1
+import it.pagopa.ecommerce.commons.documents.v1.TransactionClosureData as TransactionClosureDataV1
+import it.pagopa.ecommerce.commons.documents.v1.TransactionEvent as TransactionEventV1
+import it.pagopa.ecommerce.commons.documents.v1.TransactionUserReceiptData as TransactionUserReceiptDataV1
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.domain.v1.Email
+import it.pagopa.ecommerce.commons.domain.v1.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionExpired as BaseTransactionExpiredV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithClosureError as BaseTransactionWithClosureErrorV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithCompletedAuthorization as BaseTransactionWithCompletedAuthorizationV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRefundRequested as BaseTransactionWithRefundRequestedV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRequestedAuthorization as BaseTransactionWithRequestedAuthorizationV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRequestedUserReceipt as BaseTransactionWithRequestedUserReceiptV1
+import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithUserReceipt as BaseTransactionWithUserReceiptV1
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.commons.generated.server.model.AuthorizationResultDto
 import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
@@ -18,6 +30,8 @@ import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.generated.ecommerce.helpdesk.model.*
+import java.time.ZonedDateTime
+import java.util.*
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -31,20 +45,6 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Hooks
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
-import java.time.ZonedDateTime
-import java.util.*
-import it.pagopa.ecommerce.commons.documents.v1.TransactionAuthorizationRequestData as TransactionAuthorizationRequestDataV1
-import it.pagopa.ecommerce.commons.documents.v1.TransactionClosureData as TransactionClosureDataV1
-import it.pagopa.ecommerce.commons.documents.v1.TransactionEvent as TransactionEventV1
-import it.pagopa.ecommerce.commons.documents.v1.TransactionUserReceiptData as TransactionUserReceiptDataV1
-import it.pagopa.ecommerce.commons.domain.v1.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionExpired as BaseTransactionExpiredV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithClosureError as BaseTransactionWithClosureErrorV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithCompletedAuthorization as BaseTransactionWithCompletedAuthorizationV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRefundRequested as BaseTransactionWithRefundRequestedV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRequestedAuthorization as BaseTransactionWithRequestedAuthorizationV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithRequestedUserReceipt as BaseTransactionWithRequestedUserReceiptV1
-import it.pagopa.ecommerce.commons.domain.v1.pojos.BaseTransactionWithUserReceipt as BaseTransactionWithUserReceiptV1
 
 class EcommerceForTransactionV1DataProviderTest {
 
@@ -82,7 +82,7 @@ class EcommerceForTransactionV1DataProviderTest {
 
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
     private val transactionsEventStoreHistoryRepository:
-            TransactionsEventStoreHistoryRepository<Any> =
+        TransactionsEventStoreHistoryRepository<Any> =
         mock()
 
     private val confidentialDataManager: ConfidentialDataManager = mock()
@@ -103,13 +103,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.countTransactionsWithRptId(searchCriteria.rptId))
             .willReturn(Mono.just(2))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(CountInfo(4, 0))
             .verifyComplete()
     }
@@ -122,13 +122,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.countTransactionsWithRptId(searchCriteria.rptId))
             .willReturn(Mono.just(0))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(CountInfo(2, 0))
             .verifyComplete()
     }
@@ -141,13 +141,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.countTransactionsWithRptId(searchCriteria.rptId))
             .willReturn(Mono.just(0))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(CountInfo(2, 0))
             .verifyComplete()
     }
@@ -156,25 +156,25 @@ class EcommerceForTransactionV1DataProviderTest {
     fun `should count total transactions by paymentToken successfully`() {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
         given(
-            transactionsViewRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
-            )
-        )
-            .willReturn(Mono.just(2))
-        given(
-            transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
-            )
-        )
-            .willReturn(Mono.just(2))
-        StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                transactionsViewRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
                 )
             )
-        )
+            .willReturn(Mono.just(2))
+        given(
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(2))
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
+            )
             .expectNext(CountInfo(4, 0))
             .verifyComplete()
     }
@@ -183,25 +183,25 @@ class EcommerceForTransactionV1DataProviderTest {
     fun `should count total transactions by paymentToken successfully runtime`() {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
         given(
-            transactionsViewRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
-            )
-        )
-            .willReturn(Mono.just(2))
-        given(
-            transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
-            )
-        )
-            .willReturn(Mono.just(0))
-        StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                transactionsViewRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
                 )
             )
-        )
+            .willReturn(Mono.just(2))
+        given(
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(0))
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
+            )
             .expectNext(CountInfo(2, 0))
             .verifyComplete()
     }
@@ -210,25 +210,25 @@ class EcommerceForTransactionV1DataProviderTest {
     fun `should count total transactions by paymentToken successfully history`() {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
         given(
-            transactionsViewRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
-            )
-        )
-            .willReturn(Mono.just(0))
-        given(
-            transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
-            )
-        )
-            .willReturn(Mono.just(2))
-        StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                transactionsViewRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
                 )
             )
-        )
+            .willReturn(Mono.just(0))
+        given(
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(2))
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
+            )
             .expectNext(CountInfo(2, 0))
             .verifyComplete()
     }
@@ -241,13 +241,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.existsById(searchCriteria.transactionId))
             .willReturn(Mono.just(false))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(CountInfo(1, 0))
             .verifyComplete()
     }
@@ -260,13 +260,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.existsById(searchCriteria.transactionId))
             .willReturn(Mono.just(true))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(CountInfo(1, 0))
             .verifyComplete()
     }
@@ -279,13 +279,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.countTransactionsWithRptId(searchCriteria.rptId))
             .willReturn(Mono.just(0))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(CountInfo(0, 0))
             .verifyComplete()
     }
@@ -294,25 +294,25 @@ class EcommerceForTransactionV1DataProviderTest {
     fun `should handle no transaction found by paymentToken successfully`() {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByPaymentToken()
         given(
-            transactionsViewRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
-            )
-        )
-            .willReturn(Mono.just(0))
-        given(
-            transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
-                searchCriteria.paymentToken
-            )
-        )
-            .willReturn(Mono.just(0))
-        StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                transactionsViewRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
                 )
             )
-        )
+            .willReturn(Mono.just(0))
+        given(
+                transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                    searchCriteria.paymentToken
+                )
+            )
+            .willReturn(Mono.just(0))
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
+                )
+            )
             .expectNext(CountInfo(0, 0))
             .verifyComplete()
     }
@@ -325,13 +325,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.existsById(searchCriteria.transactionId))
             .willReturn(Mono.just(false))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(CountInfo(0, 0))
             .verifyComplete()
     }
@@ -348,13 +348,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.countTransactionsWithEmail(mailToken))
             .willReturn(Mono.just(2))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(CountInfo(4, 0))
             .verifyComplete()
     }
@@ -371,13 +371,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.countTransactionsWithEmail(mailToken))
             .willReturn(Mono.just(0))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(CountInfo(2, 0))
             .verifyComplete()
     }
@@ -394,13 +394,13 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.countTransactionsWithEmail(mailToken))
             .willReturn(Mono.just(2))
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectNext(CountInfo(2, 0))
             .verifyComplete()
     }
@@ -409,13 +409,13 @@ class EcommerceForTransactionV1DataProviderTest {
     fun `should return error for search by user fiscal code as invalid search criteria`() {
         val searchCriteria = HelpdeskTestUtils.buildSearchRequestByUserFiscalCode("fiscal code")
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
     }
@@ -425,13 +425,13 @@ class EcommerceForTransactionV1DataProviderTest {
         val searchCriteria: HelpDeskSearchTransactionRequestDto = mock()
         given(searchCriteria.type).willReturn("UNKNOWN")
         StepVerifier.create(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                SearchParamDecoder(
-                    searchParameter = searchCriteria,
-                    confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    SearchParamDecoder(
+                        searchParameter = searchCriteria,
+                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                    )
                 )
             )
-        )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
     }
@@ -470,39 +470,39 @@ class EcommerceForTransactionV1DataProviderTest {
                 userReceiptAddErrorEvent,
                 userReceiptAddedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as TransactionWithUserReceiptOkV1
+                as TransactionWithUserReceiptOkV1
         given(
-            transactionsViewRepository
-                .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                    rptId = searchCriteria.rptId,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewRepository
+                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                        rptId = searchCriteria.rptId,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.just(transactionView))
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                    rptId = searchCriteria.rptId,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                        rptId = searchCriteria.rptId,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -580,17 +580,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize * pageNumber,
-                limit = pageSize,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize * pageNumber,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .assertNext { assertEquals(expected, it) }
             .verifyComplete()
     }
@@ -629,39 +629,39 @@ class EcommerceForTransactionV1DataProviderTest {
                 userReceiptAddErrorEvent,
                 userReceiptAddedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as TransactionWithUserReceiptOkV1
+                as TransactionWithUserReceiptOkV1
         given(
-            transactionsViewRepository
-                .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                    paymentToken = searchCriteria.paymentToken,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewRepository
+                    .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
+                        paymentToken = searchCriteria.paymentToken,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.just(transactionView))
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                    paymentToken = searchCriteria.paymentToken,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
+                        paymentToken = searchCriteria.paymentToken,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -739,17 +739,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize * pageNumber,
-                limit = pageSize,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize * pageNumber,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .expectNext(expected)
             .verifyComplete()
     }
@@ -788,25 +788,25 @@ class EcommerceForTransactionV1DataProviderTest {
                 userReceiptAddErrorEvent,
                 userReceiptAddedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as TransactionWithUserReceiptOkV1
+                as TransactionWithUserReceiptOkV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -884,17 +884,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -911,17 +911,17 @@ class EcommerceForTransactionV1DataProviderTest {
         val pageNumber = 0
 
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
     }
@@ -961,42 +961,42 @@ class EcommerceForTransactionV1DataProviderTest {
                 userReceiptAddErrorEvent,
                 userReceiptAddedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as TransactionWithUserReceiptOkV1
+                as TransactionWithUserReceiptOkV1
         given(confidentialDataManager.encrypt(Email(TEST_EMAIL))).willReturn {
             Mono.just(Confidential(tokenizedEmail))
         }
         given(
-            transactionsViewRepository
-                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                    encryptedEmail = tokenizedEmail,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = tokenizedEmail,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.just(transactionView))
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                    encryptedEmail = tokenizedEmail,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = tokenizedEmail,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1074,17 +1074,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize * pageNumber,
-                limit = pageSize,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize * pageNumber,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .expectNext(expected)
             .verifyComplete()
     }
@@ -1096,17 +1096,17 @@ class EcommerceForTransactionV1DataProviderTest {
         val pageNumber = 0
         given(searchCriteria.type).willReturn("UNKNOWN")
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .expectError(InvalidSearchCriteriaException::class.java)
             .verify()
     }
@@ -1129,16 +1129,16 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1187,17 +1187,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -1224,25 +1224,25 @@ class EcommerceForTransactionV1DataProviderTest {
             )
         val events =
             listOf(transactionActivatedEvent, transactionAuthorizationRequestedEvent)
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithRequestedAuthorizationV1
+                as BaseTransactionWithRequestedAuthorizationV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1314,17 +1314,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -1357,25 +1357,25 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithCompletedAuthorizationV1
+                as BaseTransactionWithCompletedAuthorizationV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1450,17 +1450,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -1493,25 +1493,25 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionAuthorizationRequestedEvent,
                 transactionAuthorizationCompletedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithCompletedAuthorizationV1
+                as BaseTransactionWithCompletedAuthorizationV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1586,17 +1586,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -1632,25 +1632,25 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionAuthorizationCompletedEvent,
                 transactionClosedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithCompletedAuthorizationV1
+                as BaseTransactionWithCompletedAuthorizationV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1725,17 +1725,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -1771,25 +1771,25 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionAuthorizationCompletedEvent,
                 transactionClosedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithCompletedAuthorizationV1
+                as BaseTransactionWithCompletedAuthorizationV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -1864,17 +1864,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -1909,7 +1909,7 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionAuthorizationCompletedEvent,
                 closureErrorEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             (TransactionTestUtils.reduceEvents(*events.toTypedArray())
                     as BaseTransactionWithClosureErrorV1)
@@ -1919,16 +1919,16 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2003,17 +2003,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -2038,7 +2038,7 @@ class EcommerceForTransactionV1DataProviderTest {
             TransactionTestUtils.transactionUserCanceledEvent()
         val events =
             listOf(transactionActivatedEvent, transactionCancellationRequestedEvent)
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction = (TransactionTestUtils.reduceEvents(*events.toTypedArray()))
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
@@ -2047,17 +2047,17 @@ class EcommerceForTransactionV1DataProviderTest {
             .willReturn(Mono.empty())
 
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
 
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2106,17 +2106,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -2152,7 +2152,7 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionCancellationRequestedEvent,
                 transactionExpiredEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction = (TransactionTestUtils.reduceEvents(*events.toTypedArray()))
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
@@ -2160,16 +2160,16 @@ class EcommerceForTransactionV1DataProviderTest {
             .willReturn(Mono.empty())
 
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2219,17 +2219,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -2261,23 +2261,23 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionCancellationRequestedEvent,
                 transactionClosedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction = (TransactionTestUtils.reduceEvents(*events.toTypedArray()))
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2326,17 +2326,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -2373,26 +2373,26 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionAuthorizationCompletedEvent,
                 transactionCloseFailedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithCompletedAuthorizationV1
+                as BaseTransactionWithCompletedAuthorizationV1
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2467,17 +2467,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -2519,26 +2519,26 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionClosedEvent,
                 transactionNotificationRequestedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithRequestedUserReceiptV1
+                as BaseTransactionWithRequestedUserReceiptV1
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2616,17 +2616,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE),
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -2668,26 +2668,26 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionClosedEvent,
                 transactionNotificationRequestedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithRequestedUserReceiptV1
+                as BaseTransactionWithRequestedUserReceiptV1
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2765,17 +2765,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -2820,26 +2820,26 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionNotificationRequestedEvent,
                 transactionUserReceiptError
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithRequestedUserReceiptV1
+                as BaseTransactionWithRequestedUserReceiptV1
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -2917,17 +2917,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -2972,26 +2972,26 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionNotificationRequestedEvent,
                 transactionUserReceiptError
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithRequestedUserReceiptV1
+                as BaseTransactionWithRequestedUserReceiptV1
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3069,17 +3069,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -3124,26 +3124,26 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionNotificationRequestedEvent,
                 transactionUserReceiptError
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithRequestedUserReceiptV1
+                as BaseTransactionWithRequestedUserReceiptV1
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3221,17 +3221,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -3288,7 +3288,7 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionUserReceiptError,
                 transactionRefundRequestedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             (TransactionTestUtils.reduceEvents(*events.toTypedArray())
                     as BaseTransactionWithRefundRequestedV1)
@@ -3299,16 +3299,16 @@ class EcommerceForTransactionV1DataProviderTest {
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3386,17 +3386,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -3465,33 +3465,33 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionRefundRequestedEvent,
                 transactionRefundErrorEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransactionRefundError =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithRefundRequestedV1
+                as BaseTransactionWithRefundRequestedV1
 
         val baseTransactionRefundRequested =
             baseTransactionRefundError.transactionAtPreviousState
-                    as BaseTransactionWithRefundRequestedV1
+                as BaseTransactionWithRefundRequestedV1
 
         val baseTransaction =
             baseTransactionRefundRequested.transactionAtPreviousState
-                    as BaseTransactionWithUserReceiptV1
+                as BaseTransactionWithUserReceiptV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3569,17 +3569,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE),
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -3662,37 +3662,37 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionRefundErrorEvent,
                 transactionRefundedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransactionRefunded =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithRefundRequestedV1
+                as BaseTransactionWithRefundRequestedV1
 
         val baseTransactionRefundError =
             baseTransactionRefunded.transactionAtPreviousState
-                    as BaseTransactionWithRefundRequestedV1
+                as BaseTransactionWithRefundRequestedV1
 
         val baseTransactionRefundRequested =
             baseTransactionRefundError.transactionAtPreviousState
-                    as BaseTransactionWithRefundRequestedV1
+                as BaseTransactionWithRefundRequestedV1
 
         val baseTransaction =
             baseTransactionRefundRequested.transactionAtPreviousState
-                    as BaseTransactionWithUserReceiptV1
+                as BaseTransactionWithUserReceiptV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3770,17 +3770,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -3878,37 +3878,37 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionRefundErrorEvent,
                 transactionRefundedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransactionRefunded =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as BaseTransactionWithRefundRequestedV1
+                as BaseTransactionWithRefundRequestedV1
 
         val baseTransactionRefundError =
             baseTransactionRefunded.transactionAtPreviousState
-                    as BaseTransactionWithRefundRequestedV1
+                as BaseTransactionWithRefundRequestedV1
 
         val baseTransactionRefundRequested =
             baseTransactionRefundError.transactionAtPreviousState
-                    as BaseTransactionWithRefundRequestedV1
+                as BaseTransactionWithRefundRequestedV1
 
         val baseTransaction =
             baseTransactionRefundRequested.transactionAtPreviousState
-                    as BaseTransactionWithUserReceiptV1
+                as BaseTransactionWithUserReceiptV1
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -3986,17 +3986,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -4052,28 +4052,28 @@ class EcommerceForTransactionV1DataProviderTest {
                 transactionUserReceiptError,
                 transactionExpired
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransactionExpired =
             TransactionTestUtils.reduceEvents(*events.toTypedArray()) as BaseTransactionExpiredV1
         val baseTransaction =
             baseTransactionExpired.transactionAtPreviousState
-                    as BaseTransactionWithRequestedUserReceiptV1
+                as BaseTransactionWithRequestedUserReceiptV1
 
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -4151,17 +4151,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -4188,23 +4188,23 @@ class EcommerceForTransactionV1DataProviderTest {
             )
         val events =
             listOf(transactionActivatedEvent, transactionExpiredEvent)
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction = TransactionTestUtils.reduceEvents(*events.toTypedArray())
         given(transactionsViewRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.just(transactionView))
         given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
             .willReturn(Mono.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(Mono.just(Email(TEST_EMAIL)))
@@ -4253,17 +4253,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize,
-                limit = pageNumber,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize,
+                    limit = pageNumber,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .consumeNextWith {
                 assertEquals(expected, it)
                 testedStatuses.add(
@@ -4307,39 +4307,39 @@ class EcommerceForTransactionV1DataProviderTest {
                 userReceiptAddErrorEvent,
                 userReceiptAddedEvent
             )
-                    as List<TransactionEventV1<Any>>
+                as List<TransactionEventV1<Any>>
         val baseTransaction =
             TransactionTestUtils.reduceEvents(*events.toTypedArray())
-                    as TransactionWithUserReceiptOkV1
+                as TransactionWithUserReceiptOkV1
         given(
-            transactionsViewRepository
-                .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                    rptId = searchCriteria.rptId,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewRepository
+                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                        rptId = searchCriteria.rptId,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.just(transactionView))
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                    rptId = searchCriteria.rptId,
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                        rptId = searchCriteria.rptId,
+                        skip = pageSize * pageNumber,
+                        limit = pageSize
+                    )
+            )
             .willReturn(Flux.empty())
         given(
-            transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.fromIterable(events))
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                transactionView.transactionId
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
             )
-        )
             .willReturn(Flux.empty())
         given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
             .willReturn(
@@ -4427,17 +4427,17 @@ class EcommerceForTransactionV1DataProviderTest {
                     .product(ProductDto.ECOMMERCE)
             )
         StepVerifier.create(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams =
-                    SearchParamDecoder(
-                        searchParameter = searchCriteria,
-                        confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-                    ),
-                skip = pageSize * pageNumber,
-                limit = pageSize,
-                countInfo = CountInfo(1, 0)
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoder(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
+                        ),
+                    skip = pageSize * pageNumber,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 0)
+                )
             )
-        )
             .expectNext(expected)
             .verifyComplete()
     }

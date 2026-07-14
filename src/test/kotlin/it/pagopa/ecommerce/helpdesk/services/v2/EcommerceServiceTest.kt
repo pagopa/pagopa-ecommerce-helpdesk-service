@@ -20,14 +20,14 @@ import it.pagopa.generated.ecommerce.helpdesk.v2.model.PageInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.ProductDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionMetricsResponseDto
+import java.time.OffsetDateTime
+import java.time.ZonedDateTime
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
-import java.time.OffsetDateTime
-import java.time.ZonedDateTime
 
 class EcommerceServiceTest {
 
@@ -45,7 +45,7 @@ class EcommerceServiceTest {
 
     private val transactionsEventStoreRepository: TransactionsEventStoreRepository<Any> = mock()
     private val transactionsEventStoreHistoryRepository:
-            TransactionsEventStoreHistoryRepository<Any> =
+        TransactionsEventStoreHistoryRepository<Any> =
         mock()
 
     private val ecommerceService =
@@ -70,31 +70,31 @@ class EcommerceServiceTest {
                 )
             )
         given(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                argThat { this.searchParameter == searchCriteria }
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    argThat { this.searchParameter == searchCriteria }
+                )
             )
-        )
             .willReturn(Mono.just(CountInfo(totalCount.toLong(), 0)))
         given(
-            ecommerceTransactionDataProvider.findResult(
-                searchParams = argThat { this.searchParameter == searchCriteria },
-                skip = eq(pageSize * pageNumber),
-                limit = eq(pageSize),
-                countInfo = any()
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams = argThat { this.searchParameter == searchCriteria },
+                    skip = eq(pageSize * pageNumber),
+                    limit = eq(pageSize),
+                    countInfo = any()
+                )
             )
-        )
             .willReturn(Mono.just(transactions))
         val expectedResponse =
             SearchTransactionResponseDto()
                 .transactions(transactions)
                 .page(PageInfoDto().results(transactions.size).total(10).current(pageNumber))
         StepVerifier.create(
-            ecommerceService.searchTransaction(
-                pageNumber = pageNumber,
-                pageSize = pageSize,
-                ecommerceSearchTransactionRequestDto = searchCriteria
+                ecommerceService.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    ecommerceSearchTransactionRequestDto = searchCriteria
+                )
             )
-        )
             .expectNext(expectedResponse)
             .verifyComplete()
 
@@ -109,18 +109,18 @@ class EcommerceServiceTest {
         val pageNumber = 0
         val totalCount = 0
         given(
-            ecommerceTransactionDataProvider.totalRecordCount(
-                argThat { this.searchParameter == searchCriteria }
+                ecommerceTransactionDataProvider.totalRecordCount(
+                    argThat { this.searchParameter == searchCriteria }
+                )
             )
-        )
             .willReturn(Mono.just(CountInfo(totalCount.toLong(), 0)))
         StepVerifier.create(
-            ecommerceService.searchTransaction(
-                pageNumber = pageNumber,
-                pageSize = pageSize,
-                ecommerceSearchTransactionRequestDto = searchCriteria
+                ecommerceService.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    ecommerceSearchTransactionRequestDto = searchCriteria
+                )
             )
-        )
             .expectError(NoResultFoundException::class.java)
             .verify()
 
@@ -151,13 +151,13 @@ class EcommerceServiceTest {
         given(transactionsViewRepository.countTransactionsWithEmail(encryptedEmail))
             .willReturn(Mono.just(totalCount.toLong()))
         given(
-            transactionsViewRepository
-                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                    encryptedEmail = any(),
-                    skip = any(),
-                    limit = any()
-                )
-        )
+                transactionsViewRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
+                    )
+            )
             .willReturn(Flux.just(transactionDocument))
         given(transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(any()))
             .willReturn(
@@ -168,19 +168,19 @@ class EcommerceServiceTest {
         given(transactionsViewHistoryRepository.countTransactionsWithEmail(encryptedEmail))
             .willReturn(Mono.just(0))
         given(
-            transactionsViewHistoryRepository
-                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                    encryptedEmail = any(),
-                    skip = any(),
-                    limit = any()
-                )
-        )
+                transactionsViewHistoryRepository
+                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
+                    )
+            )
             .willReturn(Flux.empty())
         given(
-            transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
-                any()
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    any()
+                )
             )
-        )
             .willReturn(Flux.empty())
         val ecommerceServiceLocalMock =
             EcommerceService(
@@ -198,12 +198,12 @@ class EcommerceServiceTest {
             )
 
         StepVerifier.create(
-            ecommerceServiceLocalMock.searchTransaction(
-                pageNumber = pageNumber,
-                pageSize = pageSize,
-                ecommerceSearchTransactionRequestDto = searchCriteria
+                ecommerceServiceLocalMock.searchTransaction(
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    ecommerceSearchTransactionRequestDto = searchCriteria
+                )
             )
-        )
             .assertNext {
                 Assertions.assertEquals(
                     it.page,
