@@ -347,7 +347,7 @@ class EcommerceTransactionDataProvider(
             // in this case we have to serve db only records
             onlineDbQuery(skip, limit)
         } else {
-            if (skip <= onlineCount) {
+            if (skip < onlineCount) {
                 // in this case requested offset overlap between online and history db, we have to
                 // retrieve records from both datasource
                 val onlineDbLimit = onlineCount - skip
