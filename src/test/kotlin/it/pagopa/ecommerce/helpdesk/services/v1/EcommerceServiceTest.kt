@@ -380,6 +380,7 @@ class EcommerceServiceTest {
                 .correlationId(correlationId)
                 .authorizationRequestId(authorizationRequestId)
                 .paymentMethodName(paymentMethod.serviceName)
+                .paymentTypeCode("CP")
 
         val pspInfo = PspInfoDto().pspId(pspId)
 
@@ -424,6 +425,7 @@ class EcommerceServiceTest {
                 .correlationId(correlationId)
                 .authorizationRequestId(authorizationRequestId)
                 .paymentMethodName(paymentMethod.serviceName)
+                .paymentTypeCode("CP")
 
         val pspInfo = PspInfoDto().pspId(pspId)
 
@@ -464,6 +466,7 @@ class EcommerceServiceTest {
                 .correlationId(correlationId)
                 .authorizationRequestId(authorizationRequestId)
                 .paymentMethodName(paymentMethod.serviceName)
+                .paymentTypeCode("CP")
 
         val pspInfo = PspInfoDto().pspId(pspId)
 
@@ -504,6 +507,7 @@ class EcommerceServiceTest {
                 .correlationId(correlationId)
                 .authorizationRequestId(authorizationRequestId)
                 .paymentMethodName(paymentMethod.serviceName)
+                .paymentTypeCode("CP")
 
         val pspInfo = PspInfoDto().pspId(pspId)
 
@@ -544,6 +548,7 @@ class EcommerceServiceTest {
                 .correlationId(correlationId)
                 .authorizationRequestId(authorizationRequestId)
                 .paymentMethodName(paymentMethodName)
+                .paymentTypeCode("CP")
 
         val pspInfo = PspInfoDto().pspId(pspId)
 
@@ -574,6 +579,7 @@ class EcommerceServiceTest {
                 .correlationId(correlationId)
                 .authorizationRequestId(authorizationRequestId)
                 .paymentMethodName(paymentMethodName)
+                .paymentTypeCode("CP")
 
         val pspInfo = PspInfoDto().pspId(pspId)
 
@@ -612,6 +618,7 @@ class EcommerceServiceTest {
                 .correlationId(correlationId)
                 .authorizationRequestId(authorizationRequestId)
                 .paymentMethodName(paymentMethod.serviceName)
+                .paymentTypeCode("CP")
 
         val pspInfo = PspInfoDto().pspId(pspId)
 
@@ -654,6 +661,7 @@ class EcommerceServiceTest {
                 .correlationId(correlationId)
                 .authorizationRequestId(authorizationRequestId)
                 .paymentMethodName(paymentMethod.serviceName)
+                .paymentTypeCode("CP")
 
         val pspInfo = PspInfoDto().pspId(pspId)
 
