@@ -179,8 +179,8 @@ class EcommerceService(
                         correlationId =
                             optionalResult.get().transactionInfo.correlationId.toString(),
                         paymentMethod =
-                            NpgClient.PaymentMethod.valueOf(
-                                optionalResult.get().transactionInfo.paymentMethodName
+                            NpgClient.PaymentMethod.fromMethodTypeCode(
+                                optionalResult.get().transactionInfo.paymentTypeCode
                             )
                     )
                     .map(::mapNpgOperationsResponse)
