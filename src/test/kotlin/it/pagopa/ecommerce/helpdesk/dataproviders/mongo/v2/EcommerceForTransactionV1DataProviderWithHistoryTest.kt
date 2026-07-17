@@ -165,7 +165,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     )
                 )
             )
-            .expectNext(CountInfo(1, 1))
+            .expectNext(CountInfo(1, 0))
             .verifyComplete()
     }
 

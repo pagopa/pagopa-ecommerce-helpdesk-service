@@ -65,27 +65,15 @@ class EcommerceTransactionDataProvider(
                         CountInfo(transactionsViewCount, transactionsViewHistoryCount)
                     }
                 is SearchTransactionRequestTransactionIdDto ->
-                    Mono.zip(
-                        transactionsViewRepository.existsById(it.transactionId).map { exist ->
-                            if (exist) {
-                                1
-                            } else {
-                                0
-                            }
-                        },
-                        transactionsViewHistoryRepository.existsById(it.transactionId).map { exist
-                            ->
-                            if (exist) {
-                                1
-                            } else {
-                                0
+                    transactionsViewRepository.existsById(it.transactionId).flatMap { exist ->
+                        if (exist) {
+                            Mono.just(CountInfo(1, 0))
+                        } else {
+                            transactionsViewHistoryRepository.existsById(it.transactionId).map {
+                                existInHistory ->
+                                if (existInHistory) CountInfo(0, 1) else CountInfo(0, 0)
                             }
                         }
-                    ) { transactionsViewCount, transactionsViewHistoryCount ->
-                        CountInfo(
-                            transactionsViewCount.toLong(),
-                            transactionsViewHistoryCount.toLong()
-                        )
                     }
                 is SearchTransactionRequestEmailDto ->
                     Mono.zip(
