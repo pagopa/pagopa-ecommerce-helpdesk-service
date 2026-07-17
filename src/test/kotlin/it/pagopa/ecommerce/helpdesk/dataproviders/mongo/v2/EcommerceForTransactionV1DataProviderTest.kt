@@ -506,6 +506,9 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
@@ -680,6 +683,9 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
@@ -837,6 +843,9 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
@@ -1025,6 +1034,12 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
@@ -1197,6 +1212,12 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
@@ -1385,6 +1406,12 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
@@ -1571,6 +1598,9 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
@@ -1759,6 +1789,9 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
@@ -2047,6 +2080,9 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
@@ -2196,6 +2232,9 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
@@ -2342,6 +2381,9 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
@@ -2493,6 +2535,9 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
@@ -2643,6 +2688,9 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
@@ -2792,6 +2840,9 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
@@ -3299,6 +3350,9 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
@@ -3455,6 +3509,9 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
@@ -3615,6 +3672,9 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
@@ -3779,6 +3839,9 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
@@ -3942,6 +4005,9 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
@@ -4104,6 +4170,9 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
@@ -4280,6 +4349,9 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
@@ -4474,6 +4546,9 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
@@ -4687,6 +4762,9 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
@@ -4915,6 +4993,9 @@ class EcommerceForTransactionV1DataProviderTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
                                     .toString()
@@ -5090,6 +5171,9 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
@@ -5402,6 +5486,9 @@ class EcommerceForTransactionV1DataProviderTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(
                                 baseTransaction.transactionAuthorizationRequestData.brand!!
