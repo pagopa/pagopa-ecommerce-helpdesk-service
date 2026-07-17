@@ -7,7 +7,6 @@ import it.pagopa.ecommerce.commons.exceptions.NpgResponseException
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OrderResponseDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.utils.NpgApiKeyConfiguration
-import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.DeadLetterDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider as EcommerceTransactionDataProviderV1
@@ -22,18 +21,7 @@ import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildDeadLetterEventsSearchResponse
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
-import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchDateTimeRangeDto
-import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchDeadLetterEventsRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.OperationAdditionalDataDto
-import it.pagopa.generated.ecommerce.helpdesk.model.OperationDto
-import it.pagopa.generated.ecommerce.helpdesk.model.OperationResultDto
-import it.pagopa.generated.ecommerce.helpdesk.model.OperationTypeDto
-import it.pagopa.generated.ecommerce.helpdesk.model.PaymentMethodDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchDeadLetterEventResponseDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsByOrderIdRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsResponseDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestTransactionIdDto as SearchTransactionRequestTransactionIdDtoV2
 import java.time.Duration
 import java.util.*
@@ -167,7 +155,10 @@ class EcommerceService(
             )
 
         return ecommerceTransactionDataProviderV2
-            .findResult(searchCriteria, 0, 1, CountInfo(1, 1))
+            .totalRecordCount(searchCriteria)
+            .flatMap { countInfo ->
+                ecommerceTransactionDataProviderV2.findResult(searchCriteria, 0, 1, countInfo)
+            }
             .flatMap { list ->
                 val optionalResult = list.firstOrNull()?.let { Optional.of(it) } ?: Optional.empty()
                 if (

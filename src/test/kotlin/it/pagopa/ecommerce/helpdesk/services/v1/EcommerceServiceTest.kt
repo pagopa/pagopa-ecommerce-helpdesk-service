@@ -396,6 +396,8 @@ class EcommerceServiceTest {
             }
         val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
 
+        given(ecommerceTransactionDataProviderV2.totalRecordCount(any()))
+            .willReturn(Mono.just(CountInfo(1, 0)))
         given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
 
@@ -441,6 +443,8 @@ class EcommerceServiceTest {
             }
         val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
 
+        given(ecommerceTransactionDataProviderV2.totalRecordCount(any()))
+            .willReturn(Mono.just(CountInfo(1, 0)))
         given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
         given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
@@ -482,6 +486,8 @@ class EcommerceServiceTest {
             }
         val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
 
+        given(ecommerceTransactionDataProviderV2.totalRecordCount(any()))
+            .willReturn(Mono.just(CountInfo(1, 0)))
         given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
         given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
@@ -523,6 +529,8 @@ class EcommerceServiceTest {
             }
         val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
 
+        given(ecommerceTransactionDataProviderV2.totalRecordCount(any()))
+            .willReturn(Mono.just(CountInfo(1, 0)))
         given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
         given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
@@ -557,6 +565,8 @@ class EcommerceServiceTest {
 
         val orderResponse = OrderResponseDtoV1().apply { operations = null }
 
+        given(ecommerceTransactionDataProviderV2.totalRecordCount(any()))
+            .willReturn(Mono.just(CountInfo(1, 0)))
         given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
         given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
@@ -596,6 +606,8 @@ class EcommerceServiceTest {
 
         val orderResponse = OrderResponseDtoV1().apply { operations = listOf(npgOperation) }
 
+        given(ecommerceTransactionDataProviderV2.totalRecordCount(any()))
+            .willReturn(Mono.just(CountInfo(1, 0)))
         given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
         given(npgApiKeyConfiguration[PaymentMethod.CARDS, pspId])
@@ -625,6 +637,8 @@ class EcommerceServiceTest {
         val transactionResultDto =
             TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
 
+        given(ecommerceTransactionDataProviderV2.totalRecordCount(any()))
+            .willReturn(Mono.just(CountInfo(1, 0)))
         given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
 
@@ -667,7 +681,8 @@ class EcommerceServiceTest {
 
         val transactionResultDto =
             TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
-
+        given(ecommerceTransactionDataProviderV2.totalRecordCount(any()))
+            .willReturn(Mono.just(CountInfo(1, 0)))
         given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
 
@@ -821,6 +836,9 @@ class EcommerceServiceTest {
 
     @Test
     fun `Should throw NoResultFoundException when findResult returns empty list`() {
+
+        given(ecommerceTransactionDataProviderV2.totalRecordCount(any()))
+            .willReturn(Mono.just(CountInfo(0, 0)))
         given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(emptyList()))
 
@@ -833,6 +851,8 @@ class EcommerceServiceTest {
     fun `Should throw NoResultFoundException when transaction info is null`() {
         val transactionResultDto = TransactionResultDto()
 
+        given(ecommerceTransactionDataProviderV2.totalRecordCount(any()))
+            .willReturn(Mono.just(CountInfo(1, 0)))
         given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
 
@@ -854,6 +874,8 @@ class EcommerceServiceTest {
         val transactionResultDto =
             TransactionResultDto().transactionInfo(transactionInfo).pspInfo(pspInfo)
 
+        given(ecommerceTransactionDataProviderV2.totalRecordCount(any()))
+            .willReturn(Mono.just(CountInfo(1, 0)))
         given(ecommerceTransactionDataProviderV2.findResult(any(), eq(0), eq(1), any()))
             .willReturn(Mono.just(listOf(transactionResultDto)))
 
