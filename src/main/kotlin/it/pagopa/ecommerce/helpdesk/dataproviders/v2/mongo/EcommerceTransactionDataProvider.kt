@@ -5,10 +5,12 @@ import it.pagopa.ecommerce.commons.documents.BaseTransactionView
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager.ConfidentialData
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
+import it.pagopa.ecommerce.helpdesk.dataproviders.Utils
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository as TransactionsViewHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.v2.ConfidentialMailUtils
@@ -36,83 +38,97 @@ class EcommerceTransactionDataProvider(
 
     override fun totalRecordCount(
         searchParams: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto>
-    ): Mono<Int> {
+    ): Mono<CountInfo> {
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
             decodedSearchParam.flatMap {
-                Mono.error<Long>(InvalidSearchCriteriaException(it.type, ProductDto.ECOMMERCE))
+                Mono.error<CountInfo>(InvalidSearchCriteriaException(it.type, ProductDto.ECOMMERCE))
             }
-        return decodedSearchParam
-            .flatMap {
-                when (it) {
-                    is SearchTransactionRequestPaymentTokenDto ->
-                        Mono.zip(
-                            transactionsViewRepository.countTransactionsWithPaymentToken(
-                                it.paymentToken
-                            ),
-                            transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
-                                it.paymentToken
-                            ),
-                        ) { transactionsViewCount, transactionsViewHistoryCount ->
-                            transactionsViewCount + transactionsViewHistoryCount
-                        }
-                    is SearchTransactionRequestRptIdDto ->
-                        Mono.zip(
-                            transactionsViewRepository.countTransactionsWithRptId(it.rptId),
-                            transactionsViewHistoryRepository.countTransactionsWithRptId(it.rptId)
-                        ) { transactionsViewCount, transactionsViewHistoryCount ->
-                            transactionsViewCount + transactionsViewHistoryCount
-                        }
-                    is SearchTransactionRequestTransactionIdDto ->
-                        Mono.zip(
-                            transactionsViewRepository.existsById(it.transactionId).map { exist ->
-                                if (exist) {
-                                    1
-                                } else {
-                                    0
-                                }
-                            },
+        return decodedSearchParam.flatMap {
+            when (it) {
+                is SearchTransactionRequestPaymentTokenDto ->
+                    Mono.zip(
+                        transactionsViewRepository.countTransactionsWithPaymentToken(
+                            it.paymentToken
+                        ),
+                        transactionsViewHistoryRepository.countTransactionsWithPaymentToken(
+                            it.paymentToken
+                        ),
+                    ) { transactionsViewCount, transactionsViewHistoryCount ->
+                        CountInfo(transactionsViewCount, transactionsViewHistoryCount)
+                    }
+                is SearchTransactionRequestRptIdDto ->
+                    Mono.zip(
+                        transactionsViewRepository.countTransactionsWithRptId(it.rptId),
+                        transactionsViewHistoryRepository.countTransactionsWithRptId(it.rptId)
+                    ) { transactionsViewCount, transactionsViewHistoryCount ->
+                        CountInfo(transactionsViewCount, transactionsViewHistoryCount)
+                    }
+                is SearchTransactionRequestTransactionIdDto ->
+                    transactionsViewRepository.existsById(it.transactionId).flatMap { exist ->
+                        if (exist) {
+                            Mono.just(CountInfo(1, 0))
+                        } else {
                             transactionsViewHistoryRepository.existsById(it.transactionId).map {
-                                exist ->
-                                if (exist) {
-                                    1
-                                } else {
-                                    0
-                                }
+                                existInHistory ->
+                                if (existInHistory) CountInfo(0, 1) else CountInfo(0, 0)
                             }
-                        ) { transactionsViewCount, transactionsViewHistoryCount ->
-                            transactionsViewCount + transactionsViewHistoryCount
                         }
-                    is SearchTransactionRequestEmailDto ->
-                        Mono.zip(
-                            transactionsViewRepository.countTransactionsWithEmail(it.userEmail),
-                            transactionsViewHistoryRepository.countTransactionsWithEmail(
-                                it.userEmail
-                            )
-                        ) { transactionsViewCount, transactionsViewHistoryCount ->
-                            transactionsViewCount + transactionsViewHistoryCount
-                        }
-                    is SearchTransactionRequestFiscalCodeDto ->
-                        Mono.zip(
-                            transactionsViewRepository.countTransactionsWithFiscalCode(
-                                it.userFiscalCode
-                            ),
-                            transactionsViewHistoryRepository.countTransactionsWithFiscalCode(
-                                it.userFiscalCode
-                            )
-                        ) { transactionsViewCount, transactionsViewHistoryCount ->
-                            transactionsViewCount + transactionsViewHistoryCount
-                        }
-                    else -> invalidSearchCriteriaError
-                }
+                    }
+                is SearchTransactionRequestEmailDto ->
+                    Mono.zip(
+                        transactionsViewRepository.countTransactionsWithEmail(it.userEmail),
+                        transactionsViewHistoryRepository.countTransactionsWithEmail(it.userEmail)
+                    ) { transactionsViewCount, transactionsViewHistoryCount ->
+                        CountInfo(transactionsViewCount, transactionsViewHistoryCount)
+                    }
+                is SearchTransactionRequestFiscalCodeDto ->
+                    Mono.zip(
+                        transactionsViewRepository.countTransactionsWithFiscalCode(
+                            it.userFiscalCode
+                        ),
+                        transactionsViewHistoryRepository.countTransactionsWithFiscalCode(
+                            it.userFiscalCode
+                        )
+                    ) { transactionsViewCount, transactionsViewHistoryCount ->
+                        CountInfo(transactionsViewCount, transactionsViewHistoryCount)
+                    }
+                is SearchTransactionRequestAuthorizationRequestIdDto ->
+                    Mono.zip(
+                        transactionsViewRepository.countTransactionsWithAuthorizationRequestId(
+                            it.authorizationRequestId
+                        ),
+                        transactionsViewHistoryRepository
+                            .countTransactionsWithAuthorizationRequestId(it.authorizationRequestId)
+                    ) { transactionsViewCount, transactionsViewHistoryCount ->
+                        CountInfo(transactionsViewCount, transactionsViewHistoryCount)
+                    }
+                is SearchTransactionRequestRRNDto ->
+                    Mono.zip(
+                        transactionsViewRepository.countTransactionsWithRRN(it.rrn),
+                        transactionsViewHistoryRepository.countTransactionsWithRRN(it.rrn)
+                    ) { transactionsViewCount, transactionsViewHistoryCount ->
+                        CountInfo(transactionsViewCount, transactionsViewHistoryCount)
+                    }
+                is SearchTransactionRequestEndToEndIdDto ->
+                    Mono.zip(
+                        transactionsViewRepository.countTransactionsWithEndToEndId(it.endToEndId),
+                        transactionsViewHistoryRepository.countTransactionsWithEndToEndId(
+                            it.endToEndId
+                        )
+                    ) { transactionsViewCount, transactionsViewHistoryCount ->
+                        CountInfo(transactionsViewCount, transactionsViewHistoryCount)
+                    }
+                else -> invalidSearchCriteriaError
             }
-            .map { it.toInt() }
+        }
     }
 
     override fun findResult(
         searchParams: SearchParamDecoderV2<HelpDeskSearchTransactionRequestDto>,
         skip: Int,
-        limit: Int
+        limit: Int,
+        countInfo: CountInfo
     ): Mono<List<TransactionResultDto>> {
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
@@ -126,74 +142,176 @@ class EcommerceTransactionDataProvider(
             decodedSearchParam.flatMapMany {
                 when (it) {
                     is SearchTransactionRequestPaymentTokenDto ->
-                        Flux.concat(
-                            transactionsViewRepository
-                                .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                                    paymentToken = it.paymentToken,
-                                    skip = skip,
-                                    limit = limit
-                                ),
-                            transactionsViewHistoryRepository
-                                .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                                    paymentToken = it.paymentToken,
-                                    skip = skip,
-                                    limit = limit
-                                )
+                        Utils.readEventsFromDbs(
+                            onlineDbQuery = { skip, limit ->
+                                transactionsViewRepository
+                                    .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
+                                        paymentToken = it.paymentToken,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            historyDbQuery = { skip, limit ->
+                                transactionsViewHistoryRepository
+                                    .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
+                                        paymentToken = it.paymentToken,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            skip = skip,
+                            limit = limit,
+                            countInfo = countInfo
                         )
                     is SearchTransactionRequestRptIdDto ->
-                        Flux.concat(
-                            transactionsViewRepository
-                                .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                                    rptId = it.rptId,
-                                    skip = skip,
-                                    limit = limit
-                                ),
-                            transactionsViewHistoryRepository
-                                .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                                    rptId = it.rptId,
-                                    skip = skip,
-                                    limit = limit
-                                )
+                        Utils.readEventsFromDbs(
+                            onlineDbQuery = { skip, limit ->
+                                transactionsViewRepository
+                                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                                        rptId = it.rptId,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            historyDbQuery = { skip, limit ->
+                                transactionsViewHistoryRepository
+                                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                                        rptId = it.rptId,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            skip = skip,
+                            limit = limit,
+                            countInfo = countInfo
                         )
                     is SearchTransactionRequestTransactionIdDto ->
-                        Flux.concat(
-                            transactionsViewRepository.findById(it.transactionId).toFlux(),
-                            transactionsViewHistoryRepository.findById(it.transactionId).toFlux()
+                        Utils.readEventsFromDbs(
+                            onlineDbQuery = { _, _ ->
+                                transactionsViewRepository.findById(it.transactionId).toFlux()
+                            },
+                            historyDbQuery = { _, _ ->
+                                transactionsViewHistoryRepository
+                                    .findById(it.transactionId)
+                                    .toFlux()
+                            },
+                            skip = skip,
+                            limit = limit,
+                            countInfo = countInfo
                         )
                     is SearchTransactionRequestEmailDto ->
-                        Flux.concat(
-                            transactionsViewRepository
-                                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                                    encryptedEmail = it.userEmail,
-                                    skip = skip,
-                                    limit = limit
-                                ),
-                            transactionsViewHistoryRepository
-                                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                                    encryptedEmail = it.userEmail,
-                                    skip = skip,
-                                    limit = limit
-                                )
+                        Utils.readEventsFromDbs(
+                            onlineDbQuery = { skip, limit ->
+                                transactionsViewRepository
+                                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                                        encryptedEmail = it.userEmail,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            historyDbQuery = { skip, limit ->
+                                transactionsViewHistoryRepository
+                                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                                        encryptedEmail = it.userEmail,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            skip = skip,
+                            limit = limit,
+                            countInfo = countInfo
                         )
                     is SearchTransactionRequestFiscalCodeDto ->
-                        Flux.concat(
-                            transactionsViewRepository
-                                .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
-                                    encryptedFiscalCode = it.userFiscalCode,
-                                    skip = skip,
-                                    limit = limit
-                                ),
-                            transactionsViewHistoryRepository
-                                .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
-                                    encryptedFiscalCode = it.userFiscalCode,
-                                    skip = skip,
-                                    limit = limit
-                                )
+                        Utils.readEventsFromDbs(
+                            onlineDbQuery = { skip, limit ->
+                                transactionsViewRepository
+                                    .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
+                                        encryptedFiscalCode = it.userFiscalCode,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            historyDbQuery = { skip, limit ->
+                                transactionsViewHistoryRepository
+                                    .findTransactionsWithFiscalCodePaginatedOrderByCreationDateDesc(
+                                        encryptedFiscalCode = it.userFiscalCode,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            skip = skip,
+                            limit = limit,
+                            countInfo = countInfo
+                        )
+                    is SearchTransactionRequestRRNDto ->
+                        Utils.readEventsFromDbs(
+                            onlineDbQuery = { skip, limit ->
+                                transactionsViewRepository
+                                    .findTransactionsWithRRNPaginatedOrderByCreationDateDesc(
+                                        rrn = it.rrn,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            historyDbQuery = { skip, limit ->
+                                transactionsViewHistoryRepository
+                                    .findTransactionsWithRRNPaginatedOrderByCreationDateDesc(
+                                        rrn = it.rrn,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            skip = skip,
+                            limit = limit,
+                            countInfo = countInfo
+                        )
+                    is SearchTransactionRequestAuthorizationRequestIdDto ->
+                        Utils.readEventsFromDbs(
+                            onlineDbQuery = { skip, limit ->
+                                transactionsViewRepository
+                                    .findTransactionsWithAuthorizationRequestIdPaginatedOrderByCreationDateDesc(
+                                        authorizationRequestId = it.authorizationRequestId,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            historyDbQuery = { skip, limit ->
+                                transactionsViewHistoryRepository
+                                    .findTransactionsWithAuthorizationRequestIdPaginatedOrderByCreationDateDesc(
+                                        authorizationRequestId = it.authorizationRequestId,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            skip = skip,
+                            limit = limit,
+                            countInfo = countInfo
+                        )
+                    is SearchTransactionRequestEndToEndIdDto ->
+                        Utils.readEventsFromDbs(
+                            onlineDbQuery = { skip, limit ->
+                                transactionsViewRepository
+                                    .findTransactionsWithEndToEndIdPaginatedOrderByCreationDateDesc(
+                                        endToEndId = it.endToEndId,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            historyDbQuery = { skip, limit ->
+                                transactionsViewHistoryRepository
+                                    .findTransactionsWithEndToEndIdPaginatedOrderByCreationDateDesc(
+                                        endToEndId = it.endToEndId,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            skip = skip,
+                            limit = limit,
+                            countInfo = countInfo
                         )
                     else -> invalidSearchCriteriaError
                 }
             }
-
         return transactions
             .flatMap { mapToTransactionResultDto(it, searchParams.confidentialMailUtils!!) }
             .collectList()

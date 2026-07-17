@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.helpdesk.dataproviders.oracle.v1
 import io.r2dbc.h2.H2ConnectionConfiguration
 import io.r2dbc.h2.H2ConnectionFactory
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
@@ -38,7 +39,7 @@ class PMTransactionDataProviderTest {
                     )
                 )
             )
-            .expectNext(1)
+            .expectNext(CountInfo(1, 0))
             .verifyComplete()
     }
 
@@ -54,7 +55,7 @@ class PMTransactionDataProviderTest {
                     ),
                 )
             )
-            .expectNext(0)
+            .expectNext(CountInfo(0, 0))
             .verifyComplete()
     }
 
@@ -82,7 +83,8 @@ class PMTransactionDataProviderTest {
                 pmTransactionDataProvider.findResult(
                     searchParams = SearchParamDecoder(searchParameter = searchCriteria, null),
                     skip = 0,
-                    limit = 0
+                    limit = 0,
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -148,7 +150,8 @@ class PMTransactionDataProviderTest {
                             confidentialMailUtils = null
                         ),
                     limit = 10,
-                    skip = 0
+                    skip = 0,
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectNext(expectedResponse)
@@ -167,7 +170,7 @@ class PMTransactionDataProviderTest {
                     ),
                 )
             )
-            .expectNext(1)
+            .expectNext(CountInfo(1, 0))
             .verifyComplete()
     }
 
@@ -185,7 +188,7 @@ class PMTransactionDataProviderTest {
                     ),
                 )
             )
-            .expectNext(0)
+            .expectNext(CountInfo(0, 0))
             .verifyComplete()
     }
 
@@ -248,7 +251,8 @@ class PMTransactionDataProviderTest {
                             confidentialMailUtils = null
                         ),
                     limit = 10,
-                    skip = 0
+                    skip = 0,
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectNext(expectedResponse)
@@ -295,7 +299,8 @@ class PMTransactionDataProviderTest {
                             confidentialMailUtils = null
                         ),
                     limit = 0,
-                    skip = 10
+                    skip = 10,
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -322,7 +327,7 @@ class PMTransactionDataProviderTest {
                     )
                 )
             )
-            .expectNext(1)
+            .expectNext(CountInfo(1, 0))
             .verifyComplete()
     }
 
@@ -348,7 +353,8 @@ class PMTransactionDataProviderTest {
                             confidentialMailUtils = null
                         ),
                     limit = 10,
-                    skip = 0
+                    skip = 0,
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectNextMatches { it.isEmpty() }
@@ -364,7 +370,8 @@ class PMTransactionDataProviderTest {
                 pmTransactionDataProvider.findResult(
                     searchParams = SearchParamDecoder(searchParameter = searchCriteria, null),
                     skip = 0,
-                    limit = 0
+                    limit = 0,
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)

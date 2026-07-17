@@ -1,10 +1,12 @@
 package it.pagopa.ecommerce.helpdesk.services.v1
 
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.PageUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
@@ -34,7 +36,7 @@ class HelpdeskService(
         searchTransactionRequestDto: HelpDeskSearchTransactionRequestDto
     ): Mono<SearchTransactionResponseDto> {
         val confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
-        val totalEcommerceCount =
+        val ecommerceCountInfo =
             ecommerceTransactionDataProvider
                 .totalRecordCount(
                     SearchParamDecoder(
@@ -42,8 +44,10 @@ class HelpdeskService(
                         confidentialMailUtils = confidentialMailUtils
                     )
                 )
-                .onErrorResume(InvalidSearchCriteriaException::class.java) { Mono.just(0) }
-        val totalPmCount =
+                .onErrorResume(InvalidSearchCriteriaException::class.java) {
+                    Mono.just(CountInfo(0, 0))
+                }
+        val pmCountInfo =
             pmTransactionDataProvider
                 .totalRecordCount(
                     SearchParamDecoder(
@@ -51,10 +55,12 @@ class HelpdeskService(
                         confidentialMailUtils = null
                     )
                 )
-                .onErrorResume(InvalidSearchCriteriaException::class.java) { Mono.just(0) }
-        return totalEcommerceCount.zipWith(totalPmCount, ::Pair).flatMap {
-            (totalEcommerceCount, totalPmCount) ->
-            if (totalPmCount + totalEcommerceCount == 0) {
+                .onErrorResume(InvalidSearchCriteriaException::class.java) {
+                    Mono.just(CountInfo(0, 0))
+                }
+        return ecommerceCountInfo.zipWith(pmCountInfo, ::Pair).flatMap {
+            (ecommerceCountInfo, pmCountInfo) ->
+            if (pmCountInfo.totalCount() + ecommerceCountInfo.totalCount() == 0L) {
                 return@flatMap Mono.error(NoResultFoundException(searchTransactionRequestDto.type))
             }
             val skip = pageNumber * pageSize
@@ -63,11 +69,14 @@ class HelpdeskService(
                 pageNumber,
                 pageSize,
                 skip,
-                totalEcommerceCount,
-                totalPmCount
+                ecommerceCountInfo,
+                pmCountInfo
             )
             val (ecommerceTotalPages, ecommerceRemainder) =
-                calculatePages(pageSize = pageSize, totalCount = totalEcommerceCount)
+                PageUtils.calculatePages(
+                    pageSize = pageSize,
+                    totalCount = ecommerceCountInfo.totalCount().toInt()
+                )
             val records =
                 if (pageNumber < ecommerceTotalPages - 1) {
                     logger.info("Recovering records from eCommerce DB. Skip: {}", skip)
@@ -79,7 +88,8 @@ class HelpdeskService(
                                     confidentialMailUtils = confidentialMailUtils
                                 ),
                             skip = skip,
-                            limit = pageSize
+                            limit = pageSize,
+                            countInfo = ecommerceCountInfo
                         )
                         .onErrorResume(InvalidSearchCriteriaException::class.java) {
                             Mono.just(emptyList())
@@ -98,7 +108,8 @@ class HelpdeskService(
                                         confidentialMailUtils = confidentialMailUtils
                                     ),
                                 skip = skip,
-                                limit = pageSize
+                                limit = pageSize,
+                                countInfo = ecommerceCountInfo
                             )
                             .onErrorResume(InvalidSearchCriteriaException::class.java) {
                                 Mono.just(emptyList())
@@ -117,7 +128,8 @@ class HelpdeskService(
                                         confidentialMailUtils = confidentialMailUtils
                                     ),
                                 skip = skip,
-                                limit = ecommerceRemainder
+                                limit = ecommerceRemainder,
+                                countInfo = ecommerceCountInfo
                             )
                             .onErrorResume(InvalidSearchCriteriaException::class.java) {
                                 Mono.just(emptyList())
@@ -131,7 +143,8 @@ class HelpdeskService(
                                                 confidentialMailUtils = null
                                             ),
                                         skip = 0,
-                                        limit = pageSize - ecommerceRemainder
+                                        limit = pageSize - ecommerceRemainder,
+                                        countInfo = pmCountInfo
                                     )
                                     .map { pmRecords -> ecommerceRecords + pmRecords }
                                     .onErrorResume(InvalidSearchCriteriaException::class.java) {
@@ -140,7 +153,7 @@ class HelpdeskService(
                             }
                     }
                 } else {
-                    val skipFromPmDB = skip - totalEcommerceCount
+                    val skipFromPmDB = skip - ecommerceCountInfo.totalCount().toInt()
                     logger.info("Recovering records from PM DB, Skip: {}", skipFromPmDB)
                     pmTransactionDataProvider
                         .findResult(
@@ -150,7 +163,8 @@ class HelpdeskService(
                                     confidentialMailUtils = null
                                 ),
                             skip = skipFromPmDB,
-                            limit = pageSize
+                            limit = pageSize,
+                            countInfo = pmCountInfo
                         )
                         .onErrorResume(InvalidSearchCriteriaException::class.java) {
                             Mono.just(emptyList())
@@ -159,25 +173,12 @@ class HelpdeskService(
             return@flatMap records.map { results ->
                 buildTransactionSearchResponse(
                     currentPage = pageNumber,
-                    totalCount = totalEcommerceCount + totalPmCount,
+                    totalCount =
+                        (ecommerceCountInfo.totalCount() + pmCountInfo.totalCount()).toInt(),
                     pageSize = pageSize,
                     results = results
                 )
             }
-        }
-    }
-
-    /**
-     * Calculate pages for display all records given a page size. Return a Pair<Int,Int> where first
-     * argument is page size, second one is total count /page size remainder
-     */
-    fun calculatePages(pageSize: Int, totalCount: Int): Pair<Int, Int> {
-        val remainder = totalCount % pageSize
-        val pages = totalCount / pageSize
-        return if (remainder == 0) {
-            Pair(pages, remainder)
-        } else {
-            Pair(pages + 1, remainder)
         }
     }
 }

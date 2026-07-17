@@ -2,6 +2,7 @@ package it.pagopa.ecommerce.helpdesk.dataproviders.mongo.v1
 
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.DeadLetterRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.DeadLetterDataProvider
 import it.pagopa.generated.ecommerce.helpdesk.model.*
@@ -37,7 +38,7 @@ class DeadLetterDataProviderTest {
         given(deadLetterRepository.count()).willReturn(mono { count })
 
         StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
-            .expectNext(count.toInt())
+            .expectNext(CountInfo(count, 0))
             .verifyComplete()
 
         verify(deadLetterRepository, times(1)).count()
@@ -69,7 +70,7 @@ class DeadLetterDataProviderTest {
             .willReturn(mono { count })
 
         StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
-            .expectNext(count.toInt())
+            .expectNext(CountInfo(count, 0))
             .verifyComplete()
 
         verify(deadLetterRepository, times(1))
@@ -115,7 +116,7 @@ class DeadLetterDataProviderTest {
             .willReturn(mono { count })
 
         StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
-            .expectNext(count.toInt())
+            .expectNext(CountInfo(count, 0))
             .verifyComplete()
 
         verify(deadLetterRepository, times(1))
@@ -143,7 +144,7 @@ class DeadLetterDataProviderTest {
             .willReturn(mono { count })
 
         StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
-            .expectNext(count.toInt())
+            .expectNext(CountInfo(count, 0))
             .verifyComplete()
 
         verify(deadLetterRepository, times(1)).countDeadLetterEventForQueue(source)
@@ -178,7 +179,7 @@ class DeadLetterDataProviderTest {
             .willReturn(mono { count })
 
         StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
-            .expectNext(count.toInt())
+            .expectNext(CountInfo(count, 0))
             .verifyComplete()
 
         verify(deadLetterRepository, times(1))
@@ -229,7 +230,7 @@ class DeadLetterDataProviderTest {
             .willReturn(mono { count })
 
         StepVerifier.create(deadLetterDataProvider.totalRecordCount(searchRequest))
-            .expectNext(count.toInt())
+            .expectNext(CountInfo(count, 0))
             .verifyComplete()
 
         verify(deadLetterRepository, times(1))
@@ -283,7 +284,9 @@ class DeadLetterDataProviderTest {
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
 
-        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit))
+        StepVerifier.create(
+                deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1, 0))
+            )
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
 
@@ -336,7 +339,9 @@ class DeadLetterDataProviderTest {
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
 
-        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit))
+        StepVerifier.create(
+                deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1, 0))
+            )
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
 
@@ -397,7 +402,9 @@ class DeadLetterDataProviderTest {
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
 
-        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit))
+        StepVerifier.create(
+                deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1, 0))
+            )
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
 
@@ -446,7 +453,9 @@ class DeadLetterDataProviderTest {
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
 
-        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit))
+        StepVerifier.create(
+                deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1, 0))
+            )
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
 
@@ -497,7 +506,9 @@ class DeadLetterDataProviderTest {
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
 
-        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit))
+        StepVerifier.create(
+                deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1, 0))
+            )
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
 
@@ -565,7 +576,9 @@ class DeadLetterDataProviderTest {
             )
             .willReturn(Flux.fromIterable(deadLetterEvents))
 
-        StepVerifier.create(deadLetterDataProvider.findResult(searchRequest, skip, limit))
+        StepVerifier.create(
+                deadLetterDataProvider.findResult(searchRequest, skip, limit, CountInfo(1, 0))
+            )
             .expectNext(expectedDeadLetterDtoList)
             .verifyComplete()
 

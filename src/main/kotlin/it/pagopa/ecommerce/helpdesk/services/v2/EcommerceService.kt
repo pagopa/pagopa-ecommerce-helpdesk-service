@@ -70,18 +70,23 @@ class EcommerceService(
         dataProvider: DataProvider<K, V>,
         searchCriteriaType: String
     ): Mono<Pair<List<V>, Int>> {
-        return dataProvider.totalRecordCount(searchCriteria).flatMap { totalCount ->
-            if (totalCount > 0) {
+        return dataProvider.totalRecordCount(searchCriteria).flatMap { countInfo ->
+            if (countInfo.totalCount() > 0) {
                 val skip = pageSize * pageNumber
                 logger.info(
                     "Total record found: {}, skip: {}, limit: {}",
-                    totalCount,
+                    countInfo,
                     skip,
                     pageSize
                 )
                 dataProvider
-                    .findResult(searchParams = searchCriteria, skip = skip, limit = pageSize)
-                    .zipWith(mono { totalCount }, ::Pair)
+                    .findResult(
+                        searchParams = searchCriteria,
+                        skip = skip,
+                        limit = pageSize,
+                        countInfo = countInfo
+                    )
+                    .zipWith(mono { countInfo.totalCount().toInt() }, ::Pair)
             } else {
                 Mono.error(NoResultFoundException(searchCriteriaType))
             }

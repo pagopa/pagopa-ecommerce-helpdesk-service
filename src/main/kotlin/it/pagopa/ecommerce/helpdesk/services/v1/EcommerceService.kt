@@ -21,18 +21,7 @@ import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildDeadLetterEventsSearchResponse
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
-import it.pagopa.generated.ecommerce.helpdesk.model.DeadLetterSearchDateTimeRangeDto
-import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchDeadLetterEventsRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.EcommerceSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.OperationAdditionalDataDto
-import it.pagopa.generated.ecommerce.helpdesk.model.OperationDto
-import it.pagopa.generated.ecommerce.helpdesk.model.OperationResultDto
-import it.pagopa.generated.ecommerce.helpdesk.model.OperationTypeDto
-import it.pagopa.generated.ecommerce.helpdesk.model.PaymentMethodDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchDeadLetterEventResponseDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsByOrderIdRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchNpgOperationsResponseDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionRequestTransactionIdDto as SearchTransactionRequestTransactionIdDtoV2
 import java.time.Duration
 import java.util.*
@@ -165,29 +154,34 @@ class EcommerceService(
                 confidentialFiscalCodeUtils = ConfidentialFiscalCodeUtils(confidentialDataManager)
             )
 
-        return ecommerceTransactionDataProviderV2.findResult(searchCriteria, 0, 1).flatMap { list ->
-            val optionalResult = list.firstOrNull()?.let { Optional.of(it) } ?: Optional.empty()
-            if (
-                optionalResult.isPresent &&
-                    optionalResult.get().transactionInfo?.correlationId != null &&
-                    optionalResult.get().transactionInfo?.authorizationRequestId != null
-            ) {
-                performGetOrderNPG(
-                        transactionId = TransactionId(transactionId),
-                        orderId = optionalResult.get().transactionInfo.authorizationRequestId,
-                        pspId = optionalResult.get().pspInfo.pspId,
-                        correlationId =
-                            optionalResult.get().transactionInfo.correlationId.toString(),
-                        paymentMethod =
-                            NpgClient.PaymentMethod.fromMethodTypeCode(
-                                optionalResult.get().transactionInfo.paymentTypeCode
-                            )
-                    )
-                    .map(::mapNpgOperationsResponse)
-            } else {
-                Mono.error(NoResultFoundException(transactionId))
+        return ecommerceTransactionDataProviderV2
+            .totalRecordCount(searchCriteria)
+            .flatMap { countInfo ->
+                ecommerceTransactionDataProviderV2.findResult(searchCriteria, 0, 1, countInfo)
             }
-        }
+            .flatMap { list ->
+                val optionalResult = list.firstOrNull()?.let { Optional.of(it) } ?: Optional.empty()
+                if (
+                    optionalResult.isPresent &&
+                        optionalResult.get().transactionInfo?.correlationId != null &&
+                        optionalResult.get().transactionInfo?.authorizationRequestId != null
+                ) {
+                    performGetOrderNPG(
+                            transactionId = TransactionId(transactionId),
+                            orderId = optionalResult.get().transactionInfo.authorizationRequestId,
+                            pspId = optionalResult.get().pspInfo.pspId,
+                            correlationId =
+                                optionalResult.get().transactionInfo.correlationId.toString(),
+                            paymentMethod =
+                                NpgClient.PaymentMethod.fromMethodTypeCode(
+                                    optionalResult.get().transactionInfo.paymentTypeCode
+                                )
+                        )
+                        .map(::mapNpgOperationsResponse)
+                } else {
+                    Mono.error(NoResultFoundException(transactionId))
+                }
+            }
     }
 
     /**
@@ -304,7 +298,8 @@ class EcommerceService(
         dataProvider: DataProvider<K, V>,
         searchCriteriaType: String
     ): Mono<Pair<List<V>, Int>> {
-        return dataProvider.totalRecordCount(searchCriteria).flatMap { totalCount ->
+        return dataProvider.totalRecordCount(searchCriteria).flatMap { countInfo ->
+            val totalCount = countInfo.totalCount().toInt()
             if (totalCount > 0) {
                 val skip = pageSize * pageNumber
                 logger.info(
@@ -314,7 +309,12 @@ class EcommerceService(
                     pageSize
                 )
                 dataProvider
-                    .findResult(searchParams = searchCriteria, skip = skip, limit = pageSize)
+                    .findResult(
+                        searchParams = searchCriteria,
+                        skip = skip,
+                        limit = pageSize,
+                        countInfo = countInfo
+                    )
                     .zipWith(mono { totalCount }, ::Pair)
             } else {
                 Mono.error(NoResultFoundException(searchCriteriaType))

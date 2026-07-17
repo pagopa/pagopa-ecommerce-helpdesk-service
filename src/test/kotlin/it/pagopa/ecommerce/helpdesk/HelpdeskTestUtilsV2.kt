@@ -1,7 +1,7 @@
 package it.pagopa.ecommerce.helpdesk
 
 import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent
-import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
+import it.pagopa.ecommerce.commons.v2.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.documents.PmTransactionHistory
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
 import java.time.OffsetDateTime
@@ -44,6 +44,20 @@ object HelpdeskTestUtilsV2 {
         fiscalCode: String
     ): SearchTransactionRequestFiscalCodeDto =
         SearchTransactionRequestFiscalCodeDto().userFiscalCode(fiscalCode).type("USER_FISCAL_CODE")
+
+    fun buildSearchRequestByRRN(): SearchTransactionRequestRRNDto =
+        SearchTransactionRequestRRNDto().rrn(TransactionTestUtils.RRN).type("RRN")
+
+    fun buildSearchRequestByEndToEndId(): SearchTransactionRequestEndToEndIdDto =
+        SearchTransactionRequestEndToEndIdDto()
+            .endToEndId(TransactionTestUtils.NPG_PAYMENT_END_TO_END_ID)
+            .type("END_TO_END_ID")
+
+    fun buildSearchRequestByAuthorizationRequestId():
+        SearchTransactionRequestAuthorizationRequestIdDto =
+        SearchTransactionRequestAuthorizationRequestIdDto()
+            .authorizationRequestId(TransactionTestUtils.AUTHORIZATION_REQUEST_ID)
+            .type("AUTHORIZATION_REQUEST_ID")
 
     fun buildTransactionResultDto(
         creationDate: OffsetDateTime,

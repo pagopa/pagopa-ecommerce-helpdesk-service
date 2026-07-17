@@ -39,8 +39,8 @@ class PmService(
                     confidentialMailUtils = null
                 )
             )
-            .flatMap { totalCount ->
-                if (totalCount > 0) {
+            .flatMap { countInfo ->
+                if (countInfo.totalCount() > 0) {
                     pmTransactionDataProvider
                         .findResult(
                             searchParams =
@@ -49,12 +49,13 @@ class PmService(
                                     confidentialMailUtils = null
                                 ),
                             skip = pageSize * pageNumber,
-                            limit = pageSize
+                            limit = pageSize,
+                            countInfo = countInfo
                         )
                         .map { results ->
                             buildTransactionSearchResponse(
                                 currentPage = pageNumber,
-                                totalCount = totalCount,
+                                totalCount = countInfo.totalCount().toInt(),
                                 pageSize = pageSize,
                                 results = results
                             )

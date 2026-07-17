@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v1
 
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
@@ -21,7 +22,7 @@ interface TransactionDataProvider :
     /** Retrieve total record count for the given search parameters */
     override fun totalRecordCount(
         searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>
-    ): Mono<Int>
+    ): Mono<CountInfo>
 
     /**
      * Perform paginated query for retrieve transaction information for the given search criteria
@@ -29,6 +30,7 @@ interface TransactionDataProvider :
     override fun findResult(
         searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>,
         skip: Int,
-        limit: Int
+        limit: Int,
+        countInfo: CountInfo
     ): Mono<List<TransactionResultDto>>
 }

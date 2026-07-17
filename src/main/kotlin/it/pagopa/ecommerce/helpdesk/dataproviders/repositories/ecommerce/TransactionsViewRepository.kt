@@ -49,6 +49,14 @@ interface TransactionsViewRepository : ReactiveCrudRepository<BaseTransactionVie
     @Query("{'userId': '?0'}", count = true)
     fun countTransactionsWithFiscalCode(encryptedFiscalCode: String): Mono<Long>
 
+    @Query("{'rrn': '?0'}", count = true) fun countTransactionsWithRRN(rrn: String): Mono<Long>
+
+    @Query("{'authorizationRequestId': '?0'}", count = true)
+    fun countTransactionsWithAuthorizationRequestId(authorizationRequestId: String): Mono<Long>
+
+    @Query("{'endToEndId': '?0'}", count = true)
+    fun countTransactionsWithEndToEndId(endToEndId: String): Mono<Long>
+
     @Aggregation(
         "{\$match: {'email.data': '?0'}}",
         "{\$sort: {'creationDate': -1}}",
@@ -84,4 +92,40 @@ interface TransactionsViewRepository : ReactiveCrudRepository<BaseTransactionVie
         pspId: String,
         paymentTypeCode: String
     ): Flux<EcommerceStatusCount>
+
+    @Aggregation(
+        "{\$match: {'rrn': '?0'}}",
+        "{\$sort: {'creationDate': -1}}",
+        "{\$skip: ?1}",
+        "{\$limit: ?2}",
+    )
+    fun findTransactionsWithRRNPaginatedOrderByCreationDateDesc(
+        rrn: String,
+        skip: Int,
+        limit: Int
+    ): Flux<BaseTransactionView>
+
+    @Aggregation(
+        "{\$match: {'authorizationRequestId': '?0'}}",
+        "{\$sort: {'creationDate': -1}}",
+        "{\$skip: ?1}",
+        "{\$limit: ?2}",
+    )
+    fun findTransactionsWithAuthorizationRequestIdPaginatedOrderByCreationDateDesc(
+        authorizationRequestId: String,
+        skip: Int,
+        limit: Int
+    ): Flux<BaseTransactionView>
+
+    @Aggregation(
+        "{\$match: {'endToEndId': '?0'}}",
+        "{\$sort: {'creationDate': -1}}",
+        "{\$skip: ?1}",
+        "{\$limit: ?2}",
+    )
+    fun findTransactionsWithEndToEndIdPaginatedOrderByCreationDateDesc(
+        endToEndId: String,
+        skip: Int,
+        limit: Int
+    ): Flux<BaseTransactionView>
 }

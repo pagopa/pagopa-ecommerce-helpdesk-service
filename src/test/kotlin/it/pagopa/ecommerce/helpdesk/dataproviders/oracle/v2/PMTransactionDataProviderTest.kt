@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.helpdesk.dataproviders.oracle.v2
 import io.r2dbc.h2.H2ConnectionConfiguration
 import io.r2dbc.h2.H2ConnectionFactory
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
@@ -39,7 +40,7 @@ class PMTransactionDataProviderTest {
                     )
                 )
             )
-            .expectNext(1)
+            .expectNext(CountInfo(1, 0))
             .verifyComplete()
     }
 
@@ -56,7 +57,7 @@ class PMTransactionDataProviderTest {
                     ),
                 )
             )
-            .expectNext(0)
+            .expectNext(CountInfo(0, 0))
             .verifyComplete()
     }
 
@@ -86,7 +87,8 @@ class PMTransactionDataProviderTest {
                     searchParams =
                         SearchParamDecoderV2(searchParameter = searchCriteria, null, null),
                     skip = 0,
-                    limit = 0
+                    limit = 0,
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -154,7 +156,8 @@ class PMTransactionDataProviderTest {
                             confidentialFiscalCodeUtils = null
                         ),
                     limit = 10,
-                    skip = 0
+                    skip = 0,
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectNext(expectedResponse)
@@ -174,7 +177,7 @@ class PMTransactionDataProviderTest {
                     ),
                 )
             )
-            .expectNext(1)
+            .expectNext(CountInfo(1, 0))
             .verifyComplete()
     }
 
@@ -193,7 +196,7 @@ class PMTransactionDataProviderTest {
                     ),
                 )
             )
-            .expectNext(0)
+            .expectNext(CountInfo(0, 0))
             .verifyComplete()
     }
 
@@ -260,7 +263,8 @@ class PMTransactionDataProviderTest {
                             confidentialFiscalCodeUtils = null
                         ),
                     limit = 10,
-                    skip = 0
+                    skip = 0,
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectNext(expectedResponse)
@@ -310,7 +314,8 @@ class PMTransactionDataProviderTest {
                             confidentialFiscalCodeUtils = null
                         ),
                     limit = 0,
-                    skip = 10
+                    skip = 10,
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)

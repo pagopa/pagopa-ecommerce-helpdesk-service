@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle
 
 import io.r2dbc.spi.ConnectionFactory
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
@@ -37,39 +38,42 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
 
     override fun totalRecordCount(
         searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>
-    ): Mono<Int> {
+    ): Mono<CountInfo> {
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =
             decodedSearchParam.flatMap {
                 Mono.error<Int>(InvalidSearchCriteriaException(it.type, ProductDto.PM))
             }
-        return decodedSearchParam.flatMap {
-            when (it) {
-                is SearchTransactionRequestPaymentTokenDto -> invalidSearchCriteriaError
-                is SearchTransactionRequestRptIdDto -> invalidSearchCriteriaError
-                is SearchTransactionRequestTransactionIdDto -> invalidSearchCriteriaError
-                is SearchTransactionRequestEmailDto ->
-                    getTotalResultCount(userEmailCountQuery, it.userEmail)
-                is SearchTransactionRequestFiscalCodeDto ->
-                    getTotalResultCount(
-                        totalRecordCountQuery = userFiscalCodeCountQuery,
-                        searchParam = it.userFiscalCode
-                    )
-                is SearchTransactionRequestDateDto ->
-                    getTotalResultCountFromDateTimeRange(
-                        totalRecordCountQuery = timestampRangeCountQuery,
-                        startDate = it.timeRange.startDate,
-                        endDate = it.timeRange.endDate
-                    )
-                else -> invalidSearchCriteriaError
+        return decodedSearchParam
+            .flatMap {
+                when (it) {
+                    is SearchTransactionRequestPaymentTokenDto -> invalidSearchCriteriaError
+                    is SearchTransactionRequestRptIdDto -> invalidSearchCriteriaError
+                    is SearchTransactionRequestTransactionIdDto -> invalidSearchCriteriaError
+                    is SearchTransactionRequestEmailDto ->
+                        getTotalResultCount(userEmailCountQuery, it.userEmail)
+                    is SearchTransactionRequestFiscalCodeDto ->
+                        getTotalResultCount(
+                            totalRecordCountQuery = userFiscalCodeCountQuery,
+                            searchParam = it.userFiscalCode
+                        )
+                    is SearchTransactionRequestDateDto ->
+                        getTotalResultCountFromDateTimeRange(
+                            totalRecordCountQuery = timestampRangeCountQuery,
+                            startDate = it.timeRange.startDate,
+                            endDate = it.timeRange.endDate
+                        )
+                    else -> invalidSearchCriteriaError
+                }
             }
-        }
+            .map { CountInfo(it.toLong(), 0) }
     }
 
     override fun findResult(
         searchParams: SearchParamDecoder<HelpDeskSearchTransactionRequestDto>,
         skip: Int,
-        limit: Int
+        limit: Int,
+        countInfo: CountInfo
     ): Mono<List<TransactionResultDto>> {
         val decodedSearchParam = searchParams.decode()
         val invalidSearchCriteriaError =

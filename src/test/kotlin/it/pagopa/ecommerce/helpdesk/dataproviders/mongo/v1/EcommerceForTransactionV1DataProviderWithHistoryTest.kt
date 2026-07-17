@@ -20,22 +20,16 @@ import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository as TransactionsViewHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
-import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.PaymentDetailInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.model.PaymentInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
-import it.pagopa.generated.ecommerce.helpdesk.model.PspInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.model.TransactionInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.model.TransactionResultDto
-import it.pagopa.generated.ecommerce.helpdesk.model.UserInfoDto
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.ZonedDateTime
 import java.util.*
 import org.junit.jupiter.api.AfterAll
@@ -43,11 +37,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.given
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.willReturn
+import org.mockito.kotlin.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientResponseException
@@ -120,7 +110,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     )
                 )
             )
-            .expectNext(4)
+            .expectNext(CountInfo(2, 2))
             .verifyComplete()
     }
 
@@ -147,7 +137,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     )
                 )
             )
-            .expectNext(4)
+            .expectNext(CountInfo(2, 2))
             .verifyComplete()
     }
 
@@ -166,7 +156,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     )
                 )
             )
-            .expectNext(1)
+            .expectNext(CountInfo(1, 0))
             .verifyComplete()
     }
 
@@ -185,7 +175,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     )
                 )
             )
-            .expectNext(0)
+            .expectNext(CountInfo(0, 0))
             .verifyComplete()
     }
 
@@ -212,7 +202,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     )
                 )
             )
-            .expectNext(0)
+            .expectNext(CountInfo(0, 0))
             .verifyComplete()
     }
 
@@ -231,7 +221,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     )
                 )
             )
-            .expectNext(0)
+            .expectNext(CountInfo(0, 0))
             .verifyComplete()
     }
 
@@ -254,7 +244,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                     )
                 )
             )
-            .expectNext(4)
+            .expectNext(CountInfo(2, 2))
             .verifyComplete()
     }
 
@@ -330,18 +320,18 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(
                 transactionsViewRepository
                     .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                        rptId = searchCriteria.rptId,
-                        skip = pageSize * pageNumber,
-                        limit = pageSize
+                        rptId = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
         given(
                 transactionsViewHistoryRepository
                     .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                        rptId = searchCriteria.rptId,
-                        skip = pageSize * pageNumber,
-                        limit = pageSize
+                        rptId = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
@@ -506,8 +496,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .assertNext { assertEquals(expected, it) }
@@ -555,18 +546,18 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(
                 transactionsViewRepository
                     .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                        paymentToken = searchCriteria.paymentToken,
-                        skip = pageSize * pageNumber,
-                        limit = pageSize
+                        paymentToken = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
         given(
                 transactionsViewHistoryRepository
                     .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                        paymentToken = searchCriteria.paymentToken,
-                        skip = pageSize * pageNumber,
-                        limit = pageSize
+                        paymentToken = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
@@ -731,8 +722,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .expectNext(expected)
@@ -942,8 +934,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -968,8 +961,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -1021,18 +1015,18 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(
                 transactionsViewRepository
                     .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                        encryptedEmail = tokenizedEmail,
-                        skip = pageSize * pageNumber,
-                        limit = pageSize
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
         given(
                 transactionsViewHistoryRepository
                     .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                        encryptedEmail = tokenizedEmail,
-                        skip = pageSize * pageNumber,
-                        limit = pageSize
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
@@ -1197,11 +1191,12 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
-            .expectNext(expected)
+            .assertNext { assertEquals(expected, it) }
             .verifyComplete()
     }
 
@@ -1218,8 +1213,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 0)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -1346,8 +1342,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -1533,8 +1530,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -1732,8 +1730,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -1931,8 +1930,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2133,8 +2133,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2335,8 +2336,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2537,8 +2539,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2677,8 +2680,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2827,8 +2831,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2971,8 +2976,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -3175,8 +3181,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -3390,8 +3397,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -3605,8 +3613,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -3823,8 +3832,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -4041,8 +4051,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -4259,8 +4270,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -4490,8 +4502,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -4739,8 +4752,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -5006,8 +5020,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -5288,8 +5303,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -5519,8 +5535,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -5658,8 +5675,9 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize,
-                    limit = pageNumber
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -5712,18 +5730,18 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(
                 transactionsViewRepository
                     .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                        rptId = searchCriteria.rptId,
-                        skip = pageSize * pageNumber,
-                        limit = pageSize
+                        rptId = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
         given(
                 transactionsViewHistoryRepository
                     .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                        rptId = searchCriteria.rptId,
-                        skip = pageSize * pageNumber,
-                        limit = pageSize
+                        rptId = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
@@ -5896,11 +5914,12 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                             searchParameter = searchCriteria,
                             confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager)
                         ),
-                    skip = pageSize * pageNumber,
-                    limit = pageSize
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 1)
                 )
             )
-            .expectNext(expected)
+            .assertNext { assertEquals(expected, it) }
             .verifyComplete()
     }
 }

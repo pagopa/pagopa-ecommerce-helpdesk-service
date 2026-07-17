@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.services.v1
 
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMBulkTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
@@ -40,12 +41,13 @@ class PmServiceTest {
                     argThat { this.searchParameter == searchCriteria }
                 )
             )
-            .willReturn(Mono.just(totalCount))
+            .willReturn(Mono.just(CountInfo(totalCount.toLong(), 0)))
         given(
                 pmTransactionDataProvider.findResult(
                     searchParams = argThat { this.searchParameter == searchCriteria },
                     skip = eq(pageSize * pageNumber),
-                    limit = eq(pageSize)
+                    limit = eq(pageSize),
+                    countInfo = any()
                 )
             )
             .willReturn(Mono.just(transactions))
@@ -64,7 +66,7 @@ class PmServiceTest {
             .verifyComplete()
 
         verify(pmTransactionDataProvider, times(1)).totalRecordCount(any())
-        verify(pmTransactionDataProvider, times(1)).findResult(any(), any(), any())
+        verify(pmTransactionDataProvider, times(1)).findResult(any(), any(), any(), any())
     }
 
     @Test
@@ -79,7 +81,7 @@ class PmServiceTest {
                     argThat { this.searchParameter == searchCriteria }
                 )
             )
-            .willReturn(Mono.just(totalCount))
+            .willReturn(Mono.just(CountInfo(totalCount.toLong(), 0)))
         StepVerifier.create(
                 pmService.searchTransaction(
                     pageNumber = pageNumber,
@@ -91,7 +93,7 @@ class PmServiceTest {
             .verify()
 
         verify(pmTransactionDataProvider, times(1)).totalRecordCount(any())
-        verify(pmTransactionDataProvider, times(0)).findResult(any(), any(), any())
+        verify(pmTransactionDataProvider, times(0)).findResult(any(), any(), any(), any())
     }
 
     @Test
@@ -108,7 +110,7 @@ class PmServiceTest {
             .verifyComplete()
 
         verify(pmTransactionDataProvider, times(0)).totalRecordCount(any())
-        verify(pmTransactionDataProvider, times(0)).findResult(any(), any(), any())
+        verify(pmTransactionDataProvider, times(0)).findResult(any(), any(), any(), any())
         verify(pmPaymentMethodsDataProvider, times(1)).findResult(any())
     }
 
@@ -126,7 +128,7 @@ class PmServiceTest {
             .verifyComplete()
 
         verify(pmTransactionDataProvider, times(0)).totalRecordCount(any())
-        verify(pmTransactionDataProvider, times(0)).findResult(any(), any(), any())
+        verify(pmTransactionDataProvider, times(0)).findResult(any(), any(), any(), any())
         verify(pmPaymentMethodsDataProvider, times(1)).findResult(any())
     }
 

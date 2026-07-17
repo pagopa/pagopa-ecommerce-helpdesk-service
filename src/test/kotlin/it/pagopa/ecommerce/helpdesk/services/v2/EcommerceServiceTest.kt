@@ -8,14 +8,18 @@ import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtilsV2
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository as TransactionsViewHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.StateMetricsDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.PageInfoDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.ProductDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionMetricsResponseDto
 import java.time.OffsetDateTime
 import java.time.ZonedDateTime
 import org.junit.jupiter.api.Assertions
@@ -70,12 +74,13 @@ class EcommerceServiceTest {
                     argThat { this.searchParameter == searchCriteria }
                 )
             )
-            .willReturn(Mono.just(totalCount))
+            .willReturn(Mono.just(CountInfo(totalCount.toLong(), 0)))
         given(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams = argThat { this.searchParameter == searchCriteria },
                     skip = eq(pageSize * pageNumber),
-                    limit = eq(pageSize)
+                    limit = eq(pageSize),
+                    countInfo = any()
                 )
             )
             .willReturn(Mono.just(transactions))
@@ -94,7 +99,7 @@ class EcommerceServiceTest {
             .verifyComplete()
 
         verify(ecommerceTransactionDataProvider, times(1)).totalRecordCount(any())
-        verify(ecommerceTransactionDataProvider, times(1)).findResult(any(), any(), any())
+        verify(ecommerceTransactionDataProvider, times(1)).findResult(any(), any(), any(), any())
     }
 
     @Test
@@ -108,7 +113,7 @@ class EcommerceServiceTest {
                     argThat { this.searchParameter == searchCriteria }
                 )
             )
-            .willReturn(Mono.just(totalCount))
+            .willReturn(Mono.just(CountInfo(totalCount.toLong(), 0)))
         StepVerifier.create(
                 ecommerceService.searchTransaction(
                     pageNumber = pageNumber,
@@ -120,7 +125,7 @@ class EcommerceServiceTest {
             .verify()
 
         verify(ecommerceTransactionDataProvider, times(1)).totalRecordCount(any())
-        verify(ecommerceTransactionDataProvider, times(0)).findResult(any(), any(), any())
+        verify(ecommerceTransactionDataProvider, times(0)).findResult(any(), any(), any(), any())
     }
 
     @Test

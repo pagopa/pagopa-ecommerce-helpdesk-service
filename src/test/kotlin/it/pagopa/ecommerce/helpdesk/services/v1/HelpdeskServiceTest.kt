@@ -8,10 +8,11 @@ import it.pagopa.ecommerce.commons.generated.server.model.TransactionStatusDto
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.v1.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.HelpdeskTestUtils
+import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository as TransactionsEventStoreHistoryRepository
-import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository as TransactionsViewHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository
+import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsViewHistoryRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
@@ -74,7 +75,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalEcommerceCount))
+            .willReturn(Mono.just(CountInfo(totalEcommerceCount.toLong(), 0)))
         given(
                 pmTransactionDataProvider.totalRecordCount(
                     argThat {
@@ -83,7 +84,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
         given(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams =
@@ -92,7 +93,8 @@ class HelpdeskServiceTest {
                                 testEmail
                         },
                     limit = any(),
-                    skip = any()
+                    skip = any(),
+                    countInfo = any()
                 )
             )
             .willReturn(Mono.just(results))
@@ -132,10 +134,11 @@ class HelpdeskServiceTest {
                             testEmail
                     },
                 skip = eq(0),
-                limit = eq(4)
+                limit = eq(4),
+                countInfo = any()
             )
         verify(pmTransactionDataProvider, times(0))
-            .findResult(skip = any(), limit = any(), searchParams = any())
+            .findResult(skip = any(), limit = any(), searchParams = any(), countInfo = any())
     }
 
     @Test
@@ -162,7 +165,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalEcommerceCount))
+            .willReturn(Mono.just(CountInfo(totalEcommerceCount.toLong(), 0)))
         given(
                 pmTransactionDataProvider.totalRecordCount(
                     argThat {
@@ -171,7 +174,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
         given(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams =
@@ -180,7 +183,8 @@ class HelpdeskServiceTest {
                                 testEmail
                         },
                     limit = any(),
-                    skip = any()
+                    skip = any(),
+                    countInfo = any()
                 )
             )
             .willReturn(Mono.just(ecommerceResults))
@@ -192,7 +196,8 @@ class HelpdeskServiceTest {
                                 testEmail
                         },
                     limit = any(),
-                    skip = any()
+                    skip = any(),
+                    countInfo = any()
                 )
             )
             .willReturn(Mono.just(pmResults))
@@ -232,7 +237,8 @@ class HelpdeskServiceTest {
                             testEmail
                     },
                 skip = eq(4),
-                limit = eq(1)
+                limit = eq(1),
+                countInfo = any()
             )
         verify(pmTransactionDataProvider, times(1))
             .findResult(
@@ -242,7 +248,8 @@ class HelpdeskServiceTest {
                             testEmail
                     },
                 skip = eq(0),
-                limit = eq(3)
+                limit = eq(3),
+                countInfo = any()
             )
     }
 
@@ -270,7 +277,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalEcommerceCount))
+            .willReturn(Mono.just(CountInfo(totalEcommerceCount.toLong(), 0)))
         given(
                 pmTransactionDataProvider.totalRecordCount(
                     argThat {
@@ -279,7 +286,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
         given(
                 ecommerceTransactionDataProvider.findResult(
                     searchParams =
@@ -288,7 +295,8 @@ class HelpdeskServiceTest {
                                 testEmail
                         },
                     limit = any(),
-                    skip = any()
+                    skip = any(),
+                    countInfo = any()
                 )
             )
             .willReturn(Mono.just(ecommerceResults))
@@ -300,7 +308,8 @@ class HelpdeskServiceTest {
                                 testEmail
                         },
                     limit = any(),
-                    skip = any()
+                    skip = any(),
+                    countInfo = any()
                 )
             )
             .willReturn(Mono.just(pmResults))
@@ -340,10 +349,11 @@ class HelpdeskServiceTest {
                             testEmail
                     },
                 skip = eq(4),
-                limit = eq(4)
+                limit = eq(4),
+                countInfo = any()
             )
         verify(pmTransactionDataProvider, times(0))
-            .findResult(skip = any(), limit = any(), searchParams = any())
+            .findResult(skip = any(), limit = any(), searchParams = any(), countInfo = any())
     }
 
     @Test
@@ -363,7 +373,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalEcommerceCount))
+            .willReturn(Mono.just(CountInfo(totalEcommerceCount.toLong(), 0)))
         given(
                 pmTransactionDataProvider.totalRecordCount(
                     argThat {
@@ -372,7 +382,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
 
         given(
                 pmTransactionDataProvider.findResult(
@@ -382,7 +392,8 @@ class HelpdeskServiceTest {
                                 testEmail
                         },
                     limit = any(),
-                    skip = any()
+                    skip = any(),
+                    countInfo = any()
                 )
             )
             .willReturn(Mono.just(pmResults))
@@ -415,7 +426,7 @@ class HelpdeskServiceTest {
                 }
             )
         verify(ecommerceTransactionDataProvider, times(0))
-            .findResult(skip = any(), limit = any(), searchParams = any())
+            .findResult(skip = any(), limit = any(), searchParams = any(), countInfo = any())
         verify(pmTransactionDataProvider, times(1))
             .findResult(
                 searchParams =
@@ -424,7 +435,8 @@ class HelpdeskServiceTest {
                             testEmail
                     },
                 skip = eq(3),
-                limit = eq(4)
+                limit = eq(4),
+                countInfo = any()
             )
     }
 
@@ -444,7 +456,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalEcommerceCount))
+            .willReturn(Mono.just(CountInfo(totalEcommerceCount.toLong(), 0)))
         given(
                 pmTransactionDataProvider.totalRecordCount(
                     argThat {
@@ -453,7 +465,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
 
         given(
                 pmTransactionDataProvider.findResult(
@@ -463,7 +475,8 @@ class HelpdeskServiceTest {
                                 testEmail
                         },
                     limit = any(),
-                    skip = any()
+                    skip = any(),
+                    countInfo = any()
                 )
             )
             .willReturn(Mono.just(emptyList()))
@@ -496,7 +509,7 @@ class HelpdeskServiceTest {
                 }
             )
         verify(ecommerceTransactionDataProvider, times(0))
-            .findResult(skip = any(), limit = any(), searchParams = any())
+            .findResult(skip = any(), limit = any(), searchParams = any(), countInfo = any())
         verify(pmTransactionDataProvider, times(1))
             .findResult(
                 searchParams =
@@ -506,6 +519,7 @@ class HelpdeskServiceTest {
                     },
                 skip = eq(7),
                 limit = eq(4),
+                countInfo = any()
             )
     }
 
@@ -525,7 +539,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalEcommerceCount))
+            .willReturn(Mono.just(CountInfo(totalEcommerceCount.toLong(), 0)))
         given(
                 pmTransactionDataProvider.totalRecordCount(
                     argThat {
@@ -534,7 +548,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
 
         StepVerifier.create(
                 helpdeskService.searchTransaction(
@@ -560,9 +574,9 @@ class HelpdeskServiceTest {
                 }
             )
         verify(ecommerceTransactionDataProvider, times(0))
-            .findResult(skip = any(), limit = any(), searchParams = any())
+            .findResult(skip = any(), limit = any(), searchParams = any(), countInfo = any())
         verify(pmTransactionDataProvider, times(0))
-            .findResult(skip = any(), limit = any(), searchParams = any())
+            .findResult(skip = any(), limit = any(), searchParams = any(), countInfo = any())
     }
 
     @Test
@@ -634,7 +648,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 helpDeskServiceLocalMock.searchTransaction(
@@ -684,7 +698,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
         given(
                 pmTransactionDataProvider.findResult(
                     searchParams =
@@ -693,7 +707,8 @@ class HelpdeskServiceTest {
                                 testEmail
                         },
                     limit = any(),
-                    skip = any()
+                    skip = any(),
+                    countInfo = any()
                 )
             )
             .willReturn(Mono.just(pmResults))
@@ -741,7 +756,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 helpDeskServiceLocalMock.searchTransaction(
@@ -791,7 +806,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
         given(
                 pmTransactionDataProvider.findResult(
                     searchParams =
@@ -800,7 +815,8 @@ class HelpdeskServiceTest {
                                 testEmail
                         },
                     limit = any(),
-                    skip = any()
+                    skip = any(),
+                    countInfo = any()
                 )
             )
             .willReturn(Mono.just(pmResults))
@@ -848,7 +864,7 @@ class HelpdeskServiceTest {
                     }
                 )
             )
-            .willReturn(Mono.just(totalPmCount))
+            .willReturn(Mono.just(CountInfo(totalPmCount.toLong(), 0)))
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 helpDeskServiceLocalMock.searchTransaction(
