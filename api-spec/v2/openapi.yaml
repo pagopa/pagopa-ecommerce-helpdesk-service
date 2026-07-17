@@ -586,6 +586,7 @@ components:
         - $ref: '#/components/schemas/SearchTransactionRequestPaymentToken'
         - $ref: '#/components/schemas/SearchTransactionRequestTransactionId'
         - $ref: '#/components/schemas/SearchTransactionRequestEmail'
+        - $ref: '#/components/schemas/SearchTransactionRequestFiscalCode'
         - $ref: '#/components/schemas/SearchTransactionRequestRRN'
         - $ref: '#/components/schemas/SearchTransactionRequestAuthorizationRequestId'
         - $ref: '#/components/schemas/SearchTransactionRequestEndToEndId'
