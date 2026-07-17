@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager.ConfidentialData
 import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
+import it.pagopa.ecommerce.helpdesk.dataproviders.Utils
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsEventStoreRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.TransactionsViewRepository
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.history.TransactionsEventStoreHistoryRepository
@@ -15,14 +16,7 @@ import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.baseTransactionToTransactionInfoDtoV1
 import it.pagopa.ecommerce.helpdesk.utils.v1.baseTransactionToTransactionInfoDtoV2
-import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestEmailDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestFiscalCodeDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestPaymentTokenDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestRptIdDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestTransactionIdDto
-import it.pagopa.generated.ecommerce.helpdesk.model.TransactionResultDto
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.util.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -111,54 +105,84 @@ class EcommerceTransactionDataProvider(
             decodedSearchParam.flatMapMany {
                 when (it) {
                     is SearchTransactionRequestPaymentTokenDto ->
-                        Flux.concat(
-                            transactionsViewRepository
-                                .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                                    paymentToken = it.paymentToken,
-                                    skip = skip,
-                                    limit = limit
-                                ),
-                            transactionsViewHistoryRepository
-                                .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                                    paymentToken = it.paymentToken,
-                                    skip = skip,
-                                    limit = limit
-                                )
+                        Utils.readEventsFromDbs(
+                            onlineDbQuery = { skip, limit ->
+                                transactionsViewRepository
+                                    .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
+                                        paymentToken = it.paymentToken,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            historyDbQuery = { skip, limit ->
+                                transactionsViewHistoryRepository
+                                    .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
+                                        paymentToken = it.paymentToken,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            skip = skip,
+                            limit = limit,
+                            countInfo = countInfo
                         )
                     is SearchTransactionRequestRptIdDto ->
-                        Flux.concat(
-                            transactionsViewRepository
-                                .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                                    rptId = it.rptId,
-                                    skip = skip,
-                                    limit = limit
-                                ),
-                            transactionsViewHistoryRepository
-                                .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                                    rptId = it.rptId,
-                                    skip = skip,
-                                    limit = limit
-                                )
+                        Utils.readEventsFromDbs(
+                            onlineDbQuery = { skip, limit ->
+                                transactionsViewRepository
+                                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                                        rptId = it.rptId,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            historyDbQuery = { skip, limit ->
+                                transactionsViewHistoryRepository
+                                    .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
+                                        rptId = it.rptId,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            skip = skip,
+                            limit = limit,
+                            countInfo = countInfo
                         )
                     is SearchTransactionRequestTransactionIdDto ->
-                        Flux.concat(
-                            transactionsViewRepository.findById(it.transactionId).toFlux(),
-                            transactionsViewHistoryRepository.findById(it.transactionId).toFlux(),
+                        Utils.readEventsFromDbs(
+                            onlineDbQuery = { _, _ ->
+                                transactionsViewRepository.findById(it.transactionId).toFlux()
+                            },
+                            historyDbQuery = { _, _ ->
+                                transactionsViewHistoryRepository
+                                    .findById(it.transactionId)
+                                    .toFlux()
+                            },
+                            skip = skip,
+                            limit = limit,
+                            countInfo = countInfo
                         )
                     is SearchTransactionRequestEmailDto ->
-                        Flux.concat(
-                            transactionsViewRepository
-                                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                                    encryptedEmail = it.userEmail,
-                                    skip = skip,
-                                    limit = limit
-                                ),
-                            transactionsViewHistoryRepository
-                                .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                                    encryptedEmail = it.userEmail,
-                                    skip = skip,
-                                    limit = limit
-                                )
+                        Utils.readEventsFromDbs(
+                            onlineDbQuery = { skip, limit ->
+                                transactionsViewRepository
+                                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                                        encryptedEmail = it.userEmail,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            historyDbQuery = { skip, limit ->
+                                transactionsViewHistoryRepository
+                                    .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
+                                        encryptedEmail = it.userEmail,
+                                        skip = skip,
+                                        limit = limit
+                                    )
+                            },
+                            skip = skip,
+                            limit = limit,
+                            countInfo = countInfo
                         )
                     is SearchTransactionRequestFiscalCodeDto -> invalidSearchCriteriaError
                     else -> invalidSearchCriteriaError

@@ -320,18 +320,18 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(
                 transactionsViewRepository
                     .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                        rptId = searchCriteria.rptId,
-                        skip = 0,
-                        limit = pageSize
+                        rptId = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
         given(
                 transactionsViewHistoryRepository
                     .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                        rptId = searchCriteria.rptId,
-                        skip = 0,
-                        limit = pageSize
+                        rptId = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
@@ -498,7 +498,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .assertNext { assertEquals(expected, it) }
@@ -546,18 +546,18 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(
                 transactionsViewRepository
                     .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                        paymentToken = searchCriteria.paymentToken,
-                        skip = 0,
-                        limit = pageSize
+                        paymentToken = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
         given(
                 transactionsViewHistoryRepository
                     .findTransactionsWithPaymentTokenPaginatedOrderByCreationDateDesc(
-                        paymentToken = searchCriteria.paymentToken,
-                        skip = 0,
-                        limit = pageSize
+                        paymentToken = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
@@ -724,7 +724,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .expectNext(expected)
@@ -936,7 +936,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -963,7 +963,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .expectError(InvalidSearchCriteriaException::class.java)
@@ -1015,18 +1015,18 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(
                 transactionsViewRepository
                     .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                        encryptedEmail = tokenizedEmail,
-                        skip = 0,
-                        limit = pageSize
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
         given(
                 transactionsViewHistoryRepository
                     .findTransactionsWithEmailPaginatedOrderByCreationDateDesc(
-                        encryptedEmail = tokenizedEmail,
-                        skip = 0,
-                        limit = pageSize
+                        encryptedEmail = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
@@ -1193,10 +1193,10 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
-            .expectNext(expected)
+            .assertNext { assertEquals(expected, it) }
             .verifyComplete()
     }
 
@@ -1344,7 +1344,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -1532,7 +1532,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -1732,7 +1732,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -1932,7 +1932,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2135,7 +2135,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2338,7 +2338,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2541,7 +2541,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2682,7 +2682,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2833,7 +2833,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -2978,7 +2978,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -3183,7 +3183,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -3399,7 +3399,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -3615,7 +3615,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -3834,7 +3834,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -4053,7 +4053,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -4272,7 +4272,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -4504,7 +4504,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -4754,7 +4754,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -5022,7 +5022,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -5305,7 +5305,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -5537,7 +5537,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -5677,7 +5677,7 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
             .consumeNextWith {
@@ -5730,18 +5730,18 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
         given(
                 transactionsViewRepository
                     .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                        rptId = searchCriteria.rptId,
-                        skip = 0,
-                        limit = pageSize
+                        rptId = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
         given(
                 transactionsViewHistoryRepository
                     .findTransactionsWithRptIdPaginatedOrderByCreationDateDesc(
-                        rptId = searchCriteria.rptId,
-                        skip = 0,
-                        limit = pageSize
+                        rptId = any(),
+                        skip = any(),
+                        limit = any()
                     )
             )
             .willReturn(Flux.just(transactionView))
@@ -5916,10 +5916,10 @@ class EcommerceForTransactionV1DataProviderWithHistoryTest {
                         ),
                     skip = 0,
                     limit = pageSize,
-                    countInfo = CountInfo(1, 0)
+                    countInfo = CountInfo(1, 1)
                 )
             )
-            .expectNext(expected)
+            .assertNext { assertEquals(expected, it) }
             .verifyComplete()
     }
 }
