@@ -214,6 +214,7 @@ fun baseTransactionToTransactionInfoDtoV1(
             .rrn(transactionAuthorizationCompletedData?.rrn)
             .authorizationCode(transactionAuthorizationCompletedData?.authorizationCode)
             .paymentMethodName(transactionAuthorizationRequestData?.paymentMethodName)
+            .paymentTypeCode(transactionAuthorizationRequestData?.paymentTypeCode)
             .brand(transactionAuthorizationRequestData?.brand?.toString())
             .authorizationRequestId(transactionAuthorizationRequestData?.authorizationRequestId)
             .paymentGateway(transactionAuthorizationRequestData?.paymentGateway?.toString())

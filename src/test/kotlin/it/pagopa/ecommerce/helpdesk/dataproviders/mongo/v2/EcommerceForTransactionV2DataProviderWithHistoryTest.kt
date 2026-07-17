@@ -425,6 +425,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -485,6 +488,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -645,6 +651,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(brand)
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -719,6 +728,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(brand)
                             .authorizationRequestId(
@@ -884,6 +896,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -955,6 +970,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -1117,6 +1135,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -1188,6 +1209,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -1348,6 +1372,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -1419,6 +1446,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -1581,6 +1611,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -1652,6 +1685,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -2290,6 +2326,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -2362,6 +2401,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -2534,6 +2576,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -2605,6 +2650,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -2777,6 +2825,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -2848,6 +2899,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -3022,6 +3076,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -3093,6 +3150,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -3268,6 +3328,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -3339,6 +3402,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -3513,6 +3579,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -3584,6 +3653,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -3775,6 +3847,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -3846,6 +3921,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -4053,6 +4131,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -4123,6 +4204,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -4352,6 +4436,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -4423,6 +4510,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -4666,6 +4756,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -4737,6 +4830,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -4925,6 +5021,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -4996,6 +5095,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -5363,6 +5465,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -5431,6 +5536,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(
@@ -5610,6 +5718,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand(expectedBrand)
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -5683,6 +5794,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand(expectedBrand)
                             .authorizationRequestId(
@@ -5870,6 +5984,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
                             )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
                             .brand("VISA")
                             .authorizationRequestId(
                                 baseTransaction.transactionAuthorizationRequestData
@@ -5940,6 +6057,9 @@ class EcommerceForTransactionV2DataProviderWithHistoryTest {
                             .paymentMethodName(
                                 baseTransaction.transactionAuthorizationRequestData
                                     .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
                             )
                             .brand("VISA")
                             .authorizationRequestId(

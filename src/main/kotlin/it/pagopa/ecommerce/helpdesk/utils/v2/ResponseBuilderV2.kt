@@ -84,6 +84,7 @@ fun baseTransactionToTransactionInfoDtoV2(
             .authorizationOperationId(authorizationOperationId)
             .refundOperationId(refundOperationId)
             .paymentMethodName(transactionAuthorizationRequestData?.paymentMethodName)
+            .paymentTypeCode(transactionAuthorizationRequestData?.paymentTypeCode)
             .brand(
                 getBrand(
                     transactionAuthorizationRequestData
