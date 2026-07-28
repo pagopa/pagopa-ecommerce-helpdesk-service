@@ -17,8 +17,8 @@ public class MDCContextLifterConfiguration {
                 mdcContextReactorKey,
                 Operators.lift(
                         (
-                                scannable,
-                                coreSubscriber
+                         scannable,
+                         coreSubscriber
                         ) -> new MDCContextLifter<>(coreSubscriber)
                 )
         );
