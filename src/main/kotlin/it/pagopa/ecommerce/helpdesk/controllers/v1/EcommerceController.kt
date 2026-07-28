@@ -22,7 +22,6 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
         ecommerceSearchTransactionRequestDto: Mono<EcommerceSearchTransactionRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
-        logger.info("[HelpDesk controller] ecommerceSearchTransaction")
         return ecommerceSearchTransactionRequestDto
             .flatMap {
                 ecommerceService.searchTransaction(
@@ -40,7 +39,6 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
         ecommerceSearchDeadLetterEventsRequestDto: Mono<EcommerceSearchDeadLetterEventsRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchDeadLetterEventResponseDto>> {
-        logger.info("[HelpDesk controller] ecommerceSearchDeadLetterEvents")
         return ecommerceSearchDeadLetterEventsRequestDto
             .flatMap {
                 ecommerceService.searchDeadLetterEvents(

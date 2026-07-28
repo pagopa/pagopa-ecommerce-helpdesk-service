@@ -15,6 +15,7 @@ import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadGatewayException
 import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadRequestException
+import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialFiscalCodeUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
@@ -53,7 +54,6 @@ class EcommerceService(
         pageSize: Int,
         ecommerceSearchTransactionRequestDto: EcommerceSearchTransactionRequestDto
     ): Mono<SearchTransactionResponseDto> {
-        logger.info("[helpDesk ecommerce service] searchTransaction method")
         return searchPaginatedResult(
                 pageNumber = pageNumber,
                 pageSize = pageSize,
@@ -65,6 +65,20 @@ class EcommerceService(
                 searchCriteriaType = ecommerceSearchTransactionRequestDto.type,
                 dataProvider = ecommerceTransactionDataProvider
             )
+            .doOnSuccess { _ ->
+                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                    mapOf(
+                        "ecommerceSearchTransactionRequestDto.type" to
+                            ecommerceSearchTransactionRequestDto.type,
+                        "pageNumber" to pageNumber,
+                        "pageSize" to pageSize
+                    )
+                ) {
+                    logger.info(
+                        "[helpDesk ecommerce service] searchTransaction method complete successfully"
+                    )
+                }
+            }
             .map { (results, totalCount) ->
                 buildTransactionSearchResponse(
                     currentPage = pageNumber,
@@ -80,10 +94,7 @@ class EcommerceService(
         pageSize: Int,
         searchRequest: EcommerceSearchDeadLetterEventsRequestDto
     ): Mono<SearchDeadLetterEventResponseDto> {
-        logger.info(
-            "[helpDesk ecommerce service] search dead letter events, type: {}",
-            searchRequest.source
-        )
+
         val timeRange: DeadLetterSearchDateTimeRangeDto = searchRequest.timeRange
 
         return mono { searchRequest }
@@ -122,6 +133,20 @@ class EcommerceService(
                     pageSize = pageSize,
                     results = results
                 )
+            }
+            .doOnSuccess { _ ->
+                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                    mapOf(
+                        "searchRequest" to searchRequest.source,
+                        "pageNumber" to pageNumber,
+                        "pageSize" to pageSize
+                    )
+                ) {
+                    logger.info(
+                        "[helpDesk ecommerce service] search dead letter events, type: {} completed successfully",
+                        searchRequest.source
+                    )
+                }
             }
     }
 
@@ -270,25 +295,39 @@ class EcommerceService(
             correlationId,
             paymentMethod.serviceName,
         )
-        return npgApiKeyConfiguration[paymentMethod, pspId].fold(
-            { ex -> Mono.error(NpgBadGatewayException(ex.message)) },
-            { apiKey ->
-                npgClient.getOrder(UUID.fromString(correlationId), apiKey, orderId).onErrorMap(
-                    NpgResponseException::class.java
-                ) { exception: NpgResponseException ->
-                    val responseStatusCode = exception.statusCode
-                    responseStatusCode
-                        .map {
-                            if (it.is5xxServerError) {
-                                NpgBadGatewayException("$it")
-                            } else {
-                                NpgBadRequestException(transactionId?.value(), orderId, "$it")
+        return npgApiKeyConfiguration[paymentMethod, pspId]
+            .fold(
+                { ex -> Mono.error(NpgBadGatewayException(ex.message)) },
+                { apiKey ->
+                    npgClient.getOrder(UUID.fromString(correlationId), apiKey, orderId).onErrorMap(
+                        NpgResponseException::class.java
+                    ) { exception: NpgResponseException ->
+                        val responseStatusCode = exception.statusCode
+                        responseStatusCode
+                            .map {
+                                if (it.is5xxServerError) {
+                                    NpgBadGatewayException("$it")
+                                } else {
+                                    NpgBadRequestException(transactionId?.value(), orderId, "$it")
+                                }
                             }
-                        }
-                        .orElse(NpgBadGatewayException("NPG generic error"))
+                            .orElse(NpgBadGatewayException("NPG generic error"))
+                    }
+                }
+            )
+            .doOnSuccess { _ ->
+                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                    mapOf(
+                        "transactionId" to transactionId,
+                        "orderId" to orderId,
+                        "pspId" to pspId,
+                        "correlationId" to correlationId,
+                        "paymentMethod.serviceName" to paymentMethod.serviceName
+                    )
+                ) {
+                    logger.info("Performing get order successfully")
                 }
             }
-        )
     }
 
     private fun <K, V> searchPaginatedResult(
@@ -302,12 +341,6 @@ class EcommerceService(
             val totalCount = countInfo.totalCount().toInt()
             if (totalCount > 0) {
                 val skip = pageSize * pageNumber
-                logger.info(
-                    "Total record found: {}, skip: {}, limit: {}",
-                    totalCount,
-                    skip,
-                    pageSize
-                )
                 dataProvider
                     .findResult(
                         searchParams = searchCriteria,
@@ -316,6 +349,17 @@ class EcommerceService(
                         countInfo = countInfo
                     )
                     .zipWith(mono { totalCount }, ::Pair)
+                    .doOnSuccess { _ ->
+                        HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            mapOf(
+                                "totalCount" to totalCount,
+                                "skip" to skip,
+                                "pageSize" to pageSize,
+                            )
+                        ) {
+                            logger.info("Search transactions with pagination successfully done")
+                        }
+                    }
             } else {
                 Mono.error(NoResultFoundException(searchCriteriaType))
             }
