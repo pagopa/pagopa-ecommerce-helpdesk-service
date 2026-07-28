@@ -33,7 +33,9 @@ markdown-toc</a></i></small>
 ## Api Documentation 📖
 
 See
-the [OpenAPI 3 here.](https://editor.swagger.io/?url=https://raw.githubusercontent.com/pagopa/pagopa-ecommerce-helpdesk-service/main/api-spec/openapi.yaml)
+the OpenAPI 3 here:
+- [V1](https://editor.swagger.io/?url=https://raw.githubusercontent.com/pagopa/pagopa-ecommerce-helpdesk-service/main/api-spec/v1/openapi.yaml)
+- [V2](https://editor.swagger.io/?url=https://raw.githubusercontent.com/pagopa/pagopa-ecommerce-helpdesk-service/main/api-spec/v2/openapi.yaml)
 
 ---
 
