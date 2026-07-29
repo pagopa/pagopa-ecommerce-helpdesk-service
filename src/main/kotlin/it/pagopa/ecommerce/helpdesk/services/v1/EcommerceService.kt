@@ -72,6 +72,11 @@ class EcommerceService(
                             ecommerceSearchTransactionRequestDto.type,
                         "pageNumber" to pageNumber,
                         "pageSize" to pageSize
+                    ),
+                    mapOf(
+                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                            "eCommerce-Mongo-event-store-repository",
+                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {
                     logger.info(
@@ -140,6 +145,11 @@ class EcommerceService(
                         "searchRequest" to searchRequest.source,
                         "pageNumber" to pageNumber,
                         "pageSize" to pageSize
+                    ),
+                    mapOf(
+                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                            "deadletter-Mongo-repository",
+                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {
                     logger.info(
@@ -205,6 +215,22 @@ class EcommerceService(
                         .map(::mapNpgOperationsResponse)
                 } else {
                     Mono.error(NoResultFoundException(transactionId))
+                }
+            }
+            .doOnSuccess { _ ->
+                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                    mapOf(
+                        "transactionId" to transactionId,
+                    ),
+                    mapOf(
+                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                            arrayOf("NPG", "TransactionViewReposity"),
+                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to
+                            arrayOf("NpgClient-getOrder"),
+                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                    )
+                ) {
+                    logger.info("Performing getOrder successfully")
                 }
             }
     }
@@ -287,14 +313,6 @@ class EcommerceService(
         correlationId: String,
         paymentMethod: PaymentMethod
     ): Mono<OrderResponseDto> {
-        logger.info(
-            "Performing get order for transaction with id: [{}], orderId [{}], pspId: [{}], correlationId: [{}], paymentMethod: [{}]",
-            transactionId?.value(),
-            orderId,
-            pspId,
-            correlationId,
-            paymentMethod.serviceName,
-        )
         return npgApiKeyConfiguration[paymentMethod, pspId]
             .fold(
                 { ex -> Mono.error(NpgBadGatewayException(ex.message)) },
@@ -323,9 +341,15 @@ class EcommerceService(
                         "pspId" to pspId,
                         "correlationId" to correlationId,
                         "paymentMethod.serviceName" to paymentMethod.serviceName
+                    ),
+                    mapOf(
+                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to "NPG",
+                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to
+                            "NpgClient-getOrder",
+                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {
-                    logger.info("Performing get order successfully")
+                    logger.info("Performing getOrder successfully")
                 }
             }
     }
