@@ -6,6 +6,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionD
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.PageUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
@@ -64,14 +65,23 @@ class HelpdeskService(
                 return@flatMap Mono.error(NoResultFoundException(searchTransactionRequestDto.type))
             }
             val skip = pageNumber * pageSize
-            logger.info(
-                "Requested page number: {}, page size: {}, records to be skipped: {}. Total records found into ecommerce DB: {}, PM DB: {}",
-                pageNumber,
-                pageSize,
-                skip,
-                ecommerceCountInfo,
-                pmCountInfo
-            )
+            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                mapOf(
+                    "ecommerceCountInfo" to ecommerceCountInfo,
+                    "pmCountInfo" to pmCountInfo,
+                    "pageNumber" to pageNumber,
+                    "pageSize" to pageSize
+                )
+            ) {
+                logger.debug(
+                    "Requested page number: {}, page size: {}, records to be skipped: {}. Total records found into ecommerce DB: {}, PM DB: {}",
+                    pageNumber,
+                    pageSize,
+                    skip,
+                    ecommerceCountInfo,
+                    pmCountInfo
+                )
+            }
             val (ecommerceTotalPages, ecommerceRemainder) =
                 PageUtils.calculatePages(
                     pageSize = pageSize,
@@ -79,7 +89,6 @@ class HelpdeskService(
                 )
             val records =
                 if (pageNumber < ecommerceTotalPages - 1) {
-                    logger.info("Recovering records from eCommerce DB. Skip: {}", skip)
                     ecommerceTransactionDataProvider
                         .findResult(
                             searchParams =
@@ -91,15 +100,29 @@ class HelpdeskService(
                             limit = pageSize,
                             countInfo = ecommerceCountInfo
                         )
+                        .doOnSuccess { _ ->
+                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                mapOf(
+                                    "ecommerceCountInfo" to ecommerceCountInfo,
+                                    "pageNumber" to pageNumber,
+                                    "pageSize" to pageSize,
+                                    "skip" to skip
+                                ),
+                                mapOf(
+                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        "transactionView-mongo-repository",
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                        "success"
+                                )
+                            ) {
+                                logger.info("Record recovered from eCommerce DB.")
+                            }
+                        }
                         .onErrorResume(InvalidSearchCriteriaException::class.java) {
                             Mono.just(emptyList())
                         }
                 } else if (pageNumber == ecommerceTotalPages - 1) {
                     if (ecommerceRemainder == 0) {
-                        logger.info(
-                            "Recovering last page of records from eCommerce DB, Skip: {}",
-                            skip
-                        )
                         ecommerceTransactionDataProvider
                             .findResult(
                                 searchParams =
@@ -111,15 +134,28 @@ class HelpdeskService(
                                 limit = pageSize,
                                 countInfo = ecommerceCountInfo
                             )
+                            .doOnSuccess { _ ->
+                                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                    mapOf(
+                                        "ecommerceCountInfo" to ecommerceCountInfo,
+                                        "pageNumber" to pageNumber,
+                                        "pageSize" to pageSize,
+                                        "skip" to skip
+                                    ),
+                                    mapOf(
+                                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                            "transactionView-mongo-repository",
+                                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME
+                                            .key to "success"
+                                    )
+                                ) {
+                                    logger.info("Last page of records recovered from eCommerce DB.")
+                                }
+                            }
                             .onErrorResume(InvalidSearchCriteriaException::class.java) {
                                 Mono.just(emptyList())
                             }
                     } else {
-                        logger.info(
-                            "Recovering last page from eCommerce DB and first page from PM (partial page). Records to recover from eCommerce: {}, from PM: {}",
-                            ecommerceRemainder,
-                            pageSize - ecommerceRemainder
-                        )
                         ecommerceTransactionDataProvider
                             .findResult(
                                 searchParams =
@@ -151,10 +187,32 @@ class HelpdeskService(
                                         Mono.just(ecommerceRecords)
                                     }
                             }
+                            .doOnSuccess { _ ->
+                                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                    mapOf(
+                                        "ecommerceCountInfo" to ecommerceCountInfo,
+                                        "pmCountInfo" to pmCountInfo,
+                                        "pageNumber" to pageNumber,
+                                        "pageSize" to pageSize,
+                                        "skip" to skip,
+                                        "records_from_eCommerce" to ecommerceRemainder,
+                                        "PM" to pageSize - ecommerceRemainder,
+                                    ),
+                                    mapOf(
+                                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                            "transactionView-mongo-repository",
+                                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME
+                                            .key to "success"
+                                    )
+                                ) {
+                                    logger.info(
+                                        "Last page from eCommerce DB recovered and first page from PM (partial page)."
+                                    )
+                                }
+                            }
                     }
                 } else {
                     val skipFromPmDB = skip - ecommerceCountInfo.totalCount().toInt()
-                    logger.info("Recovering records from PM DB, Skip: {}", skipFromPmDB)
                     pmTransactionDataProvider
                         .findResult(
                             searchParams =
@@ -166,6 +224,22 @@ class HelpdeskService(
                             limit = pageSize,
                             countInfo = pmCountInfo
                         )
+                        .doOnSuccess { _ ->
+                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                mapOf(
+                                    "skipFromPmDB" to skipFromPmDB,
+                                    "pmCountInfo" to pmCountInfo,
+                                    "pageSize" to pageSize,
+                                ),
+                                mapOf(
+                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to "PM",
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                        "success"
+                                )
+                            ) {
+                                logger.info("Recovered records from PM DB.")
+                            }
+                        }
                         .onErrorResume(InvalidSearchCriteriaException::class.java) {
                             Mono.just(emptyList())
                         }

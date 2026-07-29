@@ -40,7 +40,6 @@ class HelpdeskController(
         pmSearchPaymentMethodRequestDto: Mono<PmSearchPaymentMethodRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchPaymentMethodResponseDto>> {
-        logger.info("[HelpDesk controller] pmSearchPaymentMethod")
         return pmSearchPaymentMethodRequestDto
             .flatMap { pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = it) }
             .map { ResponseEntity.ok(it) }
