@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v2
 
+import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.services.v2.HelpdeskService
 import it.pagopa.ecommerce.helpdesk.utils.PmProviderType
 import it.pagopa.generated.ecommerce.helpdesk.v2.api.HelpdeskApi
@@ -28,9 +29,6 @@ class HelpdeskController(
         helpDeskSearchTransactionRequestDto: Mono<HelpDeskSearchTransactionRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
-        logger.info(
-            "[HelpDesk V2 controller] SearchTransaction using ${if (searchPmInEcommerceHistory) "v2 (ecommerce history db)" else "v1 (pm legacy db)"} search"
-        )
         return helpDeskSearchTransactionRequestDto
             .flatMap {
                 helpdeskService.searchTransaction(
@@ -43,5 +41,22 @@ class HelpdeskController(
                 )
             }
             .map { ResponseEntity.ok(it) }
+            .doOnSuccess { _ ->
+                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                    mapOf(
+                        "pageNumber" to pageNumber,
+                        "pageSize" to pageSize,
+                    ),
+                    mapOf(
+                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                            "eCommerce_Mongo_transaction_view_repository",
+                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                    )
+                ) {
+                    logger.info(
+                        "[HelpDesk V2 controller] SearchTransaction using ${if (searchPmInEcommerceHistory) "v2 (ecommerce history db)" else "v1 (pm legacy db)"} search"
+                    )
+                }
+            }
     }
 }
