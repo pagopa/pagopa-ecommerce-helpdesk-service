@@ -4,6 +4,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMBulkTransactionDat
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.*
@@ -28,10 +29,6 @@ class PmService(
         pageSize: Int,
         pmSearchTransactionRequestDto: PmSearchTransactionRequestDto
     ): Mono<SearchTransactionResponseDto> {
-        logger.info(
-            "[helpDesk pm service] searchTransaction method, search type: {}",
-            pmSearchTransactionRequestDto.type
-        )
         return pmTransactionDataProvider
             .totalRecordCount(
                 SearchParamDecoder(
@@ -60,6 +57,24 @@ class PmService(
                                 results = results
                             )
                         }
+                        .doOnSuccess { _ ->
+                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                mapOf(
+                                    "totalCount" to countInfo.totalCount().toInt(),
+                                    "pageNumber" to pageNumber,
+                                    "pageSize" to pageSize,
+                                    "searchTransaction_method" to pmSearchTransactionRequestDto.type
+                                ),
+                                mapOf(
+                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        "transactionView-mongo-repository",
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                        "success"
+                                )
+                            ) {
+                                logger.info("[helpDesk pm service] searchTransaction method,")
+                            }
+                        }
                 } else {
                     Mono.error(NoResultFoundException(pmSearchTransactionRequestDto.type))
                 }
@@ -69,11 +84,21 @@ class PmService(
     fun searchPaymentMethod(
         pmSearchPaymentMethodRequestDto: PmSearchPaymentMethodRequestDto
     ): Mono<SearchPaymentMethodResponseDto> {
-        logger.info(
-            "[helpDesk pm service] searchPaymentMethods, search type: {}",
-            pmSearchPaymentMethodRequestDto.type
-        )
-        return pmPaymentMethodsDataProvider.findResult(pmSearchPaymentMethodRequestDto)
+        return pmPaymentMethodsDataProvider
+            .findResult(pmSearchPaymentMethodRequestDto)
+            .doOnSuccess { _ ->
+                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                    mapOf(
+                        "searchPaymentMethods_search_type" to pmSearchPaymentMethodRequestDto.type,
+                    ),
+                    mapOf(
+                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
+                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                    )
+                ) {
+                    logger.info("[helpDesk pm service] searchPaymentMethod done successfully!")
+                }
+            }
     }
 
     fun searchBulkTransaction(
@@ -92,11 +117,26 @@ class PmService(
                 Mono.error(NoResultFoundException(pmSearchBulkTransactionRequestDto.type))
             )
             .flatMap {
-                logger.info(
-                    "[helpDesk PM service] searchBulkTransaction method, search type: {}",
-                    pmSearchBulkTransactionRequestDto.type
-                )
-                pmBulkTransactionDataProvider.findResult(pmSearchBulkTransactionRequestDto)
+                pmBulkTransactionDataProvider
+                    .findResult(pmSearchBulkTransactionRequestDto)
+                    .doOnSuccess { _ ->
+                        HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            mapOf(
+                                "searchBulkTransaction_search_type" to
+                                    pmSearchBulkTransactionRequestDto.type,
+                            ),
+                            mapOf(
+                                HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                    "PM_database",
+                                HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                    "success"
+                            )
+                        ) {
+                            logger.info(
+                                "[helpDesk pm service] searchBulkTransaction done successfully!"
+                            )
+                        }
+                    }
             }
             .map { transactionList ->
                 transactionList
