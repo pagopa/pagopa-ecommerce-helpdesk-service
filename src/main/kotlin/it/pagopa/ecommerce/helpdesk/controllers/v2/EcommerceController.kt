@@ -58,7 +58,6 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
         searchMetricsRequestDto: Mono<SearchMetricsRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<TransactionMetricsResponseDto>> {
-        logger.info("[HelpDesk controller] ecommerceSearchMetrics")
         return searchMetricsRequestDto
             .flatMap { ecommerceService.searchMetrics(searchMetricsRequestDto = it) }
             .map { ResponseEntity.ok(it) }

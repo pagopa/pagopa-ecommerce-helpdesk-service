@@ -40,7 +40,6 @@ class EcommerceService(
         pageSize: Int,
         ecommerceSearchTransactionRequestDto: EcommerceSearchTransactionRequestDto
     ): Mono<SearchTransactionResponseDto> {
-        logger.info("[helpDesk ecommerce service] searchTransaction method")
         return searchPaginatedResult(
                 pageNumber = pageNumber,
                 pageSize = pageSize,
@@ -127,7 +126,6 @@ class EcommerceService(
     fun searchMetrics(
         searchMetricsRequestDto: SearchMetricsRequestDto
     ): Mono<TransactionMetricsResponseDto> {
-        logger.info("[helpDesk ecommerce service] searchMetrics method")
         return stateMetricsDataProvider.computeMetrics(searchMetricsRequestDto).doOnSuccess { _ ->
             HelpdeskServiceTracingUtils.withContextDetailsMdc(
                 null,
