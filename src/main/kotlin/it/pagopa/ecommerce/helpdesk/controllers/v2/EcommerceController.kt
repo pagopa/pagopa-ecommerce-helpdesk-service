@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v2
 
+import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.services.v2.EcommerceService
 import it.pagopa.generated.ecommerce.helpdesk.v2.api.EcommerceApi
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.EcommerceSearchTransactionRequestDto
@@ -25,7 +26,6 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
         ecommerceSearchTransactionRequestDto: Mono<EcommerceSearchTransactionRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
-        logger.info("[HelpDesk controller] ecommerceSearchTransaction")
         return ecommerceSearchTransactionRequestDto
             .flatMap {
                 ecommerceService.searchTransaction(
@@ -35,6 +35,23 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
                 )
             }
             .map { ResponseEntity.ok(it) }
+            .doOnSuccess { _ ->
+                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                    mapOf(
+                        "pageNumber" to pageNumber,
+                        "pageSize" to pageSize,
+                        "ecommerceSearchTransactionRequestDto" to
+                            ecommerceSearchTransactionRequestDto
+                    ),
+                    mapOf(
+                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                            "eCommerce-Mongo-event-store-repository",
+                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                    )
+                ) {
+                    logger.info("ecommerceSearchTransaction done successfully!")
+                }
+            }
     }
 
     override fun ecommerceSearchMetrics(
@@ -45,5 +62,17 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
         return searchMetricsRequestDto
             .flatMap { ecommerceService.searchMetrics(searchMetricsRequestDto = it) }
             .map { ResponseEntity.ok(it) }
+            .doOnSuccess { _ ->
+                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                    null,
+                    mapOf(
+                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                            "eCommerce-Mongo-transaction-view-repository",
+                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                    )
+                ) {
+                    logger.info("ecommerceSearchTransaction done successfully!")
+                }
+            }
     }
 }

@@ -148,7 +148,7 @@ class EcommerceService(
                     ),
                     mapOf(
                         HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
-                            "deadletter-Mongo-repository",
+                            "dead-letter-Mongo-repository",
                         HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {
