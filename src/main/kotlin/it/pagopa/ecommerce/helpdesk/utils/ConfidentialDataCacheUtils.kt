@@ -24,7 +24,9 @@ abstract class ConfidentialDataCacheUtils<T>(
      */
     fun toClearData(encrypted: Confidential<T>): Mono<T> {
         return if (encryptedToClearMap.contains(encrypted.opaqueData)) {
-            logger.info("confidential data cache hit")
+            HelpdeskServiceTracingUtils.withContextDetailsMdc(null, null) {
+                logger.debug("confidential data cache hit")
+            }
             mono { encryptedToClearMap[encrypted.opaqueData] }
         } else {
             confidentialDataManager
