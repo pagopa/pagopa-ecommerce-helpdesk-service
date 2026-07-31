@@ -133,10 +133,6 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
         Flux.usingWhen(
                 connectionFactory.create(),
                 { connection ->
-                    logger.info(
-                        "Retrieving transactions from PM database. Skipping: $skip, limit: $limit."
-                    )
-
                     Flux.from(
                             connection
                                 .createStatement(resultQuery)
