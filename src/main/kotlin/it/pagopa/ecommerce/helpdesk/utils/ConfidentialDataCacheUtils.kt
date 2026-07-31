@@ -2,6 +2,7 @@ package it.pagopa.ecommerce.helpdesk.utils
 
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
+import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
@@ -28,7 +29,11 @@ abstract class ConfidentialDataCacheUtils<T>(
         } else {
             confidentialDataManager
                 .decrypt(encrypted, confidentialFromClearData)
-                .doOnError { e -> logger.error("Exception decrypting confidential data", e) }
+                .doOnError { e ->
+                    HelpdeskServiceTracingUtils.withErrorMdc(e) {
+                        logger.error("Exception decrypting confidential data")
+                    }
+                }
                 .doOnNext { decryptedData ->
                     encryptedToClearMap[encrypted.opaqueData] = decryptedData
                 }
@@ -58,7 +63,9 @@ abstract class ConfidentialDataCacheUtils<T>(
                             encryptedToClearMap[encrypted.opaqueData] = clearText
                         }
                         .doOnError { e ->
-                            logger.error("Exception encrypting confidential data", e)
+                            HelpdeskServiceTracingUtils.withErrorMdc(e) {
+                                logger.error("Exception encrypting confidential data")
+                            }
                         }
                 } else {
                     Mono.just(Confidential(it.get()))
