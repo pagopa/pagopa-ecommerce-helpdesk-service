@@ -82,15 +82,17 @@ class HelpdeskService(
             }
             val skip = pageNumber * pageSize
 
-            HelpdeskServiceTracingUtils.withContextDetailsMdc(null, null) {
-                logger.debug(
-                    "Requested page number: {}, page size: {}, records to be skipped: {}. Total records found into ecommerce DB: {}, PM DB: {}",
-                    pageNumber,
-                    pageSize,
-                    skip,
-                    ecommerceCountInfo,
-                    pmCountInfo
-                )
+            if (logger.isDebugEnabled) {
+                HelpdeskServiceTracingUtils.withContextDetailsMdc(null, null) {
+                    logger.debug(
+                        "Requested page number: {}, page size: {}, records to be skipped: {}. Total records found into ecommerce DB: {}, PM DB: {}",
+                        pageNumber,
+                        pageSize,
+                        skip,
+                        ecommerceCountInfo,
+                        pmCountInfo
+                    )
+                }
             }
 
             val (ecommerceTotalPages, ecommerceRemainder) =

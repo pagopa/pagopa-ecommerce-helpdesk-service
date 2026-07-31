@@ -59,11 +59,13 @@ class ApiKeyFilter(
                 secondaryApiKey -> "secondary"
                 else -> "unknown"
             }
-        HelpdeskServiceTracingUtils.withContextDetailsMdc(
-            mapOf("apiKeyType" to apiKeyType),
-            mapOf(HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to path)
-        ) {
-            logger.debug("Unauthorized request for path $path - Missing or invalid API key")
+        if (logger.isDebugEnabled) {
+            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                mapOf("apiKeyType" to apiKeyType),
+                mapOf(HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to path)
+            ) {
+                logger.debug("Unauthorized request for path $path - Missing or invalid API key")
+            }
         }
     }
 }

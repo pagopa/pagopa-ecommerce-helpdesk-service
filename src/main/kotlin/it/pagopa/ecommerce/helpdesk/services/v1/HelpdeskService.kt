@@ -65,22 +65,24 @@ class HelpdeskService(
                 return@flatMap Mono.error(NoResultFoundException(searchTransactionRequestDto.type))
             }
             val skip = pageNumber * pageSize
-            HelpdeskServiceTracingUtils.withContextDetailsMdc(
-                mapOf(
-                    "ecommerceCountInfo" to ecommerceCountInfo,
-                    "pmCountInfo" to pmCountInfo,
-                    "pageNumber" to pageNumber,
-                    "pageSize" to pageSize
-                )
-            ) {
-                logger.debug(
-                    "Requested page number: {}, page size: {}, records to be skipped: {}. Total records found into ecommerce DB: {}, PM DB: {}",
-                    pageNumber,
-                    pageSize,
-                    skip,
-                    ecommerceCountInfo,
-                    pmCountInfo
-                )
+            if (logger.isDebugEnabled) {
+                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                    mapOf(
+                        "ecommerceCountInfo" to ecommerceCountInfo,
+                        "pmCountInfo" to pmCountInfo,
+                        "pageNumber" to pageNumber,
+                        "pageSize" to pageSize
+                    )
+                ) {
+                    logger.debug(
+                        "Requested page number: {}, page size: {}, records to be skipped: {}. Total records found into ecommerce DB: {}, PM DB: {}",
+                        pageNumber,
+                        pageSize,
+                        skip,
+                        ecommerceCountInfo,
+                        pmCountInfo
+                    )
+                }
             }
             val (ecommerceTotalPages, ecommerceRemainder) =
                 PageUtils.calculatePages(

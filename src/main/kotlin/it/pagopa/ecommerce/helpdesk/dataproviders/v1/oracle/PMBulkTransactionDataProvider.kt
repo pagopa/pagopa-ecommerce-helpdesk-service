@@ -67,8 +67,10 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
                                 .execute()
                         )
                         .flatMap { result ->
-                            HelpdeskServiceTracingUtils.withContextDetailsMdc(null, null) {
-                                logger.debug("Query executed successfully. Processing results.")
+                            if (logger.isDebugEnabled) {
+                                HelpdeskServiceTracingUtils.withContextDetailsMdc(null, null) {
+                                    logger.debug("Query executed successfully. Processing results.")
+                                }
                             }
                             resultToBulkTransactionInfoDto(result)
                         }
@@ -93,8 +95,10 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
                         }
                 },
                 { connection ->
-                    HelpdeskServiceTracingUtils.withContextDetailsMdc(null, null) {
-                        logger.debug("Closing connection.")
+                    if (logger.isDebugEnabled) {
+                        HelpdeskServiceTracingUtils.withContextDetailsMdc(null, null) {
+                            logger.debug("Closing connection.")
+                        }
                     }
                     connection.close()
                 }
