@@ -8,6 +8,7 @@ import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransaction
 import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.DeadLetterRepository
+import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import java.util.*
@@ -60,14 +61,6 @@ class DeadLetterDataProvider(
                 if (timeRange != null) {
                     val startDate = timeRange.startDate.toString()
                     val endDate = timeRange.endDate.toString()
-                    logger.info(
-                        "Counting all dead letter events in time range {} - {}, with eCommerceStatus not in {}, npgStatus not in {} and paymentGateway not in {}",
-                        startDate,
-                        endDate,
-                        eCommerceStatuses,
-                        npgStatuses,
-                        excludedPaymentGateway
-                    )
                     deadLetterRepository
                         .countAllDeadLetterEventInTimeRangeWithExcludeStatusesAndPaymentGateway(
                             startTime = startDate,
@@ -76,9 +69,46 @@ class DeadLetterDataProvider(
                             npgStatusesToExclude = npgStatuses.toSet(),
                             paymentGatewayToExclude = excludedPaymentGateway.toSet()
                         )
+                        .doOnSuccess {
+                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                mapOf(
+                                    "startDate" to startDate,
+                                    "endDate" to endDate,
+                                    "eCommerceStatuses" to eCommerceStatuses,
+                                    "npgStatuses" to npgStatuses,
+                                    "excludedPaymentGateway" to excludedPaymentGateway
+                                ),
+                                mapOf(
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                        "success",
+                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        "deadLetterEvent_repository",
+                                )
+                            ) {
+                                logger.info(
+                                    "Counted all dead letter events in time range {} - {}, with eCommerceStatus not in {}, npgStatus not in {} and paymentGateway not in {}",
+                                    startDate,
+                                    endDate,
+                                    eCommerceStatuses,
+                                    npgStatuses,
+                                    excludedPaymentGateway
+                                )
+                            }
+                        }
                 } else {
-                    logger.info("Counting all dead letter events")
-                    deadLetterRepository.count()
+                    deadLetterRepository.count().doOnSuccess {
+                        HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            null,
+                            mapOf(
+                                HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                    "success",
+                                HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                    "deadLetterEvent_repository",
+                            )
+                        ) {
+                            logger.info("Counted all dead letter events")
+                        }
+                    }
                 }
             }
             DeadLetterSearchEventSourceDto.ECOMMERCE,
@@ -87,15 +117,6 @@ class DeadLetterDataProvider(
                     val startDate = timeRange.startDate.toString()
                     val endDate = timeRange.endDate.toString()
                     val queueName = deadLetterQueueMapping[source]!!
-                    logger.info(
-                        "Counting all dead letter events for queue {} in time range {} - {}, with eCommerceStatus not in {}, npgStatus not in {} and paymentGateway not in {}",
-                        queueName,
-                        startDate,
-                        endDate,
-                        eCommerceStatuses,
-                        npgStatuses,
-                        excludedPaymentGateway
-                    )
                     deadLetterRepository
                         .countDeadLetterEventForQueueInTimeRangeWithExcludeStatusesAndPaymentGateway(
                             queueName = queueName,
@@ -105,10 +126,51 @@ class DeadLetterDataProvider(
                             npgStatusesToExclude = npgStatuses.toSet(),
                             paymentGatewayToExclude = excludedPaymentGateway.toSet()
                         )
+                        .doOnSuccess {
+                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                mapOf(
+                                    "queueName" to queueName,
+                                    "startDate" to startDate,
+                                    "endDate" to endDate,
+                                    "eCommerceStatuses" to eCommerceStatuses,
+                                    "npgStatuses" to npgStatuses,
+                                    "excludedPaymentGateway" to excludedPaymentGateway
+                                ),
+                                mapOf(
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                        "success",
+                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        "deadLetterEvent_repository",
+                                )
+                            ) {
+                                logger.info(
+                                    "Counted all dead letter events for queue {} in time range {} - {}, with eCommerceStatus not in {}, npgStatus not in {} and paymentGateway not in {}",
+                                    queueName,
+                                    startDate,
+                                    endDate,
+                                    eCommerceStatuses,
+                                    npgStatuses,
+                                    excludedPaymentGateway
+                                )
+                            }
+                        }
                 } else {
                     val queueName = deadLetterQueueMapping[source]!!
-                    logger.info("Counting all dead letter events for queue {}", queueName)
-                    deadLetterRepository.countDeadLetterEventForQueue(queueName)
+                    deadLetterRepository.countDeadLetterEventForQueue(queueName).doOnSuccess {
+                        HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            mapOf(
+                                "queueName" to queueName,
+                            ),
+                            mapOf(
+                                HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                    "success",
+                                HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                    "deadLetterEvent_repository",
+                            )
+                        ) {
+                            logger.info("Counting all dead letter events for queue {}", queueName)
+                        }
+                    }
                 }
             }
         }.map { CountInfo(it, 0) }
@@ -145,14 +207,6 @@ class DeadLetterDataProvider(
                     if (timeRange != null) {
                         val startDate = timeRange.startDate.toString()
                         val endDate = timeRange.endDate.toString()
-                        logger.info(
-                            "Finding all dead letter events in time range {} - {} with eCommerceStatus not in {} and npgStatus not in {} and paymentGateway not in {}",
-                            startDate,
-                            endDate,
-                            eCommerceStatuses,
-                            npgStatuses,
-                            excludedPaymentGateway
-                        )
                         deadLetterRepository
                             .findDeadLetterEventPaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatusesAndPaymentGateway(
                                 skip = skip,
@@ -163,12 +217,55 @@ class DeadLetterDataProvider(
                                 npgStatusesToExclude = npgStatuses.toSet(),
                                 paymentGatewayToExclude = excludedPaymentGateway.toSet()
                             )
+                            .doOnNext {
+                                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                    mapOf(
+                                        "startDate" to startDate,
+                                        "endDate" to endDate,
+                                        "eCommerceStatuses" to eCommerceStatuses,
+                                        "npgStatuses" to npgStatuses,
+                                        "excludedPaymentGateway" to excludedPaymentGateway
+                                    ),
+                                    mapOf(
+                                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME
+                                            .key to "success",
+                                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                            "deadLetterEvent_repository",
+                                    )
+                                ) {
+                                    logger.info(
+                                        "Finding all dead letter events in time range {} - {} with eCommerceStatus not in {} and npgStatus not in {} and paymentGateway not in {}",
+                                        startDate,
+                                        endDate,
+                                        eCommerceStatuses,
+                                        npgStatuses,
+                                        excludedPaymentGateway
+                                    )
+                                }
+                            }
                     } else {
-                        logger.info("Finding all dead letter events")
-                        deadLetterRepository.findDeadLetterEventPaginatedOrderByInsertionDateDesc(
-                            skip = skip,
-                            limit = limit
-                        )
+
+                        deadLetterRepository
+                            .findDeadLetterEventPaginatedOrderByInsertionDateDesc(
+                                skip = skip,
+                                limit = limit
+                            )
+                            .doOnComplete {
+                                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                    mapOf(
+                                        "skip" to skip,
+                                        "limit" to limit,
+                                    ),
+                                    mapOf(
+                                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME
+                                            .key to "success",
+                                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                            "deadLetterEvent_repository",
+                                    )
+                                ) {
+                                    logger.info("All dead letter events found.")
+                                }
+                            }
                     }
                 }
                 DeadLetterSearchEventSourceDto.ECOMMERCE,
@@ -178,15 +275,6 @@ class DeadLetterDataProvider(
                         val startDate = timeRange.startDate.toString()
                         val endDate = timeRange.endDate.toString()
 
-                        logger.info(
-                            "Finding all dead letter events for queue {} in time range {} - {} with eCommerceStatus not in {}, npgStatus not in {} and paymentGateway in {}",
-                            queueName,
-                            startDate,
-                            endDate,
-                            eCommerceStatuses,
-                            npgStatuses,
-                            excludedPaymentGateway
-                        )
                         deadLetterRepository
                             .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDescInTimeRangeWithExcludeStatusesAndPaymentGateway(
                                 queueName = queueName,
@@ -198,14 +286,61 @@ class DeadLetterDataProvider(
                                 npgStatusesToExclude = npgStatuses.toSet(),
                                 paymentGatewayToExclude = excludedPaymentGateway.toSet()
                             )
+                            .doOnComplete {
+                                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                    mapOf(
+                                        "queueName" to queueName,
+                                        "startDate" to startDate,
+                                        "endDate" to endDate,
+                                        "eCommerceStatuses" to eCommerceStatuses,
+                                        "npgStatuses" to npgStatuses,
+                                        "excludedPaymentGateway" to excludedPaymentGateway
+                                    ),
+                                    mapOf(
+                                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME
+                                            .key to "success",
+                                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                            "deadLetterEvent_repository",
+                                    )
+                                ) {
+                                    logger.info(
+                                        "Finding all dead letter events for queue {} in time range {} - {} with eCommerceStatus not in {}, npgStatus not in {} and paymentGateway in {}",
+                                        queueName,
+                                        startDate,
+                                        endDate,
+                                        eCommerceStatuses,
+                                        npgStatuses,
+                                        excludedPaymentGateway
+                                    )
+                                }
+                            }
                     } else {
-                        logger.info("Finding all dead letter events for queue name {}", queueName)
                         deadLetterRepository
                             .findDeadLetterEventForQueuePaginatedOrderByInsertionDateDesc(
                                 queueName = queueName,
                                 skip = skip,
                                 limit = limit
                             )
+                            .doOnComplete {
+                                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                    mapOf(
+                                        "queueName" to queueName,
+                                        "skip" to skip,
+                                        "limit" to limit,
+                                    ),
+                                    mapOf(
+                                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME
+                                            .key to "success",
+                                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                            "deadLetterEvent_repository",
+                                    )
+                                ) {
+                                    logger.info(
+                                        "All dead letter events for queue name {} found",
+                                        queueName
+                                    )
+                                }
+                            }
                     }
                 }
             }
