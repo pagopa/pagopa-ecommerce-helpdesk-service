@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
@@ -130,7 +131,21 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         .flatMap { result ->
                             result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
-                        .doOnNext { logger.info("Total transaction found: $it") }
+                        .doOnNext {
+                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                null,
+                                mapOf(
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                        "success",
+                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        "PM_database",
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to
+                                        "getTotalResultCount"
+                                )
+                            ) {
+                                logger.info("Total transaction found: $it")
+                            }
+                        }
                 },
                 { it.close() }
             )
@@ -154,7 +169,24 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         .flatMap { result ->
                             result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
-                        .doOnNext { logger.info("Total transaction found: $it") }
+                        .doOnNext {
+                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                mapOf(
+                                    "startDate" to startDate.toString(),
+                                    "endDate" to endDate.toString()
+                                ),
+                                mapOf(
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                        "success",
+                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        "PM_database",
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to
+                                        "getTotalResultCountFromDateTimeRange"
+                                )
+                            ) {
+                                logger.info("Total transaction found: $it")
+                            }
+                        }
                 },
                 { it.close() }
             )
@@ -170,10 +202,6 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
         Flux.usingWhen(
                 connectionFactory.create(),
                 { connection ->
-                    logger.info(
-                        "Retrieving transactions from PM database. Skipping: $skip, limit: $limit."
-                    )
-
                     Flux.from(
                             connection
                                 .createStatement(resultQuery)
@@ -183,6 +211,21 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                                 .execute()
                         )
                         .flatMap { resultToTransactionInfoDto(it) }
+                        .doOnComplete {
+                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                mapOf("skip" to skip, "limit" to limit),
+                                mapOf(
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                        "success",
+                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        "PM_database",
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to
+                                        "getResultSetFromPaginatedQuery"
+                                )
+                            ) {
+                                logger.info("Transactions from PM database retrieved.")
+                            }
+                        }
                 },
                 { it.close() }
             )
@@ -200,9 +243,6 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
         return Flux.usingWhen(
                 connectionFactory.create(),
                 { connection ->
-                    logger.info(
-                        "Retrieving transactions from PM database. Skipping: $skip, limit: $limit."
-                    )
                     Flux.from(
                             connection
                                 .createStatement(resultQuery)
@@ -215,6 +255,21 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                                 .execute()
                         )
                         .flatMap { result -> resultToTransactionInfoDto(result) }
+                        .doOnComplete {
+                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                mapOf("skip" to skip, "limit" to limit),
+                                mapOf(
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                        "success",
+                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        "PM_database",
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to
+                                        "getResultSetFromDateTimeRangeQuery"
+                                )
+                            ) {
+                                logger.info("Transactions from PM database retrieved.")
+                            }
+                        }
                 },
                 { connection -> connection.close() }
             )

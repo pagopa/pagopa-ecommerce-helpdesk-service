@@ -4,6 +4,7 @@ import io.r2dbc.spi.ConnectionFactory
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.BulkTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToBulkTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
@@ -56,9 +57,6 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
         return Flux.usingWhen(
                 connectionFactory.create(),
                 { connection ->
-                    logger.info(
-                        "Retrieving transactions from PM database given transactionId range [$startTransactionId, $endTransactionId]"
-                    )
                     Flux.from(
                             connection
                                 .createStatement(resultQuery)
@@ -69,21 +67,52 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
                                 .execute()
                         )
                         .flatMap { result ->
-                            logger.debug("Query executed successfully. Processing results.")
+                            HelpdeskServiceTracingUtils.withContextDetailsMdc(null, null) {
+                                logger.debug("Query executed successfully. Processing results.")
+                            }
                             resultToBulkTransactionInfoDto(result)
+                        }
+                        .doOnComplete {
+                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                mapOf(
+                                    "type" to type,
+                                    "startTransactionId" to startTransactionId,
+                                    "endTransactionId" to endTransactionId
+                                ),
+                                mapOf(
+                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                        "success",
+                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        "PM_database",
+                                )
+                            ) {
+                                logger.info(
+                                    "Transactions from PM database given transactionId range [$startTransactionId, $endTransactionId]"
+                                )
+                            }
                         }
                 },
                 { connection ->
-                    logger.debug("Closing connection.")
+                    HelpdeskServiceTracingUtils.withContextDetailsMdc(null, null) {
+                        logger.debug("Closing connection.")
+                    }
                     connection.close()
                 }
             )
             .collectList()
             .flatMap { results ->
                 if (results.isEmpty()) {
-                    logger.warn(
-                        "No results found for transactionId range [$startTransactionId, $endTransactionId]."
-                    )
+                    HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                        mapOf(
+                            "startTransactionId" to startTransactionId,
+                            "endTransactionId" to endTransactionId
+                        ),
+                        null
+                    ) {
+                        logger.warn(
+                            "No results found for transactionId range [$startTransactionId, $endTransactionId]."
+                        )
+                    }
                     Mono.error(NoResultFoundException(type))
                 } else {
                     Mono.just(results)

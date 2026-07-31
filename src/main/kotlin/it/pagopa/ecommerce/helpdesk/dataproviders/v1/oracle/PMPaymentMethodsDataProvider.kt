@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle
 import io.r2dbc.spi.ConnectionFactory
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.PaymentMethodDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
+import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToPaymentMethodDtoList
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
@@ -55,11 +56,22 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
         Mono.usingWhen(
             connectionFactory.create(),
             { connection ->
-                logger.info("Retrieving payment methods from PM database.")
-
                 Flux.from(connection.createStatement(resultQuery).bind(0, searchParam).execute())
                     .collectList()
                     .flatMap { results -> resultToPaymentMethodDtoList(results, searchType) }
+                    .doOnSuccess {
+                        HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            mapOf("searchType" to searchType),
+                            mapOf(
+                                HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                    "success",
+                                HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                    "PM_database",
+                            )
+                        ) {
+                            logger.info("Payment methods retrieved from PM database.")
+                        }
+                    }
             },
             { it.close() }
         )
