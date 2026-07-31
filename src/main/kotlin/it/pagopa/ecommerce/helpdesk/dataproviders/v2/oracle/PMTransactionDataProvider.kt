@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.resultToTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
@@ -106,7 +107,17 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         .flatMap { result ->
                             result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
-                        .doOnNext { logger.info("Total transaction found: $it") }
+                        .doOnNext {
+                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                null,
+                                mapOf(
+                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        "PM_database"
+                                )
+                            ) {
+                                logger.info("Total transaction found: $it")
+                            }
+                        }
                 },
                 { it.close() }
             )
@@ -135,6 +146,19 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                                 .execute()
                         )
                         .flatMap { resultToTransactionInfoDto(it) }
+                        .doOnNext {
+                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                mapOf("skip" to skip, "limit" to limit),
+                                mapOf(
+                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        "PM_database"
+                                )
+                            ) {
+                                logger.info(
+                                    "Retrieving transactions from PM database. Skipping: $skip, limit: $limit."
+                                )
+                            }
+                        }
                 },
                 { it.close() }
             )
