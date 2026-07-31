@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.helpdesk.exceptionhandler
 import it.pagopa.ecommerce.commons.exceptions.ConfidentialDataException
 import it.pagopa.ecommerce.helpdesk.exceptions.ApiError
 import it.pagopa.ecommerce.helpdesk.exceptions.RestApiException
+import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.generated.ecommerce.helpdesk.model.ProblemJsonDto
 import jakarta.validation.ConstraintViolationException
 import jakarta.xml.bind.ValidationException
@@ -36,7 +37,7 @@ class ExceptionHandler {
     /** RestApiException exception handler */
     @ExceptionHandler(RestApiException::class)
     fun handleException(e: RestApiException): ResponseEntity<ProblemJsonDto> {
-        logger.error("Exception processing request", e)
+        HelpdeskServiceTracingUtils.withErrorMdc(e) {}
         return ResponseEntity.status(e.httpStatus)
             .body(
                 ProblemJsonDto().status(e.httpStatus.value()).title(e.title).detail(e.description)
@@ -54,7 +55,7 @@ class ExceptionHandler {
     fun handleConfidentialDataException(
         e: ConfidentialDataException
     ): ResponseEntity<ProblemJsonDto> {
-        logger.error("Exception processing encrypt/decrypt pdv request", e)
+        HelpdeskServiceTracingUtils.withErrorMdc(e) {}
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
             .body(
                 ProblemJsonDto()
@@ -119,7 +120,7 @@ class ExceptionHandler {
     /** Handler for generic exception */
     @ExceptionHandler(Exception::class)
     fun handleGenericException(e: Exception): ResponseEntity<ProblemJsonDto> {
-        logger.error("Exception processing the request", e)
+        HelpdeskServiceTracingUtils.withErrorMdc(e) {}
         return ResponseEntity.internalServerError()
             .body(
                 ProblemJsonDto()
