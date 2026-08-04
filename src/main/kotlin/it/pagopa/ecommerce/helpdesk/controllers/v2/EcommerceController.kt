@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v2
 
-import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.services.v2.EcommerceService
 import it.pagopa.generated.ecommerce.helpdesk.v2.api.EcommerceApi
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.EcommerceSearchTransactionRequestDto
@@ -36,7 +36,7 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
             }
             .map { ResponseEntity.ok(it) }
             .doOnSuccess { _ ->
-                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                LogTracingUtils.withContextDetailsMdc(
                     mapOf(
                         "pageNumber" to pageNumber,
                         "pageSize" to pageSize,
@@ -44,9 +44,9 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
                             ecommerceSearchTransactionRequestDto
                     ),
                     mapOf(
-                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
                             "eCommerce-Mongo-event-store-repository",
-                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {
                     logger.info("ecommerceSearchTransaction done successfully!")
@@ -62,12 +62,12 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
             .flatMap { ecommerceService.searchMetrics(searchMetricsRequestDto = it) }
             .map { ResponseEntity.ok(it) }
             .doOnSuccess { _ ->
-                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                LogTracingUtils.withContextDetailsMdc(
                     null,
                     mapOf(
-                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
                             "eCommerce-Mongo-transaction-view-repository",
-                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {
                     logger.info("ecommerceSearchTransaction done successfully!")

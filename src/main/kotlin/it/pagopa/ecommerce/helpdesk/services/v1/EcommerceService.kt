@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.commons.client.NpgClient.PaymentMethod
 import it.pagopa.ecommerce.commons.domain.v2.TransactionId
 import it.pagopa.ecommerce.commons.exceptions.NpgResponseException
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OrderResponseDto
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.utils.NpgApiKeyConfiguration
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
@@ -15,7 +16,6 @@ import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadGatewayException
 import it.pagopa.ecommerce.helpdesk.exceptions.NpgBadRequestException
-import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialFiscalCodeUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
@@ -66,7 +66,7 @@ class EcommerceService(
                 dataProvider = ecommerceTransactionDataProvider
             )
             .doOnSuccess { _ ->
-                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                LogTracingUtils.withContextDetailsMdc(
                     mapOf(
                         "ecommerceSearchTransactionRequestDto.type" to
                             ecommerceSearchTransactionRequestDto.type,
@@ -74,9 +74,9 @@ class EcommerceService(
                         "pageSize" to pageSize
                     ),
                     mapOf(
-                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
                             "eCommerce-Mongo-event-store-repository",
-                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {
                     logger.info(
@@ -140,16 +140,16 @@ class EcommerceService(
                 )
             }
             .doOnSuccess { _ ->
-                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                LogTracingUtils.withContextDetailsMdc(
                     mapOf(
                         "searchRequest" to searchRequest.source,
                         "pageNumber" to pageNumber,
                         "pageSize" to pageSize
                     ),
                     mapOf(
-                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
                             "dead-letter-Mongo-repository",
-                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {
                     logger.info(
@@ -218,16 +218,16 @@ class EcommerceService(
                 }
             }
             .doOnSuccess { _ ->
-                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                LogTracingUtils.withContextDetailsMdc(
                     mapOf(
                         "transactionId" to transactionId,
                     ),
                     mapOf(
-                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
                             arrayOf("NPG", "TransactionViewReposity"),
-                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to
+                        LogTracingUtils.TracingEntry.EVENT_ACTION.key to
                             arrayOf("NpgClient-getOrder"),
-                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {
                     logger.info("Performing getOrder successfully")
@@ -334,7 +334,7 @@ class EcommerceService(
                 }
             )
             .doOnSuccess { _ ->
-                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                LogTracingUtils.withContextDetailsMdc(
                     mapOf(
                         "transactionId" to transactionId,
                         "orderId" to orderId,
@@ -343,10 +343,9 @@ class EcommerceService(
                         "paymentMethod.serviceName" to paymentMethod.serviceName
                     ),
                     mapOf(
-                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to "NPG",
-                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to
-                            "NpgClient-getOrder",
-                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                        LogTracingUtils.TracingEntry.DEPENDENCY.key to "NPG",
+                        LogTracingUtils.TracingEntry.EVENT_ACTION.key to "NpgClient-getOrder",
+                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {
                     logger.info("Performing getOrder successfully")
@@ -374,7 +373,7 @@ class EcommerceService(
                     )
                     .zipWith(mono { totalCount }, ::Pair)
                     .doOnSuccess { _ ->
-                        HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                        LogTracingUtils.withContextDetailsMdc(
                             mapOf(
                                 "totalCount" to totalCount,
                                 "skip" to skip,

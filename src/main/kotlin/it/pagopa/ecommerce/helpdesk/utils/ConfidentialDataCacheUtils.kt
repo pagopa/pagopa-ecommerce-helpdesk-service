@@ -1,8 +1,8 @@
 package it.pagopa.ecommerce.helpdesk.utils
 
 import it.pagopa.ecommerce.commons.domain.Confidential
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
-import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
@@ -25,7 +25,7 @@ abstract class ConfidentialDataCacheUtils<T>(
     fun toClearData(encrypted: Confidential<T>): Mono<T> {
         return if (encryptedToClearMap.contains(encrypted.opaqueData)) {
             if (logger.isDebugEnabled) {
-                HelpdeskServiceTracingUtils.withContextDetailsMdc(null, null) {
+                LogTracingUtils.withContextDetailsMdc(null, null) {
                     logger.debug("confidential data cache hit")
                 }
             }
@@ -34,7 +34,7 @@ abstract class ConfidentialDataCacheUtils<T>(
             confidentialDataManager
                 .decrypt(encrypted, confidentialFromClearData)
                 .doOnError { e ->
-                    HelpdeskServiceTracingUtils.withErrorMdc(e) {
+                    LogTracingUtils.withErrorMdc(e) {
                         logger.error("Exception decrypting confidential data")
                     }
                 }
@@ -67,7 +67,7 @@ abstract class ConfidentialDataCacheUtils<T>(
                             encryptedToClearMap[encrypted.opaqueData] = clearText
                         }
                         .doOnError { e ->
-                            HelpdeskServiceTracingUtils.withErrorMdc(e) {
+                            LogTracingUtils.withErrorMdc(e) {
                                 logger.error("Exception encrypting confidential data")
                             }
                         }

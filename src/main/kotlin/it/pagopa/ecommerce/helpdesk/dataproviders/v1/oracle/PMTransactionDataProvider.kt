@@ -1,11 +1,11 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle
 
 import io.r2dbc.spi.ConnectionFactory
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
@@ -132,14 +132,12 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                             result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
                         .doOnNext {
-                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            LogTracingUtils.withContextDetailsMdc(
                                 null,
                                 mapOf(
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                        "success",
-                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
-                                        "PM_database",
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to
+                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
+                                    LogTracingUtils.TracingEntry.EVENT_ACTION.key to
                                         "getTotalResultCount"
                                 )
                             ) {
@@ -170,17 +168,15 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                             result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
                         .doOnNext {
-                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
                                     "startDate" to startDate.toString(),
                                     "endDate" to endDate.toString()
                                 ),
                                 mapOf(
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                        "success",
-                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
-                                        "PM_database",
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to
+                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
+                                    LogTracingUtils.TracingEntry.EVENT_ACTION.key to
                                         "getTotalResultCountFromDateTimeRange"
                                 )
                             ) {
@@ -212,14 +208,12 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         )
                         .flatMap { resultToTransactionInfoDto(it) }
                         .doOnComplete {
-                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            LogTracingUtils.withContextDetailsMdc(
                                 mapOf("skip" to skip, "limit" to limit),
                                 mapOf(
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                        "success",
-                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
-                                        "PM_database",
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to
+                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
+                                    LogTracingUtils.TracingEntry.EVENT_ACTION.key to
                                         "getResultSetFromPaginatedQuery"
                                 )
                             ) {
@@ -256,14 +250,12 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         )
                         .flatMap { result -> resultToTransactionInfoDto(result) }
                         .doOnComplete {
-                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            LogTracingUtils.withContextDetailsMdc(
                                 mapOf("skip" to skip, "limit" to limit),
                                 mapOf(
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                        "success",
-                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
-                                        "PM_database",
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to
+                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
+                                    LogTracingUtils.TracingEntry.EVENT_ACTION.key to
                                         "getResultSetFromDateTimeRangeQuery"
                                 )
                             ) {

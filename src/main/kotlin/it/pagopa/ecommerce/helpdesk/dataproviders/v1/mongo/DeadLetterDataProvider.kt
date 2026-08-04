@@ -5,10 +5,10 @@ import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterNpgTransact
 import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterRedirectTransactionInfoDetailsData
 import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransactionInfo
 import it.pagopa.ecommerce.commons.documents.v2.deadletter.DeadLetterTransactionInfoDetailsData
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.repositories.ecommerce.DeadLetterRepository
-import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import java.util.*
@@ -70,7 +70,7 @@ class DeadLetterDataProvider(
                             paymentGatewayToExclude = excludedPaymentGateway.toSet()
                         )
                         .doOnSuccess {
-                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
                                     "startDate" to startDate,
                                     "endDate" to endDate,
@@ -79,9 +79,8 @@ class DeadLetterDataProvider(
                                     "excludedPaymentGateway" to excludedPaymentGateway
                                 ),
                                 mapOf(
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                        "success",
-                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                         "deadLetterEvent_repository",
                                 )
                             ) {
@@ -97,12 +96,11 @@ class DeadLetterDataProvider(
                         }
                 } else {
                     deadLetterRepository.count().doOnSuccess {
-                        HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                        LogTracingUtils.withContextDetailsMdc(
                             null,
                             mapOf(
-                                HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                    "success",
-                                HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                     "deadLetterEvent_repository",
                             )
                         ) {
@@ -127,7 +125,7 @@ class DeadLetterDataProvider(
                             paymentGatewayToExclude = excludedPaymentGateway.toSet()
                         )
                         .doOnSuccess {
-                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
                                     "queueName" to queueName,
                                     "startDate" to startDate,
@@ -137,9 +135,8 @@ class DeadLetterDataProvider(
                                     "excludedPaymentGateway" to excludedPaymentGateway
                                 ),
                                 mapOf(
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                        "success",
-                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                         "deadLetterEvent_repository",
                                 )
                             ) {
@@ -157,14 +154,13 @@ class DeadLetterDataProvider(
                 } else {
                     val queueName = deadLetterQueueMapping[source]!!
                     deadLetterRepository.countDeadLetterEventForQueue(queueName).doOnSuccess {
-                        HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                        LogTracingUtils.withContextDetailsMdc(
                             mapOf(
                                 "queueName" to queueName,
                             ),
                             mapOf(
-                                HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                    "success",
-                                HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                     "deadLetterEvent_repository",
                             )
                         ) {
@@ -218,7 +214,7 @@ class DeadLetterDataProvider(
                                 paymentGatewayToExclude = excludedPaymentGateway.toSet()
                             )
                             .doOnNext {
-                                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
                                         "startDate" to startDate,
                                         "endDate" to endDate,
@@ -227,9 +223,8 @@ class DeadLetterDataProvider(
                                         "excludedPaymentGateway" to excludedPaymentGateway
                                     ),
                                     mapOf(
-                                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME
-                                            .key to "success",
-                                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                             "deadLetterEvent_repository",
                                     )
                                 ) {
@@ -251,15 +246,14 @@ class DeadLetterDataProvider(
                                 limit = limit
                             )
                             .doOnComplete {
-                                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
                                         "skip" to skip,
                                         "limit" to limit,
                                     ),
                                     mapOf(
-                                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME
-                                            .key to "success",
-                                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                             "deadLetterEvent_repository",
                                     )
                                 ) {
@@ -287,7 +281,7 @@ class DeadLetterDataProvider(
                                 paymentGatewayToExclude = excludedPaymentGateway.toSet()
                             )
                             .doOnComplete {
-                                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
                                         "queueName" to queueName,
                                         "startDate" to startDate,
@@ -297,9 +291,8 @@ class DeadLetterDataProvider(
                                         "excludedPaymentGateway" to excludedPaymentGateway
                                     ),
                                     mapOf(
-                                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME
-                                            .key to "success",
-                                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                             "deadLetterEvent_repository",
                                     )
                                 ) {
@@ -322,16 +315,15 @@ class DeadLetterDataProvider(
                                 limit = limit
                             )
                             .doOnComplete {
-                                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
                                         "queueName" to queueName,
                                         "skip" to skip,
                                         "limit" to limit,
                                     ),
                                     mapOf(
-                                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME
-                                            .key to "success",
-                                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                             "deadLetterEvent_repository",
                                     )
                                 ) {

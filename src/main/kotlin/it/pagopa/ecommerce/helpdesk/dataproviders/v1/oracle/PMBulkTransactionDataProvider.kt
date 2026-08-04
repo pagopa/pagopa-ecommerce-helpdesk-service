@@ -1,10 +1,10 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle
 
 import io.r2dbc.spi.ConnectionFactory
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.BulkTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToBulkTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
@@ -68,24 +68,22 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
                         )
                         .flatMap { result ->
                             if (logger.isDebugEnabled) {
-                                HelpdeskServiceTracingUtils.withContextDetailsMdc(null, null) {
+                                LogTracingUtils.withContextDetailsMdc(null, null) {
                                     logger.debug("Query executed successfully. Processing results.")
                                 }
                             }
                             resultToBulkTransactionInfoDto(result)
                         }
                         .doOnComplete {
-                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
                                     "type" to type,
                                     "startTransactionId" to startTransactionId,
                                     "endTransactionId" to endTransactionId
                                 ),
                                 mapOf(
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                        "success",
-                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
-                                        "PM_database",
+                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
                                 )
                             ) {
                                 logger.info(
@@ -96,7 +94,7 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
                 },
                 { connection ->
                     if (logger.isDebugEnabled) {
-                        HelpdeskServiceTracingUtils.withContextDetailsMdc(null, null) {
+                        LogTracingUtils.withContextDetailsMdc(null, null) {
                             logger.debug("Closing connection.")
                         }
                     }
@@ -106,7 +104,7 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
             .collectList()
             .flatMap { results ->
                 if (results.isEmpty()) {
-                    HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                    LogTracingUtils.withContextDetailsMdc(
                         mapOf(
                             "startTransactionId" to startTransactionId,
                             "endTransactionId" to endTransactionId

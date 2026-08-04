@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.services.v2
 
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
@@ -7,7 +8,6 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.PmTransactionHistoryD
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialFiscalCodeUtils
 import it.pagopa.ecommerce.helpdesk.utils.PageUtils
 import it.pagopa.ecommerce.helpdesk.utils.PmProviderType
@@ -83,7 +83,7 @@ class HelpdeskService(
             val skip = pageNumber * pageSize
 
             if (logger.isDebugEnabled) {
-                HelpdeskServiceTracingUtils.withContextDetailsMdc(null, null) {
+                LogTracingUtils.withContextDetailsMdc(null, null) {
                     logger.debug(
                         "Requested page number: {}, page size: {}, records to be skipped: {}. Total records found into ecommerce DB: {}, PM DB: {}",
                         pageNumber,
@@ -115,17 +115,16 @@ class HelpdeskService(
                             countInfo = ecommerceCountInfo,
                         )
                         .doOnSuccess { _ ->
-                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
                                     "skip" to skip,
                                     "limit" to pageSize,
                                     "countInfo" to ecommerceCountInfo
                                 ),
                                 mapOf(
-                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                         "eCommerce_Mongo_transaction_view_repository",
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                        "success"
+                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                 )
                             ) {
                                 logger.info("Records recovered from eCommerce DB successfully.")
@@ -149,17 +148,16 @@ class HelpdeskService(
                                 countInfo = ecommerceCountInfo,
                             )
                             .doOnSuccess { _ ->
-                                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
                                         "skip" to skip,
                                         "limit" to pageSize,
                                         "countInfo" to ecommerceCountInfo
                                     ),
                                     mapOf(
-                                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                             "eCommerce_Mongo_transaction_view_repository",
-                                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME
-                                            .key to "success"
+                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                     )
                                 ) {
                                     logger.info("Last page of records recovered from eCommerce DB")
@@ -207,19 +205,18 @@ class HelpdeskService(
                                     }
                             }
                             .doOnSuccess { _ ->
-                                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                                LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
                                         "eCommerce_records" to ecommerceRemainder,
                                         "pm_records" to pageSize - ecommerceRemainder,
                                     ),
                                     mapOf(
-                                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                             arrayOf(
                                                 "eCommerce_Mongo_transaction_view_repository",
                                                 "PM"
                                             ),
-                                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME
-                                            .key to "success"
+                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                     )
                                 ) {
                                     logger.info(
@@ -248,14 +245,13 @@ class HelpdeskService(
                             countInfo = pmCountInfo,
                         )
                         .doOnSuccess { _ ->
-                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
                                     "skipFromPmDB" to skipFromPmDB,
                                 ),
                                 mapOf(
-                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to "PM",
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                        "success"
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM",
+                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                 )
                             ) {
                                 logger.info("Records from PM DB recovered, Skip: {}", skipFromPmDB)

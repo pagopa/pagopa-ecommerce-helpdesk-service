@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.utils
 
-import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -33,9 +33,9 @@ class ApiKeyFilter(
         if (securedPaths.any { path.startsWith(it) }) {
             val apiKey = exchange.request.headers.getFirst("x-api-key")
             if (!isValidApiKey(apiKey)) {
-                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                LogTracingUtils.withContextDetailsMdc(
                     null,
-                    mapOf(HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to path)
+                    mapOf(LogTracingUtils.TracingEntry.EVENT_ACTION.key to path)
                 ) {
                     logger.warn("Unauthorized request for path $path - Missing or invalid API key")
                 }
@@ -60,9 +60,9 @@ class ApiKeyFilter(
                 else -> "unknown"
             }
         if (logger.isDebugEnabled) {
-            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+            LogTracingUtils.withContextDetailsMdc(
                 mapOf("apiKeyType" to apiKeyType),
-                mapOf(HelpdeskServiceTracingUtils.TracingEntry.EVENT_ACTION.key to path)
+                mapOf(LogTracingUtils.TracingEntry.EVENT_ACTION.key to path)
             ) {
                 logger.debug("Unauthorized request for path $path - Missing or invalid API key")
             }

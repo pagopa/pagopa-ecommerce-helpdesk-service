@@ -1,10 +1,10 @@
 package it.pagopa.ecommerce.helpdesk.services.v1
 
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMBulkTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.*
@@ -58,7 +58,7 @@ class PmService(
                             )
                         }
                         .doOnSuccess { _ ->
-                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
                                     "totalCount" to countInfo.totalCount().toInt(),
                                     "pageNumber" to pageNumber,
@@ -66,10 +66,9 @@ class PmService(
                                     "searchTransaction_method" to pmSearchTransactionRequestDto.type
                                 ),
                                 mapOf(
-                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                         "transactionView-mongo-repository",
-                                    HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                        "success"
+                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                 )
                             ) {
                                 logger.info("[helpDesk pm service] searchTransaction method,")
@@ -87,13 +86,13 @@ class PmService(
         return pmPaymentMethodsDataProvider
             .findResult(pmSearchPaymentMethodRequestDto)
             .doOnSuccess { _ ->
-                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                LogTracingUtils.withContextDetailsMdc(
                     mapOf(
                         "searchPaymentMethods_search_type" to pmSearchPaymentMethodRequestDto.type,
                     ),
                     mapOf(
-                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
-                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                        LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
+                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {
                     logger.info("[helpDesk pm service] searchPaymentMethod done successfully!")
@@ -120,16 +119,14 @@ class PmService(
                 pmBulkTransactionDataProvider
                     .findResult(pmSearchBulkTransactionRequestDto)
                     .doOnSuccess { _ ->
-                        HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                        LogTracingUtils.withContextDetailsMdc(
                             mapOf(
                                 "searchBulkTransaction_search_type" to
                                     pmSearchBulkTransactionRequestDto.type,
                             ),
                             mapOf(
-                                HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
-                                    "PM_database",
-                                HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                    "success"
+                                LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
+                                LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                             )
                         ) {
                             logger.info(

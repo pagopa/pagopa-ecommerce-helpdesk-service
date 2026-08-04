@@ -1,9 +1,9 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle
 
 import io.r2dbc.spi.ConnectionFactory
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.PaymentMethodDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
-import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToPaymentMethodDtoList
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
@@ -60,13 +60,11 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
                     .collectList()
                     .flatMap { results -> resultToPaymentMethodDtoList(results, searchType) }
                     .doOnSuccess {
-                        HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                        LogTracingUtils.withContextDetailsMdc(
                             mapOf("searchType" to searchType),
                             mapOf(
-                                HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                    "success",
-                                HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
-                                    "PM_database",
+                                LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                                LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
                             )
                         ) {
                             logger.info("Payment methods retrieved from PM database.")

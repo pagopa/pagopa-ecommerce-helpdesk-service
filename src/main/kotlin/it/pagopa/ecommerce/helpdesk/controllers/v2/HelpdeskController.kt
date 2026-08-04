@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v2
 
-import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.services.v2.HelpdeskService
 import it.pagopa.ecommerce.helpdesk.utils.PmProviderType
 import it.pagopa.generated.ecommerce.helpdesk.v2.api.HelpdeskApi
@@ -42,15 +42,15 @@ class HelpdeskController(
             }
             .map { ResponseEntity.ok(it) }
             .doOnSuccess { _ ->
-                HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                LogTracingUtils.withContextDetailsMdc(
                     mapOf(
                         "pageNumber" to pageNumber,
                         "pageSize" to pageSize,
                     ),
                     mapOf(
-                        HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
+                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
                             "eCommerce_Mongo_transaction_view_repository",
-                        HelpdeskServiceTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {
                     logger.info(

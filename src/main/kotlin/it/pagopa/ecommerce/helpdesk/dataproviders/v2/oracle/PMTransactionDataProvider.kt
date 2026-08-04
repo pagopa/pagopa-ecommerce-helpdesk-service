@@ -1,11 +1,11 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v2.oracle
 
 import io.r2dbc.spi.ConnectionFactory
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.ecommerce.helpdesk.mdcutilities.HelpdeskServiceTracingUtils
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.resultToTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
@@ -108,12 +108,9 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                             result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
                         .doOnNext {
-                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            LogTracingUtils.withContextDetailsMdc(
                                 null,
-                                mapOf(
-                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
-                                        "PM_database"
-                                )
+                                mapOf(LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database")
                             ) {
                                 logger.info("Total transaction found: $it")
                             }
@@ -143,12 +140,9 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         )
                         .flatMap { resultToTransactionInfoDto(it) }
                         .doOnNext {
-                            HelpdeskServiceTracingUtils.withContextDetailsMdc(
+                            LogTracingUtils.withContextDetailsMdc(
                                 mapOf("skip" to skip, "limit" to limit),
-                                mapOf(
-                                    HelpdeskServiceTracingUtils.TracingEntry.DEPENDENCY.key to
-                                        "PM_database"
-                                )
+                                mapOf(LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database")
                             ) {
                                 logger.info(
                                     "Retrieving transactions from PM database. Skipping: $skip, limit: $limit."
