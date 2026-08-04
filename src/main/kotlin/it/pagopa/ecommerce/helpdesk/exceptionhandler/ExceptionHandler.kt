@@ -37,7 +37,12 @@ class ExceptionHandler {
     /** RestApiException exception handler */
     @ExceptionHandler(RestApiException::class)
     fun handleException(e: RestApiException): ResponseEntity<ProblemJsonDto> {
-        LogTracingUtils.withErrorMdc(e) {}
+        LogTracingUtils.withErrorMdc(
+            e,
+            mapOf(LogTracingUtils.TracingEntry.ERROR_MESSAGE.key to "Exception processing request")
+        ) {
+            logger.error("Exception processing request", e)
+        }
         return ResponseEntity.status(e.httpStatus)
             .body(
                 ProblemJsonDto().status(e.httpStatus.value()).title(e.title).detail(e.description)
@@ -55,7 +60,15 @@ class ExceptionHandler {
     fun handleConfidentialDataException(
         e: ConfidentialDataException
     ): ResponseEntity<ProblemJsonDto> {
-        LogTracingUtils.withErrorMdc(e) {}
+        LogTracingUtils.withErrorMdc(
+            e,
+            mapOf(
+                LogTracingUtils.TracingEntry.ERROR_MESSAGE.key to
+                    "Exception processing encrypt/decrypt pdv request"
+            )
+        ) {
+            logger.error("Exception processing encrypt/decrypt pdv request", e)
+        }
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
             .body(
                 ProblemJsonDto()
@@ -77,7 +90,12 @@ class ExceptionHandler {
     )
     fun handleRequestValidationException(exception: Exception): ResponseEntity<ProblemJsonDto> {
         // stacktrace not logged to avoid logging of sensitive data such as mail
-        logger.error(invalidRequestDefaultMessage)
+        LogTracingUtils.withErrorMdc(
+            exception,
+            mapOf(LogTracingUtils.TracingEntry.ERROR_MESSAGE.key to invalidRequestDefaultMessage)
+        ) {
+            logger.error(invalidRequestDefaultMessage)
+        }
         val validationErrorCause =
             when (exception) {
                 is ConstraintViolationException ->
@@ -120,7 +138,14 @@ class ExceptionHandler {
     /** Handler for generic exception */
     @ExceptionHandler(Exception::class)
     fun handleGenericException(e: Exception): ResponseEntity<ProblemJsonDto> {
-        LogTracingUtils.withErrorMdc(e) {}
+        LogTracingUtils.withErrorMdc(
+            e,
+            mapOf(
+                LogTracingUtils.TracingEntry.ERROR_MESSAGE.key to "Exception processing the request"
+            )
+        ) {
+            logger.error("Exception processing the request", e)
+        }
         return ResponseEntity.internalServerError()
             .body(
                 ProblemJsonDto()
