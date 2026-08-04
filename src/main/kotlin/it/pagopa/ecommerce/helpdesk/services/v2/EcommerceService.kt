@@ -34,6 +34,7 @@ class EcommerceService(
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
+    private val logDependencyValue = "eCommerce-Mongo-transaction-view-repository"
 
     fun searchTransaction(
         pageNumber: Int,
@@ -68,8 +69,7 @@ class EcommerceService(
                         "pageSize" to pageSize,
                     ),
                     mapOf(
-                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                            "eCommerce-Mongo-transaction-view-repository",
+                        LogTracingUtils.TracingEntry.DEPENDENCY.key to logDependencyValue,
                         LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {
@@ -108,8 +108,7 @@ class EcommerceService(
                                 "searchCriteriaType" to searchCriteriaType
                             ),
                             mapOf(
-                                LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                    "eCommerce-Mongo-transaction-view-repository",
+                                LogTracingUtils.TracingEntry.DEPENDENCY.key to logDependencyValue,
                                 LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                             )
                         ) {
@@ -129,8 +128,7 @@ class EcommerceService(
             LogTracingUtils.withContextDetailsMdc(
                 null,
                 mapOf(
-                    LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                        "eCommerce-Mongo-transaction-view-repository",
+                    LogTracingUtils.TracingEntry.DEPENDENCY.key to logDependencyValue,
                     LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                 )
             ) {

@@ -30,6 +30,7 @@ class HelpdeskService(
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
+    private val logDependencyName = "transactionView-mongo-repository"
 
     fun searchTransaction(
         pageNumber: Int,
@@ -112,7 +113,7 @@ class HelpdeskService(
                                 ),
                                 mapOf(
                                     LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                        "transactionView-mongo-repository",
+                                        logDependencyName,
                                     LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                 )
                             ) {
@@ -145,7 +146,7 @@ class HelpdeskService(
                                     ),
                                     mapOf(
                                         LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                            "transactionView-mongo-repository",
+                                            logDependencyName,
                                         LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                     )
                                 ) {
@@ -200,7 +201,7 @@ class HelpdeskService(
                                     ),
                                     mapOf(
                                         LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                            "transactionView-mongo-repository",
+                                            logDependencyName,
                                         LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                     )
                                 ) {
