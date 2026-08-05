@@ -142,20 +142,15 @@ class EcommerceService(
             .doOnSuccess { _ ->
                 LogTracingUtils.withContextDetailsMdc(
                     mapOf(
-                        "searchRequest" to searchRequest.source,
-                        "pageNumber" to pageNumber,
-                        "pageSize" to pageSize
-                    ),
-                    mapOf(
+                        "search_request" to searchRequest.source,
+                        "page_number" to pageNumber,
+                        "page_size" to pageSize,
                         LogTracingUtils.TracingEntry.DEPENDENCY.key to
                             "dead-letter-Mongo-repository",
-                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
-                    )
+                    ),
+                    mapOf(LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success")
                 ) {
-                    logger.info(
-                        "[helpDesk ecommerce service] search dead letter events, type: {} completed successfully",
-                        searchRequest.source
-                    )
+                    logger.info("search dead letter events done")
                 }
             }
     }
@@ -220,11 +215,11 @@ class EcommerceService(
             .doOnSuccess { _ ->
                 LogTracingUtils.withContextDetailsMdc(
                     mapOf(
-                        "transactionId" to transactionId,
+                        "transaction_id" to transactionId,
+                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
+                            arrayOf("NPG", "TransactionViewReposity")
                     ),
                     mapOf(
-                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                            arrayOf("NPG", "TransactionViewReposity"),
                         LogTracingUtils.TracingEntry.EVENT_ACTION.key to
                             arrayOf("NpgClient-getOrder"),
                         LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
@@ -336,14 +331,14 @@ class EcommerceService(
             .doOnSuccess { _ ->
                 LogTracingUtils.withContextDetailsMdc(
                     mapOf(
-                        "transactionId" to transactionId,
-                        "orderId" to orderId,
-                        "pspId" to pspId,
-                        "correlationId" to correlationId,
-                        "paymentMethod.serviceName" to paymentMethod.serviceName
+                        "transaction_id" to transactionId,
+                        "order_id" to orderId,
+                        "psp_id" to pspId,
+                        "correlation_id" to correlationId,
+                        "payment_method_service_name" to paymentMethod.serviceName,
+                        LogTracingUtils.TracingEntry.DEPENDENCY.key to "NPG"
                     ),
                     mapOf(
-                        LogTracingUtils.TracingEntry.DEPENDENCY.key to "NPG",
                         LogTracingUtils.TracingEntry.EVENT_ACTION.key to "NpgClient-getOrder",
                         LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
@@ -375,9 +370,9 @@ class EcommerceService(
                     .doOnSuccess { _ ->
                         LogTracingUtils.withContextDetailsMdc(
                             mapOf(
-                                "totalCount" to totalCount,
+                                "total_count" to totalCount,
                                 "skip" to skip,
-                                "pageSize" to pageSize,
+                                "page_size" to pageSize,
                             )
                         ) {
                             logger.info("Search transactions with pagination successfully done")

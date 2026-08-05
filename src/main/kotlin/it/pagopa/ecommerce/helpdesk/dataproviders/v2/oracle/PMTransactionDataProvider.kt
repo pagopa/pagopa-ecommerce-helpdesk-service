@@ -141,12 +141,13 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         .flatMap { resultToTransactionInfoDto(it) }
                         .doOnNext {
                             LogTracingUtils.withContextDetailsMdc(
-                                mapOf("skip" to skip, "limit" to limit),
-                                mapOf(LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database")
-                            ) {
-                                logger.info(
-                                    "Retrieving transactions from PM database. Skipping: $skip, limit: $limit."
+                                mapOf(
+                                    "skip" to skip,
+                                    "limit" to limit,
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database"
                                 )
+                            ) {
+                                logger.info("Transactions from PM database retrieved.")
                             }
                         }
                 },

@@ -72,36 +72,33 @@ class DeadLetterDataProvider(
                         .doOnSuccess {
                             LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
-                                    "startDate" to startDate,
-                                    "endDate" to endDate,
-                                    "eCommerceStatuses" to eCommerceStatuses,
-                                    "npgStatuses" to npgStatuses,
-                                    "excludedPaymentGateway" to excludedPaymentGateway
+                                    "deadLetter_search_event_source_type" to source,
+                                    "start_date" to startDate,
+                                    "end_date" to endDate,
+                                    "ecommerce_statuses" to eCommerceStatuses,
+                                    "npg_statuses" to npgStatuses,
+                                    "excluded_payment_gateway" to excludedPaymentGateway,
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        "deadLetter_event_repository"
                                 ),
                                 mapOf(
                                     LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                        "deadLetterEvent_repository",
                                 )
                             ) {
                                 logger.info(
-                                    "Counted all dead letter events in time range {} - {}, with eCommerceStatus not in {}, npgStatus not in {} and paymentGateway not in {}",
-                                    startDate,
-                                    endDate,
-                                    eCommerceStatuses,
-                                    npgStatuses,
-                                    excludedPaymentGateway
+                                    "Counted all dead letter.",
                                 )
                             }
                         }
                 } else {
                     deadLetterRepository.count().doOnSuccess {
                         LogTracingUtils.withContextDetailsMdc(
-                            null,
+                            mapOf(
+                                LogTracingUtils.TracingEntry.DEPENDENCY.key to
+                                    "deadLetter_event_repository",
+                            ),
                             mapOf(
                                 LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                    "deadLetterEvent_repository",
                             )
                         ) {
                             logger.info("Counted all dead letter events")
@@ -127,28 +124,20 @@ class DeadLetterDataProvider(
                         .doOnSuccess {
                             LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
-                                    "queueName" to queueName,
-                                    "startDate" to startDate,
-                                    "endDate" to endDate,
-                                    "eCommerceStatuses" to eCommerceStatuses,
-                                    "npgStatuses" to npgStatuses,
-                                    "excludedPaymentGateway" to excludedPaymentGateway
+                                    "queue_name" to queueName,
+                                    "start_date" to startDate,
+                                    "end_date" to endDate,
+                                    "ecommerce_statuses" to eCommerceStatuses,
+                                    "npg_statuses" to npgStatuses,
+                                    "excluded_payment_gateway" to excludedPaymentGateway,
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to
+                                        "deadLetter_event_repository"
                                 ),
                                 mapOf(
                                     LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                        "deadLetterEvent_repository",
                                 )
                             ) {
-                                logger.info(
-                                    "Counted all dead letter events for queue {} in time range {} - {}, with eCommerceStatus not in {}, npgStatus not in {} and paymentGateway not in {}",
-                                    queueName,
-                                    startDate,
-                                    endDate,
-                                    eCommerceStatuses,
-                                    npgStatuses,
-                                    excludedPaymentGateway
-                                )
+                                logger.info("Counted all dead letter events")
                             }
                         }
                 } else {
@@ -156,15 +145,15 @@ class DeadLetterDataProvider(
                     deadLetterRepository.countDeadLetterEventForQueue(queueName).doOnSuccess {
                         LogTracingUtils.withContextDetailsMdc(
                             mapOf(
-                                "queueName" to queueName,
+                                "queue_name" to queueName,
+                                LogTracingUtils.TracingEntry.DEPENDENCY.key to
+                                    "deadLetter_event_repository"
                             ),
                             mapOf(
                                 LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                    "deadLetterEvent_repository",
                             )
                         ) {
-                            logger.info("Counting all dead letter events for queue {}", queueName)
+                            logger.info("Counted all dead letter events")
                         }
                     }
                 }
@@ -216,26 +205,19 @@ class DeadLetterDataProvider(
                             .doOnNext {
                                 LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
-                                        "startDate" to startDate,
-                                        "endDate" to endDate,
-                                        "eCommerceStatuses" to eCommerceStatuses,
-                                        "npgStatuses" to npgStatuses,
-                                        "excludedPaymentGateway" to excludedPaymentGateway
+                                        "start_date" to startDate,
+                                        "end_date" to endDate,
+                                        "ecommerce_statuses" to eCommerceStatuses,
+                                        "npg_statuses" to npgStatuses,
+                                        "excluded_payment_gateway" to excludedPaymentGateway,
+                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
+                                            "deadLetter_event_repository"
                                     ),
                                     mapOf(
-                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                            "deadLetterEvent_repository",
+                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                     )
                                 ) {
-                                    logger.info(
-                                        "Finding all dead letter events in time range {} - {} with eCommerceStatus not in {} and npgStatus not in {} and paymentGateway not in {}",
-                                        startDate,
-                                        endDate,
-                                        eCommerceStatuses,
-                                        npgStatuses,
-                                        excludedPaymentGateway
-                                    )
+                                    logger.info("Dead letter events find done")
                                 }
                             }
                     } else {
@@ -250,14 +232,14 @@ class DeadLetterDataProvider(
                                     mapOf(
                                         "skip" to skip,
                                         "limit" to limit,
+                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
+                                            "deadLetter_event_repository"
                                     ),
                                     mapOf(
-                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                            "deadLetterEvent_repository",
+                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                     )
                                 ) {
-                                    logger.info("All dead letter events found.")
+                                    logger.info("Dead letter events find done")
                                 }
                             }
                     }
@@ -283,28 +265,20 @@ class DeadLetterDataProvider(
                             .doOnComplete {
                                 LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
-                                        "queueName" to queueName,
-                                        "startDate" to startDate,
-                                        "endDate" to endDate,
-                                        "eCommerceStatuses" to eCommerceStatuses,
-                                        "npgStatuses" to npgStatuses,
-                                        "excludedPaymentGateway" to excludedPaymentGateway
+                                        "queue_name" to queueName,
+                                        "start_date" to startDate,
+                                        "end_date" to endDate,
+                                        "ecommerce_statuses" to eCommerceStatuses,
+                                        "npg_statuses" to npgStatuses,
+                                        "excluded_payment_gateway" to excludedPaymentGateway,
+                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
+                                            "deadLetter_event_repository"
                                     ),
                                     mapOf(
-                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                            "deadLetterEvent_repository",
+                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                     )
                                 ) {
-                                    logger.info(
-                                        "Finding all dead letter events for queue {} in time range {} - {} with eCommerceStatus not in {}, npgStatus not in {} and paymentGateway in {}",
-                                        queueName,
-                                        startDate,
-                                        endDate,
-                                        eCommerceStatuses,
-                                        npgStatuses,
-                                        excludedPaymentGateway
-                                    )
+                                    logger.info("Dead letter events find done")
                                 }
                             }
                     } else {
@@ -317,20 +291,17 @@ class DeadLetterDataProvider(
                             .doOnComplete {
                                 LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
-                                        "queueName" to queueName,
+                                        "queue_name" to queueName,
                                         "skip" to skip,
                                         "limit" to limit,
+                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
+                                            "deadLetter_event_repository"
                                     ),
                                     mapOf(
-                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                            "deadLetterEvent_repository",
+                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                     )
                                 ) {
-                                    logger.info(
-                                        "All dead letter events for queue name {} found",
-                                        queueName
-                                    )
+                                    logger.info("Dead letter events find done")
                                 }
                             }
                     }

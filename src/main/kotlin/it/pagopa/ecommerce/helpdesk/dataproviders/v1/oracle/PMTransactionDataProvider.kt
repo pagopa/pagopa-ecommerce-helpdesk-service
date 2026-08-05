@@ -133,10 +133,12 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         }
                         .doOnNext {
                             LogTracingUtils.withContextDetailsMdc(
-                                null,
+                                mapOf(
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
+                                    "total_transaction_found" to it
+                                ),
                                 mapOf(
                                     LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
                                     LogTracingUtils.TracingEntry.EVENT_ACTION.key to
                                         "getTotalResultCount"
                                 )
@@ -170,17 +172,17 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         .doOnNext {
                             LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
-                                    "startDate" to startDate.toString(),
-                                    "endDate" to endDate.toString()
+                                    "start_date" to startDate.toString(),
+                                    "end_date" to endDate.toString(),
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
                                 ),
                                 mapOf(
                                     LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
                                     LogTracingUtils.TracingEntry.EVENT_ACTION.key to
                                         "getTotalResultCountFromDateTimeRange"
                                 )
                             ) {
-                                logger.info("Total transaction found: $it")
+                                logger.info("Total transaction found")
                             }
                         }
                 },
@@ -209,10 +211,13 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         .flatMap { resultToTransactionInfoDto(it) }
                         .doOnComplete {
                             LogTracingUtils.withContextDetailsMdc(
-                                mapOf("skip" to skip, "limit" to limit),
+                                mapOf(
+                                    "skip" to skip,
+                                    "limit" to limit,
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database"
+                                ),
                                 mapOf(
                                     LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
                                     LogTracingUtils.TracingEntry.EVENT_ACTION.key to
                                         "getResultSetFromPaginatedQuery"
                                 )
@@ -251,10 +256,13 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         .flatMap { result -> resultToTransactionInfoDto(result) }
                         .doOnComplete {
                             LogTracingUtils.withContextDetailsMdc(
-                                mapOf("skip" to skip, "limit" to limit),
+                                mapOf(
+                                    "skip" to skip,
+                                    "limit" to limit,
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database"
+                                ),
                                 mapOf(
                                     LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
                                     LogTracingUtils.TracingEntry.EVENT_ACTION.key to
                                         "getResultSetFromDateTimeRangeQuery"
                                 )

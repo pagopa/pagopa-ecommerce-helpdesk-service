@@ -78,16 +78,14 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
                             LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
                                     "type" to type,
-                                    "startTransactionId" to startTransactionId,
-                                    "endTransactionId" to endTransactionId
+                                    "start_transactionId" to startTransactionId,
+                                    "end_transactionId" to endTransactionId,
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database"
                                 ),
-                                mapOf(
-                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
-                                )
+                                mapOf(LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success")
                             ) {
                                 logger.info(
-                                    "Transactions from PM database given transactionId range [$startTransactionId, $endTransactionId]"
+                                    "Transactions from PM database from a given transactionId range processed."
                                 )
                             }
                         }
@@ -106,14 +104,12 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
                 if (results.isEmpty()) {
                     LogTracingUtils.withContextDetailsMdc(
                         mapOf(
-                            "startTransactionId" to startTransactionId,
-                            "endTransactionId" to endTransactionId
+                            "start_transactionId" to startTransactionId,
+                            "end_transactionId" to endTransactionId
                         ),
                         null
                     ) {
-                        logger.warn(
-                            "No results found for transactionId range [$startTransactionId, $endTransactionId]."
-                        )
+                        logger.warn("No results found for a given transactionId range.")
                     }
                     Mono.error(NoResultFoundException(type))
                 } else {

@@ -83,15 +83,17 @@ class HelpdeskService(
             val skip = pageNumber * pageSize
 
             if (logger.isDebugEnabled) {
-                LogTracingUtils.withContextDetailsMdc(null, null) {
-                    logger.debug(
-                        "Requested page number: {}, page size: {}, records to be skipped: {}. Total records found into ecommerce DB: {}, PM DB: {}",
-                        pageNumber,
-                        pageSize,
-                        skip,
-                        ecommerceCountInfo,
-                        pmCountInfo
-                    )
+                LogTracingUtils.withContextDetailsMdc(
+                    mapOf(
+                        "page_number" to pageNumber,
+                        "page_size" to pageSize,
+                        "skip" to skip,
+                        "ecommerce_count_info" to ecommerceCountInfo,
+                        "pm_count_info" to pmCountInfo
+                    ),
+                    null
+                ) {
+                    logger.debug("Requested page number details")
                 }
             }
 
@@ -119,13 +121,11 @@ class HelpdeskService(
                                 mapOf(
                                     "skip" to skip,
                                     "limit" to pageSize,
-                                    "countInfo" to ecommerceCountInfo
-                                ),
-                                mapOf(
+                                    "count_info" to ecommerceCountInfo,
                                     LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                        "eCommerce_Mongo_transaction_view_repository",
-                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
-                                )
+                                        "eCommerce_Mongo_transaction_view_repository"
+                                ),
+                                mapOf(LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success")
                             ) {
                                 logger.info("Records recovered from eCommerce DB successfully.")
                             }
@@ -152,11 +152,11 @@ class HelpdeskService(
                                     mapOf(
                                         "skip" to skip,
                                         "limit" to pageSize,
-                                        "countInfo" to ecommerceCountInfo
+                                        "count_info" to ecommerceCountInfo,
+                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
+                                            "eCommerce_Mongo_transaction_view_repository"
                                     ),
                                     mapOf(
-                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                            "eCommerce_Mongo_transaction_view_repository",
                                         LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                     )
                                 ) {
@@ -209,20 +209,18 @@ class HelpdeskService(
                                     mapOf(
                                         "eCommerce_records" to ecommerceRemainder,
                                         "pm_records" to pageSize - ecommerceRemainder,
-                                    ),
-                                    mapOf(
                                         LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                             arrayOf(
                                                 "eCommerce_Mongo_transaction_view_repository",
                                                 "PM"
                                             ),
+                                    ),
+                                    mapOf(
                                         LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                     )
                                 ) {
                                     logger.info(
-                                        "Last page from eCommerce DB and first page from PM (partial page) recovered.Records to recover from eCommerce: {}, from PM: {}",
-                                        ecommerceRemainder,
-                                        pageSize - ecommerceRemainder
+                                        "Last page from eCommerce DB and first page from PM (partial page) recovered"
                                     )
                                 }
                             }
@@ -247,14 +245,12 @@ class HelpdeskService(
                         .doOnSuccess { _ ->
                             LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
-                                    "skipFromPmDB" to skipFromPmDB,
+                                    "skip_from_PM_db" to skipFromPmDB,
+                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_db",
                                 ),
-                                mapOf(
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM",
-                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
-                                )
+                                mapOf(LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success")
                             ) {
-                                logger.info("Records from PM DB recovered, Skip: {}", skipFromPmDB)
+                                logger.info("Records from PM DB recovered")
                             }
                         }
                         .onErrorResume(InvalidSearchCriteriaException::class.java) {

@@ -69,20 +69,13 @@ class HelpdeskService(
             if (logger.isDebugEnabled) {
                 LogTracingUtils.withContextDetailsMdc(
                     mapOf(
-                        "ecommerceCountInfo" to ecommerceCountInfo,
+                        "ecommerce_count_info" to ecommerceCountInfo,
                         "pmCountInfo" to pmCountInfo,
-                        "pageNumber" to pageNumber,
-                        "pageSize" to pageSize
+                        "page_number" to pageNumber,
+                        "page_size" to pageSize
                     )
                 ) {
-                    logger.debug(
-                        "Requested page number: {}, page size: {}, records to be skipped: {}. Total records found into ecommerce DB: {}, PM DB: {}",
-                        pageNumber,
-                        pageSize,
-                        skip,
-                        ecommerceCountInfo,
-                        pmCountInfo
-                    )
+                    logger.debug("Requested page number details dump")
                 }
             }
             val (ecommerceTotalPages, ecommerceRemainder) =
@@ -106,16 +99,14 @@ class HelpdeskService(
                         .doOnSuccess { _ ->
                             LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
-                                    "ecommerceCountInfo" to ecommerceCountInfo,
-                                    "pageNumber" to pageNumber,
-                                    "pageSize" to pageSize,
-                                    "skip" to skip
-                                ),
-                                mapOf(
+                                    "ecommerce_count_info" to ecommerceCountInfo,
+                                    "page_number" to pageNumber,
+                                    "page_size" to pageSize,
+                                    "skip" to skip,
                                     LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                         logDependencyName,
-                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
-                                )
+                                ),
+                                mapOf(LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success")
                             ) {
                                 logger.info("Record recovered from eCommerce DB.")
                             }
@@ -139,14 +130,14 @@ class HelpdeskService(
                             .doOnSuccess { _ ->
                                 LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
-                                        "ecommerceCountInfo" to ecommerceCountInfo,
-                                        "pageNumber" to pageNumber,
-                                        "pageSize" to pageSize,
-                                        "skip" to skip
-                                    ),
-                                    mapOf(
+                                        "ecommerce_count_info" to ecommerceCountInfo,
+                                        "page_number" to pageNumber,
+                                        "page_size" to pageSize,
+                                        "skip" to skip,
                                         LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                             logDependencyName,
+                                    ),
+                                    mapOf(
                                         LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                     )
                                 ) {
@@ -191,17 +182,17 @@ class HelpdeskService(
                             .doOnSuccess { _ ->
                                 LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
-                                        "ecommerceCountInfo" to ecommerceCountInfo,
+                                        "ecommerce_count_info" to ecommerceCountInfo,
                                         "pmCountInfo" to pmCountInfo,
-                                        "pageNumber" to pageNumber,
-                                        "pageSize" to pageSize,
+                                        "page_number" to pageNumber,
+                                        "page_size" to pageSize,
                                         "skip" to skip,
                                         "records_from_eCommerce" to ecommerceRemainder,
-                                        "PM" to pageSize - ecommerceRemainder,
-                                    ),
-                                    mapOf(
+                                        "records_from_PM" to pageSize - ecommerceRemainder,
                                         LogTracingUtils.TracingEntry.DEPENDENCY.key to
                                             logDependencyName,
+                                    ),
+                                    mapOf(
                                         LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                                     )
                                 ) {
@@ -227,9 +218,9 @@ class HelpdeskService(
                         .doOnSuccess { _ ->
                             LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
-                                    "skipFromPmDB" to skipFromPmDB,
-                                    "pmCountInfo" to pmCountInfo,
-                                    "pageSize" to pageSize,
+                                    "skip_from_PM_db" to skipFromPmDB,
+                                    "PM_count_info" to pmCountInfo,
+                                    "page_size" to pageSize,
                                 ),
                                 mapOf(
                                     LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM",

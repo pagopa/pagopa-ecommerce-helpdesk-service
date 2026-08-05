@@ -46,12 +46,10 @@ class HelpdeskController(
                     mapOf(
                         "pageNumber" to pageNumber,
                         "pageSize" to pageSize,
-                    ),
-                    mapOf(
                         LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                            "eCommerce_Mongo_transaction_view_repository",
-                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
-                    )
+                            "eCommerce_Mongo_transaction_view_repository"
+                    ),
+                    mapOf(LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success")
                 ) {
                     logger.info(
                         "[HelpDesk V2 controller] SearchTransaction using ${if (searchPmInEcommerceHistory) "v2 (ecommerce history db)" else "v1 (pm legacy db)"} search"
