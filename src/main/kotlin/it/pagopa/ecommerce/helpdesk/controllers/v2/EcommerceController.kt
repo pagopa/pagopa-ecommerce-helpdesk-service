@@ -38,14 +38,14 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
             .doOnSuccess { _ ->
                 LogTracingUtils.withContextDetailsMdc(
                     mapOf(
-                        "pageNumber" to pageNumber,
-                        "pageSize" to pageSize,
-                        "ecommerceSearchTransactionRequestDto" to
+                        "page_number" to pageNumber,
+                        "page_size" to pageSize,
+                        "ecommerce_search_transaction_request" to
                             ecommerceSearchTransactionRequestDto
                     ),
                     mapOf(
                         LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                            "eCommerce-Mongo-event-store-repository",
+                            "eCommerce_mongo_event_store_repository",
                         LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
                     )
                 ) {

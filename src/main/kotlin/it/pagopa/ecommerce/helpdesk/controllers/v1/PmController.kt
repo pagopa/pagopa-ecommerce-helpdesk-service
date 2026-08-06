@@ -39,8 +39,8 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
             .doOnSuccess { _ ->
                 LogTracingUtils.withContextDetailsMdc(
                     mapOf(
-                        "pageNumber" to pageNumber,
-                        "pageSize" to pageSize,
+                        "page_number" to pageNumber,
+                        "page_size" to pageSize,
                     ),
                     mapOf(
                         LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",

@@ -60,10 +60,11 @@ class PmService(
                         .doOnSuccess { _ ->
                             LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
-                                    "totalCount" to countInfo.totalCount().toInt(),
-                                    "pageNumber" to pageNumber,
-                                    "pageSize" to pageSize,
-                                    "searchTransaction_method" to pmSearchTransactionRequestDto.type
+                                    "total_count" to countInfo.totalCount().toInt(),
+                                    "page_number" to pageNumber,
+                                    "page_size" to pageSize,
+                                    "search_transaction_method" to
+                                        pmSearchTransactionRequestDto.type
                                 ),
                                 mapOf(
                                     LogTracingUtils.TracingEntry.DEPENDENCY.key to

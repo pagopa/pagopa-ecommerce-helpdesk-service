@@ -44,10 +44,10 @@ class HelpdeskController(
             .doOnSuccess { _ ->
                 LogTracingUtils.withContextDetailsMdc(
                     mapOf(
-                        "pageNumber" to pageNumber,
-                        "pageSize" to pageSize,
+                        "page_number" to pageNumber,
+                        "page_size" to pageSize,
                         LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                            "eCommerce_Mongo_transaction_view_repository"
+                            "eCommerce_mongo_transaction_view_repository"
                     ),
                     mapOf(LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success")
                 ) {

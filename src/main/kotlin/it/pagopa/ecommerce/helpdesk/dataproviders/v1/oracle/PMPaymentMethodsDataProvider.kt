@@ -61,7 +61,7 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
                     .flatMap { results -> resultToPaymentMethodDtoList(results, searchType) }
                     .doOnSuccess {
                         LogTracingUtils.withContextDetailsMdc(
-                            mapOf("searchType" to searchType),
+                            mapOf("search_type" to searchType),
                             mapOf(
                                 LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
                                 LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
