@@ -68,8 +68,7 @@ class EcommerceService(
             .doOnSuccess { _ ->
                 LogTracingUtils.withContextDetailsMdc(
                     mapOf(
-                        "ecommerceSearch_transactionRequest_type" to
-                            ecommerceSearchTransactionRequestDto.type,
+                        "search_criteria" to ecommerceSearchTransactionRequestDto.type,
                         "page_number" to pageNumber,
                         "page_size" to pageSize
                     ),

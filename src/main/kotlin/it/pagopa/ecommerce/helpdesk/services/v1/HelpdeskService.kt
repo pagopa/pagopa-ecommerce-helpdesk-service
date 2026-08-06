@@ -70,7 +70,7 @@ class HelpdeskService(
                 LogTracingUtils.withContextDetailsMdc(
                     mapOf(
                         "ecommerce_count_info" to ecommerceCountInfo,
-                        "pmCountInfo" to pmCountInfo,
+                        "pm_count_info" to pmCountInfo,
                         "page_number" to pageNumber,
                         "page_size" to pageSize
                     )
@@ -183,7 +183,7 @@ class HelpdeskService(
                                 LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
                                         "ecommerce_count_info" to ecommerceCountInfo,
-                                        "pmCountInfo" to pmCountInfo,
+                                        "pm_count_info" to pmCountInfo,
                                         "page_number" to pageNumber,
                                         "page_size" to pageSize,
                                         "skip" to skip,

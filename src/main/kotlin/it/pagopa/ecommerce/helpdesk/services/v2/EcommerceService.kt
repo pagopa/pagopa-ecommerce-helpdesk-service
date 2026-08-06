@@ -65,8 +65,8 @@ class EcommerceService(
             .doOnSuccess { _ ->
                 LogTracingUtils.withContextDetailsMdc(
                     mapOf(
-                        "pageNumber" to pageNumber,
-                        "pageSize" to pageSize,
+                        "page_number" to pageNumber,
+                        "page_size" to pageSize,
                     ),
                     mapOf(
                         LogTracingUtils.TracingEntry.DEPENDENCY.key to logDependencyValue,
@@ -101,11 +101,11 @@ class EcommerceService(
                     .doOnSuccess { _ ->
                         LogTracingUtils.withContextDetailsMdc(
                             mapOf(
-                                "pageNumber" to pageNumber,
-                                "pageSize" to pageSize,
-                                "countInfo" to countInfo,
+                                "page_number" to pageNumber,
+                                "page_size" to pageSize,
+                                "count_info" to countInfo,
                                 "skip" to skip,
-                                "searchCriteriaType" to searchCriteriaType
+                                "search_criteria" to searchCriteriaType
                             ),
                             mapOf(
                                 LogTracingUtils.TracingEntry.DEPENDENCY.key to logDependencyValue,

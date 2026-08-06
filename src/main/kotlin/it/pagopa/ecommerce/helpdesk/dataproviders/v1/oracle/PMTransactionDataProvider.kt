@@ -135,7 +135,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                             LogTracingUtils.withContextDetailsMdc(
                                 mapOf(
                                     LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
-                                    "total_transaction_found" to it
+                                    "transactions_count" to it
                                 ),
                                 mapOf(
                                     LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
@@ -143,7 +143,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                                         "getTotalResultCount"
                                 )
                             ) {
-                                logger.info("Total transaction found: $it")
+                                logger.info("Count query executed")
                             }
                         }
                 },
@@ -174,6 +174,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                                 mapOf(
                                     "start_date" to startDate.toString(),
                                     "end_date" to endDate.toString(),
+                                    "transactions_count" to it,
                                     LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
                                 ),
                                 mapOf(
@@ -182,7 +183,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                                         "getTotalResultCountFromDateTimeRange"
                                 )
                             ) {
-                                logger.info("Total transaction found")
+                                logger.info("Count query executed")
                             }
                         }
                 },

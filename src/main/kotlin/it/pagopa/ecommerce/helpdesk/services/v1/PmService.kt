@@ -122,8 +122,7 @@ class PmService(
                     .doOnSuccess { _ ->
                         LogTracingUtils.withContextDetailsMdc(
                             mapOf(
-                                "searchBulkTransaction_search_type" to
-                                    pmSearchBulkTransactionRequestDto.type,
+                                "search_criteria" to pmSearchBulkTransactionRequestDto.type,
                             ),
                             mapOf(
                                 LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
