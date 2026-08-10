@@ -1,6 +1,8 @@
 # OpenAPI ruleset, replaces Rate My OpenAPI
 # Rationale in the RFC "Linter OpenAPI: dismissione di Rate My OpenAPI".
-# The gate fails on errors only: warnings are reported, info never blocks a PR.
+# Severity is the gate: a rule that should not block a PR is downgraded here by name
+# and with its reason, rather than absorbed by a numeric threshold. Errors and warnings
+# block by default (fail_severity), info is reported but never does.
 extends:
   - [spectral:oas, recommended]          # base OpenAPI rules
   - "@stoplight/spectral-owasp-ruleset"  # OWASP rules, not bundled with Spectral
