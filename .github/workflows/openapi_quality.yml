@@ -38,4 +38,4 @@ jobs:
         uses: ./.github/actions/openapi-lint
         with:
           spec_path: ${{ matrix.spec.path }}
-          fail_on_violation: false
+          fail_on_violation: true
