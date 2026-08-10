@@ -1,0 +1,61 @@
+name: OpenAPI lint
+description: "Lint an OpenAPI spec with Spectral and fail the job when findings exceed the given thresholds"
+
+inputs:
+  spec_path:
+    required: true
+    description: Path to the OpenAPI spec to lint, relative to the repository root
+  ruleset:
+    required: false
+    default: ".spectral.yaml"
+    description: Path to the Spectral ruleset, relative to the repository root
+  max_errors:
+    required: false
+    default: "0"
+    description: Maximum number of error findings tolerated before the job fails
+  max_warnings:
+    required: false
+    default: "0"
+    description: Maximum number of warning findings tolerated before the job fails
+  fail_on_violation:
+    required: false
+    default: "true"
+    description: >
+      Fail the job when a threshold is exceeded. Set to false to run in report-only mode.
+      A lint that cannot run at all fails the job regardless, since it is a configuration
+      error rather than a finding.
+  spectral_version:
+    required: false
+    default: "6.16.3"
+    description: Version of @stoplight/spectral-cli to install
+  owasp_ruleset_version:
+    required: false
+    default: "2.0.1"
+    description: Version of @stoplight/spectral-owasp-ruleset to install
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Spectral and the OWASP ruleset
+      shell: bash
+      env:
+        RULESET: ${{ inputs.ruleset }}
+        SPECTRAL_VERSION: ${{ inputs.spectral_version }}
+        OWASP_RULESET_VERSION: ${{ inputs.owasp_ruleset_version }}
+      run: |
+        # Spectral resolves the npm packages a ruleset extends from the directory of the
+        # ruleset file itself, and these repositories have no package.json, so the
+        # packages are installed there rather than in the working directory.
+        npm install --no-save --no-package-lock --prefix "$(dirname "$RULESET")" \
+          "@stoplight/spectral-cli@${SPECTRAL_VERSION}" \
+          "@stoplight/spectral-owasp-ruleset@${OWASP_RULESET_VERSION}"
+
+    - name: Lint ${{ inputs.spec_path }}
+      shell: bash
+      env:
+        SPEC_PATH: ${{ inputs.spec_path }}
+        RULESET: ${{ inputs.ruleset }}
+        MAX_ERRORS: ${{ inputs.max_errors }}
+        MAX_WARNINGS: ${{ inputs.max_warnings }}
+        FAIL_ON_VIOLATION: ${{ inputs.fail_on_violation }}
+      run: bash "${{ github.action_path }}/openapi-lint.sh"
