@@ -1,10 +1,10 @@
 name: OpenAPI Quality Check
 
-# this action runs only when the OpenAPI specs, the ruleset or the check itself change
+# this action runs only when the OpenAPI specs, the ruleset or the check itself change.
+# It runs on pull requests against any base branch, not only main, so that a stacked
+# pull request is checked before the branch below it has merged.
 on:
   pull_request:
-    branches:
-      - main
     paths:
       - 'api-spec/**/*.yaml'
       - 'api-spec/**/*.yml'
