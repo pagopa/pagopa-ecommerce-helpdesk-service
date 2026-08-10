@@ -20,6 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     name: OpenAPI lint
     strategy:
+      # one failing spec must not cancel the others: without this the specs after the
+      # first failure are never linted, and their findings surface one push at a time
+      fail-fast: false
       matrix:
         spec:
           - path: 'api-spec/v1/openapi.yaml'
