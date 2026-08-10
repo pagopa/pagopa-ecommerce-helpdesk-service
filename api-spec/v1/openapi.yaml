@@ -10,7 +10,7 @@ info:
     name: EUPL-1.2
     url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
 servers:
-  - url: https://{host}
+  - url: http://{host}
     x-internal: true
     variables:
       host:
@@ -477,6 +477,7 @@ components:
   schemas:
     ProblemJson:
       type: object
+      additionalProperties: true
       properties:
         type:
           type: string
