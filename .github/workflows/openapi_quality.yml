@@ -1,8 +1,6 @@
 name: OpenAPI Quality Check
 
-# this action runs only when the OpenAPI specs, the ruleset or the check itself change.
-# It runs on pull requests against any base branch, not only main, so that a stacked
-# pull request is checked before the branch below it has merged.
+# runs when the specs, the ruleset or the check itself change, on any base branch
 on:
   pull_request:
     paths:
@@ -32,10 +30,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-      # Report-only: findings are annotated on the pull request but never fail the job.
-      # The specs already lint clean at zero errors and zero warnings, so this period is
-      # to observe the check on real pull requests before the gate is switched on, which
-      # happens when the action moves to pagopa/github-actions-template.
+      # report-only until the action moves to github-actions-template
       - name: OpenAPI lint - ${{ matrix.spec.version }}
         uses: ./.github/actions/openapi-lint
         with:
