@@ -53,9 +53,12 @@ runs:
     - name: Lint ${{ inputs.spec_path }}
       shell: bash
       env:
+        # Every value reaches the script as an environment variable and none is
+        # interpolated into the script itself, so nothing can be spliced into the shell.
+        ACTION_PATH: ${{ github.action_path }}
         SPEC_PATH: ${{ inputs.spec_path }}
         RULESET: ${{ inputs.ruleset }}
         MAX_ERRORS: ${{ inputs.max_errors }}
         MAX_WARNINGS: ${{ inputs.max_warnings }}
         FAIL_ON_VIOLATION: ${{ inputs.fail_on_violation }}
-      run: bash "${{ github.action_path }}/openapi-lint.sh"
+      run: bash "${ACTION_PATH}/openapi-lint.sh"
