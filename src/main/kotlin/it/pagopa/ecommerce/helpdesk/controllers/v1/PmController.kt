@@ -37,18 +37,16 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
             }
             .map { ResponseEntity.ok(it) }
             .doOnSuccess { _ ->
-                LogTracingUtils.withContextDetailsMdc(
-                    mapOf(
-                        "page_number" to pageNumber,
-                        "page_size" to pageSize,
-                    ),
-                    mapOf(
-                        LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
-                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .details(
+                        mapOf(
+                            "page_number" to pageNumber.toString(),
+                            "page_size" to pageSize.toString(),
+                        )
                     )
-                ) {
-                    logger.info("[HelpDesk controller] pmSearchTransaction done!")
-                }
+                    .dependency("PM_database")
+                    .logInfo(logger, "[HelpDesk controller] pmSearchTransaction done!")
             }
     }
 
@@ -60,15 +58,10 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
             .flatMap { pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = it) }
             .map { ResponseEntity.ok(it) }
             .doOnSuccess { _ ->
-                LogTracingUtils.withContextDetailsMdc(
-                    null,
-                    mapOf(
-                        LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
-                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
-                    )
-                ) {
-                    logger.info("[HelpDesk controller] pmSearchPaymentMethod done!")
-                }
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .dependency("PM_database")
+                    .logInfo(logger, "[HelpDesk controller] pmSearchPaymentMethod done!")
             }
     }
 
@@ -83,15 +76,10 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
             .flatMap { pmService.searchBulkTransaction(it) }
             .map { ResponseEntity.ok(Flux.fromIterable(it)) }
             .doOnSuccess { _ ->
-                LogTracingUtils.withContextDetailsMdc(
-                    null,
-                    mapOf(
-                        LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
-                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
-                    )
-                ) {
-                    logger.info("[HelpDesk controller] pmSearchBulkTransaction done!")
-                }
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .dependency("PM_database")
+                    .logInfo(logger, "[HelpDesk controller] pmSearchBulkTransaction done!")
             }
     }
 }

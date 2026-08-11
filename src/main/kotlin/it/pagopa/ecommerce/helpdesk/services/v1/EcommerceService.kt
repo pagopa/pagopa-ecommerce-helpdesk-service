@@ -66,22 +66,20 @@ class EcommerceService(
                 dataProvider = ecommerceTransactionDataProvider
             )
             .doOnSuccess { _ ->
-                LogTracingUtils.withContextDetailsMdc(
-                    mapOf(
-                        "search_criteria" to ecommerceSearchTransactionRequestDto.type,
-                        "page_number" to pageNumber,
-                        "page_size" to pageSize
-                    ),
-                    mapOf(
-                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                            "eCommerce-Mongo-event-store-repository",
-                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .details(
+                        mapOf(
+                            "search_criteria" to ecommerceSearchTransactionRequestDto.type,
+                            "page_number" to pageNumber.toString(),
+                            "page_size" to pageSize.toString()
+                        )
                     )
-                ) {
-                    logger.info(
+                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                    .logInfo(
+                        logger,
                         "[helpDesk ecommerce service] searchTransaction method complete successfully"
                     )
-                }
             }
             .map { (results, totalCount) ->
                 buildTransactionSearchResponse(
@@ -139,18 +137,17 @@ class EcommerceService(
                 )
             }
             .doOnSuccess { _ ->
-                LogTracingUtils.withContextDetailsMdc(
-                    mapOf(
-                        "search_request" to searchRequest.source,
-                        "page_number" to pageNumber,
-                        "page_size" to pageSize,
-                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                            "dead-letter-Mongo-repository",
-                    ),
-                    mapOf(LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success")
-                ) {
-                    logger.info("search dead letter events done")
-                }
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .details(
+                        mapOf(
+                            "search_request" to searchRequest.source.toString(),
+                            "page_number" to pageNumber.toString(),
+                            "page_size" to pageSize.toString()
+                        )
+                    )
+                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                    .logInfo(logger, "search dead letter events done")
             }
     }
 
@@ -212,20 +209,10 @@ class EcommerceService(
                 }
             }
             .doOnSuccess { _ ->
-                LogTracingUtils.withContextDetailsMdc(
-                    mapOf(
-                        "transaction_id" to transactionId,
-                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                            arrayOf("NPG", "TransactionViewReposity")
-                    ),
-                    mapOf(
-                        LogTracingUtils.TracingEntry.EVENT_ACTION.key to
-                            arrayOf("NpgClient-getOrder"),
-                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
-                    )
-                ) {
-                    logger.info("Performing getOrder successfully")
-                }
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                    .logInfo(logger, "Performing getOrder successfully")
             }
     }
 
@@ -328,22 +315,22 @@ class EcommerceService(
                 }
             )
             .doOnSuccess { _ ->
-                LogTracingUtils.withContextDetailsMdc(
-                    mapOf(
-                        "transaction_id" to transactionId,
-                        "order_id" to orderId,
-                        "psp_id" to pspId,
-                        "correlation_id" to correlationId,
-                        "payment_method_service_name" to paymentMethod.serviceName,
-                        LogTracingUtils.TracingEntry.DEPENDENCY.key to "NPG"
-                    ),
-                    mapOf(
-                        LogTracingUtils.TracingEntry.EVENT_ACTION.key to "NpgClient-getOrder",
-                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .attributes(
+                        mapOf(
+                            LogTracingUtils.AttributeKeys.PSP_ID to pspId,
+                            LogTracingUtils.AttributeKeys.CORRELATION_ID to correlationId
+                        )
                     )
-                ) {
-                    logger.info("Performing getOrder successfully")
-                }
+                    .details(
+                        mapOf(
+                            "order_id" to orderId,
+                            "payment_method_service_name" to paymentMethod.serviceName
+                        )
+                    )
+                    .dependency("NPG")
+                    .logInfo(logger, "Performing getOrder successfully")
             }
     }
 
@@ -367,15 +354,19 @@ class EcommerceService(
                     )
                     .zipWith(mono { totalCount }, ::Pair)
                     .doOnSuccess { _ ->
-                        LogTracingUtils.withContextDetailsMdc(
-                            mapOf(
-                                "total_count" to totalCount,
-                                "skip" to skip,
-                                "page_size" to pageSize,
+                        LogTracingUtils.loggerTracingUtils()
+                            .success()
+                            .details(
+                                mapOf(
+                                    "total_count" to totalCount.toString(),
+                                    "skip" to skip.toString(),
+                                    "page_size" to pageSize.toString(),
+                                )
                             )
-                        ) {
-                            logger.info("Search transactions with pagination successfully done")
-                        }
+                            .logInfo(
+                                logger,
+                                "Search transactions with pagination successfully done"
+                            )
                     }
             } else {
                 Mono.error(NoResultFoundException(searchCriteriaType))

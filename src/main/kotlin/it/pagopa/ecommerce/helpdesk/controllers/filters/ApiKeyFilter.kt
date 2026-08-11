@@ -1,4 +1,4 @@
-package it.pagopa.ecommerce.helpdesk.utils
+package it.pagopa.ecommerce.helpdesk.controllers.filters
 
 import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import org.slf4j.Logger
@@ -19,6 +19,7 @@ class ApiKeyFilter(
 ) : WebFilter {
     private var logger: Logger = LoggerFactory.getLogger(this.javaClass)
     private val validApiKeys = setOf(primaryApiKey, secondaryApiKey)
+
     /*
      * @formatter:off
      *
@@ -33,12 +34,10 @@ class ApiKeyFilter(
         if (securedPaths.any { path.startsWith(it) }) {
             val apiKey = exchange.request.headers.getFirst("x-api-key")
             if (!isValidApiKey(apiKey)) {
-                LogTracingUtils.withContextDetailsMdc(
-                    null,
-                    mapOf(LogTracingUtils.TracingEntry.EVENT_ACTION.key to path)
-                ) {
-                    logger.warn("Unauthorized request for path $path - Missing or invalid API key")
-                }
+                LogTracingUtils.loggerTracingUtils()
+                    .failure()
+                    .details(mapOf("path" to path))
+                    .logWarn(logger, "Unauthorized request for path - Missing or invalid API key")
 
                 exchange.response.statusCode = HttpStatus.UNAUTHORIZED
                 return exchange.response.setComplete()
@@ -60,12 +59,10 @@ class ApiKeyFilter(
                 else -> "unknown"
             }
         if (logger.isDebugEnabled) {
-            LogTracingUtils.withContextDetailsMdc(
-                mapOf("apiKeyType" to apiKeyType),
-                mapOf(LogTracingUtils.TracingEntry.EVENT_ACTION.key to path)
-            ) {
-                logger.debug("Unauthorized request for path $path - Missing or invalid API key")
-            }
+            LogTracingUtils.loggerTracingUtils()
+                .success()
+                .details(mapOf("api_key_type" to apiKeyType, "path" to path))
+                .logDebug(logger, "Authorized request with API key")
         }
     }
 }

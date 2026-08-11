@@ -25,18 +25,18 @@ abstract class ConfidentialDataCacheUtils<T>(
     fun toClearData(encrypted: Confidential<T>): Mono<T> {
         return if (encryptedToClearMap.contains(encrypted.opaqueData)) {
             if (logger.isDebugEnabled) {
-                LogTracingUtils.withContextDetailsMdc(null, null) {
-                    logger.debug("confidential data cache hit")
-                }
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .logDebug(logger, "confidential data cache hit")
             }
             mono { encryptedToClearMap[encrypted.opaqueData] }
         } else {
             confidentialDataManager
                 .decrypt(encrypted, confidentialFromClearData)
                 .doOnError { e ->
-                    LogTracingUtils.withErrorMdc(e) {
-                        logger.error("Exception decrypting confidential data")
-                    }
+                    LogTracingUtils.loggerTracingUtils()
+                        .failure()
+                        .logError(logger, e, "Exception decrypting confidential data")
                 }
                 .doOnNext { decryptedData ->
                     encryptedToClearMap[encrypted.opaqueData] = decryptedData
@@ -67,9 +67,9 @@ abstract class ConfidentialDataCacheUtils<T>(
                             encryptedToClearMap[encrypted.opaqueData] = clearText
                         }
                         .doOnError { e ->
-                            LogTracingUtils.withErrorMdc(e) {
-                                logger.error("Exception encrypting confidential data")
-                            }
+                            LogTracingUtils.loggerTracingUtils()
+                                .failure()
+                                .logError(logger, e, "Exception encrypting confidential data")
                         }
                 } else {
                     Mono.just(Confidential(it.get()))

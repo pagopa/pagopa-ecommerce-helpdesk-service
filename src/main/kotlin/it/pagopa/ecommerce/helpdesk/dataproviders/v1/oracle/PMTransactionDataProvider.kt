@@ -8,15 +8,7 @@ import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToTransactionInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestDateDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestEmailDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestFiscalCodeDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestPaymentTokenDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestRptIdDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestTransactionIdDto
-import it.pagopa.generated.ecommerce.helpdesk.model.TransactionResultDto
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -132,19 +124,11 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                             result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
                         .doOnNext {
-                            LogTracingUtils.withContextDetailsMdc(
-                                mapOf(
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
-                                    "transactions_count" to it
-                                ),
-                                mapOf(
-                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                    LogTracingUtils.TracingEntry.EVENT_ACTION.key to
-                                        "getTotalResultCount"
-                                )
-                            ) {
-                                logger.info("Count query executed")
-                            }
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(mapOf("transactions_count" to it.toString()))
+                                .dependency("PM-db")
+                                .logInfo(logger, "Count query executed")
                         }
                 },
                 { it.close() }
@@ -170,21 +154,17 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                             result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
                         .doOnNext {
-                            LogTracingUtils.withContextDetailsMdc(
-                                mapOf(
-                                    "start_date" to startDate.toString(),
-                                    "end_date" to endDate.toString(),
-                                    "transactions_count" to it,
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
-                                ),
-                                mapOf(
-                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                    LogTracingUtils.TracingEntry.EVENT_ACTION.key to
-                                        "getTotalResultCountFromDateTimeRange"
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(
+                                    mapOf(
+                                        "start_date" to startDate.toString(),
+                                        "end_date" to endDate.toString(),
+                                        "transactions_count" to it.toString()
+                                    )
                                 )
-                            ) {
-                                logger.info("Count query executed")
-                            }
+                                .dependency("PM-db")
+                                .logInfo(logger, "Count query executed")
                         }
                 },
                 { it.close() }
@@ -211,20 +191,13 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         )
                         .flatMap { resultToTransactionInfoDto(it) }
                         .doOnComplete {
-                            LogTracingUtils.withContextDetailsMdc(
-                                mapOf(
-                                    "skip" to skip,
-                                    "limit" to limit,
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database"
-                                ),
-                                mapOf(
-                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                    LogTracingUtils.TracingEntry.EVENT_ACTION.key to
-                                        "getResultSetFromPaginatedQuery"
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(
+                                    mapOf("skip" to skip.toString(), "limit" to limit.toString())
                                 )
-                            ) {
-                                logger.info("Transactions from PM database retrieved.")
-                            }
+                                .dependency("PM-db")
+                                .logInfo(logger, "Transactions from PM database retrieved")
                         }
                 },
                 { it.close() }
@@ -256,20 +229,18 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         )
                         .flatMap { result -> resultToTransactionInfoDto(result) }
                         .doOnComplete {
-                            LogTracingUtils.withContextDetailsMdc(
-                                mapOf(
-                                    "skip" to skip,
-                                    "limit" to limit,
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database"
-                                ),
-                                mapOf(
-                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                    LogTracingUtils.TracingEntry.EVENT_ACTION.key to
-                                        "getResultSetFromDateTimeRangeQuery"
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(
+                                    mapOf(
+                                        "start_date" to startDate.toString(),
+                                        "end_date" to endDate.toString(),
+                                        "skip" to skip.toString(),
+                                        "limit" to limit.toString()
+                                    )
                                 )
-                            ) {
-                                logger.info("Transactions from PM database retrieved.")
-                            }
+                                .dependency("PM-db")
+                                .logInfo(logger, "Transactions from PM database retrieved")
                         }
                 },
                 { connection -> connection.close() }

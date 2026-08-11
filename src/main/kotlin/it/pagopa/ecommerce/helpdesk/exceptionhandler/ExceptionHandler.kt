@@ -7,7 +7,6 @@ import it.pagopa.ecommerce.helpdesk.exceptions.RestApiException
 import it.pagopa.generated.ecommerce.helpdesk.model.ProblemJsonDto
 import jakarta.validation.ConstraintViolationException
 import jakarta.xml.bind.ValidationException
-import java.util.*
 import java.util.stream.Collectors
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -37,7 +36,9 @@ class ExceptionHandler {
     /** RestApiException exception handler */
     @ExceptionHandler(RestApiException::class)
     fun handleException(e: RestApiException): ResponseEntity<ProblemJsonDto> {
-        LogTracingUtils.withErrorMdc(e) { logger.error("Exception processing request", e) }
+        LogTracingUtils.loggerTracingUtils()
+            .failure()
+            .logError(logger, e, "Exception processing request")
         return ResponseEntity.status(e.httpStatus)
             .body(
                 ProblemJsonDto().status(e.httpStatus.value()).title(e.title).detail(e.description)
@@ -55,9 +56,9 @@ class ExceptionHandler {
     fun handleConfidentialDataException(
         e: ConfidentialDataException
     ): ResponseEntity<ProblemJsonDto> {
-        LogTracingUtils.withErrorMdc(e) {
-            logger.error("Exception processing encrypt/decrypt pdv request", e)
-        }
+        LogTracingUtils.loggerTracingUtils()
+            .failure()
+            .logError(logger, e, "Exception processing encrypt/decrypt pdv request")
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
             .body(
                 ProblemJsonDto()
@@ -79,7 +80,9 @@ class ExceptionHandler {
     )
     fun handleRequestValidationException(exception: Exception): ResponseEntity<ProblemJsonDto> {
         // stacktrace not logged to avoid logging of sensitive data such as mail
-        LogTracingUtils.withErrorMdc(exception) { logger.error(invalidRequestDefaultMessage) }
+        LogTracingUtils.loggerTracingUtils()
+            .failure()
+            .logError(logger, exception, invalidRequestDefaultMessage)
         val validationErrorCause =
             when (exception) {
                 is ConstraintViolationException ->
@@ -122,7 +125,9 @@ class ExceptionHandler {
     /** Handler for generic exception */
     @ExceptionHandler(Exception::class)
     fun handleGenericException(e: Exception): ResponseEntity<ProblemJsonDto> {
-        LogTracingUtils.withErrorMdc(e) { logger.error("Exception processing the request", e) }
+        LogTracingUtils.loggerTracingUtils()
+            .failure()
+            .logErrorWithStackTrace(logger, e, "Exception processing the request")
         return ResponseEntity.internalServerError()
             .body(
                 ProblemJsonDto()

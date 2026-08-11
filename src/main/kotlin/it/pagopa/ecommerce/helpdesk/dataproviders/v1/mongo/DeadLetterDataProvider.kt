@@ -32,6 +32,8 @@ class DeadLetterDataProvider(
 ) : DataProvider<EcommerceSearchDeadLetterEventsRequestDto, DeadLetterEventDto> {
 
     private val logger = LoggerFactory.getLogger(javaClass)
+    private val countLogMsg = "Counted all dead letter events"
+    private val findLogMsg = "Found dead letter events"
 
     /*
      * @formatter:off
@@ -70,39 +72,31 @@ class DeadLetterDataProvider(
                             paymentGatewayToExclude = excludedPaymentGateway.toSet()
                         )
                         .doOnSuccess {
-                            LogTracingUtils.withContextDetailsMdc(
-                                mapOf(
-                                    "deadLetter_search_event_source_type" to source,
-                                    "start_date" to startDate,
-                                    "end_date" to endDate,
-                                    "ecommerce_statuses" to eCommerceStatuses,
-                                    "npg_statuses" to npgStatuses,
-                                    "excluded_payment_gateway" to excludedPaymentGateway,
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                        "deadLetter_event_repository"
-                                ),
-                                mapOf(
-                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(
+                                    mapOf(
+                                        "deadLetter_search_event_source_type" to source.toString(),
+                                        "start_date" to startDate,
+                                        "end_date" to endDate,
+                                        "ecommerce_statuses" to eCommerceStatuses.toString(),
+                                        "npg_statuses" to npgStatuses.toString(),
+                                        "excluded_payment_gateway" to
+                                            excludedPaymentGateway.toString()
+                                    )
                                 )
-                            ) {
-                                logger.info(
-                                    "Counted all dead letter.",
-                                )
-                            }
+                                .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                                .logInfo(logger, countLogMsg)
                         }
                 } else {
                     deadLetterRepository.count().doOnSuccess {
-                        LogTracingUtils.withContextDetailsMdc(
-                            mapOf(
-                                LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                    "deadLetter_event_repository",
-                            ),
-                            mapOf(
-                                LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                        LogTracingUtils.loggerTracingUtils()
+                            .success()
+                            .details(
+                                mapOf("deadLetter_search_event_source_type" to source.toString())
                             )
-                        ) {
-                            logger.info("Counted all dead letter events")
-                        }
+                            .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                            .logInfo(logger, countLogMsg)
                     }
                 }
             }
@@ -122,39 +116,36 @@ class DeadLetterDataProvider(
                             paymentGatewayToExclude = excludedPaymentGateway.toSet()
                         )
                         .doOnSuccess {
-                            LogTracingUtils.withContextDetailsMdc(
-                                mapOf(
-                                    "queue_name" to queueName,
-                                    "start_date" to startDate,
-                                    "end_date" to endDate,
-                                    "ecommerce_statuses" to eCommerceStatuses,
-                                    "npg_statuses" to npgStatuses,
-                                    "excluded_payment_gateway" to excludedPaymentGateway,
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                        "deadLetter_event_repository"
-                                ),
-                                mapOf(
-                                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(
+                                    mapOf(
+                                        "deadLetter_search_event_source_type" to source.toString(),
+                                        "queue_name" to queueName,
+                                        "start_date" to startDate,
+                                        "end_date" to endDate,
+                                        "ecommerce_statuses" to eCommerceStatuses.toString(),
+                                        "npg_statuses" to npgStatuses.toString(),
+                                        "excluded_payment_gateway" to
+                                            excludedPaymentGateway.toString()
+                                    )
                                 )
-                            ) {
-                                logger.info("Counted all dead letter events")
-                            }
+                                .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                                .logInfo(logger, countLogMsg)
                         }
                 } else {
                     val queueName = deadLetterQueueMapping[source]!!
                     deadLetterRepository.countDeadLetterEventForQueue(queueName).doOnSuccess {
-                        LogTracingUtils.withContextDetailsMdc(
-                            mapOf(
-                                "queue_name" to queueName,
-                                LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                    "deadLetter_event_repository"
-                            ),
-                            mapOf(
-                                LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
+                        LogTracingUtils.loggerTracingUtils()
+                            .success()
+                            .details(
+                                mapOf(
+                                    "deadLetter_search_event_source_type" to source.toString(),
+                                    "queue_name" to queueName
+                                )
                             )
-                        ) {
-                            logger.info("Counted all dead letter events")
-                        }
+                            .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                            .logInfo(logger, countLogMsg)
                     }
                 }
             }
@@ -203,22 +194,22 @@ class DeadLetterDataProvider(
                                 paymentGatewayToExclude = excludedPaymentGateway.toSet()
                             )
                             .doOnNext {
-                                LogTracingUtils.withContextDetailsMdc(
-                                    mapOf(
-                                        "start_date" to startDate,
-                                        "end_date" to endDate,
-                                        "ecommerce_statuses" to eCommerceStatuses,
-                                        "npg_statuses" to npgStatuses,
-                                        "excluded_payment_gateway" to excludedPaymentGateway,
-                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                            "deadLetter_event_repository"
-                                    ),
-                                    mapOf(
-                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                                LogTracingUtils.loggerTracingUtils()
+                                    .success()
+                                    .details(
+                                        mapOf(
+                                            "deadLetter_search_event_source_type" to
+                                                source.toString(),
+                                            "start_date" to startDate,
+                                            "end_date" to endDate,
+                                            "ecommerce_statuses" to eCommerceStatuses.toString(),
+                                            "npg_statuses" to npgStatuses.toString(),
+                                            "excluded_payment_gateway" to
+                                                excludedPaymentGateway.toString()
+                                        )
                                     )
-                                ) {
-                                    logger.info("Dead letter events find done")
-                                }
+                                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                                    .logInfo(logger, findLogMsg)
                             }
                     } else {
 
@@ -228,19 +219,18 @@ class DeadLetterDataProvider(
                                 limit = limit
                             )
                             .doOnComplete {
-                                LogTracingUtils.withContextDetailsMdc(
-                                    mapOf(
-                                        "skip" to skip,
-                                        "limit" to limit,
-                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                            "deadLetter_event_repository"
-                                    ),
-                                    mapOf(
-                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                                LogTracingUtils.loggerTracingUtils()
+                                    .success()
+                                    .details(
+                                        mapOf(
+                                            "deadLetter_search_event_source_type" to
+                                                source.toString(),
+                                            "skip" to skip.toString(),
+                                            "limit" to limit.toString()
+                                        )
                                     )
-                                ) {
-                                    logger.info("Dead letter events find done")
-                                }
+                                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                                    .logInfo(logger, findLogMsg)
                             }
                     }
                 }
@@ -263,23 +253,23 @@ class DeadLetterDataProvider(
                                 paymentGatewayToExclude = excludedPaymentGateway.toSet()
                             )
                             .doOnComplete {
-                                LogTracingUtils.withContextDetailsMdc(
-                                    mapOf(
-                                        "queue_name" to queueName,
-                                        "start_date" to startDate,
-                                        "end_date" to endDate,
-                                        "ecommerce_statuses" to eCommerceStatuses,
-                                        "npg_statuses" to npgStatuses,
-                                        "excluded_payment_gateway" to excludedPaymentGateway,
-                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                            "deadLetter_event_repository"
-                                    ),
-                                    mapOf(
-                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                                LogTracingUtils.loggerTracingUtils()
+                                    .success()
+                                    .details(
+                                        mapOf(
+                                            "deadLetter_search_event_source_type" to
+                                                source.toString(),
+                                            "queue_name" to queueName,
+                                            "start_date" to startDate,
+                                            "end_date" to endDate,
+                                            "ecommerce_statuses" to eCommerceStatuses.toString(),
+                                            "npg_statuses" to npgStatuses.toString(),
+                                            "excluded_payment_gateway" to
+                                                excludedPaymentGateway.toString()
+                                        )
                                     )
-                                ) {
-                                    logger.info("Dead letter events find done")
-                                }
+                                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                                    .logInfo(logger, findLogMsg)
                             }
                     } else {
                         deadLetterRepository
@@ -289,20 +279,19 @@ class DeadLetterDataProvider(
                                 limit = limit
                             )
                             .doOnComplete {
-                                LogTracingUtils.withContextDetailsMdc(
-                                    mapOf(
-                                        "queue_name" to queueName,
-                                        "skip" to skip,
-                                        "limit" to limit,
-                                        LogTracingUtils.TracingEntry.DEPENDENCY.key to
-                                            "deadLetter_event_repository"
-                                    ),
-                                    mapOf(
-                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                                LogTracingUtils.loggerTracingUtils()
+                                    .success()
+                                    .details(
+                                        mapOf(
+                                            "deadLetter_search_event_source_type" to
+                                                source.toString(),
+                                            "queue_name" to queueName,
+                                            "skip" to skip.toString(),
+                                            "limit" to limit.toString()
+                                        )
                                     )
-                                ) {
-                                    logger.info("Dead letter events find done")
-                                }
+                                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                                    .logInfo(logger, findLogMsg)
                             }
                     }
                 }

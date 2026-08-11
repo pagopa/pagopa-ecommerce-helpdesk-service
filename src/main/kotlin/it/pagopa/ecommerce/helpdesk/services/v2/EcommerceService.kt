@@ -34,7 +34,6 @@ class EcommerceService(
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
-    private val logDependencyValue = "eCommerce-Mongo-transaction-view-repository"
 
     fun searchTransaction(
         pageNumber: Int,
@@ -63,20 +62,19 @@ class EcommerceService(
                 )
             }
             .doOnSuccess { _ ->
-                LogTracingUtils.withContextDetailsMdc(
-                    mapOf(
-                        "page_number" to pageNumber,
-                        "page_size" to pageSize,
-                    ),
-                    mapOf(
-                        LogTracingUtils.TracingEntry.DEPENDENCY.key to logDependencyValue,
-                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .details(
+                        mapOf(
+                            "page_number" to pageNumber.toString(),
+                            "page_size" to pageSize.toString(),
+                        )
                     )
-                ) {
-                    logger.info(
+                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                    .logInfo(
+                        logger,
                         "[helpDesk ecommerce service] searchTransaction method done successfully!"
                     )
-                }
             }
     }
 
@@ -99,21 +97,19 @@ class EcommerceService(
                     )
                     .zipWith(mono { countInfo.totalCount().toInt() }, ::Pair)
                     .doOnSuccess { _ ->
-                        LogTracingUtils.withContextDetailsMdc(
-                            mapOf(
-                                "page_number" to pageNumber,
-                                "page_size" to pageSize,
-                                "count_info" to countInfo,
-                                "skip" to skip,
-                                "search_criteria" to searchCriteriaType
-                            ),
-                            mapOf(
-                                LogTracingUtils.TracingEntry.DEPENDENCY.key to logDependencyValue,
-                                LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
+                        LogTracingUtils.loggerTracingUtils()
+                            .success()
+                            .details(
+                                mapOf(
+                                    "page_number" to pageNumber.toString(),
+                                    "page_size" to pageSize.toString(),
+                                    "count_info" to countInfo.toString(),
+                                    "skip" to skip.toString(),
+                                    "search_criteria" to searchCriteriaType
+                                )
                             )
-                        ) {
-                            logger.info("searchPaginatedResult done successfully!")
-                        }
+                            .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                            .logInfo(logger, "searchPaginatedResult done successfully!")
                     }
             } else {
                 Mono.error(NoResultFoundException(searchCriteriaType))
@@ -125,15 +121,10 @@ class EcommerceService(
         searchMetricsRequestDto: SearchMetricsRequestDto
     ): Mono<TransactionMetricsResponseDto> {
         return stateMetricsDataProvider.computeMetrics(searchMetricsRequestDto).doOnSuccess { _ ->
-            LogTracingUtils.withContextDetailsMdc(
-                null,
-                mapOf(
-                    LogTracingUtils.TracingEntry.DEPENDENCY.key to logDependencyValue,
-                    LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success"
-                )
-            ) {
-                logger.info("ecommerceSearchTransaction done successfully!")
-            }
+            LogTracingUtils.loggerTracingUtils()
+                .success()
+                .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                .logInfo(logger, "ecommerceSearchTransaction done successfully!")
         }
     }
 }

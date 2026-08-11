@@ -1,6 +1,8 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v1
 
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.services.v1.EcommerceService
+import it.pagopa.ecommerce.helpdesk.utils.v1.LogUtils
 import it.pagopa.generated.ecommerce.helpdesk.api.EcommerceApi
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import jakarta.validation.constraints.Max
@@ -22,15 +24,23 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
         ecommerceSearchTransactionRequestDto: Mono<EcommerceSearchTransactionRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
-        return ecommerceSearchTransactionRequestDto
-            .flatMap {
-                ecommerceService.searchTransaction(
+        return ecommerceSearchTransactionRequestDto.flatMap { dto ->
+            // Add attributes based on the DTO's type to enrich the log context
+            val logContextAttribute = LogUtils.extractContextAttributeFromDto(dto)
+
+            ecommerceService
+                .searchTransaction(
                     pageNumber = pageNumber,
                     pageSize = pageSize,
-                    ecommerceSearchTransactionRequestDto = it
+                    ecommerceSearchTransactionRequestDto = dto
                 )
-            }
-            .map { ResponseEntity.ok(it) }
+                .map { ResponseEntity.ok(it) }
+                .contextWrite { context ->
+                    logContextAttribute?.let { (key, value) ->
+                        LogTracingUtils.enrichContextForEvent(mapOf(key to value), context)
+                    } ?: context
+                }
+        }
     }
 
     override fun ecommerceSearchDeadLetterEvents(
@@ -54,9 +64,19 @@ class EcommerceController(@Autowired val ecommerceService: EcommerceService) : E
         searchNpgOperationsRequestDto: Mono<SearchNpgOperationsRequestDto>,
         exchange: ServerWebExchange?
     ): Mono<ResponseEntity<SearchNpgOperationsResponseDto>> {
-        return searchNpgOperationsRequestDto
-            .flatMap { ecommerceService.searchNpgOperations(transactionId = it.idTransaction) }
-            .map { ResponseEntity.ok(it) }
+        return searchNpgOperationsRequestDto.flatMap { dto ->
+            ecommerceService
+                .searchNpgOperations(transactionId = dto.idTransaction)
+                .map { ResponseEntity.ok(it) }
+                .contextWrite { context ->
+                    LogTracingUtils.enrichContextForEvent(
+                        mapOf(
+                            LogTracingUtils.AttributeKeys.CTX_TRANSACTION_ID to dto.idTransaction
+                        ),
+                        context
+                    )
+                }
+        }
     }
 
     override fun ecommerceSearchNpgOperationsByOrderId(

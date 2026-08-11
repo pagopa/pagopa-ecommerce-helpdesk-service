@@ -108,12 +108,11 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                             result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
                         .doOnNext {
-                            LogTracingUtils.withContextDetailsMdc(
-                                null,
-                                mapOf(LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database")
-                            ) {
-                                logger.info("Total transaction found: $it")
-                            }
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(mapOf("total" to it.toString()))
+                                .dependency("PM-db")
+                                .logInfo(logger, "Total transaction found")
                         }
                 },
                 { it.close() }
@@ -140,15 +139,13 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         )
                         .flatMap { resultToTransactionInfoDto(it) }
                         .doOnNext {
-                            LogTracingUtils.withContextDetailsMdc(
-                                mapOf(
-                                    "skip" to skip,
-                                    "limit" to limit,
-                                    LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database"
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(
+                                    mapOf("skip" to skip.toString(), "limit" to limit.toString())
                                 )
-                            ) {
-                                logger.info("Transactions from PM database retrieved.")
-                            }
+                                .dependency("PM-db")
+                                .logInfo(logger, "Transactions from PM database retrieved")
                         }
                 },
                 { it.close() }

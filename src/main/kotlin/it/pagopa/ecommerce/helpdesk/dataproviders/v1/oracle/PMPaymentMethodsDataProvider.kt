@@ -60,15 +60,15 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
                     .collectList()
                     .flatMap { results -> resultToPaymentMethodDtoList(results, searchType) }
                     .doOnSuccess {
-                        LogTracingUtils.withContextDetailsMdc(
-                            mapOf("search_type" to searchType),
-                            mapOf(
-                                LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to "success",
-                                LogTracingUtils.TracingEntry.DEPENDENCY.key to "PM_database",
+                        LogTracingUtils.loggerTracingUtils()
+                            .success()
+                            .details(
+                                mapOf(
+                                    "search_type" to searchType,
+                                )
                             )
-                        ) {
-                            logger.info("Payment methods retrieved from PM database.")
-                        }
+                            .dependency("PM-db")
+                            .logInfo(logger, "Payment methods retrieved from PM database")
                     }
             },
             { it.close() }
