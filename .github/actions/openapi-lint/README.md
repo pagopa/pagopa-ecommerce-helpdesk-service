@@ -32,6 +32,8 @@ The spec matrix stays in the calling workflow, because the number of specs diffe
 
 **A lint that cannot run fails the job, in report-only mode too.** Spectral exits `1` when it finds results but `2` or more when it could not run at all, and in that case it writes no report. A gate that does not tell the two apart passes silently and stops protecting anything. An unloadable ruleset is a configuration error, not a finding, so `fail_on_violation: false` does not suppress it.
 
+Two cases need more than the exit code, because Spectral reports them as ordinary findings. A document it does not recognise as OpenAPI yields exit `0` and a single `unrecognized-format` **warning**, having evaluated no rules at all, so under `fail_severity: error` it would otherwise go green while checking nothing. A spec that fails to parse yields `parser` findings. Both are treated as configuration errors on the same grounds as an unloadable ruleset: neither `fail_severity` nor `fail_on_violation` suppresses them.
+
 **Noise is handled by severity, not by a budget.** There is deliberately no `max_warnings`. A rule too noisy to block on is downgraded in `.spectral.yaml`, by name and with the reason, so the exception is visible in review; a numeric budget hides findings by count and, as the RMOA rollout showed, only ever grows. Use `fail_severity: error` to let a repository migrate while its warnings are still being worked through, and `fail_on_violation: false` when nothing should block yet.
 
 **Only errors and warnings are annotated on the pull request.** GitHub renders at most 10 annotations per type per step, so annotating info findings as well would push the actionable ones out of the view. Info findings are reported as counts, broken down by rule, in the job summary.
