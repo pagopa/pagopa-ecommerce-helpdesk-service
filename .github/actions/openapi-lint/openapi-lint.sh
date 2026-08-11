@@ -33,10 +33,8 @@ fi
 OUT="$(mktemp)"
 trap 'rm -f "$OUT"' EXIT
 
-# Spectral exits 0 when it finds nothing above the fail severity, 1 when it has results,
-# and 2 or more when it could not run at all. In that last case it writes no JSON, so a
-# gate that only reads the JSON would pass silently and quietly stop checking anything.
-# Both conditions are therefore verified: the exit code and a non-empty report.
+# Exit 2 or more means Spectral could not run and wrote no JSON. Check both the exit code
+# and a non-empty report, or the gate passes silently and stops checking.
 set +e
 "$SPECTRAL_BIN" lint --ruleset "$RULESET" --format json --output "$OUT" --quiet "$SPEC_PATH"
 RC=$?
@@ -47,11 +45,9 @@ if [ "$RC" -gt 1 ] || [ ! -s "$OUT" ]; then
   exit 1
 fi
 
-# Spectral reports two conditions as ordinary findings, even though both mean the document
-# was never actually linted: an unrecognised document type, which evaluates zero rules and
-# is only a warning, and a parse failure. Neither is subject to fail_severity or to
-# report-only mode, for the same reason as the exit code above: a check that cannot read
-# the spec has stopped checking, and must say so instead of going green.
+# Both mean nothing was linted, yet Spectral reports them as ordinary findings:
+# unrecognized-format runs zero rules and is only a warning, so fail_severity: error
+# would let it through. Configuration errors, so report-only does not suppress them.
 UNLINTABLE=$(jq -r '[.[] | select(.code == "unrecognized-format" or .code == "parser")] | .[0].message // empty' "$OUT")
 if [ -n "$UNLINTABLE" ]; then
   echo "::error file=${SPEC_PATH}::Spectral could not lint ${SPEC_PATH}: ${UNLINTABLE}. Failing the job rather than reporting a clean run."
@@ -68,14 +64,12 @@ ERRORS=$(count_severity 0)
 WARNINGS=$(count_severity 1)
 INFOS=$(count_severity 2)
 
-# The gate is computed here rather than delegated to Spectral's own --fail-severity,
-# because report-only mode would then need to swallow Spectral's exit code and that is
-# what reopens the exit 2 hole above.
+# Computed here, not delegated to Spectral's --fail-severity: report-only would then have
+# to swallow Spectral's exit code, reopening the exit 2 hole above.
 BLOCKING=$(jq --argjson l "$FAIL_LEVEL" '[.[] | select(.severity <= $l)] | length' "$OUT")
 
-# Annotations for errors and warnings only. GitHub renders at most 10 annotations per
-# type per step, so annotating info findings too would bury the ones worth acting on.
-# The info findings are reported as counts in the job summary instead.
+# Errors and warnings only: GitHub renders at most 10 annotations per type per step, so
+# info findings would bury them. Info goes to the job summary as counts.
 jq -r --arg f "$SPEC_PATH" '
   .[]
   | select(.severity <= 1)
@@ -113,8 +107,7 @@ if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
   } >> "$GITHUB_STEP_SUMMARY"
 fi
 
-# In report-only mode the threshold messages are warnings, so that a job which is not
-# meant to fail does not display red errors on the pull request.
+# Report-only downgrades the gate message only. Finding annotations keep their severity.
 GATE_LEVEL="error"
 if [ "$FAIL_ON_VIOLATION" != "true" ]; then
   GATE_LEVEL="warning"
