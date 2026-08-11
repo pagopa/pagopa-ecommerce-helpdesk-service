@@ -47,6 +47,17 @@ if [ "$RC" -gt 1 ] || [ ! -s "$OUT" ]; then
   exit 1
 fi
 
+# Spectral reports two conditions as ordinary findings, even though both mean the document
+# was never actually linted: an unrecognised document type, which evaluates zero rules and
+# is only a warning, and a parse failure. Neither is subject to fail_severity or to
+# report-only mode, for the same reason as the exit code above: a check that cannot read
+# the spec has stopped checking, and must say so instead of going green.
+UNLINTABLE=$(jq -r '[.[] | select(.code == "unrecognized-format" or .code == "parser")] | .[0].message // empty' "$OUT")
+if [ -n "$UNLINTABLE" ]; then
+  echo "::error file=${SPEC_PATH}::Spectral could not lint ${SPEC_PATH}: ${UNLINTABLE}. Failing the job rather than reporting a clean run."
+  exit 1
+fi
+
 count_severity() {
   jq --argjson s "$1" '[.[] | select(.severity == $s)] | length' "$OUT"
 }
