@@ -33,30 +33,17 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install Spectral and the OWASP ruleset
-      shell: bash
-      env:
-        RULESET: ${{ inputs.ruleset }}
-        SPECTRAL_VERSION: ${{ inputs.spectral_version }}
-        OWASP_RULESET_VERSION: ${{ inputs.owasp_ruleset_version }}
-      run: |
-        # Spectral resolves a ruleset's npm packages from the ruleset's own directory, and
-        # the repo has no package.json, so install there. Resolved once, here, and handed
-        # to the lint step: deriving it twice lets the two disagree about where npm put it.
-        PREFIX="$(dirname "$RULESET")"
-        npm install --no-save --no-package-lock --prefix "$PREFIX" \
-          "@stoplight/spectral-cli@${SPECTRAL_VERSION}" \
-          "@stoplight/spectral-owasp-ruleset@${OWASP_RULESET_VERSION}"
-        echo "SPECTRAL_BIN=${PREFIX}/node_modules/.bin/spectral" >> "$GITHUB_ENV"
-
+    # One step on purpose: the script installs Spectral where it reads it from, so no
+    # input-derived path crosses a step boundary through GITHUB_ENV.
     - name: Lint ${{ inputs.spec_path }}
       shell: bash
       env:
         # Values reach the script as env vars, never interpolated into the run block.
-        # SPECTRAL_BIN arrives from the install step above, via GITHUB_ENV.
         ACTION_PATH: ${{ github.action_path }}
         SPEC_PATH: ${{ inputs.spec_path }}
         RULESET: ${{ inputs.ruleset }}
         FAIL_SEVERITY: ${{ inputs.fail_severity }}
         FAIL_ON_VIOLATION: ${{ inputs.fail_on_violation }}
+        SPECTRAL_VERSION: ${{ inputs.spectral_version }}
+        OWASP_RULESET_VERSION: ${{ inputs.owasp_ruleset_version }}
       run: bash "${ACTION_PATH}/openapi-lint.sh"

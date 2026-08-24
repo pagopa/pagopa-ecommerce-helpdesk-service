@@ -7,7 +7,8 @@ set -euo pipefail
 : "${RULESET:?RULESET is required}"
 : "${FAIL_SEVERITY:?FAIL_SEVERITY is required}"
 : "${FAIL_ON_VIOLATION:?FAIL_ON_VIOLATION is required}"
-: "${SPECTRAL_BIN:?SPECTRAL_BIN is required, the install step in action.yml resolves it}"
+: "${SPECTRAL_VERSION:?SPECTRAL_VERSION is required}"
+: "${OWASP_RULESET_VERSION:?OWASP_RULESET_VERSION is required}"
 
 # Spectral's own severity numbering, as it appears in the JSON report.
 case "$FAIL_SEVERITY" in
@@ -28,8 +29,17 @@ if [ ! -f "$RULESET" ]; then
   echo "::error::Spectral ruleset not found: ${RULESET}"
   exit 1
 fi
+
+# Spectral resolves a ruleset's npm packages from the ruleset's own directory and these
+# repos have no package.json, so install there and read the binary back from the same path.
+# Never skipped on an existing node_modules: that would lint with an unpinned version.
+PREFIX="$(dirname "$RULESET")"
+SPECTRAL_BIN="${PREFIX}/node_modules/.bin/spectral"
+npm install --no-save --no-package-lock --prefix "$PREFIX" \
+  "@stoplight/spectral-cli@${SPECTRAL_VERSION}" \
+  "@stoplight/spectral-owasp-ruleset@${OWASP_RULESET_VERSION}"
 if [ ! -x "$SPECTRAL_BIN" ]; then
-  echo "::error::Spectral not found at ${SPECTRAL_BIN}: the install step did not put it where this script was told to look."
+  echo "::error::Spectral not found at ${SPECTRAL_BIN} after installing it there."
   exit 1
 fi
 
