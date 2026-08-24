@@ -39,3 +39,15 @@ Two cases need more than the exit code, since Spectral reports them as ordinary 
 **Only errors and warnings are annotated on the pull request.** GitHub renders at most 10 annotations per type per step, so annotating info findings as well would push the actionable ones out of the view. Info findings are reported as counts, broken down by rule, in the job summary.
 
 **The npm packages are installed next to the ruleset.** Spectral resolves the packages a ruleset extends starting from the directory of the ruleset file, and these repositories have no `package.json`. The install therefore targets `dirname(ruleset)` and creates only a `node_modules` directory, which is already ignored by git.
+
+The install step resolves that path once and passes the resulting binary to the lint step as `SPECTRAL_BIN`, through `GITHUB_ENV`. `openapi-lint.sh` never derives it a second time: it requires the variable and fails with a named path if the binary is not there. To run the script outside Actions, install the packages and point it at the result:
+
+```bash
+npm install --no-save --no-package-lock --prefix . \
+  @stoplight/spectral-cli@6.16.3 @stoplight/spectral-owasp-ruleset@2.0.1
+
+SPEC_PATH=api-spec/v1/openapi.yaml RULESET=.spectral.yaml \
+  FAIL_SEVERITY=warn FAIL_ON_VIOLATION=true \
+  SPECTRAL_BIN=./node_modules/.bin/spectral \
+  bash .github/actions/openapi-lint/openapi-lint.sh
+```
