@@ -41,15 +41,19 @@ runs:
         OWASP_RULESET_VERSION: ${{ inputs.owasp_ruleset_version }}
       run: |
         # Spectral resolves a ruleset's npm packages from the ruleset's own directory, and
-        # these repos have no package.json, so install there.
-        npm install --no-save --no-package-lock --prefix "$(dirname "$RULESET")" \
+        # the repo has no package.json, so install there. Resolved once, here, and handed
+        # to the lint step: deriving it twice lets the two disagree about where npm put it.
+        PREFIX="$(dirname "$RULESET")"
+        npm install --no-save --no-package-lock --prefix "$PREFIX" \
           "@stoplight/spectral-cli@${SPECTRAL_VERSION}" \
           "@stoplight/spectral-owasp-ruleset@${OWASP_RULESET_VERSION}"
+        echo "SPECTRAL_BIN=${PREFIX}/node_modules/.bin/spectral" >> "$GITHUB_ENV"
 
     - name: Lint ${{ inputs.spec_path }}
       shell: bash
       env:
         # Values reach the script as env vars, never interpolated into the run block.
+        # SPECTRAL_BIN arrives from the install step above, via GITHUB_ENV.
         ACTION_PATH: ${{ github.action_path }}
         SPEC_PATH: ${{ inputs.spec_path }}
         RULESET: ${{ inputs.ruleset }}
