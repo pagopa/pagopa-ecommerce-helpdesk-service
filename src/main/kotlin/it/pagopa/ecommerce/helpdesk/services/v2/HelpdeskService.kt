@@ -9,6 +9,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v2.oracle.PMTransactionDataPro
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
 import it.pagopa.ecommerce.helpdesk.utils.ConfidentialFiscalCodeUtils
+import it.pagopa.ecommerce.helpdesk.utils.LogTracingTags
 import it.pagopa.ecommerce.helpdesk.utils.PageUtils
 import it.pagopa.ecommerce.helpdesk.utils.PmProviderType
 import it.pagopa.ecommerce.helpdesk.utils.v2.ConfidentialMailUtils
@@ -247,7 +248,7 @@ class HelpdeskService(
                                         "count_info" to pmCountInfo.toString()
                                     )
                                 )
-                                .dependency("PM-db")
+                                .dependency(LogTracingTags.Dependency.PM_DB)
                                 .logInfo(logger, "Records recovered from PM DB successfully")
                         }
                         .onErrorResume(InvalidSearchCriteriaException::class.java) {

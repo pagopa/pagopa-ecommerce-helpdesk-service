@@ -5,7 +5,7 @@ import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.BulkTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
-import it.pagopa.ecommerce.helpdesk.utils.LogTracingConstant
+import it.pagopa.ecommerce.helpdesk.utils.LogTracingTags
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToBulkTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchBulkTransactionRequestDto
 import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
@@ -91,7 +91,7 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
                                         "end_transaction_id" to endTransactionId
                                     )
                                 )
-                                .dependency(LogTracingConstant.PM_DEPENDENCY)
+                                .dependency(LogTracingTags.Dependency.PM_DB)
                                 .logInfo(
                                     logger,
                                     "Transactions from PM database from a given transactionId range processed"
@@ -119,7 +119,7 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
                                 "end_transaction_id" to endTransactionId
                             )
                         )
-                        .dependency(LogTracingConstant.PM_DEPENDENCY)
+                        .dependency(LogTracingTags.Dependency.PM_DB)
                         .logWarn(logger, "No results found for a given transactionId range")
                     Mono.error(NoResultFoundException(type))
                 } else {

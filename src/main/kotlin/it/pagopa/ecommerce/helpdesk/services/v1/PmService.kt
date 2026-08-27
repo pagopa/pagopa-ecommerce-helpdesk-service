@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMBulkTransactionDat
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMPaymentMethodsDataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.LogTracingTags
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.buildTransactionSearchResponse
 import it.pagopa.generated.ecommerce.helpdesk.model.*
@@ -89,7 +90,7 @@ class PmService(
                 LogTracingUtils.loggerTracingUtils()
                     .success()
                     .details(mapOf("search_type" to pmSearchPaymentMethodRequestDto.type))
-                    .dependency("PM-db")
+                    .dependency(LogTracingTags.Dependency.PM_DB)
                     .logInfo(logger, "[helpDesk pm service] searchPaymentMethod done successfully!")
             }
     }
@@ -120,7 +121,7 @@ class PmService(
                                     "search_criteria" to pmSearchBulkTransactionRequestDto.type,
                                 )
                             )
-                            .dependency("PM-db")
+                            .dependency(LogTracingTags.Dependency.PM_DB)
                             .logInfo(
                                 logger,
                                 "[helpDesk pm service] searchBulkTransaction done successfully!"

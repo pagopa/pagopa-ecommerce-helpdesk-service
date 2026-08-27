@@ -7,6 +7,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.v1.mongo.EcommerceTransactionD
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle.PMTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.LogTracingTags
 import it.pagopa.ecommerce.helpdesk.utils.PageUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.ConfidentialMailUtils
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
@@ -225,7 +226,7 @@ class HelpdeskService(
                                         "skip_from_PM_db" to skipFromPmDB.toString()
                                     )
                                 )
-                                .dependency("PM-db")
+                                .dependency(LogTracingTags.Dependency.PM_DB)
                                 .logInfo(logger, "Records recovered from PM DB")
                         }
                         .onErrorResume(InvalidSearchCriteriaException::class.java) {

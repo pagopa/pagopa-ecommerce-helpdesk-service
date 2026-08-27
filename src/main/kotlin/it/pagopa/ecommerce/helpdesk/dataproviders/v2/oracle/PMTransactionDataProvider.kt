@@ -6,6 +6,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.LogTracingTags
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.resultToTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
@@ -111,7 +112,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                             LogTracingUtils.loggerTracingUtils()
                                 .success()
                                 .details(mapOf("total" to it.toString()))
-                                .dependency("PM-db")
+                                .dependency(LogTracingTags.Dependency.PM_DB)
                                 .logInfo(logger, "Total transaction found")
                         }
                 },
@@ -144,7 +145,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                                 .details(
                                     mapOf("skip" to skip.toString(), "limit" to limit.toString())
                                 )
-                                .dependency("PM-db")
+                                .dependency(LogTracingTags.Dependency.PM_DB)
                                 .logInfo(logger, "Transactions from PM database retrieved")
                         }
                 },

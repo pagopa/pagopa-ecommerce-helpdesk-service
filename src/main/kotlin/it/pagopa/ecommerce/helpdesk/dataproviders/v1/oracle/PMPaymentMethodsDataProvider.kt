@@ -4,6 +4,7 @@ import io.r2dbc.spi.ConnectionFactory
 import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.PaymentMethodDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
+import it.pagopa.ecommerce.helpdesk.utils.LogTracingTags
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToPaymentMethodDtoList
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import org.slf4j.LoggerFactory
@@ -67,7 +68,7 @@ class PMPaymentMethodsDataProvider(@Autowired private val connectionFactory: Con
                                     "search_type" to searchType,
                                 )
                             )
-                            .dependency("PM-db")
+                            .dependency(LogTracingTags.Dependency.PM_DB)
                             .logInfo(logger, "Payment methods retrieved from PM database")
                     }
             },
