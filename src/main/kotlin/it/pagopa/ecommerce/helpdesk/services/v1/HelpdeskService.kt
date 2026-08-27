@@ -66,19 +66,6 @@ class HelpdeskService(
                 return@flatMap Mono.error(NoResultFoundException(searchTransactionRequestDto.type))
             }
             val skip = pageNumber * pageSize
-            if (logger.isDebugEnabled) {
-                LogTracingUtils.loggerTracingUtils()
-                    .details(
-                        mapOf(
-                            "ecommerce_count_info" to ecommerceCountInfo.toString(),
-                            "pm_count_info" to pmCountInfo.toString(),
-                            "page_number" to pageNumber.toString(),
-                            "page_size" to pageSize.toString()
-                        )
-                    )
-                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
-                    .logDebug(logger, "Requested page number details dump")
-            }
             val (ecommerceTotalPages, ecommerceRemainder) =
                 PageUtils.calculatePages(
                     pageSize = pageSize,
