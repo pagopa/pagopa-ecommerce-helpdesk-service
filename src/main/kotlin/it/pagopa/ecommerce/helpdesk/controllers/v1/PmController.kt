@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.helpdesk.controllers.v1
 import io.swagger.v3.oas.annotations.Parameter
 import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.services.v1.PmService
+import it.pagopa.ecommerce.helpdesk.utils.LogTracingConstant
 import it.pagopa.generated.ecommerce.helpdesk.api.PmApi
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import jakarta.validation.Valid
@@ -45,7 +46,7 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
                             "page_size" to pageSize.toString(),
                         )
                     )
-                    .dependency("PM_database")
+                    .dependency(LogTracingConstant.PM_DEPENDENCY)
                     .logInfo(logger, "[HelpDesk controller] pmSearchTransaction done!")
             }
     }
@@ -60,7 +61,7 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
             .doOnSuccess { _ ->
                 LogTracingUtils.loggerTracingUtils()
                     .success()
-                    .dependency("PM_database")
+                    .dependency(LogTracingConstant.PM_DEPENDENCY)
                     .logInfo(logger, "[HelpDesk controller] pmSearchPaymentMethod done!")
             }
     }
@@ -78,7 +79,7 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
             .doOnSuccess { _ ->
                 LogTracingUtils.loggerTracingUtils()
                     .success()
-                    .dependency("PM_database")
+                    .dependency(LogTracingConstant.PM_DEPENDENCY)
                     .logInfo(logger, "[HelpDesk controller] pmSearchBulkTransaction done!")
             }
     }

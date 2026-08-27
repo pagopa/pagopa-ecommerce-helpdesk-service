@@ -6,6 +6,7 @@ import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.LogTracingConstant
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.model.*
@@ -127,7 +128,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                             LogTracingUtils.loggerTracingUtils()
                                 .success()
                                 .details(mapOf("transactions_count" to it.toString()))
-                                .dependency("PM-db")
+                                .dependency(LogTracingConstant.PM_DEPENDENCY)
                                 .logInfo(logger, "Count query executed")
                         }
                 },
@@ -163,7 +164,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                                         "transactions_count" to it.toString()
                                     )
                                 )
-                                .dependency("PM-db")
+                                .dependency(LogTracingConstant.PM_DEPENDENCY)
                                 .logInfo(logger, "Count query executed")
                         }
                 },
@@ -196,7 +197,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                                 .details(
                                     mapOf("skip" to skip.toString(), "limit" to limit.toString())
                                 )
-                                .dependency("PM-db")
+                                .dependency(LogTracingConstant.PM_DEPENDENCY)
                                 .logInfo(logger, "Transactions from PM database retrieved")
                         }
                 },
@@ -239,7 +240,7 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                                         "limit" to limit.toString()
                                     )
                                 )
-                                .dependency("PM-db")
+                                .dependency(LogTracingConstant.PM_DEPENDENCY)
                                 .logInfo(logger, "Transactions from PM database retrieved")
                         }
                 },
