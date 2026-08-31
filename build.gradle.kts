@@ -21,7 +21,7 @@ plugins {
 }
 
 // eCommerce commons library version
-val ecommerceCommonsVersion = "3.10.1-CHK-4872-OER-logging-builder-SNAPSHOT-caa6655"
+val ecommerceCommonsVersion = "3.10.1-CHK-4872-OER-logging-builder-SNAPSHOT-f1d9f08"
 
 // eCommerce commons library git ref (by default tag)
 val ecommerceCommonsGitRef = ecommerceCommonsVersion
