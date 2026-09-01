@@ -21,7 +21,7 @@ plugins {
 }
 
 // eCommerce commons library version
-val ecommerceCommonsVersion = "3.10.0"
+val ecommerceCommonsVersion = "3.11.0"
 
 // eCommerce commons library git ref (by default tag)
 val ecommerceCommonsGitRef = ecommerceCommonsVersion
@@ -87,6 +87,8 @@ dependencies {
 
   // ECS logback encoder
   implementation("co.elastic.logging:logback-ecs-encoder:$ecsLoggingVersion")
+
+  implementation("io.micrometer:context-propagation")
 
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   testImplementation("org.springframework.boot:spring-boot-starter-test")

@@ -1,21 +1,15 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle
 
 import io.r2dbc.spi.ConnectionFactory
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.LogTracingTags
 import it.pagopa.ecommerce.helpdesk.utils.v1.SearchParamDecoder
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToTransactionInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.model.HelpDeskSearchTransactionRequestDto
-import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestDateDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestEmailDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestFiscalCodeDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestPaymentTokenDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestRptIdDto
-import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestTransactionIdDto
-import it.pagopa.generated.ecommerce.helpdesk.model.TransactionResultDto
+import it.pagopa.generated.ecommerce.helpdesk.model.*
 import java.time.OffsetDateTime
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -130,7 +124,13 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         .flatMap { result ->
                             result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
-                        .doOnNext { logger.info("Total transaction found: $it") }
+                        .doOnNext {
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(mapOf("transactions_count" to it.toString()))
+                                .dependency(LogTracingTags.Dependency.PM_DB)
+                                .logInfo(logger, "Count query executed")
+                        }
                 },
                 { it.close() }
             )
@@ -154,7 +154,19 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         .flatMap { result ->
                             result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
-                        .doOnNext { logger.info("Total transaction found: $it") }
+                        .doOnNext {
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(
+                                    mapOf(
+                                        "start_date" to startDate.toString(),
+                                        "end_date" to endDate.toString(),
+                                        "transactions_count" to it.toString()
+                                    )
+                                )
+                                .dependency(LogTracingTags.Dependency.PM_DB)
+                                .logInfo(logger, "Count query executed")
+                        }
                 },
                 { it.close() }
             )
@@ -170,10 +182,6 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
         Flux.usingWhen(
                 connectionFactory.create(),
                 { connection ->
-                    logger.info(
-                        "Retrieving transactions from PM database. Skipping: $skip, limit: $limit."
-                    )
-
                     Flux.from(
                             connection
                                 .createStatement(resultQuery)
@@ -183,6 +191,15 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                                 .execute()
                         )
                         .flatMap { resultToTransactionInfoDto(it) }
+                        .doOnComplete {
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(
+                                    mapOf("skip" to skip.toString(), "limit" to limit.toString())
+                                )
+                                .dependency(LogTracingTags.Dependency.PM_DB)
+                                .logInfo(logger, "Transactions from PM database retrieved")
+                        }
                 },
                 { it.close() }
             )
@@ -200,9 +217,6 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
         return Flux.usingWhen(
                 connectionFactory.create(),
                 { connection ->
-                    logger.info(
-                        "Retrieving transactions from PM database. Skipping: $skip, limit: $limit."
-                    )
                     Flux.from(
                             connection
                                 .createStatement(resultQuery)
@@ -215,6 +229,20 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                                 .execute()
                         )
                         .flatMap { result -> resultToTransactionInfoDto(result) }
+                        .doOnComplete {
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(
+                                    mapOf(
+                                        "start_date" to startDate.toString(),
+                                        "end_date" to endDate.toString(),
+                                        "skip" to skip.toString(),
+                                        "limit" to limit.toString()
+                                    )
+                                )
+                                .dependency(LogTracingTags.Dependency.PM_DB)
+                                .logInfo(logger, "Transactions from PM database retrieved")
+                        }
                 },
                 { connection -> connection.close() }
             )

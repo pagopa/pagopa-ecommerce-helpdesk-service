@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.helpdesk.services.v2
 
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.mongo.EcommerceTransactionDataProvider
@@ -39,7 +40,6 @@ class EcommerceService(
         pageSize: Int,
         ecommerceSearchTransactionRequestDto: EcommerceSearchTransactionRequestDto
     ): Mono<SearchTransactionResponseDto> {
-        logger.info("[helpDesk ecommerce service] searchTransaction method")
         return searchPaginatedResult(
                 pageNumber = pageNumber,
                 pageSize = pageSize,
@@ -61,6 +61,21 @@ class EcommerceService(
                     results = results
                 )
             }
+            .doOnSuccess { _ ->
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .details(
+                        mapOf(
+                            "page_number" to pageNumber.toString(),
+                            "page_size" to pageSize.toString(),
+                        )
+                    )
+                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                    .logInfo(
+                        logger,
+                        "[helpDesk ecommerce service] searchTransaction method done successfully!"
+                    )
+            }
     }
 
     private fun <K, V> searchPaginatedResult(
@@ -73,12 +88,6 @@ class EcommerceService(
         return dataProvider.totalRecordCount(searchCriteria).flatMap { countInfo ->
             if (countInfo.totalCount() > 0) {
                 val skip = pageSize * pageNumber
-                logger.info(
-                    "Total record found: {}, skip: {}, limit: {}",
-                    countInfo,
-                    skip,
-                    pageSize
-                )
                 dataProvider
                     .findResult(
                         searchParams = searchCriteria,
@@ -87,6 +96,21 @@ class EcommerceService(
                         countInfo = countInfo
                     )
                     .zipWith(mono { countInfo.totalCount().toInt() }, ::Pair)
+                    .doOnSuccess { _ ->
+                        LogTracingUtils.loggerTracingUtils()
+                            .success()
+                            .details(
+                                mapOf(
+                                    "page_number" to pageNumber.toString(),
+                                    "page_size" to pageSize.toString(),
+                                    "count_info" to countInfo.toString(),
+                                    "skip" to skip.toString(),
+                                    "search_criteria" to searchCriteriaType
+                                )
+                            )
+                            .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                            .logInfo(logger, "searchPaginatedResult done successfully!")
+                    }
             } else {
                 Mono.error(NoResultFoundException(searchCriteriaType))
             }
@@ -96,7 +120,11 @@ class EcommerceService(
     fun searchMetrics(
         searchMetricsRequestDto: SearchMetricsRequestDto
     ): Mono<TransactionMetricsResponseDto> {
-        logger.info("[helpDesk ecommerce service] searchMetrics method")
-        return stateMetricsDataProvider.computeMetrics(searchMetricsRequestDto)
+        return stateMetricsDataProvider.computeMetrics(searchMetricsRequestDto).doOnSuccess { _ ->
+            LogTracingUtils.loggerTracingUtils()
+                .success()
+                .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                .logInfo(logger, "ecommerceSearchTransaction done successfully!")
+        }
     }
 }

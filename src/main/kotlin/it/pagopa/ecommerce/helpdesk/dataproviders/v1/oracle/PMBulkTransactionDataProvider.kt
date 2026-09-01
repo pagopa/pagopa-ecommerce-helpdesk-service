@@ -1,11 +1,16 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v1.oracle
 
 import io.r2dbc.spi.ConnectionFactory
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.v1.BulkTransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.LogTracingTags
 import it.pagopa.ecommerce.helpdesk.utils.v1.resultToBulkTransactionInfoDto
-import it.pagopa.generated.ecommerce.helpdesk.model.*
+import it.pagopa.generated.ecommerce.helpdesk.model.PmSearchBulkTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.model.ProductDto
+import it.pagopa.generated.ecommerce.helpdesk.model.SearchTransactionRequestTransactionIdRangeDto
+import it.pagopa.generated.ecommerce.helpdesk.model.TransactionBulkResultDto
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -56,9 +61,6 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
         return Flux.usingWhen(
                 connectionFactory.create(),
                 { connection ->
-                    logger.info(
-                        "Retrieving transactions from PM database given transactionId range [$startTransactionId, $endTransactionId]"
-                    )
                     Flux.from(
                             connection
                                 .createStatement(resultQuery)
@@ -69,21 +71,56 @@ class PMBulkTransactionDataProvider(@Autowired private val connectionFactory: Co
                                 .execute()
                         )
                         .flatMap { result ->
-                            logger.debug("Query executed successfully. Processing results.")
+                            if (logger.isDebugEnabled) {
+                                LogTracingUtils.loggerTracingUtils()
+                                    .success()
+                                    .logDebug(
+                                        logger,
+                                        "Query executed successfully. Processing results."
+                                    )
+                            }
                             resultToBulkTransactionInfoDto(result)
+                        }
+                        .doOnComplete {
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(
+                                    mapOf(
+                                        "type" to type,
+                                        "start_transaction_id" to startTransactionId,
+                                        "end_transaction_id" to endTransactionId
+                                    )
+                                )
+                                .dependency(LogTracingTags.Dependency.PM_DB)
+                                .logInfo(
+                                    logger,
+                                    "Transactions from PM database from a given transactionId range processed"
+                                )
                         }
                 },
                 { connection ->
-                    logger.debug("Closing connection.")
+                    if (logger.isDebugEnabled) {
+                        LogTracingUtils.loggerTracingUtils()
+                            .success()
+                            .logDebug(logger, "Closing connection")
+                    }
                     connection.close()
                 }
             )
             .collectList()
             .flatMap { results ->
                 if (results.isEmpty()) {
-                    logger.warn(
-                        "No results found for transactionId range [$startTransactionId, $endTransactionId]."
-                    )
+                    LogTracingUtils.loggerTracingUtils()
+                        .failure()
+                        .details(
+                            mapOf(
+                                "type" to type,
+                                "start_transaction_id" to startTransactionId,
+                                "end_transaction_id" to endTransactionId
+                            )
+                        )
+                        .dependency(LogTracingTags.Dependency.PM_DB)
+                        .logWarn(logger, "No results found for a given transactionId range")
                     Mono.error(NoResultFoundException(type))
                 } else {
                     Mono.just(results)

@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.utils
 
 import it.pagopa.ecommerce.commons.domain.Confidential
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
@@ -23,12 +24,20 @@ abstract class ConfidentialDataCacheUtils<T>(
      */
     fun toClearData(encrypted: Confidential<T>): Mono<T> {
         return if (encryptedToClearMap.contains(encrypted.opaqueData)) {
-            logger.info("confidential data cache hit")
+            if (logger.isDebugEnabled) {
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .logDebug(logger, "confidential data cache hit")
+            }
             mono { encryptedToClearMap[encrypted.opaqueData] }
         } else {
             confidentialDataManager
                 .decrypt(encrypted, confidentialFromClearData)
-                .doOnError { e -> logger.error("Exception decrypting confidential data", e) }
+                .doOnError { e ->
+                    LogTracingUtils.loggerTracingUtils()
+                        .failure()
+                        .logError(logger, e, "Exception decrypting confidential data")
+                }
                 .doOnNext { decryptedData ->
                     encryptedToClearMap[encrypted.opaqueData] = decryptedData
                 }
@@ -58,7 +67,9 @@ abstract class ConfidentialDataCacheUtils<T>(
                             encryptedToClearMap[encrypted.opaqueData] = clearText
                         }
                         .doOnError { e ->
-                            logger.error("Exception encrypting confidential data", e)
+                            LogTracingUtils.loggerTracingUtils()
+                                .failure()
+                                .logError(logger, e, "Exception encrypting confidential data")
                         }
                 } else {
                     Mono.just(Confidential(it.get()))

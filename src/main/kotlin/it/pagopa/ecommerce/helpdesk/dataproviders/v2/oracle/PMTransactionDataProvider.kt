@@ -1,10 +1,12 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.v2.oracle
 
 import io.r2dbc.spi.ConnectionFactory
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.dataproviders.CountInfo
 import it.pagopa.ecommerce.helpdesk.dataproviders.v2.TransactionDataProvider
 import it.pagopa.ecommerce.helpdesk.exceptions.InvalidSearchCriteriaException
 import it.pagopa.ecommerce.helpdesk.exceptions.NoResultFoundException
+import it.pagopa.ecommerce.helpdesk.utils.LogTracingTags
 import it.pagopa.ecommerce.helpdesk.utils.v2.SearchParamDecoderV2
 import it.pagopa.ecommerce.helpdesk.utils.v2.resultToTransactionInfoDto
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
@@ -106,7 +108,13 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                         .flatMap { result ->
                             result.map { row -> row[0, java.lang.Long::class.java]!!.toInt() }
                         }
-                        .doOnNext { logger.info("Total transaction found: $it") }
+                        .doOnNext {
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(mapOf("total" to it.toString()))
+                                .dependency(LogTracingTags.Dependency.PM_DB)
+                                .logInfo(logger, "Total transaction found")
+                        }
                 },
                 { it.close() }
             )
@@ -122,10 +130,6 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
         Flux.usingWhen(
                 connectionFactory.create(),
                 { connection ->
-                    logger.info(
-                        "Retrieving transactions from PM database. Skipping: $skip, limit: $limit."
-                    )
-
                     Flux.from(
                             connection
                                 .createStatement(resultQuery)
@@ -135,6 +139,15 @@ class PMTransactionDataProvider(@Autowired private val connectionFactory: Connec
                                 .execute()
                         )
                         .flatMap { resultToTransactionInfoDto(it) }
+                        .doOnNext {
+                            LogTracingUtils.loggerTracingUtils()
+                                .success()
+                                .details(
+                                    mapOf("skip" to skip.toString(), "limit" to limit.toString())
+                                )
+                                .dependency(LogTracingTags.Dependency.PM_DB)
+                                .logInfo(logger, "Transactions from PM database retrieved")
+                        }
                 },
                 { it.close() }
             )

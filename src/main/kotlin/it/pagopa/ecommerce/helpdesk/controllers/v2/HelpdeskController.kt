@@ -1,9 +1,12 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v2
 
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.services.v2.HelpdeskService
 import it.pagopa.ecommerce.helpdesk.utils.PmProviderType
+import it.pagopa.ecommerce.helpdesk.utils.v2.LogUtils
 import it.pagopa.generated.ecommerce.helpdesk.v2.api.HelpdeskApi
-import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.HelpDeskSearchTransactionRequestDto
+import it.pagopa.generated.ecommerce.helpdesk.v2.model.SearchTransactionResponseDto
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import org.slf4j.LoggerFactory
@@ -28,20 +31,40 @@ class HelpdeskController(
         helpDeskSearchTransactionRequestDto: Mono<HelpDeskSearchTransactionRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
-        logger.info(
-            "[HelpDesk V2 controller] SearchTransaction using ${if (searchPmInEcommerceHistory) "v2 (ecommerce history db)" else "v1 (pm legacy db)"} search"
-        )
-        return helpDeskSearchTransactionRequestDto
-            .flatMap {
-                helpdeskService.searchTransaction(
+        return helpDeskSearchTransactionRequestDto.flatMap { dto ->
+            // Add attributes based on the DTO's type to enrich the log context
+            val logContextAttribute = LogUtils.extractContextAttributeFromDto(dto)
+
+            helpdeskService
+                .searchTransaction(
                     pageNumber = pageNumber,
                     pageSize = pageSize,
-                    searchTransactionRequestDto = it,
+                    searchTransactionRequestDto = dto,
                     pmProviderType =
                         if (searchPmInEcommerceHistory) PmProviderType.ECOMMERCE_HISTORY
                         else PmProviderType.PM_LEGACY
                 )
-            }
-            .map { ResponseEntity.ok(it) }
+                .map { ResponseEntity.ok(it) }
+                .doOnSuccess {
+                    LogTracingUtils.loggerTracingUtils()
+                        .success()
+                        .details(
+                            mapOf(
+                                "page_number" to pageNumber.toString(),
+                                "page_size" to pageSize.toString(),
+                                "db" to
+                                    if (searchPmInEcommerceHistory) "v2 (ecommerce history db)"
+                                    else "v1 (pm legacy db)"
+                            )
+                        )
+                        .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                        .logInfo(logger, "[HelpDesk V2 controller] SearchTransaction search")
+                }
+                .contextWrite { context ->
+                    logContextAttribute?.let { (key, value) ->
+                        LogTracingUtils.enrichContextForEvent(mapOf(key to value), context)
+                    } ?: context
+                }
+        }
     }
 }

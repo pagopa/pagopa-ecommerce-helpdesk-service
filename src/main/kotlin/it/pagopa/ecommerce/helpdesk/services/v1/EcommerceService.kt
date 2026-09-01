@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.commons.client.NpgClient.PaymentMethod
 import it.pagopa.ecommerce.commons.domain.v2.TransactionId
 import it.pagopa.ecommerce.commons.exceptions.NpgResponseException
 import it.pagopa.ecommerce.commons.generated.npg.v1.dto.OrderResponseDto
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.commons.utils.ConfidentialDataManager
 import it.pagopa.ecommerce.commons.utils.NpgApiKeyConfiguration
 import it.pagopa.ecommerce.helpdesk.dataproviders.DataProvider
@@ -53,7 +54,6 @@ class EcommerceService(
         pageSize: Int,
         ecommerceSearchTransactionRequestDto: EcommerceSearchTransactionRequestDto
     ): Mono<SearchTransactionResponseDto> {
-        logger.info("[helpDesk ecommerce service] searchTransaction method")
         return searchPaginatedResult(
                 pageNumber = pageNumber,
                 pageSize = pageSize,
@@ -65,6 +65,22 @@ class EcommerceService(
                 searchCriteriaType = ecommerceSearchTransactionRequestDto.type,
                 dataProvider = ecommerceTransactionDataProvider
             )
+            .doOnSuccess { _ ->
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .details(
+                        mapOf(
+                            "search_criteria" to ecommerceSearchTransactionRequestDto.type,
+                            "page_number" to pageNumber.toString(),
+                            "page_size" to pageSize.toString()
+                        )
+                    )
+                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                    .logInfo(
+                        logger,
+                        "[helpDesk ecommerce service] searchTransaction method complete successfully"
+                    )
+            }
             .map { (results, totalCount) ->
                 buildTransactionSearchResponse(
                     currentPage = pageNumber,
@@ -80,10 +96,7 @@ class EcommerceService(
         pageSize: Int,
         searchRequest: EcommerceSearchDeadLetterEventsRequestDto
     ): Mono<SearchDeadLetterEventResponseDto> {
-        logger.info(
-            "[helpDesk ecommerce service] search dead letter events, type: {}",
-            searchRequest.source
-        )
+
         val timeRange: DeadLetterSearchDateTimeRangeDto = searchRequest.timeRange
 
         return mono { searchRequest }
@@ -122,6 +135,19 @@ class EcommerceService(
                     pageSize = pageSize,
                     results = results
                 )
+            }
+            .doOnSuccess { _ ->
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .details(
+                        mapOf(
+                            "search_request" to searchRequest.source.toString(),
+                            "page_number" to pageNumber.toString(),
+                            "page_size" to pageSize.toString()
+                        )
+                    )
+                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                    .logInfo(logger, "search dead letter events done")
             }
     }
 
@@ -181,6 +207,12 @@ class EcommerceService(
                 } else {
                     Mono.error(NoResultFoundException(transactionId))
                 }
+            }
+            .doOnSuccess { _ ->
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                    .logInfo(logger, "Performing getOrder successfully")
             }
     }
 
@@ -262,33 +294,44 @@ class EcommerceService(
         correlationId: String,
         paymentMethod: PaymentMethod
     ): Mono<OrderResponseDto> {
-        logger.info(
-            "Performing get order for transaction with id: [{}], orderId [{}], pspId: [{}], correlationId: [{}], paymentMethod: [{}]",
-            transactionId?.value(),
-            orderId,
-            pspId,
-            correlationId,
-            paymentMethod.serviceName,
-        )
-        return npgApiKeyConfiguration[paymentMethod, pspId].fold(
-            { ex -> Mono.error(NpgBadGatewayException(ex.message)) },
-            { apiKey ->
-                npgClient.getOrder(UUID.fromString(correlationId), apiKey, orderId).onErrorMap(
-                    NpgResponseException::class.java
-                ) { exception: NpgResponseException ->
-                    val responseStatusCode = exception.statusCode
-                    responseStatusCode
-                        .map {
-                            if (it.is5xxServerError) {
-                                NpgBadGatewayException("$it")
-                            } else {
-                                NpgBadRequestException(transactionId?.value(), orderId, "$it")
+        return npgApiKeyConfiguration[paymentMethod, pspId]
+            .fold(
+                { ex -> Mono.error(NpgBadGatewayException(ex.message)) },
+                { apiKey ->
+                    npgClient.getOrder(UUID.fromString(correlationId), apiKey, orderId).onErrorMap(
+                        NpgResponseException::class.java
+                    ) { exception: NpgResponseException ->
+                        val responseStatusCode = exception.statusCode
+                        responseStatusCode
+                            .map {
+                                if (it.is5xxServerError) {
+                                    NpgBadGatewayException("$it")
+                                } else {
+                                    NpgBadRequestException(transactionId?.value(), orderId, "$it")
+                                }
                             }
-                        }
-                        .orElse(NpgBadGatewayException("NPG generic error"))
+                            .orElse(NpgBadGatewayException("NPG generic error"))
+                    }
                 }
+            )
+            .doOnSuccess { _ ->
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .attributes(
+                        mapOf(
+                            LogTracingUtils.AttributeKeys.PSP_ID to pspId,
+                            LogTracingUtils.AttributeKeys.CORRELATION_ID to correlationId
+                        )
+                    )
+                    .details(
+                        mapOf(
+                            "order_id" to orderId,
+                            "payment_method_service_name" to paymentMethod.serviceName
+                        )
+                    )
+                    .dependency("NPG")
+                    .logInfo(logger, "Performing getOrder successfully")
             }
-        )
     }
 
     private fun <K, V> searchPaginatedResult(
@@ -302,12 +345,6 @@ class EcommerceService(
             val totalCount = countInfo.totalCount().toInt()
             if (totalCount > 0) {
                 val skip = pageSize * pageNumber
-                logger.info(
-                    "Total record found: {}, skip: {}, limit: {}",
-                    totalCount,
-                    skip,
-                    pageSize
-                )
                 dataProvider
                     .findResult(
                         searchParams = searchCriteria,
@@ -316,6 +353,21 @@ class EcommerceService(
                         countInfo = countInfo
                     )
                     .zipWith(mono { totalCount }, ::Pair)
+                    .doOnSuccess { _ ->
+                        LogTracingUtils.loggerTracingUtils()
+                            .success()
+                            .details(
+                                mapOf(
+                                    "total_count" to totalCount.toString(),
+                                    "skip" to skip.toString(),
+                                    "page_size" to pageSize.toString(),
+                                )
+                            )
+                            .logInfo(
+                                logger,
+                                "Search transactions with pagination successfully done"
+                            )
+                    }
             } else {
                 Mono.error(NoResultFoundException(searchCriteriaType))
             }

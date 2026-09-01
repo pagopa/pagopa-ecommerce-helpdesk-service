@@ -1,7 +1,9 @@
 package it.pagopa.ecommerce.helpdesk.controllers.v1
 
 import io.swagger.v3.oas.annotations.Parameter
+import it.pagopa.ecommerce.commons.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.helpdesk.services.v1.PmService
+import it.pagopa.ecommerce.helpdesk.utils.LogTracingTags
 import it.pagopa.generated.ecommerce.helpdesk.api.PmApi
 import it.pagopa.generated.ecommerce.helpdesk.model.*
 import jakarta.validation.Valid
@@ -26,7 +28,6 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
         pmSearchTransactionRequestDto: Mono<PmSearchTransactionRequestDto>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<SearchTransactionResponseDto>> {
-        logger.info("[HelpDesk controller] pmSearchTransaction")
         return pmSearchTransactionRequestDto
             .flatMap {
                 pmService.searchTransaction(
@@ -36,16 +37,33 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
                 )
             }
             .map { ResponseEntity.ok(it) }
+            .doOnSuccess { _ ->
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .details(
+                        mapOf(
+                            "page_number" to pageNumber.toString(),
+                            "page_size" to pageSize.toString(),
+                        )
+                    )
+                    .dependency(LogTracingTags.Dependency.PM_DB)
+                    .logInfo(logger, "[HelpDesk controller] pmSearchTransaction done!")
+            }
     }
 
     override fun pmSearchPaymentMethod(
         pmSearchPaymentMethodRequestDto: Mono<PmSearchPaymentMethodRequestDto>,
         exchange: ServerWebExchange?
     ): Mono<ResponseEntity<SearchPaymentMethodResponseDto>> {
-        logger.info("[HelpDesk controller] pmSearchPaymentMethod")
         return pmSearchPaymentMethodRequestDto
             .flatMap { pmService.searchPaymentMethod(pmSearchPaymentMethodRequestDto = it) }
             .map { ResponseEntity.ok(it) }
+            .doOnSuccess { _ ->
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .dependency(LogTracingTags.Dependency.PM_DB)
+                    .logInfo(logger, "[HelpDesk controller] pmSearchPaymentMethod done!")
+            }
     }
 
     override fun pmSearchBulkTransaction(
@@ -55,9 +73,14 @@ class PmController(@Autowired val pmService: PmService) : PmApi {
         pmSearchBulkTransactionRequestDto: @Valid Mono<PmSearchBulkTransactionRequestDto>,
         @Parameter(hidden = true) exchange: ServerWebExchange
     ): Mono<ResponseEntity<Flux<TransactionBulkResultDto>>> {
-        logger.info("[HelpDesk controller] pmSearchBulkTransaction")
         return pmSearchBulkTransactionRequestDto
             .flatMap { pmService.searchBulkTransaction(it) }
             .map { ResponseEntity.ok(Flux.fromIterable(it)) }
+            .doOnSuccess { _ ->
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .dependency(LogTracingTags.Dependency.PM_DB)
+                    .logInfo(logger, "[HelpDesk controller] pmSearchBulkTransaction done!")
+            }
     }
 }
