@@ -7,7 +7,6 @@ on:
       - 'api-spec/**/*.yaml'
       - 'api-spec/**/*.yml'
       - '.spectral.yaml'
-      - '.github/actions/openapi-lint/**'
       - '.github/workflows/openapi_quality.yml'
 
 permissions:
@@ -31,9 +30,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-      # report-only until the action moves to github-actions-template
+      # report-only for now, the gate is tightened separately
       - name: Lint ${{ matrix.spec.path }}
-        uses: ./.github/actions/openapi-lint
+        # pinned to the PIDM-2330 branch head, re-pin to the main SHA before merging
+        uses: pagopa/github-actions-template/openapi-lint@b96101a
         with:
           spec_path: ${{ matrix.spec.path }}
+          # this repo's calibrated ruleset, not the one bundled with the action
+          ruleset: .spectral.yaml
           fail_on_violation: false
