@@ -1,13 +1,14 @@
 name: OpenAPI Quality Check
 
-# this action runs only when OpenAPI spec files are modified
+# runs when the specs, the ruleset or the check itself change, on any base branch
 on:
   pull_request:
-    branches:
-      - main
     paths:
       - 'api-spec/**/*.yaml'
       - 'api-spec/**/*.yml'
+      - '.spectral.yaml'
+      - '.github/actions/openapi-lint/**'
+      - '.github/workflows/openapi_quality.yml'
 
 permissions:
   contents: read
@@ -15,8 +16,11 @@ permissions:
 jobs:
   openapi_quality:
     runs-on: ubuntu-latest
-    name: Rate My OpenAPI
+    # an expression here stops GitHub appending the whole matrix combination
+    name: Lint ${{ matrix.spec.version }}
     strategy:
+      # one failing spec must not cancel the others
+      fail-fast: false
       matrix:
         spec:
           - path: 'api-spec/v1/openapi.yaml'
@@ -27,11 +31,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-      - name: Rate My OpenAPI - ${{ matrix.spec.version }}
-        uses: zuplo/rmoa-action@c4a74a8823496c6061cd6fb586d80db8c2fd7e34 # v1
+      # report-only until the action moves to github-actions-template
+      - name: Lint ${{ matrix.spec.path }}
+        uses: ./.github/actions/openapi-lint
         with:
-          filepath: ${{ matrix.spec.path }}
-          apikey: ${{ secrets.RATEMYOPENAPI_API_KEY }}
-          minimum-score: 80
-          max-warnings: 44
-          max-errors: 5
+          spec_path: ${{ matrix.spec.path }}
+          fail_on_violation: false
