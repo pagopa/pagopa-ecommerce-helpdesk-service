@@ -1,12 +1,11 @@
 name: OpenAPI Quality Check
 
-# runs when the specs, the ruleset or the check itself change, on any base branch
+# runs when the specs or the check itself change, on any base branch
 on:
   pull_request:
     paths:
       - 'api-spec/**/*.yaml'
       - 'api-spec/**/*.yml'
-      - '.spectral.yaml'
       - '.github/workflows/openapi_quality.yml'
 
 permissions:
@@ -15,10 +14,8 @@ permissions:
 jobs:
   openapi_quality:
     runs-on: ubuntu-latest
-    # an expression here stops GitHub appending the whole matrix combination
     name: Lint ${{ matrix.spec.version }}
     strategy:
-      # one failing spec must not cancel the others
       fail-fast: false
       matrix:
         spec:
@@ -32,10 +29,8 @@ jobs:
 
       # report-only for now, the gate is tightened separately
       - name: Lint ${{ matrix.spec.path }}
-        # pinned to the PIDM-2330 branch head, re-pin to the main SHA before merging
+        # note: ruleset bundled with the shared action, can be overridden if needed
         uses: pagopa/github-actions-template/openapi-lint@b96101a679da51806f2fcb734bbf4035c97ed73a
         with:
           spec_path: ${{ matrix.spec.path }}
-          # this repo's calibrated ruleset, not the one bundled with the action
-          ruleset: .spectral.yaml
           fail_on_violation: false
