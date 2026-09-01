@@ -11,6 +11,7 @@ info:
     url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
 servers:
   - url: https://{host}
+    x-internal: true # required by owasp:api9:2023-inventory-access
     variables:
       host:
         description: The hostname of the API server
@@ -1208,7 +1209,6 @@ components:
           description: Dead letter event insertion date time
         transactionInfo:
           $ref: '#/components/schemas/DeadLetterTransactionInfo'
-          description: Dead letter transaction info
       required:
         - queueName
         - data
@@ -1656,9 +1656,6 @@ components:
               - source
               - timeRange
           examples:
-            search by source without time range:
-              value:
-                source: ALL
             search by source with time range:
               value:
                 source: ALL
