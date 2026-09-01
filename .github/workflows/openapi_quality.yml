@@ -33,7 +33,7 @@ jobs:
       # report-only for now, the gate is tightened separately
       - name: Lint ${{ matrix.spec.path }}
         # pinned to the PIDM-2330 branch head, re-pin to the main SHA before merging
-        uses: pagopa/github-actions-template/openapi-lint@b96101a
+        uses: pagopa/github-actions-template/openapi-lint@b96101a679da51806f2fcb734bbf4035c97ed73a
         with:
           spec_path: ${{ matrix.spec.path }}
           # this repo's calibrated ruleset, not the one bundled with the action
