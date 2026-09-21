@@ -27,10 +27,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-      # report-only for now, the gate is tightened separately
+      # blocks on errors
       - name: Lint ${{ matrix.spec.path }}
         # note: ruleset bundled with the shared action, can be overridden if needed
         uses: pagopa/github-actions-template/openapi-lint@bfb849a1e43acbc9347afae2428a799e0d2efe88
         with:
           spec_path: ${{ matrix.spec.path }}
-          fail_on_violation: false
+          fail_severity: error
