@@ -53,6 +53,12 @@ parameters:
       - False
       - True
 
+  # Required for TAS tests
+  - name: ref
+    displayName: "TAS repo branch/tag"
+    type: string
+    default: main
+
 resources:
   repositories:
     - repository: pagopaCommons
@@ -60,6 +66,12 @@ resources:
       name: pagopa/azure-pipeline-templates
       ref: refs/tags/v6.14.0
       endpoint: 'io-azure-devops-github-ro'
+    - repository: tas
+      type: github
+      name: pagopa/azure-pipeline-templates
+      ref: refs/heads/PQ-456-add-qa-tas-template-dependsOn   # template repo branch (→ refs/tags/v1 once merged)
+      endpoint: 'io-azure-devops-github-ro'   # ← GitHub service connection name (Project settings → Service connections)
+
 
 pool:
   vmImage: ubuntu-latest
@@ -67,9 +79,19 @@ pool:
 # --- START Deploy DEV --- #
 stages:
 
+  - stage: 'test_fake_buil_and_deploy'
+    displayName: 'Fake build and deploy for DEV deployment'
+    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
+    jobs:
+      - job: test_fake_buil_and_deploy
+        displayName: 'Fake build and deploy for DEV deployment'
+        steps:
+          - task: Bash@3
+
   - stage: 'Build_for_DEV'
     displayName: 'Build for DEV'
-    condition: and(succeeded(), not(${{ parameters.SKIP_BUILD }}), eq(${{parameters.DEV_DEPLOY}}, true))
+    condition: false
+    #condition: and(succeeded(), not(${{ parameters.SKIP_BUILD }}), eq(${{parameters.DEV_DEPLOY}}, true))
     jobs:
       - job: Build_docker
         displayName: Build docker with Build.SourceVersion as TAG
@@ -120,6 +142,47 @@ stages:
                     VALUE_FILE: "helm/values-dev.yaml"
                     GREEN_VERSION: $(Build.SourceVersion)
   # --- END Deploy DEV --- #
+
+  # --- START TAS TEST for DEV DEPLOY --- #
+  - stage: TAS_tests_DEV
+    dependsOn: test_fake_buil_and_deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+    jobs:
+      - job: Run_TAS_tests
+        steps:
+          - template: templates/qa-tas/tas-integration-test.yml@tas
+            parameters:
+              testType: integration
+              suite: tas_pass
+              environment: dev
+              mode: async
+              ref: ${{ parameters.ref }}
+              verifyOrchestrator: true
+              publishTests: true
+              stepName: TAS_INTEGRATION_dev
+              # Behave tag filter. Leave empty to keep the workflow default (@runnable,
+              # used by the integration suites). Override to target other suites, e.g.
+              # set 'tags: @e2e' to run the e2e checkout suite (testType: e2e).
+              tags: '@runnable'
+              # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
+              # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
+              # masked in the logs — do not paste the raw token into this file.
+              githubToken: $(TO_DO_ADD_NEW_TOKEN)
+              # Optional overrides — exposed inline because they are typically
+              # set-once-and-forget (not toggled from the portal at run-time):
+              # pythonVersion: "3.11"
+              # poolVmImage:   "ubuntu-latest"
+              # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
+              #
+              # Supply-chain integrity, pinned mode (true SRI). When set, the sidecar
+              # verification is replaced by a check against this explicit digest.
+              # Compute it once against the version you trust and bake it in:
+              #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
+              # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
+              # Testing parameter for setting dependecy to other stages
+              #dependsOnStages: ['Deploy_UAT_pagoPA']
+  # --- END TAS TEST for DEV DEPLOY --- #
 
   # --- START API TEST for DEV DEPLOY --- #
   - stage: "API_DEV_test_V1"
@@ -394,6 +457,50 @@ stages:
               USER_EMAIL: $(HELPDESK_TESTING_EMAIL_UAT)
               USER_FISCAL_CODE: $(HELPDESK_TESTING_FISCALCODE_UAT)
   # --- END API TEST for GREEN UAT DEPLOY --- #
+
+  # --- START TAS TEST for UAT DEPLOY --- #
+  - stage: TAS_tests_UAT
+    dependsOn:
+      # TO-CHANGE with:
+      #- Deploy_UAT_Green
+      - Build_release_candidate #test value
+    pool:
+      vmImage: 'ubuntu-latest'
+    jobs:
+      - job: Run_TAS_tests
+        steps:
+          - template: templates/qa-tas/tas-integration-test.yml@tas
+            parameters:
+              testType: integration
+              suite: tas_pass
+              environment: uat
+              mode: async
+              ref: ${{ parameters.ref }}
+              verifyOrchestrator: true
+              publishTests: true
+              stepName: TAS_INTEGRATION_uat
+              # Behave tag filter. Leave empty to keep the workflow default (@runnable,
+              # used by the integration suites). Override to target other suites, e.g.
+              # set 'tags: @e2e' to run the e2e checkout suite (testType: e2e).
+              tags: '@runnable'
+              # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
+              # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
+              # masked in the logs — do not paste the raw token into this file.
+              githubToken: $(TO_DO_ADD_NEW_TOKEN)
+              # Optional overrides — exposed inline because they are typically
+              # set-once-and-forget (not toggled from the portal at run-time):
+              # pythonVersion: "3.11"
+              # poolVmImage:   "ubuntu-latest"
+              # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
+              #
+              # Supply-chain integrity, pinned mode (true SRI). When set, the sidecar
+              # verification is replaced by a check against this explicit digest.
+              # Compute it once against the version you trust and bake it in:
+              #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
+              # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
+              # Testing parameter for setting dependecy to other stages
+              #dependsOnStages: ['Deploy_UAT_pagoPA']
+  # --- END TAS TEST for UAT DEPLOY --- #
 
   # --- START Deploy PROD --- #
   - stage: "Prod_WaitForApproval"
