@@ -20,7 +20,7 @@ microservice-chart:
     envSecret: {}
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaecommercehelpdeskservice
-    tag: "2.14.1"
+    tag: "2.14.2"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -124,7 +124,6 @@ microservice-chart:
     NPG_GOOGLE_PAY_PSP_LIST: ""
     SEARCH_DEAD_LETTER_QUEUE_MAPPING: >
       {ALL: '*', ECOMMERCE: 'pagopa-p-weu-ecommerce-transactions-dead-letter-queue', NOTIFICATIONS_SERVICE: 'pagopa-p-weu-ecommerce-notifications-service-errors-queue'}
-
     SEARCH_DEAD_LETTER_TIME_RANGE_MAX: "7"
     SEARCH_PM_IN_ECOMMERCE_HISTORY_ENABLED: "true"
     SEARCH_PM_TRANSACTION_ID_RANGE_MAX: "10000"
