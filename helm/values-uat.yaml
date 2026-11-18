@@ -15,6 +15,7 @@ microservice-chart:
       repository: pagopaucommonacr.azurecr.io/pagopaecommercehelpdeskservice
       tag: "latest"
     envConfig:
+      JAVA_OPTS: "-XX:-UseBASE64Intrinsics"
       ECS_SERVICE_NAME: "pagopa-ecommerce-helpdesk-service-blue"
       OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-helpdesk-service-blue,deployment.environment=uat"
     envSecret: {}
@@ -78,6 +79,7 @@ microservice-chart:
           type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
           value: "75"
   envConfig:
+    JAVA_OPTS: "-XX:-UseBASE64Intrinsics"
     ACTIVE_PROFILE: k8s
     DEFAULT_LOGGING_LEVEL: "info"
     APP_LOGGING_LEVEL: "info"
