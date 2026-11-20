@@ -68,12 +68,26 @@ fun baseTransactionToTransactionInfoDtoV2(
                     if (event.data != null) {
                         when (event) {
                             is TransactionClosureErrorEvent -> {
-                                this.description(event.data.errorDescription)
-                                this.httpCode(event.data.httpErrorCode.toString())
+                                this.errorDetails =
+                                    ErrorDetailsDto(
+                                            event.data.errorDescription,
+                                            event.data.errorType.toString()
+                                        )
+                                        .apply {
+                                            if (event.data.httpErrorCode != null)
+                                                httpErrorCode = event.data.httpErrorCode?.value()
+                                        }
                             }
                             is TransactionRefundErrorEvent -> {
-                                this.description(event.data.errorDescription)
-                                this.httpCode(event.data.httpErrorCode.toString())
+                                this.errorDetails =
+                                    ErrorDetailsDto(
+                                            event.data.errorDescription,
+                                            event.data.errorType.toString()
+                                        )
+                                        .apply {
+                                            if (event.data.httpErrorCode != null)
+                                                httpErrorCode = event.data.httpErrorCode?.value()
+                                        }
                             }
                         }
                     }

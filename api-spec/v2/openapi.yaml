@@ -619,8 +619,10 @@ components:
       example:
         creationDate: "2023-08-07T15:32:56.592Z"
         eventCode: "TRANSACTION_ACTIVATED_EVENT"
-        httpCode: "400 Bad Request"
-        description: "Missing field 'x'"
+        errorDetails:
+          httpErrorCode: 500
+          description: "Internal server error"
+          errorType: "COMMUNICATION_ERROR"
     ErrorDetails:
       type: object
       description: Error details
@@ -630,9 +632,12 @@ components:
         description:
           type: string
           description: error description
+        errorType:
+          type: string
+          description: error type
       required:
-        - httpErrorCode
         - description
+        - errorType
     SearchMetricsRequest:
       type: object
       properties:

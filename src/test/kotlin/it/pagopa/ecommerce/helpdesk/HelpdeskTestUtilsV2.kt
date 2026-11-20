@@ -22,12 +22,26 @@ object HelpdeskTestUtilsV2 {
                     if (it.data != null) {
                         when (it) {
                             is TransactionClosureErrorEvent -> {
-                                this.description(it.data.errorDescription)
-                                this.httpCode(it.data.httpErrorCode.toString())
+                                this.errorDetails =
+                                    ErrorDetailsDto(
+                                            it.data.errorDescription,
+                                            it.data.errorType.toString()
+                                        )
+                                        .apply {
+                                            if (it.data.httpErrorCode != null)
+                                                httpErrorCode = it.data.httpErrorCode?.value()
+                                        }
                             }
                             is TransactionRefundErrorEvent -> {
-                                this.description(it.data.errorDescription)
-                                this.httpCode(it.data.httpErrorCode.toString())
+                                this.errorDetails =
+                                    ErrorDetailsDto(
+                                            it.data.errorDescription,
+                                            it.data.errorType.toString()
+                                        )
+                                        .apply {
+                                            if (it.data.httpErrorCode != null)
+                                                httpErrorCode = it.data.httpErrorCode?.value()
+                                        }
                             }
                             else -> {}
                         }
