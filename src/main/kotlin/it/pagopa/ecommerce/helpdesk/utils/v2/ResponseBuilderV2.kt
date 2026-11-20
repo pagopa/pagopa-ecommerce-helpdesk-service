@@ -4,6 +4,8 @@ import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
 import it.pagopa.ecommerce.commons.documents.v2.TransactionActivatedData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationCompletedData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
+import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureErrorEvent
+import it.pagopa.ecommerce.commons.documents.v2.TransactionRefundErrorEvent
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData
 import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.*
@@ -62,6 +64,20 @@ fun baseTransactionToTransactionInfoDtoV2(
             EventInfoDto()
                 .creationDate(ZonedDateTime.parse(event.creationDate).toOffsetDateTime())
                 .eventCode(event.eventCode)
+                .apply {
+                    if (event.data != null) {
+                        when (event) {
+                            is TransactionClosureErrorEvent -> {
+                                this.description(event.data.errorDescription)
+                                this.httpCode(event.data.httpErrorCode.toString())
+                            }
+                            is TransactionRefundErrorEvent -> {
+                                this.description(event.data.errorDescription)
+                                this.httpCode(event.data.httpErrorCode.toString())
+                            }
+                        }
+                    }
+                }
         }
 
     // build transaction info

@@ -1,6 +1,8 @@
 package it.pagopa.ecommerce.helpdesk
 
+import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureErrorEvent
 import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent
+import it.pagopa.ecommerce.commons.documents.v2.TransactionRefundErrorEvent
 import it.pagopa.ecommerce.commons.v2.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.documents.PmTransactionHistory
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
@@ -16,6 +18,21 @@ object HelpdeskTestUtilsV2 {
             EventInfoDto()
                 .eventCode(it.eventCode)
                 .creationDate(ZonedDateTime.parse(it.creationDate).toOffsetDateTime())
+                .apply {
+                    if (it.data != null) {
+                        when (it) {
+                            is TransactionClosureErrorEvent -> {
+                                this.description(it.data.errorDescription)
+                                this.httpCode(it.data.httpErrorCode.toString())
+                            }
+                            is TransactionRefundErrorEvent -> {
+                                this.description(it.data.errorDescription)
+                                this.httpCode(it.data.httpErrorCode.toString())
+                            }
+                            else -> {}
+                        }
+                    }
+                }
         }
 
     fun buildProblemJson(

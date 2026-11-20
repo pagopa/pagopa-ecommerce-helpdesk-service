@@ -611,9 +611,17 @@ components:
           format: date-time
         eventCode:
           type: string
+        httpCode:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
       example:
         creationDate: "2023-08-07T15:32:56.592Z"
         eventCode: "TRANSACTION_ACTIVATED_EVENT"
+        httpCode: "400 Bad Request"
+        description: "Missing field 'x'"
     SearchMetricsRequest:
       type: object
       properties:
