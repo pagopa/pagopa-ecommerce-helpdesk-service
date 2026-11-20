@@ -611,17 +611,28 @@ components:
           format: date-time
         eventCode:
           type: string
-        httpCode:
-          type: string
-          nullable: true
-        description:
-          type: string
-          nullable: true
+        errorDetails:
+          $ref: '#/components/schemas/ErrorDetails'
+      required:
+        - creationDate
+        - eventCode
       example:
         creationDate: "2023-08-07T15:32:56.592Z"
         eventCode: "TRANSACTION_ACTIVATED_EVENT"
         httpCode: "400 Bad Request"
         description: "Missing field 'x'"
+    ErrorDetails:
+      type: object
+      description: Error details
+      properties:
+        httpErrorCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        description:
+          type: string
+          description: error description
+      required:
+        - httpErrorCode
+        - description
     SearchMetricsRequest:
       type: object
       properties:
