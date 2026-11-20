@@ -21,7 +21,7 @@ plugins {
 }
 
 // eCommerce commons library version
-val ecommerceCommonsVersion = "3.11.1"
+val ecommerceCommonsVersion = "3.12.0-CHK-5130-refund-error-details-SNAPSHOT-4290676"
 
 // eCommerce commons library git ref (by default tag)
 val ecommerceCommonsGitRef = ecommerceCommonsVersion

@@ -1,5 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo.v2
 
+import it.pagopa.ecommerce.commons.documents.v2.ClosureErrorData
+import it.pagopa.ecommerce.commons.documents.v2.ErrorType
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData as TransactionAuthorizationRequestDataV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureData as TransactionClosureDataV2
@@ -1133,7 +1135,10 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         val transactionClosedRequestedEvent =
             TransactionTestUtilsV2.transactionClosureRequestedEvent()
-        val closureErrorEvent = TransactionTestUtilsV2.transactionClosureErrorEvent()
+        val closureErrorEvent =
+            TransactionTestUtilsV2.transactionClosureErrorEvent(
+                ClosureErrorData(HttpStatus.BAD_GATEWAY, null, ErrorType.COMMUNICATION_ERROR)
+            )
         val events =
             listOf(
                 transactionActivatedEvent,
@@ -2909,17 +2914,21 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         val transactionRefundErrorEvent =
             TransactionTestUtilsV2.transactionRefundErrorEvent(
-                TransactionTestUtilsV2.reduceEvents(
-                    transactionActivatedEvent,
-                    transactionAuthorizationRequestedEvent,
-                    transactionAuthorizationCompletedEvent,
-                    transactionClosedRequestedEvent,
-                    transactionClosedEvent,
-                    transactionNotificationRequestedEvent,
-                    transactionUserReceiptError,
-                    transactionRefundRequestedEvent
+                    TransactionTestUtilsV2.reduceEvents(
+                        transactionActivatedEvent,
+                        transactionAuthorizationRequestedEvent,
+                        transactionAuthorizationCompletedEvent,
+                        transactionClosedRequestedEvent,
+                        transactionClosedEvent,
+                        transactionNotificationRequestedEvent,
+                        transactionUserReceiptError,
+                        transactionRefundRequestedEvent
+                    )
                 )
-            )
+                .apply {
+                    data.httpErrorCode = HttpStatus.BAD_GATEWAY
+                    data.errorDescription = null
+                }
         val events =
             listOf(
                 transactionActivatedEvent,

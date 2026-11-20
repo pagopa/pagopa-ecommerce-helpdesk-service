@@ -4,6 +4,8 @@ import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
 import it.pagopa.ecommerce.commons.documents.v2.TransactionActivatedData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationCompletedData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
+import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureErrorEvent
+import it.pagopa.ecommerce.commons.documents.v2.TransactionRefundErrorEvent
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData
 import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.*
@@ -62,6 +64,34 @@ fun baseTransactionToTransactionInfoDtoV2(
             EventInfoDto()
                 .creationDate(ZonedDateTime.parse(event.creationDate).toOffsetDateTime())
                 .eventCode(event.eventCode)
+                .apply {
+                    if (event.data != null) {
+                        when (event) {
+                            is TransactionClosureErrorEvent -> {
+                                this.errorDetails =
+                                    ErrorDetailsDto(
+                                            event.data.errorDescription,
+                                            event.data.errorType.toString()
+                                        )
+                                        .apply {
+                                            if (event.data.httpErrorCode != null)
+                                                httpErrorCode = event.data.httpErrorCode?.value()
+                                        }
+                            }
+                            is TransactionRefundErrorEvent -> {
+                                this.errorDetails =
+                                    ErrorDetailsDto(
+                                            event.data.errorDescription,
+                                            event.data.errorType.toString()
+                                        )
+                                        .apply {
+                                            if (event.data.httpErrorCode != null)
+                                                httpErrorCode = event.data.httpErrorCode?.value()
+                                        }
+                            }
+                        }
+                    }
+                }
         }
 
     // build transaction info
