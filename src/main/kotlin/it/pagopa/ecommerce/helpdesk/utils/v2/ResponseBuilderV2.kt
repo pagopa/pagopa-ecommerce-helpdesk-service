@@ -69,25 +69,17 @@ fun baseTransactionToTransactionInfoDtoV2(
                         when (event) {
                             is TransactionClosureErrorEvent -> {
                                 this.errorDetails =
-                                    ErrorDetailsDto(
-                                            event.data.errorDescription,
-                                            event.data.errorType.toString()
-                                        )
-                                        .apply {
-                                            if (event.data.httpErrorCode != null)
-                                                httpErrorCode = event.data.httpErrorCode?.value()
-                                        }
+                                    ErrorDetailsDto()
+                                        .httpErrorCode(event.data.httpErrorCode?.value())
+                                        .description(event.data.errorDescription)
+                                        .errorType(event.data.errorType.toString())
                             }
                             is TransactionRefundErrorEvent -> {
                                 this.errorDetails =
-                                    ErrorDetailsDto(
-                                            event.data.errorDescription,
-                                            event.data.errorType.toString()
-                                        )
-                                        .apply {
-                                            if (event.data.httpErrorCode != null)
-                                                httpErrorCode = event.data.httpErrorCode?.value()
-                                        }
+                                    ErrorDetailsDto()
+                                        .httpErrorCode(event.data.httpErrorCode?.value())
+                                        .description(event.data.errorDescription)
+                                        .errorType(event.data.errorType.toString())
                             }
                         }
                     }
