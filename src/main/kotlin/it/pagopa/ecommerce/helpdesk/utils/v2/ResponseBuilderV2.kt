@@ -69,12 +69,32 @@ fun baseTransactionToTransactionInfoDtoV2(
                                         .description(event.data.errorDescription ?: "N/A")
                                         .errorType(event.data.errorType.toString())
                             }
+                            is TransactionClosureRetriedEvent -> {
+                                val closureErrorData = event.data.closureErrorData
+                                if (closureErrorData != null) {
+                                    this.errorDetails =
+                                        ErrorDetailsDto()
+                                            .httpErrorCode(closureErrorData.httpErrorCode?.value())
+                                            .description(closureErrorData.errorDescription ?: "N/A")
+                                            .errorType(closureErrorData.errorType.toString())
+                                }
+                            }
                             is TransactionRefundErrorEvent -> {
                                 this.errorDetails =
                                     ErrorDetailsDto()
                                         .httpErrorCode(event.data.httpErrorCode?.value())
                                         .description(event.data.errorDescription ?: "N/A")
                                         .errorType(event.data.errorType.toString())
+                            }
+                            is TransactionRefundRetriedEvent -> {
+                                val refundErrorData = event.data.transactionRefundErrorData
+                                if (refundErrorData != null) {
+                                    this.errorDetails =
+                                        ErrorDetailsDto()
+                                            .httpErrorCode(refundErrorData.httpErrorCode?.value())
+                                            .description(refundErrorData.errorDescription ?: "N/A")
+                                            .errorType(refundErrorData.errorType.toString())
+                                }
                             }
                         }
                     }
