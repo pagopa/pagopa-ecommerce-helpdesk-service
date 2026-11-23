@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.helpdesk
 
-import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent
+import it.pagopa.ecommerce.commons.documents.v2.*
 import it.pagopa.ecommerce.commons.v2.TransactionTestUtils
 import it.pagopa.ecommerce.helpdesk.documents.PmTransactionHistory
 import it.pagopa.generated.ecommerce.helpdesk.v2.model.*
@@ -16,6 +16,49 @@ object HelpdeskTestUtilsV2 {
             EventInfoDto()
                 .eventCode(it.eventCode)
                 .creationDate(ZonedDateTime.parse(it.creationDate).toOffsetDateTime())
+                .apply {
+                    if (it.data != null) {
+                        when (it) {
+                            is TransactionClosureErrorEvent -> {
+                                val closureErrorData = it.data
+                                this.errorDetails =
+                                    ErrorDetailsDto()
+                                        .httpErrorCode(closureErrorData.httpErrorCode?.value())
+                                        .description(closureErrorData.errorDescription ?: "N/A")
+                                        .errorType(closureErrorData.errorType.toString())
+                            }
+                            is TransactionClosureRetriedEvent -> {
+                                val closureErrorData = it.data.closureErrorData
+                                if (closureErrorData != null) {
+                                    this.errorDetails =
+                                        ErrorDetailsDto()
+                                            .httpErrorCode(closureErrorData.httpErrorCode?.value())
+                                            .description(closureErrorData.errorDescription ?: "N/A")
+                                            .errorType(closureErrorData.errorType.toString())
+                                }
+                            }
+                            is TransactionRefundErrorEvent -> {
+                                val refundErrorData = it.data
+                                this.errorDetails =
+                                    ErrorDetailsDto()
+                                        .httpErrorCode(refundErrorData.httpErrorCode?.value())
+                                        .description(refundErrorData.errorDescription ?: "N/A")
+                                        .errorType(refundErrorData.errorType.toString())
+                            }
+                            is TransactionRefundRetriedEvent -> {
+                                val refundErrorData = it.data.transactionRefundErrorData
+                                if (refundErrorData != null) {
+                                    this.errorDetails =
+                                        ErrorDetailsDto()
+                                            .httpErrorCode(refundErrorData.httpErrorCode?.value())
+                                            .description(refundErrorData.errorDescription ?: "N/A")
+                                            .errorType(refundErrorData.errorType.toString())
+                                }
+                            }
+                            else -> {}
+                        }
+                    }
+                }
         }
 
     fun buildProblemJson(

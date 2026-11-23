@@ -1,10 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.utils.v2
 
 import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
-import it.pagopa.ecommerce.commons.documents.v2.TransactionActivatedData
-import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationCompletedData
-import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
-import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData
+import it.pagopa.ecommerce.commons.documents.v2.*
 import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.*
 import it.pagopa.ecommerce.commons.documents.v2.refund.NpgGatewayRefundData
@@ -62,6 +59,46 @@ fun baseTransactionToTransactionInfoDtoV2(
             EventInfoDto()
                 .creationDate(ZonedDateTime.parse(event.creationDate).toOffsetDateTime())
                 .eventCode(event.eventCode)
+                .apply {
+                    if (event.data != null) {
+                        when (event) {
+                            is TransactionClosureErrorEvent -> {
+                                this.errorDetails =
+                                    ErrorDetailsDto()
+                                        .httpErrorCode(event.data.httpErrorCode?.value())
+                                        .description(event.data.errorDescription ?: "N/A")
+                                        .errorType(event.data.errorType.toString())
+                            }
+                            is TransactionClosureRetriedEvent -> {
+                                val closureErrorData = event.data.closureErrorData
+                                if (closureErrorData != null) {
+                                    this.errorDetails =
+                                        ErrorDetailsDto()
+                                            .httpErrorCode(closureErrorData.httpErrorCode?.value())
+                                            .description(closureErrorData.errorDescription ?: "N/A")
+                                            .errorType(closureErrorData.errorType.toString())
+                                }
+                            }
+                            is TransactionRefundErrorEvent -> {
+                                this.errorDetails =
+                                    ErrorDetailsDto()
+                                        .httpErrorCode(event.data.httpErrorCode?.value())
+                                        .description(event.data.errorDescription ?: "N/A")
+                                        .errorType(event.data.errorType.toString())
+                            }
+                            is TransactionRefundRetriedEvent -> {
+                                val refundErrorData = event.data.transactionRefundErrorData
+                                if (refundErrorData != null) {
+                                    this.errorDetails =
+                                        ErrorDetailsDto()
+                                            .httpErrorCode(refundErrorData.httpErrorCode?.value())
+                                            .description(refundErrorData.errorDescription ?: "N/A")
+                                            .errorType(refundErrorData.errorType.toString())
+                                }
+                            }
+                        }
+                    }
+                }
         }
 
     // build transaction info

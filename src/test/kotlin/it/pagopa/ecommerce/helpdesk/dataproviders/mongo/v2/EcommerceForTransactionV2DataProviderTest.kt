@@ -1,9 +1,12 @@
 package it.pagopa.ecommerce.helpdesk.dataproviders.mongo.v2
 
+import it.pagopa.ecommerce.commons.documents.v2.ClosureErrorData
+import it.pagopa.ecommerce.commons.documents.v2.ErrorType
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData as TransactionAuthorizationRequestDataV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureData as TransactionClosureDataV2
 import it.pagopa.ecommerce.commons.documents.v2.TransactionEvent as TransactionEventV2
+import it.pagopa.ecommerce.commons.documents.v2.TransactionRefundErrorData
 import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData as TransactionUserReceiptDataV2
 import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.NpgTransactionGatewayAuthorizationData
@@ -13,6 +16,7 @@ import it.pagopa.ecommerce.commons.documents.v2.authorization.TransactionGateway
 import it.pagopa.ecommerce.commons.documents.v2.refund.NpgGatewayRefundData
 import it.pagopa.ecommerce.commons.domain.Confidential
 import it.pagopa.ecommerce.commons.domain.v2.Email
+import it.pagopa.ecommerce.commons.domain.v2.TransactionEventCode
 import it.pagopa.ecommerce.commons.domain.v2.TransactionWithUserReceiptOk as TransactionWithUserReceiptOkV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionExpired as BaseTransactionExpiredV2
 import it.pagopa.ecommerce.commons.domain.v2.pojos.BaseTransactionWithClosureError as BaseTransactionWithClosureErrorV2
@@ -46,6 +50,7 @@ import java.util.stream.Stream
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -1133,7 +1138,10 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         val transactionClosedRequestedEvent =
             TransactionTestUtilsV2.transactionClosureRequestedEvent()
-        val closureErrorEvent = TransactionTestUtilsV2.transactionClosureErrorEvent()
+        val closureErrorEvent =
+            TransactionTestUtilsV2.transactionClosureErrorEvent(
+                ClosureErrorData(HttpStatus.BAD_GATEWAY, null, ErrorType.COMMUNICATION_ERROR)
+            )
         val events =
             listOf(
                 transactionActivatedEvent,
@@ -2909,17 +2917,21 @@ class EcommerceForTransactionV2DataProviderTest {
             )
         val transactionRefundErrorEvent =
             TransactionTestUtilsV2.transactionRefundErrorEvent(
-                TransactionTestUtilsV2.reduceEvents(
-                    transactionActivatedEvent,
-                    transactionAuthorizationRequestedEvent,
-                    transactionAuthorizationCompletedEvent,
-                    transactionClosedRequestedEvent,
-                    transactionClosedEvent,
-                    transactionNotificationRequestedEvent,
-                    transactionUserReceiptError,
-                    transactionRefundRequestedEvent
+                    TransactionTestUtilsV2.reduceEvents(
+                        transactionActivatedEvent,
+                        transactionAuthorizationRequestedEvent,
+                        transactionAuthorizationCompletedEvent,
+                        transactionClosedRequestedEvent,
+                        transactionClosedEvent,
+                        transactionNotificationRequestedEvent,
+                        transactionUserReceiptError,
+                        transactionRefundRequestedEvent
+                    )
                 )
-            )
+                .apply {
+                    data.httpErrorCode = HttpStatus.BAD_GATEWAY
+                    data.errorDescription = null
+                }
         val events =
             listOf(
                 transactionActivatedEvent,
@@ -4538,6 +4550,312 @@ class EcommerceForTransactionV2DataProviderTest {
                 assertEquals(expected, it)
                 testedStatuses.add(
                     TransactionStatusDto.valueOf(it[0].transactionInfo.eventStatus.toString())
+                )
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should map successfully transaction V2 data into response searching by transaction id for transaction in REFUND_ERROR state outcome handling error data in refund and close payment events`() {
+        val searchCriteria = HelpdeskTestUtilsV2.buildSearchRequestByTransactionId()
+        val pageSize = 100
+        val pageNumber = 0
+        val correlationId = UUID.randomUUID().toString()
+        val orderId = "orderId"
+        val transactionView =
+            TransactionTestUtilsV2.transactionDocument(
+                TransactionStatusDto.REFUND_ERROR,
+                ZonedDateTime.now()
+            )
+        val transactionUserReceiptData =
+            TransactionTestUtilsV2.transactionUserReceiptData(
+                TransactionUserReceiptDataV2.Outcome.KO
+            )
+        val transactionActivatedEvent =
+            TransactionTestUtilsV2.transactionActivateEvent(
+                NpgTransactionGatewayActivationData(orderId, correlationId)
+            )
+        val transactionAuthorizationRequestedEvent =
+            TransactionTestUtilsV2.transactionAuthorizationRequestedEvent(
+                TransactionAuthorizationRequestDataV2.PaymentGateway.NPG
+            )
+        val transactionAuthorizationCompletedEvent =
+            TransactionTestUtilsV2.transactionAuthorizationCompletedEvent(
+                TransactionTestUtilsV2.npgTransactionGatewayAuthorizationData(
+                    OperationResultDto.EXECUTED
+                )
+            )
+        val transactionClosedRequestedEvent =
+            TransactionTestUtilsV2.transactionClosureRequestedEvent()
+        val closureErrorData =
+            ClosureErrorData(
+                HttpStatus.BAD_GATEWAY,
+                "Closure error description",
+                ErrorType.KO_RESPONSE_RECEIVED
+            )
+        val transactionClosureErrorEvent =
+            TransactionTestUtilsV2.transactionClosureErrorEvent(closureErrorData)
+        val transactionClosureRetriedEvent =
+            TransactionTestUtilsV2.transactionClosureRetriedEvent(1, closureErrorData)
+        val transactionClosedEvent =
+            TransactionTestUtilsV2.transactionClosedEvent(TransactionClosureDataV2.Outcome.OK)
+        val transactionNotificationRequestedEvent =
+            TransactionTestUtilsV2.transactionUserReceiptRequestedEvent(transactionUserReceiptData)
+        val transactionUserReceiptError =
+            TransactionTestUtilsV2.transactionUserReceiptAddedEvent(transactionUserReceiptData)
+        val transactionRefundRequestedEvent =
+            TransactionTestUtilsV2.transactionRefundRequestedEvent(
+                TransactionTestUtilsV2.reduceEvents(
+                    transactionActivatedEvent,
+                    transactionAuthorizationRequestedEvent,
+                    transactionAuthorizationCompletedEvent,
+                    transactionClosedRequestedEvent,
+                    transactionClosureErrorEvent,
+                    transactionClosureRetriedEvent,
+                    transactionClosedEvent,
+                    transactionNotificationRequestedEvent,
+                    transactionUserReceiptError
+                ),
+                transactionAuthorizationCompletedEvent.data.transactionGatewayAuthorizationData
+            )
+        val refundErrorData =
+            TransactionRefundErrorData(
+                TransactionStatusDto.REFUND_REQUESTED,
+                HttpStatus.BAD_GATEWAY,
+                "Refund error description",
+                ErrorType.KO_RESPONSE_RECEIVED
+            )
+        val transactionRefundErrorEvent =
+            TransactionTestUtilsV2.transactionRefundErrorEvent(refundErrorData)
+        val transactionRefundRetriedEvent =
+            TransactionTestUtilsV2.transactionRefundRetriedEvent(
+                1,
+                TransactionTestUtilsV2.npgTransactionGatewayAuthorizationData(
+                    OperationResultDto.EXECUTED
+                ),
+                refundErrorData
+            )
+
+        val events =
+            listOf(
+                transactionActivatedEvent,
+                transactionAuthorizationRequestedEvent,
+                transactionAuthorizationCompletedEvent,
+                transactionClosedRequestedEvent,
+                transactionClosureErrorEvent,
+                transactionClosureRetriedEvent,
+                transactionClosedEvent,
+                transactionNotificationRequestedEvent,
+                transactionUserReceiptError,
+                transactionRefundRequestedEvent,
+                transactionRefundErrorEvent,
+                transactionRefundRetriedEvent
+            )
+                as List<TransactionEventV2<Any>>
+        val baseTransactionRefundError =
+            TransactionTestUtilsV2.reduceEvents(*events.toTypedArray())
+                as BaseTransactionWithRefundRequestedV2
+
+        val baseTransactionRefundRequested =
+            baseTransactionRefundError.transactionAtPreviousState
+                as BaseTransactionWithRefundRequestedV2
+
+        val baseTransaction =
+            baseTransactionRefundRequested.transactionAtPreviousState
+                as BaseTransactionWithUserReceiptV2
+        given(transactionsViewRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.just(transactionView))
+        given(
+                transactionsEventStoreRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.fromIterable(events))
+        given(transactionsViewHistoryRepository.findById(searchCriteria.transactionId))
+            .willReturn(Mono.empty())
+        given(
+                transactionsEventStoreHistoryRepository.findByTransactionIdOrderByCreationDateAsc(
+                    transactionView.transactionId
+                )
+            )
+            .willReturn(Flux.empty())
+        given(confidentialDataManager.decrypt(any<Confidential<Email>>(), any()))
+            .willReturn(Mono.just(Email(TEST_EMAIL)))
+        val amount = baseTransaction.paymentNotices.sumOf { it.transactionAmount.value }
+        val fee = baseTransaction.transactionAuthorizationRequestData.fee
+        val totalAmount = amount.plus(fee)
+        val expected =
+            listOf(
+                TransactionResultDto()
+                    .userInfo(
+                        UserInfoDto().authenticationType("REGISTERED").notificationEmail(TEST_EMAIL)
+                    )
+                    .transactionInfo(
+                        TransactionInfoDto()
+                            .creationDate(baseTransaction.creationDate.toOffsetDateTime())
+                            .status("Confermato")
+                            .statusDetails(null)
+                            .events(convertEventsToEventInfoList(events))
+                            .eventStatus(
+                                it.pagopa.generated.ecommerce.helpdesk.v2.model.TransactionStatusDto
+                                    .valueOf(transactionView.status.toString())
+                            )
+                            .amount(amount)
+                            .fee(fee)
+                            .grandTotal(totalAmount)
+                            .rrn(baseTransaction.transactionAuthorizationCompletedData.rrn)
+                            .authorizationOperationId(
+                                (baseTransactionRefundRequested.transactionAuthorizationGatewayData
+                                        .get() as NpgTransactionGatewayAuthorizationData)
+                                    .operationId
+                            )
+                            .refundOperationId(null)
+                            .authorizationCode(
+                                baseTransaction.transactionAuthorizationCompletedData
+                                    .authorizationCode
+                            )
+                            .paymentMethodName(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .paymentMethodName
+                            )
+                            .paymentTypeCode(
+                                baseTransaction.transactionAuthorizationRequestData.paymentTypeCode
+                            )
+                            .brand("VISA")
+                            .authorizationRequestId(
+                                baseTransaction.transactionAuthorizationRequestData
+                                    .authorizationRequestId
+                            )
+                            .paymentGateway(
+                                baseTransaction.transactionAuthorizationRequestData.paymentGateway
+                                    .toString()
+                            )
+                            .correlationId(UUID.fromString(correlationId))
+                            .gatewayAuthorizationStatus(OperationResultDto.EXECUTED.value)
+                    )
+                    .paymentInfo(
+                        PaymentInfoDto()
+                            .origin(baseTransaction.clientId.toString())
+                            .idTransaction(baseTransaction.transactionId.value())
+                            .details(
+                                baseTransaction.paymentNotices.map {
+                                    PaymentDetailInfoDto()
+                                        .subject(it.transactionDescription.value)
+                                        .rptId(it.rptId.value)
+                                        .amount(it.transactionAmount.value)
+                                        .paymentToken(it.paymentToken.value)
+                                        .creditorInstitution(it.companyName.value)
+                                        .paFiscalCode(it.transferList[0].paFiscalCode)
+                                }
+                            )
+                    )
+                    .pspInfo(
+                        PspInfoDto()
+                            .pspId(baseTransaction.transactionAuthorizationRequestData.pspId)
+                            .businessName(
+                                baseTransaction.transactionAuthorizationRequestData.pspBusinessName
+                            )
+                            .idChannel(
+                                baseTransaction.transactionAuthorizationRequestData.pspChannelCode
+                            )
+                    )
+                    .product(ProductDto.ECOMMERCE)
+            )
+        StepVerifier.create(
+                ecommerceTransactionDataProvider.findResult(
+                    searchParams =
+                        SearchParamDecoderV2(
+                            searchParameter = searchCriteria,
+                            confidentialMailUtils = ConfidentialMailUtils(confidentialDataManager),
+                            confidentialFiscalCodeUtils =
+                                ConfidentialFiscalCodeUtils(confidentialDataManager)
+                        ),
+                    skip = 0,
+                    limit = pageSize,
+                    countInfo = CountInfo(1, 0)
+                )
+            )
+            .consumeNextWith {
+                val eventList = it[0].transactionInfo.events
+                val closureErrorEvent =
+                    eventList.find { event ->
+                        event.eventCode ==
+                            TransactionEventCode.TRANSACTION_CLOSURE_ERROR_EVENT.toString()
+                    }
+                val closureRetriedEvent =
+                    eventList.find { event ->
+                        event.eventCode ==
+                            TransactionEventCode.TRANSACTION_CLOSURE_RETRIED_EVENT.toString()
+                    }
+                val refundErrorEvent =
+                    eventList.find { event ->
+                        event.eventCode ==
+                            TransactionEventCode.TRANSACTION_REFUND_ERROR_EVENT.toString()
+                    }
+                val refundRetriedEvent =
+                    eventList.find { event ->
+                        event.eventCode ==
+                            TransactionEventCode.TRANSACTION_REFUND_RETRIED_EVENT.toString()
+                    }
+                assertEquals(expected, it)
+                testedStatuses.add(
+                    TransactionStatusDto.valueOf(it[0].transactionInfo.eventStatus.toString())
+                )
+                assertNotNull(closureErrorEvent)
+                assertNotNull(closureRetriedEvent)
+                assertNotNull(refundErrorEvent)
+                assertNotNull(refundRetriedEvent)
+
+                assertEquals(
+                    closureErrorData.httpErrorCode!!.value(),
+                    closureErrorEvent!!.errorDetails!!.httpErrorCode
+                )
+                assertEquals(
+                    closureErrorData.errorDescription,
+                    closureErrorEvent.errorDetails.description
+                )
+                assertEquals(
+                    closureErrorData.errorType.toString(),
+                    closureErrorEvent.errorDetails.errorType
+                )
+
+                assertEquals(
+                    closureErrorData.httpErrorCode!!.value(),
+                    closureRetriedEvent!!.errorDetails!!.httpErrorCode
+                )
+                assertEquals(
+                    closureErrorData.errorDescription,
+                    closureRetriedEvent.errorDetails.description
+                )
+                assertEquals(
+                    closureErrorData.errorType.toString(),
+                    closureRetriedEvent.errorDetails.errorType
+                )
+
+                assertEquals(
+                    refundErrorData.httpErrorCode!!.value(),
+                    refundErrorEvent!!.errorDetails!!.httpErrorCode
+                )
+                assertEquals(
+                    refundErrorData.errorDescription,
+                    refundErrorEvent.errorDetails.description
+                )
+                assertEquals(
+                    refundErrorData.errorType.toString(),
+                    refundErrorEvent.errorDetails.errorType
+                )
+
+                assertEquals(
+                    refundErrorData.httpErrorCode!!.value(),
+                    refundRetriedEvent!!.errorDetails!!.httpErrorCode
+                )
+                assertEquals(
+                    refundErrorData.errorDescription,
+                    refundRetriedEvent.errorDetails.description
+                )
+                assertEquals(
+                    refundErrorData.errorType.toString(),
+                    refundRetriedEvent.errorDetails.errorType
                 )
             }
             .verifyComplete()
