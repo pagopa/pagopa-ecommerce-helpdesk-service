@@ -1,12 +1,7 @@
 package it.pagopa.ecommerce.helpdesk.utils.v2
 
 import it.pagopa.ecommerce.commons.documents.BaseTransactionEvent
-import it.pagopa.ecommerce.commons.documents.v2.TransactionActivatedData
-import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationCompletedData
-import it.pagopa.ecommerce.commons.documents.v2.TransactionAuthorizationRequestData
-import it.pagopa.ecommerce.commons.documents.v2.TransactionClosureErrorEvent
-import it.pagopa.ecommerce.commons.documents.v2.TransactionRefundErrorEvent
-import it.pagopa.ecommerce.commons.documents.v2.TransactionUserReceiptData
+import it.pagopa.ecommerce.commons.documents.v2.*
 import it.pagopa.ecommerce.commons.documents.v2.activation.NpgTransactionGatewayActivationData
 import it.pagopa.ecommerce.commons.documents.v2.authorization.*
 import it.pagopa.ecommerce.commons.documents.v2.refund.NpgGatewayRefundData
@@ -71,14 +66,14 @@ fun baseTransactionToTransactionInfoDtoV2(
                                 this.errorDetails =
                                     ErrorDetailsDto()
                                         .httpErrorCode(event.data.httpErrorCode?.value())
-                                        .description(event.data.errorDescription)
+                                        .description(event.data.errorDescription ?: "N/A")
                                         .errorType(event.data.errorType.toString())
                             }
                             is TransactionRefundErrorEvent -> {
                                 this.errorDetails =
                                     ErrorDetailsDto()
                                         .httpErrorCode(event.data.httpErrorCode?.value())
-                                        .description(event.data.errorDescription)
+                                        .description(event.data.errorDescription ?: "N/A")
                                         .errorType(event.data.errorType.toString())
                             }
                         }
